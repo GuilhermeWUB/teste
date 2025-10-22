@@ -22,7 +22,12 @@
                     <a th:href="@{/partners/{id}(id=${partner.id})}">Detalhes</a>
                     <a th:href="@{/partners/edit/{id}(id=${partner.id})}">Alterar</a>
                     <a th:href="@{/partners/delete/{id}(id=${partner.id})}">Excluir</a>
-                    <a th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}" th:href="@{/pagamentos/gerar-mensalidades(vehicle_id=${partner.vehicles[0].id})}">Gerar Faturas</a>
+                    <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}" th:action="@{/pagamentos/gerar-mensalidades}" method="get">
+                        <select name="vehicle_id">
+                            <option th:each="vehicle : ${partner.vehicles}" th:value="${vehicle.id}" th:text="${vehicle.plaque}"></option>
+                        </select>
+                        <button type="submit">Gerar Faturas</button>
+                    </form>
                 </td>
             </tr>
         </tbody>

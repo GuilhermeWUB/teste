@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Controller
 @RequestMapping("/partners")
@@ -38,13 +40,17 @@ public class PartnerController {
 
     @GetMapping("/{id}")
     public String showPartnerDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("partner", partnerService.getPartnerById(id).orElse(null));
+        Partner partner = partnerService.getPartnerById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+        model.addAttribute("partner", partner);
         return "detalhes_associado";
     }
 
     @GetMapping("/edit/{id}")
     public String showUpdatePartnerForm(@PathVariable Long id, Model model) {
-        model.addAttribute("partner", partnerService.getPartnerById(id).orElse(null));
+        Partner partner = partnerService.getPartnerById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+        model.addAttribute("partner", partner);
         return "update_associado";
     }
 

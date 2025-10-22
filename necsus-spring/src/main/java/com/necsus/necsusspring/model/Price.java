@@ -15,7 +15,7 @@ public class Price {
     private BigDecimal value;
 
     @ManyToOne
-    @JoinColumn(name = "princes_group_id")
+    @JoinColumn(name = "prices_group_id")
     private PriceGroup priceGroup;
 
     public Long getId() {

@@ -10,10 +10,10 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "accont_code")
+    @Column(name = "account_code")
     private String accountCode;
 
-    @Column(name = "accont_dv")
+    @Column(name = "account_dv")
     private String accountDv;
 
     @ManyToOne
