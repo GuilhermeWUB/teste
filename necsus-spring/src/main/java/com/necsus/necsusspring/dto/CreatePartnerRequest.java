@@ -1,8 +1,8 @@
-package com.example.necsusspring.dto;
+package com.necsus.necsusspring.dto;
 
-import com.example.necsusspring.model.Address;
-import com.example.necsusspring.model.Adhesion;
-import com.example.necsusspring.model.Partner;
+import com.necsus.necsusspring.model.Address;
+import com.necsus.necsusspring.model.Adhesion;
+import com.necsus.necsusspring.model.Partner;
 
 public class CreatePartnerRequest {
 

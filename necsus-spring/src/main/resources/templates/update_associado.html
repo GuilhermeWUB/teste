@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Atualizar Associado</title>
+</head>
+<body>
+    <h1>Atualizar Associado</h1>
+    <form action="#" th:action="@{/partners/update/{id}(id=${partner.id})}" th:object="${partner}" method="post">
+        <h2>Dados do associado</h2>
+        <input type="text" th:field="*{name}" placeholder="Nome/Razão social" />
+        <input type="text" th:field="*{cpf}" placeholder="CPF" />
+        <input type="text" th:field="*{rg}" placeholder="RG/Doc. Indentificação" />
+        <input type="email" th:field="*{email}" placeholder="E-mail" />
+        <input type="date" th:field="*{dateBorn}" placeholder="Data de nascimento" />
+        <input type="text" th:field="*{phone}" placeholder="Telefone" />
+        <input type="text" th:field="*{cell}" placeholder="Celular 1" />
+
+        <button type="submit">Atualizar</button>
+    </form>
+</body>
+</html>

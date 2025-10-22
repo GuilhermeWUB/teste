@@ -1,4 +1,4 @@
-package com.example.necsusspring;
+package com.necsus.necsusspring;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

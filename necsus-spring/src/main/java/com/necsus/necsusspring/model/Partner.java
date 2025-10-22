@@ -1,10 +1,14 @@
-package com.example.necsusspring.model;
+package com.necsus.necsusspring.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import java.util.Date;
+import jakarta.persistence.OneToMany;
+import java.util.List;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 public class Partner {
@@ -29,6 +33,13 @@ public class Partner {
     private String rg;
     private String fax;
     private Long addressId;
+
+    @OneToMany(mappedBy = "partner")
+    private List<Vehicle> vehicles;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     public Long getId() {
         return id;
@@ -164,5 +175,21 @@ public class Partner {
 
     public void setAddressId(Long addressId) {
         this.addressId = addressId;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

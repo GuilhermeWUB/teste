@@ -1,6 +1,6 @@
-package com.example.necsusspring.repository;
+package com.necsus.necsusspring.repository;
 
-import com.example.necsusspring.model.Address;
+import com.necsus.necsusspring.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
