@@ -21,7 +21,7 @@ public class Address {
     @NotEmpty(message = "O CEP é obrigatório")
     private String zipcode;
     private String number;
-    private Long states_id;
+    private String states;
 
     public Long getId() {
         return id;
@@ -31,11 +31,11 @@ public class Address {
         this.id = id;
     }
 
-    public String getAddress() {
+    public @NotEmpty(message = "O endereço é obrigatório") String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(@NotEmpty(message = "O endereço é obrigatório") String address) {
         this.address = address;
     }
 
@@ -63,11 +63,11 @@ public class Address {
         this.complement = complement;
     }
 
-    public String getZipcode() {
+    public @NotEmpty(message = "O CEP é obrigatório") String getZipcode() {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public void setZipcode(@NotEmpty(message = "O CEP é obrigatório") String zipcode) {
         this.zipcode = zipcode;
     }
 
@@ -79,11 +79,11 @@ public class Address {
         this.number = number;
     }
 
-    public Long getStates_id() {
-        return states_id;
+    public String getStates() {
+        return states;
     }
 
-    public void setStates_id(Long states_id) {
-        this.states_id = states_id;
+    public void setStates(String states) {
+        this.states = states;
     }
 }

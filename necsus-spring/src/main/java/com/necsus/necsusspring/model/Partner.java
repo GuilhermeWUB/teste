@@ -4,6 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import jakarta.persistence.OneToMany;
 import java.util.List;
@@ -21,7 +25,7 @@ public class Partner {
 
     @NotEmpty(message = "O nome é obrigatório")
     private String name;
-    private Date dateBorn;
+    private LocalDate dateBorn;
     private String zipcode;
     private String address;
     private String neighborhood;
@@ -47,6 +51,15 @@ public class Partner {
     @JoinColumn(name = "company_id")
     private Company company;
 
+
+    public @NotEmpty(message = "O nome é obrigatório") String getName() {
+        return name;
+    }
+
+    public void setName(@NotEmpty(message = "O nome é obrigatório") String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -55,19 +68,11 @@ public class Partner {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getDateBorn() {
+    public LocalDate getDateBorn() {
         return dateBorn;
     }
 
-    public void setDateBorn(Date dateBorn) {
+    public void setDateBorn(LocalDate dateBorn) {
         this.dateBorn = dateBorn;
     }
 
@@ -111,11 +116,11 @@ public class Partner {
         this.complement = complement;
     }
 
-    public String getEmail() {
+    public @NotEmpty(message = "O e-mail é obrigatório") @Email(message = "E-mail inválido") String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@NotEmpty(message = "O e-mail é obrigatório") @Email(message = "E-mail inválido") String email) {
         this.email = email;
     }
 
@@ -135,11 +140,11 @@ public class Partner {
         this.uf = uf;
     }
 
-    public String getCpf() {
+    public @NotEmpty(message = "O CPF é obrigatório") String getCpf() {
         return cpf;
     }
 
-    public void setCpf(String cpf) {
+    public void setCpf(@NotEmpty(message = "O CPF é obrigatório") String cpf) {
         this.cpf = cpf;
     }
 
