@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>System UB</title>
+    <title>SUB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color: orange;
+            padding: 10px 0;
+            width: 100%;
+        }
+        .header img {
+            height: 50px;
+        }
+    </style>
 </head>
 <body>
+<div class="header">
+    <div class="container">
+        <img src="/images/ub_logo_roxa_degrade_1.png" alt="Logo SUB">
+    </div>
+</div>
 <div class="container mt-4">
     <div th:if="${partner}">
-        <h1 class="mb-4">Detalhes do Parceiro</h1>
+        <h1 class="mb-4">Detalhes do Associado</h1>
         <div class="card">
             <div class="card-header">
                 <h4 th:text="${partner.name}"></h4>
@@ -42,7 +57,7 @@
         <a th:href="@{/partners}" class="btn btn-primary mt-3">Voltar para a lista</a>
     </div>
     <div th:if="${partner == null}" class="alert alert-warning mt-4" role="alert">
-        Parceiro não encontrado.
+        Associado não encontrado.
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
