@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class Address {
@@ -12,10 +13,12 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "O endereço é obrigatório")
     private String address;
     private String neighborhood;
     private String city;
     private String complement;
+    @NotEmpty(message = "O CEP é obrigatório")
     private String zipcode;
     private String number;
     private Long states_id;

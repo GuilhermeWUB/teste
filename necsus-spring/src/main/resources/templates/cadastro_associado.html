@@ -2,30 +2,80 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Cadastrar associado</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <h1>Cadastrar associado</h1>
     <form action="#" th:action="@{/partners}" th:object="${createPartnerRequest}" method="post">
         <h2>Dados do associado</h2>
-        <input type="text" th:field="*{partner.name}" placeholder="Nome/Razão social" />
-        <input type="text" th:field="*{partner.cpf}" placeholder="CPF" />
-        <input type="text" th:field="*{partner.rg}" placeholder="RG/Doc. Indentificação" />
-        <input type="email" th:field="*{partner.email}" placeholder="E-mail" />
-        <input type="date" th:field="*{partner.dateBorn}" placeholder="Data de nascimento" />
-        <input type="text" th:field="*{partner.phone}" placeholder="Telefone" />
-        <input type="text" th:field="*{partner.cell}" placeholder="Celular 1" />
+        <div>
+            <input type="text" th:field="*{partner.name}" placeholder="Nome/Razão social" />
+            <span class="error" th:if="${#fields.hasErrors('partner.name')}" th:errors="*{partner.name}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{partner.cpf}" placeholder="CPF" />
+            <span class="error" th:if="${#fields.hasErrors('partner.cpf')}" th:errors="*{partner.cpf}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{partner.rg}" placeholder="RG/Doc. Indentificação" />
+            <span class="error" th:if="${#fields.hasErrors('partner.rg')}" th:errors="*{partner.rg}"></span>
+        </div>
+        <div>
+            <input type="email" th:field="*{partner.email}" placeholder="E-mail" />
+            <span class="error" th:if="${#fields.hasErrors('partner.email')}" th:errors="*{partner.email}"></span>
+        </div>
+        <div>
+            <input type="date" th:field="*{partner.dateBorn}" placeholder="dd/mm/aaaa" />
+            <span class="error" th:if="${#fields.hasErrors('partner.dateBorn')}" th:errors="*{partner.dateBorn}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{partner.phone}" placeholder="Telefone" />
+            <span class="error" th:if="${#fields.hasErrors('partner.phone')}" th:errors="*{partner.phone}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{partner.cell}" placeholder="Celular 1" />
+            <span class="error" th:if="${#fields.hasErrors('partner.cell')}" th:errors="*{partner.cell}"></span>
+        </div>
 
         <h2>Informações de endereço</h2>
-        <input type="text" th:field="*{address.zipcode}" placeholder="CEP" />
-        <input type="text" th:field="*{address.address}" placeholder="Endereço" />
-        <input type="text" th:field="*{address.number}" placeholder="Nº" />
-        <input type="text" th:field="*{address.city}" placeholder="Cidade" />
-        <input type="text" th:field="*{address.neighborhood}" placeholder="Bairro" />
-        <input type="text" th:field="*{address.states_id}" placeholder="UF" />
-        <input type="text" th:field="*{address.complement}" placeholder="Complemento" />
+        <div>
+            <input type="text" th:field="*{address.zipcode}" placeholder="CEP" />
+            <span class="error" th:if="${#fields.hasErrors('address.zipcode')}" th:errors="*{address.zipcode}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.address}" placeholder="Endereço" />
+            <span class="error" th:if="${#fields.hasErrors('address.address')}" th:errors="*{address.address}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.number}" placeholder="Nº" />
+            <span class="error" th:if="${#fields.hasErrors('address.number')}" th:errors="*{address.number}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.city}" placeholder="Cidade" />
+            <span class="error" th:if="${#fields.hasErrors('address.city')}" th:errors="*{address.city}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.neighborhood}" placeholder="Bairro" />
+            <span class="error" th:if="${#fields.hasErrors('address.neighborhood')}" th:errors="*{address.neighborhood}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.states_id}" placeholder="UF" />
+            <span class="error" th:if="${#fields.hasErrors('address.states_id')}" th:errors="*{address.states_id}"></span>
+        </div>
+        <div>
+            <input type="text" th:field="*{address.complement}" placeholder="Complemento" />
+            <span class="error" th:if="${#fields.hasErrors('address.complement')}" th:errors="*{address.complement}"></span>
+        </div>
 
         <h2>Informações de adesão</h2>
-        <input type="text" th:field="*{adhesion.value}" placeholder="Valor da adesão" />
+        <div>
+            <input type="text" th:field="*{adhesion.value}" placeholder="Valor da adesão" />
+            <span class="error" th:if="${#fields.hasErrors('adhesion.value')}" th:errors="*{adhesion.value}"></span>
+        </div>
 
         <button type="submit">Cadastrar</button>
     </form>
