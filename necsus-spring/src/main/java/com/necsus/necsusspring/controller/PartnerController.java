@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
@@ -27,7 +29,10 @@ public class PartnerController {
     }
 
     @PostMapping
-    public String createPartner(CreatePartnerRequest request) {
+    public String createPartner(@Valid CreatePartnerRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+            return "cadastro_associado";
+        }
         partnerService.createPartner(request.getPartner(), request.getAddress(), request.getAdhesion());
         return "redirect:/partners";
     }

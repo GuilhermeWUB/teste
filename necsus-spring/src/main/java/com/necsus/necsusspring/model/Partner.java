@@ -9,6 +9,8 @@ import jakarta.persistence.OneToMany;
 import java.util.List;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 public class Partner {
@@ -17,6 +19,7 @@ public class Partner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "O nome é obrigatório")
     private String name;
     private Date dateBorn;
     private String zipcode;
@@ -24,9 +27,12 @@ public class Partner {
     private String neighborhood;
     private String numResid;
     private String complement;
+    @NotEmpty(message = "O e-mail é obrigatório")
+    @Email(message = "E-mail inválido")
     private String email;
     private String city;
     private String uf;
+    @NotEmpty(message = "O CPF é obrigatório")
     private String cpf;
     private String phone;
     private String cell;

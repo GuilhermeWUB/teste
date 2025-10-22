@@ -3,6 +3,7 @@ package com.necsus.necsusspring.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "adhesion")
@@ -16,6 +17,7 @@ public class Adhesion {
     @JoinColumn(name = "partners_id")
     private Partner partner;
 
+    @NotNull(message = "O valor da adesão é obrigatório")
     @Column(name = "value")
     private BigDecimal value;
 
