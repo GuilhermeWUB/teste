@@ -63,8 +63,8 @@
             <span class="error" th:if="${#fields.hasErrors('address.neighborhood')}" th:errors="*{address.neighborhood}"></span>
         </div>
         <div>
-            <input type="text" th:field="*{address.states_id}" placeholder="UF" />
-            <span class="error" th:if="${#fields.hasErrors('address.states_id')}" th:errors="*{address.states_id}"></span>
+            <input type="text" th:field="*{address.states}" placeholder="UF" />
+            <span class="error" th:if="${#fields.hasErrors('address.states')}" th:errors="*{address.states}"></span>
         </div>
         <div>
             <input type="text" th:field="*{address.complement}" placeholder="Complemento" />
