@@ -66,7 +66,7 @@ public class PartnerController {
         return "redirect:/partners";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deletePartner(@PathVariable Long id) {
         partnerService.deletePartner(id);
         return "redirect:/partners";
