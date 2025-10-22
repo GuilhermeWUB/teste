@@ -18,15 +18,11 @@ public class PartnerService {
     @Autowired
     private PartnerRepository partnerRepository;
 
-    @Autowired
-    private AdhesionRepository adhesionRepository;
-
     public Partner createPartner(Partner partner, Address address, Adhesion adhesion) {
         partner.setAddress(address);
-        Partner savedPartner = partnerRepository.save(partner);
-        adhesion.setPartners_id(savedPartner.getId());
-        adhesionRepository.save(adhesion);
-        return savedPartner;
+        partner.setAdhesion(adhesion);
+        adhesion.setPartner(partner);
+        return partnerRepository.save(partner);
     }
 
     public List<Partner> getAllPartners() {

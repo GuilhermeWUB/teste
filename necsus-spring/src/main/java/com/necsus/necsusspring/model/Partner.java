@@ -38,8 +38,11 @@ public class Partner {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
-    @OneToMany(mappedBy = "partner")
+    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles;
+
+    @OneToOne(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Adhesion adhesion;
 
     @ManyToOne
     @JoinColumn(name = "company_id")
@@ -140,5 +143,13 @@ public class Partner {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public Adhesion getAdhesion() {
+        return adhesion;
+    }
+
+    public void setAdhesion(Adhesion adhesion) {
+        this.adhesion = adhesion;
     }
 }

@@ -14,7 +14,7 @@ public class Adhesion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "partners_id")
     private Partner partner;
 
@@ -57,12 +57,5 @@ public class Adhesion {
 
     public void setVencimento(Date vencimento) {
         this.vencimento = vencimento;
-    }
-
-    public void setPartners_id(Long id) {
-        if (this.partner == null) {
-            this.partner = new Partner();
-        }
-        this.partner.setId(id);
     }
 }
