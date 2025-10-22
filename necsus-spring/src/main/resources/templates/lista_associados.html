@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Associados</title>
+</head>
+<body>
+    <h1>Associados</h1>
+    <a href="/partners/new">Cadastrar Novo Associado</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome/Razão social</th>
+                <th>CPF</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="partner : ${partners}">
+                <td th:text="${partner.name}"></td>
+                <td th:text="${partner.cpf}"></td>
+                <td>
+                    <a th:href="@{/partners/{id}(id=${partner.id})}">Detalhes</a>
+                    <a th:href="@{/partners/edit/{id}(id=${partner.id})}">Alterar</a>
+                    <a th:href="@{/partners/delete/{id}(id=${partner.id})}">Excluir</a>
+                    <a th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}" th:href="@{/pagamentos/gerar-mensalidades(vehicle_id=${partner.vehicles[0].id})}">Gerar Faturas</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

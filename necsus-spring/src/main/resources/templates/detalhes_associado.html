@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalhes do Associado</title>
+</head>
+<body>
+    <h1>Detalhes do Associado</h1>
+    <div th:if="${partner}">
+        <table>
+            <tr>
+                <td>Nome:</td>
+                <td th:text="${partner.name}"></td>
+            </tr>
+            <tr>
+                <td>CPF:</td>
+                <td th:text="${partner.cpf}"></td>
+            </tr>
+            <tr>
+                <td>RG:</td>
+                <td th:text="${partner.rg}"></td>
+            </tr>
+            <tr>
+                <td>E-mail:</td>
+                <td th:text="${partner.email}"></td>
+            </tr>
+            <tr>
+                <td>Data de Nascimento:</td>
+                <td th:text="${partner.dateBorn}"></td>
+            </tr>
+            <tr>
+                <td>Telefone:</td>
+                <td th:text="${partner.phone}"></td>
+            </tr>
+            <tr>
+                <td>Celular:</td>
+                <td th:text="${partner.cell}"></td>
+            </tr>
+            <tr>
+                <td>Endereço:</td>
+                <td th:text="${partner.address}"></td>
+            </tr>
+            <tr>
+                <td>CEP:</td>
+                <td th:text="${partner.zipcode}"></td>
+            </tr>
+            <tr>
+                <td>Cidade:</td>
+                <td th:text="${partner.city}"></td>
+            </tr>
+            <tr>
+                <td>UF:</td>
+                <td th:text="${partner.uf}"></td>
+            </tr>
+        </table>
+        <a th:href="@{/partners}">Voltar para a lista</a>
+    </div>
+    <div th:if="${partner == null}">
+        <p>Associado não encontrado.</p>
+    </div>
+</body>
+</html>

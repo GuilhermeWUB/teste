@@ -1,0 +1,64 @@
+package com.necsus.necsusspring.model;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Entity
+@Table(name = "adhesion")
+public class Adhesion {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "partners_id")
+    private Partner partner;
+
+    @Column(name = "value")
+    private BigDecimal value;
+
+    @Column(name = "vencimento")
+    @Temporal(TemporalType.DATE)
+    private Date vencimento;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Partner getPartner() {
+        return partner;
+    }
+
+    public void setPartner(Partner partner) {
+        this.partner = partner;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public Date getVencimento() {
+        return vencimento;
+    }
+
+    public void setVencimento(Date vencimento) {
+        this.vencimento = vencimento;
+    }
+
+    public void setPartners_id(Long id) {
+        if (this.partner == null) {
+            this.partner = new Partner();
+        }
+        this.partner.setId(id);
+    }
+}
