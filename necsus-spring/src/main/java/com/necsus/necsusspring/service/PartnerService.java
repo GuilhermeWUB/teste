@@ -19,14 +19,10 @@ public class PartnerService {
     private PartnerRepository partnerRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
     private AdhesionRepository adhesionRepository;
 
     public Partner createPartner(Partner partner, Address address, Adhesion adhesion) {
-        Address savedAddress = addressRepository.save(address);
-        partner.setAddressId(savedAddress.getId());
+        partner.setAddress(address);
         Partner savedPartner = partnerRepository.save(partner);
         adhesion.setPartners_id(savedPartner.getId());
         adhesionRepository.save(adhesion);
@@ -46,19 +42,21 @@ public class PartnerService {
                 .map(existingPartner -> {
                     existingPartner.setName(partner.getName());
                     existingPartner.setDateBorn(partner.getDateBorn());
-                    existingPartner.setZipcode(partner.getZipcode());
-                    existingPartner.setAddress(partner.getAddress());
-                    existingPartner.setNeighborhood(partner.getNeighborhood());
-                    existingPartner.setNumResid(partner.getNumResid());
-                    existingPartner.setComplement(partner.getComplement());
                     existingPartner.setEmail(partner.getEmail());
-                    existingPartner.setCity(partner.getCity());
-                    existingPartner.setUf(partner.getUf());
                     existingPartner.setCpf(partner.getCpf());
                     existingPartner.setPhone(partner.getPhone());
                     existingPartner.setCell(partner.getCell());
                     existingPartner.setRg(partner.getRg());
                     existingPartner.setFax(partner.getFax());
+                    if (partner.getAddress() != null) {
+                        existingPartner.getAddress().setZipcode(partner.getAddress().getZipcode());
+                        existingPartner.getAddress().setAddress(partner.getAddress().getAddress());
+                        existingPartner.getAddress().setNeighborhood(partner.getAddress().getNeighborhood());
+                        existingPartner.getAddress().setNumber(partner.getAddress().getNumber());
+                        existingPartner.getAddress().setComplement(partner.getAddress().getComplement());
+                        existingPartner.getAddress().setCity(partner.getAddress().getCity());
+                        existingPartner.getAddress().setStates(partner.getAddress().getStates());
+                    }
                     return partnerRepository.save(existingPartner);
                 })
                 .orElseThrow(() -> new RuntimeException("Partner not found with id " + partner.getId()));
