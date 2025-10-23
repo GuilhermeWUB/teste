@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.necsus</groupId>
-	<artifactId>necsus-spring</artifactId>
+	<artifactId>sub</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>necsus-spring</name>
 	<description>Spring Boot migration of the Necsus application</description>
