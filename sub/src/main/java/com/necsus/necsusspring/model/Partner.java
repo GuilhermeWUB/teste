@@ -44,6 +44,9 @@ public class Partner {
     @OneToOne(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Adhesion adhesion;
 
+    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BankSlip> bankSlips;
+
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
@@ -151,5 +154,13 @@ public class Partner {
 
     public void setAdhesion(Adhesion adhesion) {
         this.adhesion = adhesion;
+    }
+
+    public List<BankSlip> getBankSlips() {
+        return bankSlips;
+    }
+
+    public void setBankSlips(List<BankSlip> bankSlips) {
+        this.bankSlips = bankSlips;
     }
 }

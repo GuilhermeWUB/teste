@@ -1,18 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Gerar Faturas</title>
+    <title>SUB - Gerar Mensalidades</title>
 </head>
 <body>
-    <h1>Gerar Faturas</h1>
-    <form th:action="@{/pagamentos/gerar-mensalidades}" method="post">
-        <label for="vehicle_id">ID do Veículo:</label>
-        <input type="text" id="vehicle_id" name="vehicle_id" />
-        <br/>
-        <label for="qtd_boletos">Quantidade de Boletos:</label>
-        <input type="text" id="qtd_boletos" name="qtd_boletos" />
-        <br/>
-        <button type="submit">Gerar Faturas</button>
+
+<!-- HEADER -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- CONTEÚDO -->
+<div class="container mt-4">
+    <h1 class="mb-4">Gerar Mensalidades</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Veículo Selecionado</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Associado</h5>
+                    <p th:text="${vehicle.partner.name}"></p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Veículo</h5>
+                    <p th:text="${vehicle.brand} + ' ' + ${vehicle.model} + ' - ' + ${vehicle.plaque}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/pagamentos/gerar-mensalidades}" method="post" class="mt-4">
+        <input type="hidden" name="vehicle_id" th:value="${vehicle.id}" />
+        <div class="mb-3">
+            <label for="qtd_boletos" class="form-label">Quantidade de Meses</label>
+            <input type="number" id="qtd_boletos" name="qtd_boletos" class="form-control" min="1" value="1" />
+        </div>
+        <button type="submit" class="btn btn-primary">Gerar Faturas</button>
+        <a th:href="@{/partners}" class="btn btn-secondary">Cancelar</a>
     </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
