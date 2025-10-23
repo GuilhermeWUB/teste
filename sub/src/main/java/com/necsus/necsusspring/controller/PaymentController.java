@@ -13,10 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import com.necsus.necsusspring.model.Vehicle;
+import com.necsus.necsusspring.model.Partner;
+import com.necsus.necsusspring.repository.VehicleRepository;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/pagamentos")
@@ -31,20 +36,29 @@ public class PaymentController {
     @Autowired
     private BankSlipRepository bankSlipRepository;
 
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
     @GetMapping("/gerar-mensalidades")
-    public String showGenerateInvoicesForm() {
+    public String showGenerateInvoicesForm(@RequestParam("vehicle_id") Long vehicleId, Model model) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid vehicle Id:" + vehicleId));
+        model.addAttribute("vehicle", vehicle);
         return "gerar_mensalidades";
     }
 
     @PostMapping("/gerar-mensalidades")
-    public ResponseEntity<String> generateMonthlyInvoices(
+    public String generateMonthlyInvoices(
             @RequestParam("vehicle_id") Long vehicleId,
-            @RequestParam("qtd_boletos") int numberOfSlips) {
+            @RequestParam("qtd_boletos") int numberOfSlips,
+            RedirectAttributes redirectAttributes) {
         try {
-            paymentService.generateMonthlyInvoices(vehicleId, numberOfSlips);
-            return ResponseEntity.ok("Invoices generated successfully.");
+            Partner partner = paymentService.generateMonthlyInvoices(vehicleId, numberOfSlips);
+            redirectAttributes.addFlashAttribute("successMessage", "Faturas geradas com sucesso!");
+            return "redirect:/partners/" + partner.getId();
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error generating invoices: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao gerar faturas: " + e.getMessage());
+            return "redirect:/pagamentos/gerar-mensalidades?vehicle_id=" + vehicleId;
         }
     }
 

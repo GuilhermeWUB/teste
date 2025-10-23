@@ -2,6 +2,7 @@ package com.necsus.necsusspring.service;
 
 import com.necsus.necsusspring.model.BankSlip;
 import com.necsus.necsusspring.model.BankShipment;
+import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.repository.BankSlipRepository;
 import com.necsus.necsusspring.repository.BankShipmentRepository;
@@ -32,7 +33,7 @@ public class PaymentService {
     private VehicleRepository vehicleRepository;
 
     @Transactional
-    public void generateMonthlyInvoices(Long vehicleId, int numberOfSlips) {
+    public Partner generateMonthlyInvoices(Long vehicleId, int numberOfSlips) {
         Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
         BankShipment bankShipment = new BankShipment();
@@ -56,5 +57,7 @@ public class PaymentService {
             bankSlips.add(bankSlip);
         }
         bankSlipRepository.saveAll(bankSlips);
+
+        return vehicle.getPartner();
     }
 }
