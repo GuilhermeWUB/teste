@@ -20,8 +20,8 @@ public class Adhesion {
 
 
     @NotNull(message = "O valor da adesão é obrigatório")
-    @Column(name = "value")
-    private BigDecimal value;
+    @Column(name = "amount")
+    private BigDecimal amount;
 
     @Column(name = "vencimento")
     @Temporal(TemporalType.DATE)
@@ -44,11 +44,11 @@ public class Adhesion {
     }
 
     public BigDecimal getValue() {
-        return value;
+        return amount;
     }
 
     public void setValue(BigDecimal value) {
-        this.value = value;
+        this.amount = value;
     }
 
     public Date getVencimento() {
