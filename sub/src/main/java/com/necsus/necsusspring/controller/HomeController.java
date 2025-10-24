@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping({"/", "/dashboard"})
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping("/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("totalPartners", 128);
         model.addAttribute("activeVehicles", 54);
