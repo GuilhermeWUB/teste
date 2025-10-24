@@ -12,12 +12,4 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        model.addAttribute("totalPartners", 128);
-        model.addAttribute("activeVehicles", 54);
-        model.addAttribute("pendingInvoices", 12);
-        model.addAttribute("collectionProgress", 72);
-        return "dashboard";
-    }
 }
