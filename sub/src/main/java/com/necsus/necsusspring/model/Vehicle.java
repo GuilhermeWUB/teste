@@ -1,13 +1,18 @@
 package com.necsus.necsusspring.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Date;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.Date;
 
 @Entity
 public class Vehicle {
@@ -16,15 +21,24 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Informe a montadora")
     private String maker;
     private String type_vehicle;
+    @NotBlank(message = "Informe a placa")
     private String plaque;
-    private Long partners_id;
+
+    @Column(name = "partners_id")
+    @NotNull(message = "Selecione o associado")
+    private Long partnerId;
+
+    @NotBlank(message = "Informe o modelo")
     private String model;
     private Integer status;
+    @NotBlank(message = "Informe a cor")
     private String color;
     private String chassis;
     private Integer ports;
+    @NotBlank(message = "Informe o ano/modelo")
     private String year_mod;
     private String year_maker;
     private Date date_dut;
@@ -42,9 +56,11 @@ public class Vehicle {
     private Date contract_end;
     private String codigo_externo;
     private String codigo_fipe;
+    @NotBlank(message = "Informe o tipo de combustível")
     private String tipo_combustivel;
 
     @OneToOne(mappedBy = "vehicle")
+    @Valid
     private Payment payment;
 
     @ManyToOne
@@ -83,12 +99,12 @@ public class Vehicle {
         this.plaque = plaque;
     }
 
-    public Long getPartners_id() {
-        return partners_id;
+    public Long getPartnerId() {
+        return partnerId;
     }
 
-    public void setPartners_id(Long partners_id) {
-        this.partners_id = partners_id;
+    public void setPartnerId(Long partnerId) {
+        this.partnerId = partnerId;
     }
 
     public String getModel() {
