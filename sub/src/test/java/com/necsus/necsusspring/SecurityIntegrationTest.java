@@ -21,4 +21,10 @@ class SecurityIntegrationTest {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void homePageAccessibleWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk());
+    }
 }
