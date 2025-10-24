@@ -44,6 +44,44 @@
         <div th:if="${errorMessage}" class="alert alert-danger mt-4" role="alert" th:text="${errorMessage}"></div>
         <a th:href="@{/partners}" class="btn btn-primary mt-3">Voltar para a lista</a>
 
+        <h2 class="mt-4">Veículos</h2>
+        <div th:if="${partner.vehicles != null and !#lists.isEmpty(partner.vehicles)}" class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Placa</th>
+                    <th>Mensalidade</th>
+                    <th>Vencimento</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="vehicle : ${partner.vehicles}">
+                    <td>
+                        <span class="fw-semibold" th:text="${vehicle.maker}"></span>
+                        <span th:text="${' - ' + vehicle.model}"></span>
+                    </td>
+                    <td th:text="${vehicle.plaque}"></td>
+                    <td th:text="${vehicle.payment != null ? 'R$ ' + #numbers.formatDecimal(vehicle.payment.monthly, 1, 2, 'COMMA') : 'R$ 0,00'}"></td>
+                    <td th:text="${vehicle.payment != null ? vehicle.payment.vencimento : '-'}"></td>
+                    <td class="text-center">
+                        <a class="btn btn-warning btn-sm"
+                           th:href="@{/vehicles/edit/{id}(id=${vehicle.id}, partnerId=${partner.id})}">Editar</a>
+                        <form th:action="@{/vehicles/delete/{id}(id=${vehicle.id}, partnerId=${partner.id})}" method="post"
+                              class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Confirma a remoção deste veículo?');">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${partner.vehicles == null || #lists.isEmpty(partner.vehicles)}" class="alert alert-info mt-3" role="alert">
+            Nenhum veículo cadastrado para este associado.
+        </div>
+
         <h2 class="mt-4">Boletos</h2>
         <table class="table table-striped">
             <thead>

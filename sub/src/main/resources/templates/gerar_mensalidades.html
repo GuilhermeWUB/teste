@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-md-6">
                     <h5>Veículo</h5>
-                    <p th:text="|${vehicle.maker} ${vehicle.model} - ${vehicle.plaque}|"></p>
+                    <p th:text="${vehicle.maker} + ' ' + ${vehicle.model} + ' - ' + ${vehicle.plaque}"></p>
                 </div>
             </div>
         </div>

@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
-
-    @EntityGraph(attributePaths = {"partner", "payment"})
-    Optional<Vehicle> findWithPartnerAndPaymentById(Long id);
+    List<Vehicle> findByPartnerId(Long partnerId);
 }

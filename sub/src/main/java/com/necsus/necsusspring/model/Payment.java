@@ -1,6 +1,11 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -21,9 +26,14 @@ public class Payment {
     private Partner partner;
 
     @Column(name = "monthly")
+    @NotNull(message = "Informe o valor da mensalidade")
+    @Positive(message = "A mensalidade deve ser maior que zero")
     private BigDecimal monthly;
 
     @Column(name = "vencimento")
+    @NotNull(message = "Informe o dia do vencimento")
+    @Min(value = 1, message = "O vencimento deve ser entre 1 e 31")
+    @Max(value = 31, message = "O vencimento deve ser entre 1 e 31")
     private Integer vencimento;
 
     @Column(name = "date_create")
