@@ -6,8 +6,6 @@ import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.repository.BankSlipRepository;
 import com.necsus.necsusspring.repository.BankShipmentRepository;
-import com.necsus.necsusspring.repository.PaymentRepository;
-import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +19,18 @@ import java.util.List;
 public class PaymentService {
 
     @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
     private BankSlipRepository bankSlipRepository;
 
     @Autowired
     private BankShipmentRepository bankShipmentRepository;
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    private VehicleService vehicleService;
 
     @Transactional
     public Partner generateMonthlyInvoices(Long vehicleId, int numberOfSlips) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = vehicleService.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
         BankShipment bankShipment = new BankShipment();
         bankShipment.setVehicle(vehicle);
