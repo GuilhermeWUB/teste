@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Login</title>
+    <style>
+        .login-wrapper {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            background: linear-gradient(145deg, rgba(106, 13, 173, 0.85), rgba(106, 13, 173, 0.65));
+            border-radius: 1.25rem;
+            padding: 3rem 2.5rem;
+            color: #fff;
+            box-shadow: 0 20px 45px rgba(106, 13, 173, 0.25);
+        }
+
+        .login-card h1 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .login-card p {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(106, 13, 173, 0.25);
+        }
+
+        .btn-login {
+            background-color: var(--ub-purple);
+            border-color: var(--ub-purple);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-login:hover {
+            background-color: #580cae;
+            border-color: #580cae;
+        }
+
+        .forgot-link {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .forgot-link:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="mb-4 text-center">
+                <i class="bi bi-shield-lock-fill fs-1"></i>
+                <h1 class="mt-3">Bem-vindo de volta</h1>
+                <p>Acesse o painel SUB com suas credenciais.</p>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-danger border-0 rounded-3">
+                Usuário ou senha inválidos. Tente novamente.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success border-0 rounded-3">
+                Você saiu da sua conta com sucesso.
+            </div>
+
+            <form th:action="@{/login}" method="post" class="mt-3">
+                <div class="mb-3">
+                    <label for="username" class="form-label text-uppercase small">Usuário</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu usuário" required autofocus>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label text-uppercase small">Senha</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" required>
+                </div>
+                <button type="submit" class="btn btn-login w-100 mt-2">Entrar</button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a href="#" class="forgot-link text-decoration-none">Esqueci minha senha</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
