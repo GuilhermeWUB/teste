@@ -24,7 +24,7 @@
         <div class="col-md-6">
             <label for="partnerId" class="form-label">Filtrar por associado</label>
             <select id="partnerId" name="partnerId" class="form-select">
-                <option th:value="" th:selected="${partnerId == null}">Todos os associados</option>
+                <option value="" th:selected="${partnerId == null}">Todos os associados</option>
                 <option th:each="partner : ${partners}"
                         th:value="${partner.id}"
                         th:text="${partner.name}"
