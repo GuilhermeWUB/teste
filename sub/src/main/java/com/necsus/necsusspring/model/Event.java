@@ -16,17 +16,27 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Informe o nome do evento")
-    private String name;
+    @NotBlank(message = "Informe o motivo")
+    private String motivo;
 
-    private String description;
+    @NotBlank(message = "Informe o envolvimento")
+    private String envolvimento;
 
-    @NotNull(message = "Informe a data do evento")
-    private Date eventDate;
+    @NotNull(message = "Informe a data do ocorrido")
+    private Date dataAconteceu;
 
-    private String location;
+    @NotNull(message = "Informe o horário do ocorrido")
+    private Long horaAconteceu;
 
-    private String status;
+    @NotNull(message = "Informe a data da comunicação")
+    private Date dataComunicacao;
+
+    @NotNull(message = "Informe o horário da comunicação")
+    private Long horaComunicacao;
+
+    private Long idExterno;
+
+    private String analistaResponsavel;
 
     public Long getId() {
         return id;
@@ -36,43 +46,67 @@ public class Event {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getMotivo() {
+        return motivo;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 
-    public String getDescription() {
-        return description;
+    public String getEnvolvimento() {
+        return envolvimento;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setEnvolvimento(String envolvimento) {
+        this.envolvimento = envolvimento;
     }
 
-    public Date getEventDate() {
-        return eventDate;
+    public Date getDataAconteceu() {
+        return dataAconteceu;
     }
 
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
+    public void setDataAconteceu(Date dataAconteceu) {
+        this.dataAconteceu = dataAconteceu;
     }
 
-    public String getLocation() {
-        return location;
+    public Long getHoraAconteceu() {
+        return horaAconteceu;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setHoraAconteceu(Long horaAconteceu) {
+        this.horaAconteceu = horaAconteceu;
     }
 
-    public String getStatus() {
-        return status;
+    public Date getDataComunicacao() {
+        return dataComunicacao;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDataComunicacao(Date dataComunicacao) {
+        this.dataComunicacao = dataComunicacao;
+    }
+
+    public Long getHoraComunicacao() {
+        return horaComunicacao;
+    }
+
+    public void setHoraComunicacao(Long horaComunicacao) {
+        this.horaComunicacao = horaComunicacao;
+    }
+
+    public Long getIdExterno() {
+        return idExterno;
+    }
+
+    public void setIdExterno(Long idExterno) {
+        this.idExterno = idExterno;
+    }
+
+    public String getAnalistaResponsavel() {
+        return analistaResponsavel;
+    }
+
+    public void setAnalistaResponsavel(String analistaResponsavel) {
+        this.analistaResponsavel = analistaResponsavel;
     }
 }

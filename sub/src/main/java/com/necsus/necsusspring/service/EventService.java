@@ -37,11 +37,14 @@ public class EventService {
         Event existing = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
 
-        existing.setName(eventPayload.getName());
-        existing.setDescription(eventPayload.getDescription());
-        existing.setEventDate(eventPayload.getEventDate());
-        existing.setLocation(eventPayload.getLocation());
-        existing.setStatus(eventPayload.getStatus());
+        existing.setMotivo(eventPayload.getMotivo());
+        existing.setEnvolvimento(eventPayload.getEnvolvimento());
+        existing.setDataAconteceu(eventPayload.getDataAconteceu());
+        existing.setHoraAconteceu(eventPayload.getHoraAconteceu());
+        existing.setDataComunicacao(eventPayload.getDataComunicacao());
+        existing.setHoraComunicacao(eventPayload.getHoraComunicacao());
+        existing.setIdExterno(eventPayload.getIdExterno());
+        existing.setAnalistaResponsavel(eventPayload.getAnalistaResponsavel());
 
         return eventRepository.save(existing);
     }

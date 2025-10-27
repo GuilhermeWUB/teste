@@ -50,7 +50,7 @@ public class EventController {
             return "cadastro_evento";
         }
         eventService.create(event);
-        redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
+        redirectAttributes.addFlashAttribute("successMessage", "Comunicação cadastrada com sucesso!");
         return "redirect:/events";
     }
 
@@ -73,14 +73,14 @@ public class EventController {
         }
         event.setId(id);
         eventService.update(id, event);
-        redirectAttributes.addFlashAttribute("successMessage", "Evento atualizado com sucesso!");
+        redirectAttributes.addFlashAttribute("successMessage", "Comunicação atualizada com sucesso!");
         return "redirect:/events";
     }
 
     @PostMapping("/delete/{id}")
     public String deleteEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         eventService.delete(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Evento removido com sucesso!");
+        redirectAttributes.addFlashAttribute("successMessage", "Comunicação removida com sucesso!");
         return "redirect:/events";
     }
 }
