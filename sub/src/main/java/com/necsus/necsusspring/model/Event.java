@@ -1,6 +1,8 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,8 +18,9 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Informe o motivo")
-    private String motivo;
+    @NotNull(message = "Informe o motivo")
+    @Enumerated(EnumType.STRING)
+    private Motivo motivo;
 
     @NotBlank(message = "Informe o envolvimento")
     private String envolvimento;
@@ -46,11 +49,11 @@ public class Event {
         this.id = id;
     }
 
-    public String getMotivo() {
+    public Motivo getMotivo() {
         return motivo;
     }
 
-    public void setMotivo(String motivo) {
+    public void setMotivo(Motivo motivo) {
         this.motivo = motivo;
     }
 
