@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'SUB'">SUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --ub-purple: #6a0dad;
+            --bg-light: #ECECED;
+            --bg-dark: #1a1a1a;
+            --card-light: #ffffff;
+            --card-dark: #2d2d2d;
+            --text-light: #212529;
+            --text-dark: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            background-color: var(--ub-purple) !important;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: #e0d0f5 !important;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Botão de tema */
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Card de conteúdo */
+        .content-card {
+            background-color: var(--card-light);
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            padding: 2rem;
+            margin-top: 2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .content-card {
+            background-color: var(--card-dark);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos para cabeçalhos e títulos no modo escuro */
+        body.dark-mode h1,
+        body.dark-mode h2,
+        body.dark-mode h3,
+        body.dark-mode h4,
+        body.dark-mode h5,
+        body.dark-mode h6 {
+            color: var(--text-dark);
+        }
+
+        body.dark-mode thead {
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .table thead th {
+            background-color: #3d3d3d;
+            color: var(--text-dark);
+            border-color: #505050;
+        }
+
+        body.dark-mode .table tbody td {
+            color: var(--text-dark);
+        }
+
+        /* Ajustes para modo escuro em tabelas */
+        body.dark-mode table {
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .table {
+            --bs-table-bg: #2d2d2d;
+            --bs-table-striped-bg: #252525;
+            --bs-table-hover-bg: #353535;
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .table-bordered {
+            border-color: #404040;
+        }
+
+        body.dark-mode .table-bordered td,
+        body.dark-mode .table-bordered th {
+            border-color: #404040;
+        }
+
+        /* Ajustes nos botões para modo escuro */
+        body.dark-mode .btn-primary {
+            background-color: var(--ub-purple);
+            border-color: var(--ub-purple);
+        }
+
+        body.dark-mode .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #fff;
+        }
+
+        body.dark-mode .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+
+        body.dark-mode .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #fff;
+        }
+
+        body.dark-mode .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #3d3d3d;
+            border-color: #505050;
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background-color: #3d3d3d;
+            border-color: var(--ub-purple);
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light border-bottom">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/ub_02_2.jpeg}" alt="UB Logo" title="Voltar para a página de associados">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Início</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/partners}">Associados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/vehicles}">Veículos</a>
+                </li>
+            </ul>
+            <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTEÚDO -->
+<main class="container">
+    <div class="content-card" layout:fragment="content">
+        <!-- conteúdo da página -->
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Script para alternar modo escuro
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    if (themeToggle && themeIcon) {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            themeIcon.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    }
+</script>
+</body>
+</html>
+
