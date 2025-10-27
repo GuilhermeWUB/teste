@@ -6,7 +6,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
@@ -22,8 +21,9 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private Motivo motivo;
 
-    @NotBlank(message = "Informe o envolvimento")
-    private String envolvimento;
+    @NotNull(message = "Informe o envolvimento")
+    @Enumerated(EnumType.STRING)
+    private Envolvimento envolvimento;
 
     @NotNull(message = "Informe a data do ocorrido")
     private Date dataAconteceu;
@@ -57,11 +57,11 @@ public class Event {
         this.motivo = motivo;
     }
 
-    public String getEnvolvimento() {
+    public Envolvimento getEnvolvimento() {
         return envolvimento;
     }
 
-    public void setEnvolvimento(String envolvimento) {
+    public void setEnvolvimento(Envolvimento envolvimento) {
         this.envolvimento = envolvimento;
     }
 

@@ -42,7 +42,7 @@
                 <td>
                     <span class="fw-semibold" th:text="${event.motivo != null ? event.motivo.descricao : '-'}"></span>
                 </td>
-                <td th:text="${event.envolvimento}"></td>
+                <td th:text="${event.envolvimento != null ? event.envolvimento.descricao : '-'}"></td>
                 <td th:text="${event.dataAconteceu != null ? #dates.format(event.dataAconteceu, 'dd/MM/yyyy') : '-'}"></td>
                 <td th:text="${event.horaAconteceu != null ? #numbers.formatInteger(event.horaAconteceu, '0000') : '-'}"></td>
                 <td th:text="${event.dataComunicacao != null ? #dates.format(event.dataComunicacao, 'dd/MM/yyyy') : '-'}"></td>
