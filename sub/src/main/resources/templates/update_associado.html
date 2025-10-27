@@ -76,9 +76,9 @@
         <div class="mb-3" th:if="${partner.documentPaths != null and !#lists.isEmpty(partner.documentPaths)}">
             <label class="form-label">Documentos Existentes</label>
             <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc, iterStat : ${partner.documentPaths}">
-                    <span th:text="${#strings.substringAfterLast(doc, '/')}">documento.pdf</span>
-                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(doc, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc : ${partner.documentPaths}">
+                    <span th:text="${doc.contains('/') ? doc.substring(doc.lastIndexOf('/') + 1) : doc}">documento.pdf</span>
+                    <a th:href="@{/uploads/{filename}(filename=${doc.contains('/') ? doc.substring(doc.lastIndexOf('/') + 1) : doc})}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
                 </li>
             </ul>
         </div>

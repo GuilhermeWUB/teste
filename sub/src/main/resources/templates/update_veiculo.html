@@ -87,8 +87,8 @@
             <label class="form-label">Fotos de Inspeção Existentes</label>
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" th:each="photo : ${vehicle.inspectionPhotoPaths}">
-                    <span th:text="${#strings.substringAfterLast(photo, '/')}">foto.jpg</span>
-                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(photo, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                    <span th:text="${photo.contains('/') ? photo.substring(photo.lastIndexOf('/') + 1) : photo}">foto.jpg</span>
+                    <a th:href="@{/uploads/{filename}(filename=${photo.contains('/') ? photo.substring(photo.lastIndexOf('/') + 1) : photo})}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
                 </li>
             </ul>
         </div>
@@ -96,8 +96,8 @@
             <label class="form-label">Fotos de Documentação Existentes</label>
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc : ${vehicle.documentPhotoPaths}">
-                    <span th:text="${#strings.substringAfterLast(doc, '/')}">documento.pdf</span>
-                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(doc, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                    <span th:text="${doc.contains('/') ? doc.substring(doc.lastIndexOf('/') + 1) : doc}">documento.pdf</span>
+                    <a th:href="@{/uploads/{filename}(filename=${doc.contains('/') ? doc.substring(doc.lastIndexOf('/') + 1) : doc})}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
                 </li>
             </ul>
         </div>
