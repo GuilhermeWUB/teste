@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.model.Envolvimento;
 import com.necsus.necsusspring.model.Event;
 import com.necsus.necsusspring.model.Motivo;
 import com.necsus.necsusspring.service.EventService;
@@ -31,6 +32,11 @@ public class EventController {
     @ModelAttribute("motivoOptions")
     public Motivo[] motivoOptions() {
         return Motivo.values();
+    }
+
+    @ModelAttribute("envolvimentoOptions")
+    public Envolvimento[] envolvimentoOptions() {
+        return Envolvimento.values();
     }
 
     @GetMapping

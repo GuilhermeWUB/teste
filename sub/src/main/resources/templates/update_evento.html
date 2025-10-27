@@ -22,7 +22,12 @@
         </div>
         <div class="col-md-6">
             <label for="envolvimento" class="form-label">Envolvimento</label>
-            <input type="text" id="envolvimento" class="form-control" th:field="*{envolvimento}" />
+            <select id="envolvimento" class="form-select" th:field="*{envolvimento}">
+                <option value="" th:selected="${event.envolvimento == null}">--SELECIONE--</option>
+                <option th:each="envolvimentoOption : ${envolvimentoOptions}"
+                        th:value="${envolvimentoOption}"
+                        th:text="${envolvimentoOption.descricao}"></option>
+            </select>
             <div class="text-danger" th:if="${#fields.hasErrors('envolvimento')}" th:errors="*{envolvimento}"></div>
         </div>
         <div class="col-md-6">
