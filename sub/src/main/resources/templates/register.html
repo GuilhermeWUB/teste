@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Registrar</title>
+    <style>
+        .register-wrapper {
+            min-height: calc(100vh - 120px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-card {
+            max-width: 520px;
+            width: 100%;
+            background: linear-gradient(145deg, rgba(106, 13, 173, 0.9), rgba(106, 13, 173, 0.7));
+            border-radius: 1.25rem;
+            padding: 3rem 2.75rem;
+            color: #fff;
+            box-shadow: 0 20px 45px rgba(106, 13, 173, 0.3);
+        }
+
+        .register-card h1 {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(106, 13, 173, 0.25);
+        }
+
+        .btn-register {
+            background-color: #fff;
+            color: var(--ub-purple);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-register:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .text-link {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .text-link:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="register-wrapper">
+        <div class="register-card">
+            <div class="mb-4 text-center">
+                <i class="bi bi-person-plus-fill fs-1"></i>
+                <h1 class="mt-3">Criar acesso administrativo</h1>
+                <p class="mb-0">Preencha os dados abaixo para iniciar sua gestão no SUB.</p>
+            </div>
+
+            <form th:action="@{/register}" th:object="${registrationForm}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="mb-3">
+                    <label class="form-label text-uppercase small">Nome completo</label>
+                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="Digite seu nome completo">
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-uppercase small">E-mail</label>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="Digite seu e-mail">
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-uppercase small">Usuário</label>
+                    <input type="text" th:field="*{username}" class="form-control" placeholder="Defina um usuário de acesso">
+                    <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-uppercase small">Senha</label>
+                        <input type="password" th:field="*{password}" class="form-control" placeholder="Crie uma senha">
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-uppercase small">Confirme a senha</label>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repita a senha">
+                        <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-register w-100 mt-4">Registrar</button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <span class="d-block mb-1">Já possui uma conta?</span>
+                <a th:href="@{/login}" class="text-link text-decoration-none">Voltar para o login</a>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
