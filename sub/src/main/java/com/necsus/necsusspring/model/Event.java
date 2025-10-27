@@ -1,10 +1,11 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
@@ -16,11 +17,13 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Informe o motivo")
-    private String motivo;
+    @NotNull(message = "Informe o motivo")
+    @Enumerated(EnumType.STRING)
+    private EventReason motivo;
 
-    @NotBlank(message = "Informe o envolvimento")
-    private String envolvimento;
+    @NotNull(message = "Informe o envolvimento")
+    @Enumerated(EnumType.STRING)
+    private EventInvolvement envolvimento;
 
     @NotNull(message = "Informe a data do ocorrido")
     private Date dataAconteceu;
@@ -46,19 +49,19 @@ public class Event {
         this.id = id;
     }
 
-    public String getMotivo() {
+    public EventReason getMotivo() {
         return motivo;
     }
 
-    public void setMotivo(String motivo) {
+    public void setMotivo(EventReason motivo) {
         this.motivo = motivo;
     }
 
-    public String getEnvolvimento() {
+    public EventInvolvement getEnvolvimento() {
         return envolvimento;
     }
 
-    public void setEnvolvimento(String envolvimento) {
+    public void setEnvolvimento(EventInvolvement envolvimento) {
         this.envolvimento = envolvimento;
     }
 
