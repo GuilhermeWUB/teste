@@ -40,7 +40,7 @@
             <tbody>
             <tr th:each="event : ${events}">
                 <td>
-                    <span class="fw-semibold" th:text="${event.motivo}"></span>
+                    <span class="fw-semibold" th:text="${event.motivo != null ? event.motivo.descricao : '-'}"></span>
                 </td>
                 <td th:text="${event.envolvimento}"></td>
                 <td th:text="${event.dataAconteceu != null ? #dates.format(event.dataAconteceu, 'dd/MM/yyyy') : '-'}"></td>

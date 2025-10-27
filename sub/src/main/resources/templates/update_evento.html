@@ -12,7 +12,12 @@
         <input type="hidden" th:field="*{id}" />
         <div class="col-md-6">
             <label for="motivo" class="form-label">Motivo</label>
-            <input type="text" id="motivo" class="form-control" th:field="*{motivo}" />
+            <select id="motivo" class="form-select" th:field="*{motivo}">
+                <option value="" th:selected="${event.motivo == null}">--SELECIONE--</option>
+                <option th:each="motivoOption : ${motivoOptions}"
+                        th:value="${motivoOption}"
+                        th:text="${motivoOption.descricao}"></option>
+            </select>
             <div class="text-danger" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
         </div>
         <div class="col-md-6">

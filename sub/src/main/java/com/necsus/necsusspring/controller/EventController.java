@@ -1,6 +1,7 @@
 package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.model.Event;
+import com.necsus.necsusspring.model.Motivo;
 import com.necsus.necsusspring.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,11 @@ public class EventController {
 
     public EventController(EventService eventService) {
         this.eventService = eventService;
+    }
+
+    @ModelAttribute("motivoOptions")
+    public Motivo[] motivoOptions() {
+        return Motivo.values();
     }
 
     @GetMapping
