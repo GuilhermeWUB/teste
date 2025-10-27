@@ -63,9 +63,9 @@
                 <input type="date" id="contractDate" class="form-control" th:field="*{contractDate}" />
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3" th:if="${partner.registrationDate != null}">
             <label class="form-label">Data de Cadastro</label>
-            <input type="text" class="form-control" th:value="${#temporals.format(registrationDate, 'dd/MM/yyyy HH:mm')}" readonly />
+            <input type="text" class="form-control" th:value="${#temporals.format(partner.registrationDate, 'dd/MM/yyyy HH:mm')}" readonly />
             <small class="form-text text-muted">Data de cadastro não pode ser alterada</small>
         </div>
         <div class="mb-3">
@@ -73,7 +73,7 @@
             <input type="file" id="documents" class="form-control" name="documents" multiple accept="image/*,application/pdf" />
             <small class="form-text text-muted">Selecione novos arquivos para adicionar à documentação existente</small>
         </div>
-        <div class="mb-3" th:if="${partner.documentPaths != null && !partner.documentPaths.isEmpty()}">
+        <div class="mb-3" th:if="${partner.documentPaths != null and !#lists.isEmpty(partner.documentPaths)}">
             <label class="form-label">Documentos Existentes</label>
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc, iterStat : ${partner.documentPaths}">

@@ -8,7 +8,7 @@
 
 <section layout:fragment="content">
     <h1 class="mb-4">Cadastrar Veículo</h1>
-    <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" class="row g-3">
+    <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
         <div class="col-md-6">
             <label for="maker" class="form-label">Montadora</label>
             <input type="text" id="maker" class="form-control" th:field="*{maker}" />
@@ -57,6 +57,29 @@
             <input type="number" min="1" max="31" id="vencimento" class="form-control" th:field="*{payment.vencimento}" />
             <div class="text-danger" th:if="${#fields.hasErrors('payment.vencimento')}" th:errors="*{payment.vencimento}"></div>
         </div>
+
+        <h2 class="mt-4 h5">Situação e Documentação</h2>
+        <div class="col-md-12">
+            <label for="vehicleStatus" class="form-label">Situação do Veículo</label>
+            <select id="vehicleStatus" class="form-select" th:field="*{vehicleStatus}">
+                <option value="">Selecione uma situação</option>
+                <option th:each="status : ${T(com.necsus.necsusspring.model.VehicleStatus).values()}"
+                        th:value="${status}"
+                        th:text="${status.displayName}">
+                </option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="inspectionPhotos" class="form-label">Fotos de Inspeção do Veículo</label>
+            <input type="file" id="inspectionPhotos" class="form-control" name="inspectionPhotos" multiple accept="image/*" />
+            <small class="form-text text-muted">Você pode selecionar múltiplas fotos</small>
+        </div>
+        <div class="col-md-6">
+            <label for="documentPhotos" class="form-label">Fotos da Documentação do Veículo</label>
+            <input type="file" id="documentPhotos" class="form-control" name="documentPhotos" multiple accept="image/*,application/pdf" />
+            <small class="form-text text-muted">Você pode selecionar múltiplos arquivos (imagens ou PDFs)</small>
+        </div>
+
         <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Salvar</button>
             <a th:href="${partnerId != null} ? @{/vehicles(partnerId=${partnerId})} : @{/vehicles}" class="btn btn-secondary">Cancelar</a>
