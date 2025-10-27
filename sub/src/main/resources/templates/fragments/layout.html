@@ -302,6 +302,27 @@
         body.dark-mode .text-info {
             color: #79c0ff !important;
         }
+
+        /* Garantir legibilidade de todos os textos */
+        body.dark-mode td,
+        body.dark-mode th,
+        body.dark-mode p,
+        body.dark-mode span,
+        body.dark-mode div,
+        body.dark-mode label {
+            color: var(--text-dark);
+        }
+
+        /* Opções de select */
+        body.dark-mode option {
+            background-color: #0d1117;
+            color: var(--text-dark);
+        }
+
+        /* Small text */
+        body.dark-mode small {
+            color: var(--text-muted-dark);
+        }
     </style>
 </head>
 <body>
@@ -326,6 +347,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/vehicles}">Veículos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/events}">Eventos</a>
                 </li>
             </ul>
 

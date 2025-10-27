@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Eventos</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-0">Eventos</h1>
+        </div>
+        <a class="btn btn-primary" th:href="@{/events/new}">
+            Novo Evento
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(events)}" class="alert alert-info" role="alert">
+        Nenhum evento cadastrado.
+    </div>
+
+    <div th:if="${!#lists.isEmpty(events)}" class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Data</th>
+                <th>Local</th>
+                <th>Status</th>
+                <th class="text-center">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}">
+                <td>
+                    <span class="fw-semibold" th:text="${event.name}"></span>
+                </td>
+                <td th:text="${#dates.format(event.eventDate, 'dd/MM/yyyy')}"></td>
+                <td th:text="${event.location ?: 'N/I'}"></td>
+                <td th:text="${event.status ?: '-'}"></td>
+                <td class="text-center">
+                    <a class="btn btn-warning btn-sm" th:href="@{/events/edit/{id}(id=${event.id})}">
+                        Editar
+                    </a>
+                    <form th:action="@{/events/delete/{id}(id=${event.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Confirma a remoção deste evento?');">
+                            Remover
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</body>
+</html>
