@@ -8,7 +8,7 @@
 
 <section layout:fragment="content">
     <h1 class="mb-4">Atualizar Associado</h1>
-    <form action="#" th:action="@{/partners/update/{id}(id=${partner.id})}" th:object="${partner}" method="post">
+    <form action="#" th:action="@{/partners/update/{id}(id=${partner.id})}" th:object="${partner}" method="post" enctype="multipart/form-data">
         <h2 class="mt-4 h5">Dados do Associado</h2>
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -43,6 +43,44 @@
         <div class="mb-3">
             <label for="cell" class="form-label">Celular</label>
             <input type="text" id="cell" class="form-control" th:field="*{cell}" />
+        </div>
+
+        <h2 class="mt-4 h5">Status e Documentação</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" class="form-select" th:field="*{status}">
+                    <option value="">Selecione um status</option>
+                    <option th:each="statusOption : ${T(com.necsus.necsusspring.model.PartnerStatus).values()}"
+                            th:value="${statusOption}"
+                            th:text="${statusOption.displayName}"
+                            th:selected="${statusOption == status}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="contractDate" class="form-label">Data do Contrato</label>
+                <input type="date" id="contractDate" class="form-control" th:field="*{contractDate}" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Data de Cadastro</label>
+            <input type="text" class="form-control" th:value="${#temporals.format(registrationDate, 'dd/MM/yyyy HH:mm')}" readonly />
+            <small class="form-text text-muted">Data de cadastro não pode ser alterada</small>
+        </div>
+        <div class="mb-3">
+            <label for="documents" class="form-label">Adicionar Documentação (Fotos/PDFs)</label>
+            <input type="file" id="documents" class="form-control" name="documents" multiple accept="image/*,application/pdf" />
+            <small class="form-text text-muted">Selecione novos arquivos para adicionar à documentação existente</small>
+        </div>
+        <div class="mb-3" th:if="${partner.documentPaths != null && !partner.documentPaths.isEmpty()}">
+            <label class="form-label">Documentos Existentes</label>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc, iterStat : ${partner.documentPaths}">
+                    <span th:text="${#strings.substringAfterLast(doc, '/')}">documento.pdf</span>
+                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(doc, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                </li>
+            </ul>
         </div>
 
         <h2 class="mt-4 h5">Informações de endereço</h2>
