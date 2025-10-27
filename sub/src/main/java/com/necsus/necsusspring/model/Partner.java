@@ -7,10 +7,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -33,6 +39,22 @@ public class Partner {
     private String cell;
     private String rg;
     private String fax;
+
+    @Enumerated(EnumType.STRING)
+    private PartnerStatus status;
+
+    @ElementCollection
+    private List<String> documentPaths = new ArrayList<>();
+
+    private LocalDateTime registrationDate;
+    private LocalDate contractDate;
+
+    @PrePersist
+    protected void onCreate() {
+        if (registrationDate == null) {
+            registrationDate = LocalDateTime.now();
+        }
+    }
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
@@ -162,5 +184,37 @@ public class Partner {
 
     public void setBankSlips(List<BankSlip> bankSlips) {
         this.bankSlips = bankSlips;
+    }
+
+    public PartnerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PartnerStatus status) {
+        this.status = status;
+    }
+
+    public List<String> getDocumentPaths() {
+        return documentPaths;
+    }
+
+    public void setDocumentPaths(List<String> documentPaths) {
+        this.documentPaths = documentPaths;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDate getContractDate() {
+        return contractDate;
+    }
+
+    public void setContractDate(LocalDate contractDate) {
+        this.contractDate = contractDate;
     }
 }

@@ -3,6 +3,7 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.CreatePartnerRequest;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.service.PartnerService;
+import com.necsus.necsusspring.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,10 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.BindingResult;
 import jakarta.validation.Valid;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import java.util.List;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/partners")
@@ -22,6 +27,9 @@ public class PartnerController {
     @Autowired
     private PartnerService partnerService;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @GetMapping("/new")
     public String showCreatePartnerForm(Model model) {
         model.addAttribute("createPartnerRequest", new CreatePartnerRequest());
@@ -29,10 +37,20 @@ public class PartnerController {
     }
 
     @PostMapping
-    public String createPartner(@Valid CreatePartnerRequest request, BindingResult result) {
+    public String createPartner(
+            @Valid CreatePartnerRequest request,
+            BindingResult result,
+            @RequestParam(value = "documents", required = false) MultipartFile[] documents) {
         if (result.hasErrors()) {
             return "cadastro_associado";
         }
+
+        // Processar upload de documentos
+        if (documents != null && documents.length > 0) {
+            List<String> documentPaths = fileStorageService.storeFiles(documents);
+            request.getPartner().setDocumentPaths(documentPaths);
+        }
+
         partnerService.createPartner(request.getPartner(), request.getAddress(), request.getAdhesion());
         return "redirect:/partners";
     }
@@ -60,8 +78,28 @@ public class PartnerController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePartner(@PathVariable Long id, Partner partner) {
+    public String updatePartner(
+            @PathVariable Long id,
+            Partner partner,
+            @RequestParam(value = "documents", required = false) MultipartFile[] documents) {
         partner.setId(id);
+
+        // Buscar o partner existente para manter os documentos antigos
+        Partner existingPartner = partnerService.getPartnerById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+
+        // Adicionar novos documentos aos existentes
+        List<String> existingDocs = existingPartner.getDocumentPaths();
+        if (existingDocs == null) {
+            existingDocs = new ArrayList<>();
+        }
+
+        if (documents != null && documents.length > 0) {
+            List<String> newDocPaths = fileStorageService.storeFiles(documents);
+            existingDocs.addAll(newDocPaths);
+        }
+
+        partner.setDocumentPaths(existingDocs);
         partnerService.updatePartner(partner);
         return "redirect:/partners";
     }

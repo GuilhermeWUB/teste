@@ -8,7 +8,7 @@
 
 <section layout:fragment="content">
     <h1 class="mb-4">Cadastrar Associado</h1>
-    <form action="#" th:action="@{/partners}" th:object="${createPartnerRequest}" method="post">
+    <form action="#" th:action="@{/partners}" th:object="${createPartnerRequest}" method="post" enctype="multipart/form-data">
         <h2 class="mt-4 h5">Dados do Associado</h2>
         <div class="row">
             <div class="col-md-6 mb-3">
@@ -46,6 +46,29 @@
         <div class="mb-3">
             <label for="cell" class="form-label">Celular</label>
             <input type="text" id="cell" class="form-control" th:field="*{partner.cell}" />
+        </div>
+
+        <h2 class="mt-4 h5">Status e Documentação</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" class="form-select" th:field="*{partner.status}">
+                    <option value="">Selecione um status</option>
+                    <option th:each="status : ${T(com.necsus.necsusspring.model.PartnerStatus).values()}"
+                            th:value="${status}"
+                            th:text="${status.displayName}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="contractDate" class="form-label">Data do Contrato</label>
+                <input type="date" id="contractDate" class="form-control" th:field="*{partner.contractDate}" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="documents" class="form-label">Documentação (Fotos/PDFs)</label>
+            <input type="file" id="documents" class="form-control" name="documents" multiple accept="image/*,application/pdf" />
+            <small class="form-text text-muted">Você pode selecionar múltiplos arquivos (imagens ou PDFs)</small>
         </div>
 
         <h2 class="mt-4 h5">Informações de endereço</h2>
