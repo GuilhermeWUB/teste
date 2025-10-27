@@ -8,11 +8,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.ElementCollection;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class Vehicle {
@@ -34,6 +39,16 @@ public class Vehicle {
     @NotBlank(message = "Informe o modelo")
     private String model;
     private Integer status;
+
+    @Enumerated(EnumType.STRING)
+    private VehicleStatus vehicleStatus;
+
+    @ElementCollection
+    private List<String> inspectionPhotoPaths = new ArrayList<>();
+
+    @ElementCollection
+    private List<String> documentPhotoPaths = new ArrayList<>();
+
     @NotBlank(message = "Informe a cor")
     private String color;
     private String chassis;
@@ -305,5 +320,29 @@ public class Vehicle {
 
     public void setPartner(Partner partner) {
         this.partner = partner;
+    }
+
+    public VehicleStatus getVehicleStatus() {
+        return vehicleStatus;
+    }
+
+    public void setVehicleStatus(VehicleStatus vehicleStatus) {
+        this.vehicleStatus = vehicleStatus;
+    }
+
+    public List<String> getInspectionPhotoPaths() {
+        return inspectionPhotoPaths;
+    }
+
+    public void setInspectionPhotoPaths(List<String> inspectionPhotoPaths) {
+        this.inspectionPhotoPaths = inspectionPhotoPaths;
+    }
+
+    public List<String> getDocumentPhotoPaths() {
+        return documentPhotoPaths;
+    }
+
+    public void setDocumentPhotoPaths(List<String> documentPhotoPaths) {
+        this.documentPhotoPaths = documentPhotoPaths;
     }
 }

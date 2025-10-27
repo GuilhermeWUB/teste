@@ -8,7 +8,7 @@
 
 <section layout:fragment="content">
     <h1 class="mb-4">Atualizar Veículo</h1>
-    <form th:action="@{/vehicles/update/{id}(id=${vehicle.id})}" th:object="${vehicle}" method="post" class="row g-3">
+    <form th:action="@{/vehicles/update/{id}(id=${vehicle.id})}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
         <input type="hidden" th:field="*{id}" />
         <input type="hidden" th:field="*{payment.id}" />
         <div class="col-md-6">
@@ -59,6 +59,49 @@
             <input type="number" min="1" max="31" id="vencimento" class="form-control" th:field="*{payment.vencimento}" />
             <div class="text-danger" th:if="${#fields.hasErrors('payment.vencimento')}" th:errors="*{payment.vencimento}"></div>
         </div>
+
+        <h2 class="mt-4 h5">Situação e Documentação</h2>
+        <div class="col-md-12">
+            <label for="vehicleStatus" class="form-label">Situação do Veículo</label>
+            <select id="vehicleStatus" class="form-select" th:field="*{vehicleStatus}">
+                <option value="">Selecione uma situação</option>
+                <option th:each="statusOption : ${T(com.necsus.necsusspring.model.VehicleStatus).values()}"
+                        th:value="${statusOption}"
+                        th:text="${statusOption.displayName}"
+                        th:selected="${statusOption == vehicleStatus}">
+                </option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="inspectionPhotos" class="form-label">Adicionar Fotos de Inspeção</label>
+            <input type="file" id="inspectionPhotos" class="form-control" name="inspectionPhotos" multiple accept="image/*" />
+            <small class="form-text text-muted">Selecione novas fotos para adicionar às existentes</small>
+        </div>
+        <div class="col-md-6">
+            <label for="documentPhotos" class="form-label">Adicionar Fotos da Documentação</label>
+            <input type="file" id="documentPhotos" class="form-control" name="documentPhotos" multiple accept="image/*,application/pdf" />
+            <small class="form-text text-muted">Selecione novos arquivos para adicionar aos existentes</small>
+        </div>
+
+        <div class="col-md-6" th:if="${vehicle.inspectionPhotoPaths != null and !#lists.isEmpty(vehicle.inspectionPhotoPaths)}">
+            <label class="form-label">Fotos de Inspeção Existentes</label>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="photo : ${vehicle.inspectionPhotoPaths}">
+                    <span th:text="${#strings.substringAfterLast(photo, '/')}">foto.jpg</span>
+                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(photo, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6" th:if="${vehicle.documentPhotoPaths != null and !#lists.isEmpty(vehicle.documentPhotoPaths)}">
+            <label class="form-label">Fotos de Documentação Existentes</label>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc : ${vehicle.documentPhotoPaths}">
+                    <span th:text="${#strings.substringAfterLast(doc, '/')}">documento.pdf</span>
+                    <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(doc, '/')}}" class="btn btn-sm btn-primary" target="_blank">Ver</a>
+                </li>
+            </ul>
+        </div>
+
         <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Salvar alterações</button>
             <a th:href="${partnerId != null} ? @{/vehicles(partnerId=${partnerId})} : @{/vehicles}" class="btn btn-secondary">Cancelar</a>

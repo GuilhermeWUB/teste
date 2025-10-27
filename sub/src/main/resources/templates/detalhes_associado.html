@@ -44,34 +44,34 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <b>Status:</b>
-                                <span th:if="${partner.status != null}" th:text="${partner.status.displayName}" class="badge bg-primary"></span>
-                                <span th:if="${partner.status == null}" class="text-muted">Não definido</span>
+                                <span th:if="${partner.status != null}" th:text="${partner.status.getDisplayName()}" class="badge bg-primary"></span>
+                                <span th:unless="${partner.status != null}" class="text-muted">Não definido</span>
                             </li>
                             <li class="list-group-item">
                                 <b>Data de Cadastro:</b>
                                 <span th:if="${partner.registrationDate != null}" th:text="${#temporals.format(partner.registrationDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                <span th:if="${partner.registrationDate == null}" class="text-muted">Não informada</span>
+                                <span th:unless="${partner.registrationDate != null}" class="text-muted">Não informada</span>
                             </li>
                             <li class="list-group-item">
                                 <b>Data do Contrato:</b>
                                 <span th:if="${partner.contractDate != null}" th:text="${#temporals.format(partner.contractDate, 'dd/MM/yyyy')}"></span>
-                                <span th:if="${partner.contractDate == null}" class="text-muted">Não informada</span>
+                                <span th:unless="${partner.contractDate != null}" class="text-muted">Não informada</span>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <h5>Documentação</h5>
-                        <div th:if="${partner.documentPaths != null && !partner.documentPaths.isEmpty()}">
+                        <div th:if="${partner.documentPaths != null and !#lists.isEmpty(partner.documentPaths)}">
                             <ul class="list-group">
                                 <li class="list-group-item d-flex justify-content-between align-items-center" th:each="doc : ${partner.documentPaths}">
                                     <span th:text="${#strings.substringAfterLast(doc, '/')}">documento.pdf</span>
                                     <a th:href="@{'/uploads/' + ${#strings.substringAfterLast(doc, '/')}}" class="btn btn-sm btn-primary" target="_blank">
-                                        <i class="bi bi-eye"></i> Ver
+                                        Ver
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        <div th:if="${partner.documentPaths == null || partner.documentPaths.isEmpty()}" class="alert alert-info">
+                        <div th:unless="${partner.documentPaths != null and !#lists.isEmpty(partner.documentPaths)}" class="alert alert-info">
                             Nenhum documento anexado.
                         </div>
                     </div>
