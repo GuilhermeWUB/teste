@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.config;
 
+import com.necsus.necsusspring.model.RoleType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +32,7 @@ public class RoleBasedAuthenticationSuccessHandler extends SimpleUrlAuthenticati
         }
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_ADMIN"::equals)
+                .anyMatch(RoleType::isAdminAuthority)
                 ? ADMIN_TARGET_URL
                 : USER_TARGET_URL;
     }

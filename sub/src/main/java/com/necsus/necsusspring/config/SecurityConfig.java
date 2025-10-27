@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.config;
 
+import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.service.UserAccountService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final String[] ADMIN_ROLES = RoleType.adminRoleCodes();
+    private static final String[] AUTHENTICATED_ROLES = RoleType.allRoleCodes();
 
     private final UserAccountService userAccountService;
     private final PasswordEncoder passwordEncoder;
@@ -52,10 +56,10 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/events/**"),
                                 new AntPathRequestMatcher("/pagamentos/**"),
                                 new AntPathRequestMatcher("/admin/**")
-                        ).hasRole("ADMIN")
+                        ).hasAnyRole(ADMIN_ROLES)
                         .requestMatchers(
                                 new AntPathRequestMatcher("/me/**")
-                        ).hasAnyRole("ADMIN", "USER")
+                        ).hasAnyRole(AUTHENTICATED_ROLES)
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

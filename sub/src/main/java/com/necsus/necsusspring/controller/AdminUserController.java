@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.service.UserAccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,7 @@ public class AdminUserController {
     public String listUsers(Model model) {
         model.addAttribute("pageTitle", "SUB - Usuários");
         model.addAttribute("users", userAccountService.findAll());
+        model.addAttribute("availableRoles", RoleType.assignableRoles());
         return "admin_users";
     }
 
