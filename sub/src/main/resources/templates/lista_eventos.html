@@ -2,45 +2,53 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>SUB - Eventos</title>
+    <title>SUB - Comunicações</title>
 </head>
 <body>
 
 <section layout:fragment="content">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h1 class="mb-0">Eventos</h1>
+            <h1 class="mb-0">Comunicações</h1>
         </div>
         <a class="btn btn-primary" th:href="@{/events/new}">
-            Novo Evento
+            Nova Comunicação
         </a>
     </div>
 
     <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
 
     <div th:if="${#lists.isEmpty(events)}" class="alert alert-info" role="alert">
-        Nenhum evento cadastrado.
+        Nenhuma comunicação cadastrada.
     </div>
 
     <div th:if="${!#lists.isEmpty(events)}" class="table-responsive">
         <table class="table table-striped align-middle">
             <thead>
             <tr>
-                <th>Nome</th>
-                <th>Data</th>
-                <th>Local</th>
-                <th>Status</th>
+                <th>Motivo</th>
+                <th>Envolvimento</th>
+                <th>Data do Ocorrido</th>
+                <th>Hora do Ocorrido</th>
+                <th>Data da Comunicação</th>
+                <th>Hora da Comunicação</th>
+                <th>ID Externo</th>
+                <th>Analista Responsável</th>
                 <th class="text-center">Ações</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="event : ${events}">
                 <td>
-                    <span class="fw-semibold" th:text="${event.name}"></span>
+                    <span class="fw-semibold" th:text="${event.motivo}"></span>
                 </td>
-                <td th:text="${#dates.format(event.eventDate, 'dd/MM/yyyy')}"></td>
-                <td th:text="${event.location ?: 'N/I'}"></td>
-                <td th:text="${event.status ?: '-'}"></td>
+                <td th:text="${event.envolvimento}"></td>
+                <td th:text="${event.dataAconteceu != null ? #dates.format(event.dataAconteceu, 'dd/MM/yyyy') : '-'}"></td>
+                <td th:text="${event.horaAconteceu != null ? #numbers.formatInteger(event.horaAconteceu, '0000') : '-'}"></td>
+                <td th:text="${event.dataComunicacao != null ? #dates.format(event.dataComunicacao, 'dd/MM/yyyy') : '-'}"></td>
+                <td th:text="${event.horaComunicacao != null ? #numbers.formatInteger(event.horaComunicacao, '0000') : '-'}"></td>
+                <td th:text="${event.idExterno != null ? event.idExterno : '-'}"></td>
+                <td th:text="${event.analistaResponsavel != null ? event.analistaResponsavel : '-'}"></td>
                 <td class="text-center">
                     <a class="btn btn-warning btn-sm" th:href="@{/events/edit/{id}(id=${event.id})}">
                         Editar

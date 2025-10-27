@@ -28,6 +28,8 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/js/**"),
                                 new AntPathRequestMatcher("/images/**"),
                                 new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/logout"),
+                                new AntPathRequestMatcher("/logout/success"),
                                 new AntPathRequestMatcher("/error"),
                                 new AntPathRequestMatcher("/favicon.ico")
                         ).permitAll()
@@ -39,7 +41,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/perform-logout")
+                        .logoutSuccessUrl("/logout/success")
                         .permitAll()
                 )
                 .csrf(csrf -> csrf

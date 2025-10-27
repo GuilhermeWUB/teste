@@ -2,41 +2,51 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>SUB - Atualizar Evento</title>
+    <title>SUB - Atualizar Comunicação</title>
 </head>
 <body>
 
 <section layout:fragment="content">
-    <h1 class="mb-4">Atualizar Evento</h1>
+    <h1 class="mb-4">Atualizar Comunicação</h1>
     <form th:action="@{/events/update/{id}(id=${event.id})}" th:object="${event}" method="post" class="row g-3">
         <input type="hidden" th:field="*{id}" />
-        <div class="col-md-12">
-            <label for="name" class="form-label">Nome do Evento</label>
-            <input type="text" id="name" class="form-control" th:field="*{name}" />
-            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        <div class="col-md-6">
+            <label for="motivo" class="form-label">Motivo</label>
+            <input type="text" id="motivo" class="form-control" th:field="*{motivo}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
         </div>
         <div class="col-md-6">
-            <label for="eventDate" class="form-label">Data do Evento</label>
-            <input type="date" id="eventDate" class="form-control" th:field="*{eventDate}" />
-            <div class="text-danger" th:if="${#fields.hasErrors('eventDate')}" th:errors="*{eventDate}"></div>
+            <label for="envolvimento" class="form-label">Envolvimento</label>
+            <input type="text" id="envolvimento" class="form-control" th:field="*{envolvimento}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('envolvimento')}" th:errors="*{envolvimento}"></div>
         </div>
         <div class="col-md-6">
-            <label for="location" class="form-label">Local</label>
-            <input type="text" id="location" class="form-control" th:field="*{location}" />
+            <label for="dataAconteceu" class="form-label">Data em que aconteceu</label>
+            <input type="date" id="dataAconteceu" class="form-control" th:field="*{dataAconteceu}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
         </div>
         <div class="col-md-6">
-            <label for="status" class="form-label">Status</label>
-            <select id="status" class="form-select" th:field="*{status}">
-                <option value="">Selecione</option>
-                <option value="Planejado">Planejado</option>
-                <option value="Em Andamento">Em Andamento</option>
-                <option value="Cancelado">Cancelado</option>
-                <option value="Concluído">Concluído</option>
-            </select>
+            <label for="horaAconteceu" class="form-label">Horário em que aconteceu (hhmm)</label>
+            <input type="number" id="horaAconteceu" class="form-control" th:field="*{horaAconteceu}" min="0" max="2359" step="1" />
+            <div class="text-danger" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
         </div>
-        <div class="col-md-12">
-            <label for="description" class="form-label">Descrição</label>
-            <textarea id="description" class="form-control" rows="4" th:field="*{description}"></textarea>
+        <div class="col-md-6">
+            <label for="dataComunicacao" class="form-label">Data da comunicação</label>
+            <input type="date" id="dataComunicacao" class="form-control" th:field="*{dataComunicacao}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
+        </div>
+        <div class="col-md-6">
+            <label for="horaComunicacao" class="form-label">Horário da comunicação (hhmm)</label>
+            <input type="number" id="horaComunicacao" class="form-control" th:field="*{horaComunicacao}" min="0" max="2359" step="1" />
+            <div class="text-danger" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
+        </div>
+        <div class="col-md-6">
+            <label for="idExterno" class="form-label">ID Externo</label>
+            <input type="number" id="idExterno" class="form-control" th:field="*{idExterno}" />
+        </div>
+        <div class="col-md-6">
+            <label for="analistaResponsavel" class="form-label">Analista Responsável</label>
+            <input type="text" id="analistaResponsavel" class="form-control" th:field="*{analistaResponsavel}" />
         </div>
         <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Salvar alterações</button>

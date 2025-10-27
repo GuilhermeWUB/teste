@@ -10,4 +10,14 @@ public class AuthController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/logout")
+    public String logoutView() {
+        return "logout";
     }
+
+    @GetMapping("/logout/success")
+    public String logoutSuccess() {
+        return "logout_success";
+    }
+}
