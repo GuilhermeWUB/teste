@@ -31,7 +31,7 @@ public class UserAccount {
     private String password;
 
     @Column(nullable = false)
-    private String role = "USER";
+    private String role = RoleType.USER.getCode();
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -42,7 +42,7 @@ public class UserAccount {
             createdAt = LocalDateTime.now();
         }
         if (role == null) {
-            role = "USER";
+            role = RoleType.USER.getCode();
         }
     }
 

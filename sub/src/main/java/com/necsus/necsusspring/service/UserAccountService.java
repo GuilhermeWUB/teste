@@ -1,6 +1,7 @@
 package com.necsus.necsusspring.service;
 
 import com.necsus.necsusspring.dto.UserRegistrationDto;
+import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.model.UserAccount;
 import com.necsus.necsusspring.repository.UserAccountRepository;
 import org.springframework.security.core.userdetails.User;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 
@@ -23,9 +25,10 @@ public class UserAccountService implements UserDetailsService {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private static final String ROLE_ADMIN = "ADMIN";
-    private static final String ROLE_USER = "USER";
-    private static final Set<String> ALLOWED_ROLES = Set.of(ROLE_ADMIN, ROLE_USER);
+    private static final Set<String> ADMIN_ROLES = RoleType.adminRoleCodeSet();
+    private static final Set<String> ALLOWED_ROLES = RoleType.assignableRoles().stream()
+            .map(RoleType::getCode)
+            .collect(Collectors.toUnmodifiableSet());
 
     public UserAccountService(UserAccountRepository userAccountRepository,
                               PasswordEncoder passwordEncoder) {
@@ -39,7 +42,7 @@ public class UserAccountService implements UserDetailsService {
         userAccount.setEmail(registrationDto.getEmail());
         userAccount.setUsername(registrationDto.getUsername());
         userAccount.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        userAccount.setRole(ROLE_USER);
+        userAccount.setRole(RoleType.USER.getCode());
         return userAccountRepository.save(userAccount);
     }
 
@@ -75,21 +78,30 @@ public class UserAccountService implements UserDetailsService {
             throw new IllegalArgumentException("Tipo de permissão inválido: " + role);
         }
 
+        RoleType targetRole = RoleType.fromCode(normalizedRole)
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de permissão inválido: " + role));
+
         UserAccount user = userAccountRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
 
-        if (ROLE_ADMIN.equals(user.getRole()) && ROLE_USER.equals(normalizedRole)
-                && userAccountRepository.countByRole(ROLE_ADMIN) <= 1) {
-            throw new IllegalStateException("Não é possível remover o último administrador do sistema.");
+        RoleType currentRole = RoleType.fromCode(user.getRole()).orElse(RoleType.USER);
+        boolean currentIsAdmin = currentRole.hasAdminPrivileges();
+        boolean targetIsAdmin = targetRole.hasAdminPrivileges();
+
+        if (currentIsAdmin && !targetIsAdmin) {
+            long adminCount = userAccountRepository.countByRoleIn(ADMIN_ROLES);
+            if (adminCount <= 1) {
+                throw new IllegalStateException("Não é possível remover o último usuário com acesso administrativo do sistema.");
+            }
         }
 
-        user.setRole(normalizedRole);
+        user.setRole(targetRole.getCode());
         userAccountRepository.save(user);
     }
 
     private String normalizeRole(String role) {
         if (role == null) {
-            return ROLE_USER;
+            return RoleType.USER.getCode();
         }
         return role.trim().toUpperCase(Locale.ROOT);
     }
@@ -99,9 +111,11 @@ public class UserAccountService implements UserDetailsService {
         UserAccount userAccount = userAccountRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
 
+        RoleType roleType = RoleType.fromCode(userAccount.getRole()).orElse(RoleType.USER);
+
         return User.withUsername(userAccount.getUsername())
                 .password(userAccount.getPassword())
-                .roles(userAccount.getRole())
+                .roles(roleType.getCode())
                 .build();
     }
 }

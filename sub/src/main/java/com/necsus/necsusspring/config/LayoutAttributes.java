@@ -1,9 +1,11 @@
 package com.necsus.necsusspring.config;
 
+import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.model.UserAccount;
 import com.necsus.necsusspring.service.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,7 +32,8 @@ public class LayoutAttributes {
             return false;
         }
         return authentication.getAuthorities().stream()
-                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(RoleType::isAdminAuthority);
     }
 
     @ModelAttribute("currentUserFullName")

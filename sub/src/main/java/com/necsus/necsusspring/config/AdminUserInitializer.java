@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.config;
 
+import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.model.UserAccount;
 import com.necsus.necsusspring.repository.UserAccountRepository;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class AdminUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userAccountRepository.countByRole("ADMIN") > 0) {
+        if (userAccountRepository.countByRole(RoleType.ADMIN.getCode()) > 0) {
             return;
         }
 
@@ -47,7 +48,7 @@ public class AdminUserInitializer implements CommandLineRunner {
         adminUser.setUsername(defaultAdminUsername);
         adminUser.setEmail(defaultAdminEmail);
         adminUser.setPassword(passwordEncoder.encode(defaultAdminPassword));
-        adminUser.setRole("ADMIN");
+        adminUser.setRole(RoleType.ADMIN.getCode());
 
         userAccountRepository.save(adminUser);
         LOGGER.info("Usuário administrador padrão '{}' criado.", defaultAdminUsername);
