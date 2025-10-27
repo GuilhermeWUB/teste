@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Meus Veículos</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-0">Meus Veículos</h1>
+            <p class="text-muted mb-0" th:if="${partner != null}" th:text="${partner.name}"></p>
+        </div>
+    </div>
+
+    <div th:if="${missingUser}" class="alert alert-danger" role="alert">
+        Não foi possível localizar o seu cadastro de usuário. Entre em contato com o administrador do sistema.
+    </div>
+
+    <div th:if="${missingPartner}" class="alert alert-info" role="alert">
+        Não encontramos um associado vinculado ao seu e-mail. Por favor, confirme seus dados com a administração.
+    </div>
+
+    <div th:if="${partner != null}" class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Dados do Associado</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <span class="text-muted d-block">Nome completo</span>
+                    <span class="fw-semibold" th:text="${partner.name}"></span>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block">E-mail</span>
+                    <span class="fw-semibold" th:text="${partner.email}"></span>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted d-block">Telefone</span>
+                    <span class="fw-semibold" th:text="${partner.phone != null ? partner.phone : partner.cell}">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${partner != null && #lists.isEmpty(vehicles)}" class="alert alert-info" role="alert">
+        Você ainda não possui veículos cadastrados.
+    </div>
+
+    <div th:if="${partner != null && !#lists.isEmpty(vehicles)}" class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+            <tr>
+                <th>Veículo</th>
+                <th>Placa</th>
+                <th>Cor</th>
+                <th>Ano/Modelo</th>
+                <th>Combustível</th>
+                <th>Mensalidade</th>
+                <th>Vencimento</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vehicle : ${vehicles}">
+                <td>
+                    <span class="fw-semibold" th:text="${vehicle.maker}"></span>
+                    <span th:text="${' - ' + vehicle.model}"></span>
+                </td>
+                <td th:text="${vehicle.plaque}"></td>
+                <td th:text="${vehicle.color}"></td>
+                <td th:text="${vehicle.year_mod}"></td>
+                <td th:text="${vehicle.tipo_combustivel}"></td>
+                <td th:text="${vehicle.payment != null ? 'R$ ' + #numbers.formatDecimal(vehicle.payment.monthly, 1, 2, 'COMMA') : 'R$ 0,00'}"></td>
+                <td th:text="${vehicle.payment != null ? vehicle.payment.vencimento : '-'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

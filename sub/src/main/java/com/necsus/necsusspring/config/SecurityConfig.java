@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -16,10 +17,14 @@ public class SecurityConfig {
 
     private final UserAccountService userAccountService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    public SecurityConfig(UserAccountService userAccountService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserAccountService userAccountService,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationSuccessHandler authenticationSuccessHandler) {
         this.userAccountService = userAccountService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     @Bean
@@ -40,12 +45,23 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/error"),
                                 new AntPathRequestMatcher("/favicon.ico")
                         ).permitAll()
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/dashboard/**"),
+                                new AntPathRequestMatcher("/partners/**"),
+                                new AntPathRequestMatcher("/vehicles/**"),
+                                new AntPathRequestMatcher("/events/**"),
+                                new AntPathRequestMatcher("/pagamentos/**"),
+                                new AntPathRequestMatcher("/admin/**")
+                        ).hasRole("ADMIN")
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/me/**")
+                        ).hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .successHandler(authenticationSuccessHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout

@@ -33,6 +33,13 @@ public class PartnerService {
         return partnerRepository.findById(id);
     }
 
+    public Optional<Partner> getPartnerByEmail(String email) {
+        if (email == null) {
+            return Optional.empty();
+        }
+        return partnerRepository.findByEmailIgnoreCase(email);
+    }
+
     public Partner updatePartner(Partner partner) {
         return partnerRepository.findById(partner.getId())
                 .map(existingPartner -> {

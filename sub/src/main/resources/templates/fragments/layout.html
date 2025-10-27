@@ -330,7 +330,7 @@
 <!-- NAVBAR (apenas quando logado) -->
 <nav class="navbar navbar-expand-lg navbar-light border-bottom" th:if="${isLoggedIn}">
     <div class="container">
-        <a class="navbar-brand" th:href="@{/dashboard}">
+        <a class="navbar-brand" th:href="${isAdmin} ? @{/dashboard} : @{/me/vehicles}">
             <img th:src="@{/images/ub_02_2.jpeg}" alt="UB Logo" title="Voltar para a página de associados">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -339,21 +339,29 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
+                <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/partners}">Associados</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/vehicles}">Veículos</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/events}">Eventos</a>
+                </li>
+                <li class="nav-item" th:if="${isAdmin}">
+                    <a class="nav-link" th:href="@{/admin/users}">Usuários</a>
+                </li>
+                <li class="nav-item" th:if="${!isAdmin}">
+                    <a class="nav-link" th:href="@{/me/vehicles}">Meus Veículos</a>
                 </li>
             </ul>
 
             <div class="d-flex align-items-center gap-3">
+                <span class="text-white fw-semibold d-none d-lg-inline" th:if="${currentUserFullName != null}"
+                      th:text="${currentUserFullName}"></span>
                 <button class="theme-toggle" id="themeToggle" title="Alternar tema">
                     <span id="themeIcon">🌙</span>
                 </button>
