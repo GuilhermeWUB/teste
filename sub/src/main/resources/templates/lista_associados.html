@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Lista de Associados</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <h1 class="mb-4">Lista de Associados</h1>
+    <a href="/partners/new" class="btn btn-primary mb-3">Cadastrar Novo Associado</a>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nome/Razão social</th>
+            <th>CPF</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="partner : ${partners}">
+            <td th:text="${partner.name}"></td>
+            <td th:text="${partner.cpf}"></td>
+            <td class="align-middle">
+                <a th:href="@{/partners/{id}(id=${partner.id})}" class="btn btn-info btn-sm">Detalhes</a>
+                <a th:href="@{/partners/edit/{id}(id=${partner.id})}" class="btn btn-warning btn-sm">Alterar</a>
+                <a th:href="@{/vehicles(partnerId=${partner.id})}" class="btn btn-secondary btn-sm">Gerenciar veículos</a>
+
+                <form th:action="@{/partners/delete/{id}(id=${partner.id})}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Tem certeza que deseja excluir este associado?');">
+                        Excluir
+                    </button>
+                </form>
+
+                <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
+                      th:action="@{/pagamentos/gerar-mensalidades}" method="get" class="d-inline">
+                    <select name="vehicle_id" class="form-select form-select-sm d-inline-block w-auto">
+                        <option th:each="vehicle : ${partner.vehicles}"
+                                th:value="${vehicle.id}"
+                                th:text="${vehicle.plaque}">
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-success btn-sm">Gerar Faturas</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
