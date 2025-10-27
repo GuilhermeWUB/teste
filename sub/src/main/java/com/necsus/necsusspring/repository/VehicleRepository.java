@@ -14,4 +14,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     @EntityGraph(attributePaths = {"partner", "payment"})
     Optional<Vehicle> findWithPartnerAndPaymentById(Long id);
+
+    long countByStatus(Integer status);
 }
