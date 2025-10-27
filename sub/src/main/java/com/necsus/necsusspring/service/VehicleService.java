@@ -34,6 +34,34 @@ public class VehicleService {
         return listAll(null);
     }
 
+    @Transactional
+    public Vehicle createVehicle(Vehicle vehicle) {
+        return create(vehicle);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehicle> getAllVehicles() {
+        return listAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Vehicle> getVehicleById(Long id) {
+        return findById(id);
+    }
+
+    @Transactional
+    public Vehicle updateVehicle(Vehicle vehiclePayload) {
+        if (vehiclePayload.getId() == null) {
+            throw new IllegalArgumentException("Vehicle id must not be null for update");
+        }
+        return update(vehiclePayload.getId(), vehiclePayload);
+    }
+
+    @Transactional
+    public void deleteVehicle(Long id) {
+        delete(id);
+    }
+
     @Transactional(readOnly = true)
     public List<Vehicle> listAll(Long partnerId) {
         List<Vehicle> vehicles = partnerId != null
