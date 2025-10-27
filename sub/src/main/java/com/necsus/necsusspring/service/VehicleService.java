@@ -39,6 +39,16 @@ public class VehicleService {
     }
 
     @Transactional(readOnly = true)
+    public List<Vehicle> listByPartnerId(Long partnerId) {
+        if (partnerId == null) {
+            return List.of();
+        }
+        List<Vehicle> vehicles = vehicleRepository.findByPartnerId(partnerId);
+        vehicles.forEach(this::ensurePaymentLoaded);
+        return vehicles;
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Vehicle> findById(Long id) {
         return vehicleRepository.findById(id).map(this::ensurePaymentLoaded);
     }
