@@ -12,12 +12,22 @@
         <input type="hidden" th:field="*{id}" />
         <div class="col-md-6">
             <label for="motivo" class="form-label">Motivo</label>
-            <input type="text" id="motivo" class="form-control" th:field="*{motivo}" />
+            <select id="motivo" class="form-select" th:field="*{motivo}">
+                <option value="" disabled th:selected="${event.motivo == null}">--SELECIONE--</option>
+                <option th:each="motivoOption : ${motivos}"
+                        th:value="${motivoOption}"
+                        th:text="${motivoOption.label}"></option>
+            </select>
             <div class="text-danger" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
         </div>
         <div class="col-md-6">
             <label for="envolvimento" class="form-label">Envolvimento</label>
-            <input type="text" id="envolvimento" class="form-control" th:field="*{envolvimento}" />
+            <select id="envolvimento" class="form-select" th:field="*{envolvimento}">
+                <option value="" disabled th:selected="${event.envolvimento == null}">--SELECIONE--</option>
+                <option th:each="envolvimentoOption : ${envolvimentos}"
+                        th:value="${envolvimentoOption}"
+                        th:text="${envolvimentoOption.label}"></option>
+            </select>
             <div class="text-danger" th:if="${#fields.hasErrors('envolvimento')}" th:errors="*{envolvimento}"></div>
         </div>
         <div class="col-md-6">
