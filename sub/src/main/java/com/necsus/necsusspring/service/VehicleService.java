@@ -29,6 +29,34 @@ public class VehicleService {
         this.paymentRepository = paymentRepository;
     }
 
+    @Transactional
+    public Vehicle createVehicle(Vehicle vehicle) {
+        return create(vehicle);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vehicle> getAllVehicles() {
+        return listAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Vehicle> getVehicleById(Long id) {
+        return findById(id);
+    }
+
+    @Transactional
+    public Vehicle updateVehicle(Vehicle vehicle) {
+        if (vehicle.getId() == null) {
+            throw new IllegalArgumentException("Vehicle id must not be null");
+        }
+        return update(vehicle.getId(), vehicle);
+    }
+
+    @Transactional
+    public void deleteVehicle(Long id) {
+        delete(id);
+    }
+
     @Transactional(readOnly = true)
     public List<Vehicle> listAll() {
         return listAll(null);
