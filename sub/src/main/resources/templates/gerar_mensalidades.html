@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Gerar Mensalidades</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <h1 class="mb-4">Gerar Mensalidades</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Veículo Selecionado</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Associado</h5>
+                    <p th:text="${vehicle.partner.name}"></p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Veículo</h5>
+                    <p th:text="${vehicle.maker} + ' ' + ${vehicle.model} + ' - ' + ${vehicle.plaque}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/pagamentos/gerar-mensalidades}" method="post">
+        <input type="hidden" name="vehicle_id" th:value="${vehicle.id}" />
+        <div class="mb-3">
+            <label for="qtd_boletos" class="form-label">Quantidade de Meses a Gerar</label>
+            <input type="number" id="qtd_boletos" name="qtd_boletos" class="form-control" min="1" value="1" />
+        </div>
+        <button type="submit" class="btn btn-primary">Gerar Faturas</button>
+        <a th:href="@{/partners}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</section>
+
+</body>
+</html>

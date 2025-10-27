@@ -11,20 +11,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PublicPagesIntegrationTest {
+class SecurityIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void homePageAccessibleWithoutAuthentication() throws Exception {
-        mockMvc.perform(get("/"))
+    void loginPageAccessibleWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/login"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void dashboardAccessibleWithoutAuthentication() throws Exception {
-        mockMvc.perform(get("/dashboard"))
+    void homePageAccessibleWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/"))
                 .andExpect(status().isOk());
     }
 }
