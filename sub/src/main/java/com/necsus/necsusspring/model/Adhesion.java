@@ -4,10 +4,17 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import jakarta.validation.constraints.NotNull;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "adhesion")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Adhesion {
 
     @Id
@@ -18,7 +25,6 @@ public class Adhesion {
     @JoinColumn(name = "partners_id")
     private Partner partner;
 
-
     @NotNull(message = "O valor da adesão é obrigatório")
     @Column(name = "amount")
     private BigDecimal amount;
@@ -27,35 +33,12 @@ public class Adhesion {
     @Temporal(TemporalType.DATE)
     private Date vencimento;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Partner getPartner() {
-        return partner;
-    }
-
-    public void setPartner(Partner partner) {
-        this.partner = partner;
-    }
-
+    // Getter customizado para compatibilidade
     public BigDecimal getValue() {
         return amount;
     }
 
     public void setValue(BigDecimal value) {
         this.amount = value;
-    }
-
-    public Date getVencimento() {
-        return vencimento;
-    }
-
-    public void setVencimento(Date vencimento) {
-        this.vencimento = vencimento;
     }
 }

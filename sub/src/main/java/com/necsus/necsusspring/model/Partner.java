@@ -19,8 +19,16 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Partner {
 
     @Id
@@ -72,149 +80,4 @@ public class Partner {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
-
-
-    public @NotEmpty(message = "O nome é obrigatório") String getName() {
-        return name;
-    }
-
-    public void setName(@NotEmpty(message = "O nome é obrigatório") String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getDateBorn() {
-        return dateBorn;
-    }
-
-    public void setDateBorn(LocalDate dateBorn) {
-        this.dateBorn = dateBorn;
-    }
-
-    public @NotEmpty(message = "O e-mail é obrigatório") @Email(message = "E-mail inválido") String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NotEmpty(message = "O e-mail é obrigatório") @Email(message = "E-mail inválido") String email) {
-        this.email = email;
-    }
-
-    public @NotEmpty(message = "O CPF é obrigatório") String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(@NotEmpty(message = "O CPF é obrigatório") String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCell() {
-        return cell;
-    }
-
-    public void setCell(String cell) {
-        this.cell = cell;
-    }
-
-    public String getRg() {
-        return rg;
-    }
-
-    public void setRg(String rg) {
-        this.rg = rg;
-    }
-
-    public String getFax() {
-        return fax;
-    }
-
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
-
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public Adhesion getAdhesion() {
-        return adhesion;
-    }
-
-    public void setAdhesion(Adhesion adhesion) {
-        this.adhesion = adhesion;
-    }
-
-    public List<BankSlip> getBankSlips() {
-        return bankSlips;
-    }
-
-    public void setBankSlips(List<BankSlip> bankSlips) {
-        this.bankSlips = bankSlips;
-    }
-
-    public PartnerStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PartnerStatus status) {
-        this.status = status;
-    }
-
-    public List<String> getDocumentPaths() {
-        return documentPaths;
-    }
-
-    public void setDocumentPaths(List<String> documentPaths) {
-        this.documentPaths = documentPaths;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public LocalDate getContractDate() {
-        return contractDate;
-    }
-
-    public void setContractDate(LocalDate contractDate) {
-        this.contractDate = contractDate;
-    }
 }

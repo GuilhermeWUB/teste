@@ -7,10 +7,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id
@@ -40,76 +48,4 @@ public class Event {
     private Long idExterno;
 
     private String analistaResponsavel;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Motivo getMotivo() {
-        return motivo;
-    }
-
-    public void setMotivo(Motivo motivo) {
-        this.motivo = motivo;
-    }
-
-    public Envolvimento getEnvolvimento() {
-        return envolvimento;
-    }
-
-    public void setEnvolvimento(Envolvimento envolvimento) {
-        this.envolvimento = envolvimento;
-    }
-
-    public Date getDataAconteceu() {
-        return dataAconteceu;
-    }
-
-    public void setDataAconteceu(Date dataAconteceu) {
-        this.dataAconteceu = dataAconteceu;
-    }
-
-    public Long getHoraAconteceu() {
-        return horaAconteceu;
-    }
-
-    public void setHoraAconteceu(Long horaAconteceu) {
-        this.horaAconteceu = horaAconteceu;
-    }
-
-    public Date getDataComunicacao() {
-        return dataComunicacao;
-    }
-
-    public void setDataComunicacao(Date dataComunicacao) {
-        this.dataComunicacao = dataComunicacao;
-    }
-
-    public Long getHoraComunicacao() {
-        return horaComunicacao;
-    }
-
-    public void setHoraComunicacao(Long horaComunicacao) {
-        this.horaComunicacao = horaComunicacao;
-    }
-
-    public Long getIdExterno() {
-        return idExterno;
-    }
-
-    public void setIdExterno(Long idExterno) {
-        this.idExterno = idExterno;
-    }
-
-    public String getAnalistaResponsavel() {
-        return analistaResponsavel;
-    }
-
-    public void setAnalistaResponsavel(String analistaResponsavel) {
-        this.analistaResponsavel = analistaResponsavel;
-    }
 }

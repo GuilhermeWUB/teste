@@ -5,8 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
 
     @Id
@@ -23,67 +31,32 @@ public class Address {
     private String number;
     private String states;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public @NotEmpty(message = "O endereço é obrigatório") String getAddress() {
+    // Getter customizado para manter compatibilidade
+    public String getEndereco() {
         return address;
     }
 
-    public void setAddress(@NotEmpty(message = "O endereço é obrigatório") String address) {
-        this.address = address;
-    }
-
-    public String getNeighborhood() {
+    public String getBairro() {
         return neighborhood;
     }
 
-    public void setNeighborhood(String neighborhood) {
-        this.neighborhood = neighborhood;
-    }
-
-    public String getCity() {
+    public String getCidade() {
         return city;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getComplement() {
+    public String getComplemento() {
         return complement;
     }
 
-    public void setComplement(String complement) {
-        this.complement = complement;
-    }
-
-    public @NotEmpty(message = "O CEP é obrigatório") String getZipcode() {
+    public String getCep() {
         return zipcode;
     }
 
-    public void setZipcode(@NotEmpty(message = "O CEP é obrigatório") String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    public String getNumber() {
+    public String getNumero() {
         return number;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getStates() {
+    public String getEstado() {
         return states;
-    }
-
-    public void setStates(String states) {
-        this.states = states;
     }
 }
