@@ -61,9 +61,19 @@
 </section>
 
 <script th:inline="javascript">
+    console.log('🔵 Script de relatório carregando...');
+
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('🔵 DOMContentLoaded disparado');
+        console.log('🔵 window.initializeReportPage existe?', typeof window.initializeReportPage);
+
         if (window.initializeReportPage) {
+            console.log('🔵 Inicializando página de relatório de veículos...');
             window.initializeReportPage('vehicles', {autoOpen: true, title: 'Relatório de Veículos'});
+            console.log('🔵 Página de relatório inicializada!');
+        } else {
+            console.error('❌ window.initializeReportPage não existe!');
+            console.error('❌ Verifique se layout.html está carregando corretamente');
         }
     });
 </script>
