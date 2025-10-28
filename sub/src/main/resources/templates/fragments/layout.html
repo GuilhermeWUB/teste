@@ -123,6 +123,50 @@
             width: 80%;
         }
 
+        /* Dropdown - aparecer ao passar o mouse */
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-lg);
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu-dark {
+            background: linear-gradient(135deg, var(--ub-purple-dark) 0%, #1e293b 100%);
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-item {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            opacity: 0.8;
+        }
+
         .navbar-toggler {
             border-color: rgba(255, 255, 255, 0.3);
             padding: 0.5rem;
@@ -457,6 +501,15 @@
                 </li>
                 <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/admin/users}">Usuários</a>
+                </li>
+                <li class="nav-item dropdown" th:if="${isAdmin}">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Relatórios
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="reportsDropdown">
+                        <li><a class="dropdown-item" th:href="@{/reports/vehicles}"><i class="bi bi-car-front me-2"></i>Relatório de Veículos</a></li>
+                        <li><a class="dropdown-item" th:href="@{/reports/partners}"><i class="bi bi-people me-2"></i>Relatório de Associados</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item" th:if="${!isAdmin}">
                     <a class="nav-link" th:href="@{/me/vehicles}">Meus Veículos</a>
