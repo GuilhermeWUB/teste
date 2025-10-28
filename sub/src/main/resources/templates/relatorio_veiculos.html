@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Relatório de Veículos</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1 d-flex align-items-center gap-2">
+                <i class="bi bi-car-front-fill text-primary"></i>
+                <span>Relatório de Veículos</span>
+            </h1>
+            <p class="text-muted mb-0">Visão consolidada dos veículos cadastrados e seus associados.</p>
+        </div>
+        <div class="badge bg-light text-dark fs-6 py-2 px-3 shadow-sm" th:if="${hasVehicles}">
+            Total de veículos: <span class="fw-semibold" th:text="${totalVehicles}"></span>
+        </div>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-warning d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div th:if="${hasVehicles}">
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <span class="text-muted text-uppercase fw-semibold small">Veículos cadastrados</span>
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <h2 class="fw-bold mb-0" th:text="${totalVehicles}"></h2>
+                            <span class="display-6 text-primary"><i class="bi bi-car-front"></i></span>
+                        </div>
+                        <p class="text-muted small mb-0">Quantidade total de veículos ativos no sistema.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <span class="text-muted text-uppercase fw-semibold small">Associados impactados</span>
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <h2 class="fw-bold mb-0" th:text="${distinctPartners}"></h2>
+                            <span class="display-6 text-primary"><i class="bi bi-people-fill"></i></span>
+                        </div>
+                        <p class="text-muted small mb-0">Associados com ao menos um veículo vinculado.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <span class="text-muted text-uppercase fw-semibold small">Mensalidades estimadas</span>
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <h2 class="fw-bold mb-0" th:text="${totalMonthlyValueFormatted}"></h2>
+                            <span class="display-6 text-primary"><i class="bi bi-cash-coin"></i></span>
+                        </div>
+                        <p class="text-muted small mb-0">Somatório das mensalidades configuradas para os veículos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 pb-0">
+                        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-fuel-pump-fill text-primary"></i>
+                            Distribuição por combustível
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-muted" th:if="${#maps.isEmpty(vehiclesByFuel)}">Nenhuma informação disponível.</div>
+                        <ul class="list-group list-group-flush" th:if="${!#maps.isEmpty(vehiclesByFuel)}">
+                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                th:each="entry : ${vehiclesByFuel.entrySet()}">
+                                <span th:text="${entry.key}"></span>
+                                <span class="badge bg-primary rounded-pill" th:text="${entry.value}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent border-0 pb-0">
+                        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-building text-primary"></i>
+                            Montadoras com mais veículos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-muted" th:if="${#maps.isEmpty(vehiclesByMaker)}">Nenhuma informação disponível.</div>
+                        <ul class="list-group list-group-flush" th:if="${!#maps.isEmpty(vehiclesByMaker)}">
+                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                th:each="entry : ${vehiclesByMaker.entrySet()}">
+                                <span th:text="${entry.key}"></span>
+                                <span class="badge bg-primary rounded-pill" th:text="${entry.value}"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0 pb-0">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                    <div>
+                        <h5 class="card-title mb-1">Detalhamento dos veículos</h5>
+                        <p class="text-muted small mb-0">Lista completa dos veículos com informações do associado responsável.</p>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary fw-semibold py-2 px-3">
+                        Atualizado em <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Associado</th>
+                            <th>Placa</th>
+                            <th>Modelo</th>
+                            <th>Montadora</th>
+                            <th>Cor</th>
+                            <th>Ano/Modelo</th>
+                            <th>Combustível</th>
+                            <th>Mensalidade</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="vehicle : ${vehicles}">
+                            <td th:text="${vehicle.partner != null ? vehicle.partner.name : 'Não informado'}"></td>
+                            <td class="fw-semibold" th:text="${vehicle.plaque}"></td>
+                            <td th:text="${vehicle.model}"></td>
+                            <td th:text="${vehicle.maker}"></td>
+                            <td th:text="${vehicle.color}"></td>
+                            <td th:text="${vehicle.year_mod}"></td>
+                            <td th:text="${vehicle.tipo_combustivel}"></td>
+                            <td>
+                                <span th:if="${vehicle.payment != null and vehicle.payment.monthly != null}" th:text="${'R$ ' + vehicle.payment.monthly}"></span>
+                                <span th:if="${vehicle.payment == null or vehicle.payment.monthly == null}">-</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

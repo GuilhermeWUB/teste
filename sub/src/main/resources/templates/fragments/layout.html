@@ -74,10 +74,11 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             margin-top: 0.125rem;
             min-width: 250px;
+            background: linear-gradient(135deg, var(--ub-purple) 0%, var(--ub-purple-dark) 100%);
         }
 
         .dropdown-menu-dark {
-            background-color: var(--ub-purple-dark);
+            background: linear-gradient(135deg, var(--ub-purple-dark) 0%, var(--ub-purple) 100%);
         }
 
         .dropdown-item {
@@ -373,6 +374,27 @@
                 </li>
                 <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/vehicles}">Veículos</a>
+                </li>
+                <li class="nav-item dropdown" th:if="${isAdmin}">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="reportsDropdown"
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span>Relatórios</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark border-0 shadow" aria-labelledby="reportsDropdown">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{/reports/vehicles}">
+                                <i class="bi bi-car-front-fill"></i>
+                                <span>Relatório de Veículos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{/reports/partners}">
+                                <i class="bi bi-people-fill"></i>
+                                <span>Relatório de Associados</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/events}">Eventos</a>

@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/vehicles/**"),
                                 new AntPathRequestMatcher("/events/**"),
                                 new AntPathRequestMatcher("/pagamentos/**"),
+                                new AntPathRequestMatcher("/reports/**"),
                                 new AntPathRequestMatcher("/admin/**")
                         ).hasAnyRole(ADMIN_ROLES)
                         .requestMatchers(
