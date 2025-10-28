@@ -438,15 +438,6 @@
             }
         }
 
-        body.dark-mode @keyframes overlayFadeIn {
-            from {
-                background: rgba(0, 0, 0, 0);
-            }
-            to {
-                background: rgba(0, 0, 0, 0.85);
-            }
-        }
-
         /* Report results */
         .report-results-card {
             background-color: var(--card-light);
@@ -1103,9 +1094,15 @@
         }
 
         window.initializeReportPage = function (type, options) {
+            console.log('🟢 initializeReportPage chamado! Type:', type, 'Options:', options);
+
             const settings = Object.assign({autoOpen: false, title: ''}, options || {});
             const page = document.querySelector('[data-report-page="' + type + '"]');
+
+            console.log('🟢 Página encontrada?', page !== null);
+
             if (!page) {
+                console.error('❌ ERRO: Página não encontrada com selector: [data-report-page="' + type + '"]');
                 return;
             }
 
@@ -1119,6 +1116,9 @@
             const openButtons = page.querySelectorAll('[data-report-open]');
             const clearButton = page.querySelector('[data-report-clear]');
 
+            console.log('🟢 Overlay:', overlay !== null);
+            console.log('🟢 Botões encontrados:', openButtons.length);
+
             const pageTitle = settings.title || page.dataset.reportTitle || '';
 
             function onKeyDown(event) {
@@ -1128,11 +1128,19 @@
             }
 
             function showOverlay() {
+                console.log('🔵 showOverlay() chamado!');
+                console.log('🔵 Overlay:', overlay);
+                console.log('🔵 OverlayContent:', overlayContent);
+
                 if (!overlay || !overlayContent) {
+                    console.error('❌ Overlay ou overlayContent não existe!');
                     return;
                 }
+
+                console.log('🔵 Abrindo modal...');
                 overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status" aria-label="Carregando"></div><p class="mt-3 mb-0 fw-semibold">Carregando opções do relatório...</p></div>';
                 overlay.classList.add('is-visible');
+                console.log('🔵 Classe is-visible adicionada!');
                 document.addEventListener('keydown', onKeyDown);
 
                 // Foco no modal para acessibilidade
@@ -1293,12 +1301,16 @@
                 }
             }
 
-            openButtons.forEach(function (button) {
+            console.log('🟢 Adicionando event listeners aos botões...');
+            openButtons.forEach(function (button, index) {
+                console.log('🟢 Botão', index + 1, 'encontrado:', button);
                 button.addEventListener('click', function (event) {
+                    console.log('🔵 CLIQUE DETECTADO no botão', index + 1);
                     event.preventDefault();
                     showOverlay();
                 });
             });
+            console.log('🟢 Event listeners adicionados com sucesso!');
 
             if (clearButton) {
                 clearButton.addEventListener('click', function (event) {

@@ -15,7 +15,7 @@
             <p class="text-muted mb-0">Personalize a consulta com os campos que deseja visualizar e gere o relatório dinamicamente.</p>
         </div>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-report-open>
+            <button type="button" id="btnNovaConsulta" class="btn btn-primary d-flex align-items-center gap-2" data-report-open>
                 <i class="bi bi-funnel"></i>
                 <span>Nova consulta</span>
             </button>
@@ -61,11 +61,37 @@
 </section>
 
 <script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.initializeReportPage) {
-            window.initializeReportPage('vehicles', {autoOpen: true, title: 'Relatório de Veículos'});
+(function() {
+    'use strict';
+
+    let retryCount = 0;
+    const maxRetries = 20;
+
+    function initializeReport() {
+        if (typeof window.initializeReportPage === 'function') {
+            console.log('✅ Inicializando relatório de veículos...');
+            window.initializeReportPage('vehicles', {
+                autoOpen: false,
+                title: 'Relatório de Veículos'
+            });
+            console.log('✅ Relatório de veículos inicializado com sucesso!');
+        } else {
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log('⏳ Aguardando layout.html carregar... (tentativa ' + retryCount + '/' + maxRetries + ')');
+                setTimeout(initializeReport, 50);
+            } else {
+                console.error('❌ ERRO: window.initializeReportPage não foi carregado após ' + maxRetries + ' tentativas');
+            }
         }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeReport);
+    } else {
+        initializeReport();
+    }
+})();
 </script>
 </body>
 </html>
