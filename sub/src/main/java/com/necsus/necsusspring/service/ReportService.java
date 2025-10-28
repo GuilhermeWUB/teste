@@ -319,7 +319,7 @@ public class ReportService {
 
         // Estilos
         CellStyle headerStyle = workbook.createCellStyle();
-        Font headerFont = workbook.createFont();
+        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont(); // POI Font
         headerFont.setBold(true);
         headerFont.setColor(IndexedColors.WHITE.getIndex());
         headerFont.setFontHeightInPoints((short) 12);
@@ -376,7 +376,7 @@ public class ReportService {
 
         // Estilos
         CellStyle headerStyle = workbook.createCellStyle();
-        Font headerFont = workbook.createFont();
+        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont(); // POI Font
         headerFont.setBold(true);
         headerFont.setColor(IndexedColors.WHITE.getIndex());
         headerFont.setFontHeightInPoints((short) 12);
