@@ -47,12 +47,12 @@
         <div data-report-results></div>
     </div>
 
-    <div class="report-overlay" data-report-overlay>
-        <div class="report-overlay-dialog shadow-lg">
+    <div class="report-overlay" data-report-overlay role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+        <div class="report-overlay-dialog shadow-lg" tabindex="-1">
             <button type="button" class="btn-close" aria-label="Fechar" data-report-close></button>
             <div class="report-overlay-body" data-report-overlay-content>
                 <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="spinner-border text-primary" role="status" aria-label="Carregando"></div>
                     <p class="mt-3 mb-0">Carregando opções...</p>
                 </div>
             </div>
