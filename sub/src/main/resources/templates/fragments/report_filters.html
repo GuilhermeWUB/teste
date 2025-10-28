@@ -1,0 +1,109 @@
+<div th:fragment="vehicleFilters">
+    <div class="mb-4">
+        <h2 class="h4 mb-1 d-flex align-items-center gap-2">
+            <i class="bi bi-car-front-fill text-primary"></i>
+            <span>Configurar relatório de veículos</span>
+        </h2>
+        <p class="text-muted mb-0">Selecione as seções que deseja visualizar no resultado da consulta.</p>
+    </div>
+    <form class="report-filter-form" data-report-form>
+        <div class="alert alert-warning d-none" role="alert" data-report-error></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="summary" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Resumo geral</span>
+                        <small class="text-muted">Exibe os principais indicadores da frota cadastrada.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="fuelDistribution" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Combustível</span>
+                        <small class="text-muted">Mostra a distribuição de veículos por tipo de combustível.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="makerDistribution" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Montadoras</span>
+                        <small class="text-muted">Apresenta as montadoras com maior volume de veículos.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="vehicleList" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Detalhamento</span>
+                        <small class="text-muted">Lista todos os veículos com status e associado responsável.</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary" data-report-close>Cancelar</button>
+            <button type="submit" class="btn btn-primary">Ver relatório</button>
+        </div>
+    </form>
+</div>
+
+<div th:fragment="partnerFilters">
+    <div class="mb-4">
+        <h2 class="h4 mb-1 d-flex align-items-center gap-2">
+            <i class="bi bi-people-fill text-primary"></i>
+            <span>Configurar relatório de associados</span>
+        </h2>
+        <p class="text-muted mb-0">Escolha quais seções deseja visualizar antes de gerar o relatório.</p>
+    </div>
+    <form class="report-filter-form" data-report-form>
+        <div class="alert alert-warning d-none" role="alert" data-report-error></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="summary" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Resumo geral</span>
+                        <small class="text-muted">Apresenta os totais de associados e a média de veículos.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="topCities" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Cidades em destaque</span>
+                        <small class="text-muted">Mostra as cidades com maior concentração de associados.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="generalIndicators" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Indicadores gerais</span>
+                        <small class="text-muted">Inclui o total de veículos e o percentual de associados ativos.</small>
+                    </div>
+                </label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                    <input class="form-check-input mt-1" type="checkbox" name="sections" value="partnerList" checked>
+                    <div>
+                        <span class="fw-semibold d-block">Lista de associados</span>
+                        <small class="text-muted">Apresenta todos os associados com status e cidade.</small>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary" data-report-close>Cancelar</button>
+            <button type="submit" class="btn btn-primary">Ver relatório</button>
+        </div>
+    </form>
+</div>
