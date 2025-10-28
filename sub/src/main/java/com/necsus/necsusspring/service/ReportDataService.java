@@ -4,6 +4,7 @@ import com.necsus.necsusspring.model.Address;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -26,6 +27,7 @@ public class ReportDataService {
         this.vehicleService = vehicleService;
     }
 
+    @Transactional(readOnly = true)
     public PartnerReportData loadPartnerReportData() {
         List<Partner> partners = partnerService.getAllPartners();
         boolean hasPartners = !partners.isEmpty();
@@ -80,6 +82,7 @@ public class ReportDataService {
         );
     }
 
+    @Transactional(readOnly = true)
     public VehicleReportData loadVehicleReportData() {
         List<Vehicle> vehicles = vehicleService.listAll(null);
         boolean hasVehicles = !vehicles.isEmpty();
