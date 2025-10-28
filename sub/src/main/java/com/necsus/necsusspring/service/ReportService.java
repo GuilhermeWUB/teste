@@ -116,6 +116,11 @@ public class ReportService {
             List<Vehicle> vehicles = vehicleRepository.findAll();
             logger.info("Total de veículos encontrados: {}", vehicles.size());
 
+            if (vehicles.isEmpty()) {
+                logger.warn("Nenhum veículo encontrado para gerar relatório");
+                throw new IllegalStateException("Não há veículos cadastrados no sistema. Por favor, cadastre veículos antes de gerar o relatório.");
+            }
+
             List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), VEHICLE_FIELD_LABELS);
             logger.info("Campos selecionados: {}", selectedFields);
 
@@ -126,6 +131,9 @@ public class ReportService {
                 logger.info("Gerando relatório em formato Excel");
                 return generateVehicleExcel(vehicles, selectedFields);
             }
+        } catch (IllegalStateException e) {
+            logger.error("Validação falhou: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             logger.error("Erro ao gerar relatório de veículos: {}", e.getMessage(), e);
             throw new RuntimeException("Erro ao gerar relatório de veículos", e);
@@ -138,6 +146,11 @@ public class ReportService {
             List<Partner> partners = partnerRepository.findAll();
             logger.info("Total de associados encontrados: {}", partners.size());
 
+            if (partners.isEmpty()) {
+                logger.warn("Nenhum associado encontrado para gerar relatório");
+                throw new IllegalStateException("Não há associados cadastrados no sistema. Por favor, cadastre associados antes de gerar o relatório.");
+            }
+
             List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), PARTNER_FIELD_LABELS);
             logger.info("Campos selecionados: {}", selectedFields);
 
@@ -148,6 +161,9 @@ public class ReportService {
                 logger.info("Gerando relatório em formato Excel");
                 return generatePartnerExcel(partners, selectedFields);
             }
+        } catch (IllegalStateException e) {
+            logger.error("Validação falhou: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
             logger.error("Erro ao gerar relatório de associados: {}", e.getMessage(), e);
             throw new RuntimeException("Erro ao gerar relatório de associados", e);

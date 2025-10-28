@@ -66,9 +66,18 @@ public class ReportController {
             }
 
             return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            logger.warn("Validação falhou ao gerar relatório de veículos: {}", e.getMessage());
+            String errorMessage = e.getMessage();
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(errorMessage.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         } catch (Exception e) {
             logger.error("Erro ao gerar relatório de veículos: {}", e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Erro interno ao gerar relatório. Por favor, tente novamente.";
+            return ResponseEntity.internalServerError()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(errorMessage.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
     }
 
@@ -94,9 +103,18 @@ public class ReportController {
             }
 
             return new ResponseEntity<>(reportData, headers, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            logger.warn("Validação falhou ao gerar relatório de associados: {}", e.getMessage());
+            String errorMessage = e.getMessage();
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(errorMessage.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         } catch (Exception e) {
             logger.error("Erro ao gerar relatório de associados: {}", e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = "Erro interno ao gerar relatório. Por favor, tente novamente.";
+            return ResponseEntity.internalServerError()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(errorMessage.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
     }
 }

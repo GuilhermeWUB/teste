@@ -307,7 +307,10 @@
                         .then(response => {
                             console.log('Resposta recebida:', response.status);
                             if (!response.ok) {
-                                throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+                                // Tentar ler a mensagem de erro do backend
+                                return response.text().then(text => {
+                                    throw new Error(text || `Erro HTTP ${response.status}: ${response.statusText}`);
+                                });
                             }
                             return response.blob();
                         })
@@ -329,7 +332,7 @@
                         })
                         .catch(error => {
                             console.error('Erro ao gerar relatório:', error);
-                            errorMsg.textContent = `Erro ao gerar relatório: ${error.message}. Por favor, tente novamente.`;
+                            errorMsg.textContent = error.message;
                             errorMsg.style.display = 'block';
                             loadingMsg.style.display = 'none';
                         });
