@@ -296,9 +296,10 @@
                         console.log('CSRF token adicionado');
                     }
 
-                    console.log('Enviando requisição para /reports/vehicles/generate');
+                    const endpoint = '/reports/vehicles';
+                    console.log(`Enviando requisição para ${endpoint}`);
 
-                    fetch('/reports/vehicles/generate', {
+                    fetch(endpoint, {
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify(config)
