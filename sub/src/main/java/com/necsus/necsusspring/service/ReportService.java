@@ -86,21 +86,23 @@ public class ReportService {
 
     public byte[] generateVehicleReport(ReportConfig config) throws DocumentException, IOException {
         List<Vehicle> vehicles = vehicleRepository.findAll();
+        List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), VEHICLE_FIELD_LABELS);
 
         if ("pdf".equalsIgnoreCase(config.getFormat())) {
-            return generateVehiclePDF(vehicles, config.getSelectedFields());
+            return generateVehiclePDF(vehicles, selectedFields);
         } else {
-            return generateVehicleExcel(vehicles, config.getSelectedFields());
+            return generateVehicleExcel(vehicles, selectedFields);
         }
     }
 
     public byte[] generatePartnerReport(ReportConfig config) throws DocumentException, IOException {
         List<Partner> partners = partnerRepository.findAll();
+        List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), PARTNER_FIELD_LABELS);
 
         if ("pdf".equalsIgnoreCase(config.getFormat())) {
-            return generatePartnerPDF(partners, config.getSelectedFields());
+            return generatePartnerPDF(partners, selectedFields);
         } else {
-            return generatePartnerExcel(partners, config.getSelectedFields());
+            return generatePartnerExcel(partners, selectedFields);
         }
     }
 
@@ -154,7 +156,7 @@ public class ReportService {
 
         // Cabeçalho da tabela
         for (String field : selectedFields) {
-            PdfPCell cell = new PdfPCell(new Phrase(VEHICLE_FIELD_LABELS.get(field), headerFont));
+            PdfPCell cell = new PdfPCell(new Phrase(VEHICLE_FIELD_LABELS.getOrDefault(field, field), headerFont));
             cell.setBackgroundColor(UB_PURPLE);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setPadding(8);
@@ -233,7 +235,7 @@ public class ReportService {
 
         // Cabeçalho da tabela
         for (String field : selectedFields) {
-            PdfPCell cell = new PdfPCell(new Phrase(PARTNER_FIELD_LABELS.get(field), headerFont));
+            PdfPCell cell = new PdfPCell(new Phrase(PARTNER_FIELD_LABELS.getOrDefault(field, field), headerFont));
             cell.setBackgroundColor(UB_PURPLE);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setPadding(8);
@@ -290,7 +292,7 @@ public class ReportService {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < selectedFields.size(); i++) {
             Cell cell = headerRow.createCell(i);
-            cell.setCellValue(VEHICLE_FIELD_LABELS.get(selectedFields.get(i)));
+            cell.setCellValue(VEHICLE_FIELD_LABELS.getOrDefault(selectedFields.get(i), selectedFields.get(i)));
             cell.setCellStyle(headerStyle);
         }
 
@@ -347,7 +349,7 @@ public class ReportService {
         Row headerRow = sheet.createRow(0);
         for (int i = 0; i < selectedFields.size(); i++) {
             Cell cell = headerRow.createCell(i);
-            cell.setCellValue(PARTNER_FIELD_LABELS.get(selectedFields.get(i)));
+            cell.setCellValue(PARTNER_FIELD_LABELS.getOrDefault(selectedFields.get(i), selectedFields.get(i)));
             cell.setCellStyle(headerStyle);
         }
 
@@ -441,13 +443,37 @@ public class ReportService {
 
     private String formatAddress(com.necsus.necsusspring.model.Address address) {
         StringBuilder sb = new StringBuilder();
-        if (address.getEndereco() != null) sb.append(address.getEndereco());
-        if (address.getNumero() != null) sb.append(", ").append(address.getNumero());
-        if (address.getBairro() != null) sb.append(" - ").append(address.getBairro());
-        if (address.getCidade() != null) sb.append(", ").append(address.getCidade());
-        if (address.getEstado() != null) sb.append(" - ").append(address.getEstado());
-        if (address.getCep() != null) sb.append(" CEP: ").append(address.getCep());
+        appendIfNotBlank(sb, address.getEndereco(), "", "");
+        appendIfNotBlank(sb, address.getNumero(), sb.length() > 0 ? ", " : "", "");
+        appendIfNotBlank(sb, address.getBairro(), sb.length() > 0 ? " - " : "", "");
+        appendIfNotBlank(sb, address.getCidade(), sb.length() > 0 ? ", " : "", "");
+        appendIfNotBlank(sb, address.getEstado(), sb.length() > 0 ? " - " : "", "");
+        appendIfNotBlank(sb, address.getCep(), sb.length() > 0 ? " CEP: " : "CEP: ", "");
         return sb.toString();
+    }
+
+    private List<String> resolveSelectedFields(List<String> selectedFields, Map<String, String> fieldLabels) {
+        List<String> resolved = new ArrayList<>();
+
+        if (selectedFields != null) {
+            for (String field : selectedFields) {
+                if (fieldLabels.containsKey(field)) {
+                    resolved.add(field);
+                }
+            }
+        }
+
+        if (resolved.isEmpty()) {
+            resolved.addAll(fieldLabels.keySet());
+        }
+
+        return resolved;
+    }
+
+    private void appendIfNotBlank(StringBuilder sb, String value, String prefix, String suffix) {
+        if (value != null && !value.isBlank()) {
+            sb.append(prefix).append(value).append(suffix);
+        }
     }
 
     public Map<String, String> getVehicleFieldLabels() {
