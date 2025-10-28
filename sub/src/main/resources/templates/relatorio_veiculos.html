@@ -6,6 +6,25 @@
 </head>
 <body>
 <section layout:fragment="content">
+    <div class="mb-4">
+        <ul class="nav nav-pills flex-column flex-sm-row gap-2">
+            <li class="nav-item">
+                <a class="nav-link active d-flex align-items-center justify-content-center gap-2" aria-current="page"
+                   th:href="@{/reports/vehicles}">
+                    <i class="bi bi-car-front-fill"></i>
+                    <span>Relatório de Veículos</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center justify-content-center gap-2"
+                   th:href="@{/reports/partners}">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Relatório de Associados</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
         <div>
             <h1 class="mb-1 d-flex align-items-center gap-2">
@@ -25,6 +44,98 @@
     </div>
 
     <div th:if="${hasVehicles}">
+        <div class="card border-0 shadow-sm mb-4" id="vehicleCustomFields">
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+                    <div>
+                        <h5 class="card-title mb-1 d-flex align-items-center gap-2">
+                            <i class="bi bi-ui-checks-grid text-primary"></i>
+                            Campos customizados
+                        </h5>
+                        <p class="text-muted small mb-0">Selecione os campos extras que deseja incluir no relatório antes de gerar a visualização.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary" data-apply-fields>
+                        <i class="bi bi-clipboard-data me-2"></i>
+                        Gerar relatório
+                    </button>
+                </div>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mt-3" data-field-options>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldStatus" data-field-target="vehicleStatus">
+                            <div>
+                                <span class="fw-semibold d-block">Status do veículo</span>
+                                <small class="text-muted">Exibe a situação atual cadastrada para o veículo.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldChassis" data-field-target="chassis">
+                            <div>
+                                <span class="fw-semibold d-block">Chassi</span>
+                                <small class="text-muted">Mostra o código de identificação do chassi.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldCategory" data-field-target="category">
+                            <div>
+                                <span class="fw-semibold d-block">Categoria</span>
+                                <small class="text-muted">Categoria ou segmento informado no cadastro.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldContractBegin" data-field-target="contractBegin">
+                            <div>
+                                <span class="fw-semibold d-block">Contrato - início</span>
+                                <small class="text-muted">Data de início do contrato do veículo.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldContractEnd" data-field-target="contractEnd">
+                            <div>
+                                <span class="fw-semibold d-block">Contrato - término</span>
+                                <small class="text-muted">Exibe a data prevista para o término.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldFipe" data-field-target="fipeValue">
+                            <div>
+                                <span class="fw-semibold d-block">Valor FIPE</span>
+                                <small class="text-muted">Mostra a referência de valor FIPE informada.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldRenavam" data-field-target="renavam">
+                            <div>
+                                <span class="fw-semibold d-block">Renavam</span>
+                                <small class="text-muted">Mostra o código Renavam vinculado ao veículo.</small>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-check border rounded-3 p-3 shadow-sm w-100 mb-0 d-flex align-items-start gap-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="vehicleFieldNotes" data-field-target="notes">
+                            <div>
+                                <span class="fw-semibold d-block">Observações</span>
+                                <small class="text-muted">Exibe observações complementares cadastradas.</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row g-4 mb-4">
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100">
@@ -121,7 +232,7 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="vehiclesReportTable">
                         <thead class="table-light">
                         <tr>
                             <th>Associado</th>
@@ -132,6 +243,14 @@
                             <th>Ano/Modelo</th>
                             <th>Combustível</th>
                             <th>Mensalidade</th>
+                            <th class="d-none" data-field="vehicleStatus">Status do veículo</th>
+                            <th class="d-none" data-field="chassis">Chassi</th>
+                            <th class="d-none" data-field="category">Categoria</th>
+                            <th class="d-none" data-field="contractBegin">Contrato - início</th>
+                            <th class="d-none" data-field="contractEnd">Contrato - término</th>
+                            <th class="d-none" data-field="fipeValue">Valor FIPE</th>
+                            <th class="d-none" data-field="renavam">Renavam</th>
+                            <th class="d-none" data-field="notes">Observações</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -147,6 +266,18 @@
                                 <span th:if="${vehicle.payment != null and vehicle.payment.monthly != null}" th:text="${'R$ ' + vehicle.payment.monthly}"></span>
                                 <span th:if="${vehicle.payment == null or vehicle.payment.monthly == null}">-</span>
                             </td>
+                            <td class="d-none" data-field="vehicleStatus"
+                                th:text="${vehicle.vehicleStatus != null ? vehicle.vehicleStatus.getDisplayName() : (vehicle.status != null ? T(com.necsus.necsusspring.model.VehicleStatus).fromId(vehicle.status).getDisplayName() : 'Não informado')}"></td>
+                            <td class="d-none" data-field="chassis" th:text="${!#strings.isEmpty(vehicle.chassis) ? vehicle.chassis : 'Não informado'}"></td>
+                            <td class="d-none" data-field="category" th:text="${!#strings.isEmpty(vehicle.category) ? vehicle.category : 'Não informado'}"></td>
+                            <td class="d-none" data-field="contractBegin"
+                                th:text="${vehicle.contract_begin != null ? #dates.format(vehicle.contract_begin, 'dd/MM/yyyy') : '-'}"></td>
+                            <td class="d-none" data-field="contractEnd"
+                                th:text="${vehicle.contract_end != null ? #dates.format(vehicle.contract_end, 'dd/MM/yyyy') : '-'}"></td>
+                            <td class="d-none" data-field="fipeValue"
+                                th:text="${vehicle.fipe_value != null ? 'R$ ' + #numbers.formatDecimal(vehicle.fipe_value, 1, 2, 'COMMA') : '-'}"></td>
+                            <td class="d-none" data-field="renavam" th:text="${!#strings.isEmpty(vehicle.renavam) ? vehicle.renavam : 'Não informado'}"></td>
+                            <td class="d-none" data-field="notes" th:text="${!#strings.isEmpty(vehicle.notes) ? vehicle.notes : 'Sem observações'}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -154,6 +285,67 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('vehicleCustomFields');
+            const table = document.getElementById('vehiclesReportTable');
+            if (!container || !table) {
+                return;
+            }
+
+            const applyButton = container.querySelector('[data-apply-fields]');
+            const checkboxes = container.querySelectorAll('input[type="checkbox"][data-field-target]');
+            if (!applyButton || checkboxes.length === 0) {
+                return;
+            }
+
+            const storageKey = 'subVehicleReportCustomFields';
+
+            function toggleColumns(saveSelection) {
+                const selectedFields = [];
+                checkboxes.forEach((checkbox) => {
+                    const field = checkbox.dataset.fieldTarget;
+                    if (!field) {
+                        return;
+                    }
+
+                    if (checkbox.checked) {
+                        selectedFields.push(field);
+                    }
+
+                    table.querySelectorAll('[data-field="' + field + '"]').forEach((element) => {
+                        element.classList.toggle('d-none', !checkbox.checked);
+                    });
+                });
+
+                if (saveSelection) {
+                    try {
+                        window.localStorage.setItem(storageKey, JSON.stringify(selectedFields));
+                    } catch (error) {
+                        console.warn('Não foi possível salvar os campos customizados do relatório de veículos.', error);
+                    }
+                }
+            }
+
+            try {
+                const stored = window.localStorage.getItem(storageKey);
+                if (stored) {
+                    const selected = JSON.parse(stored);
+                    if (Array.isArray(selected)) {
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = selected.includes(checkbox.dataset.fieldTarget);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.warn('Não foi possível carregar os campos customizados do relatório de veículos.', error);
+            }
+
+            toggleColumns(false);
+
+            applyButton.addEventListener('click', () => toggleColumns(true));
+        });
+    </script>
 </section>
 </body>
 </html>

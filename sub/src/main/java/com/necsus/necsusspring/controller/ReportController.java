@@ -128,6 +128,14 @@ public class ReportController {
                         LinkedHashMap::new
                 ));
 
+        Map<Long, String> partnerAddressSummary = partners.stream()
+                .collect(Collectors.toMap(
+                        Partner::getId,
+                        partner -> formatFullAddress(partner.getAddress()),
+                        (first, second) -> first,
+                        LinkedHashMap::new
+                ));
+
         model.addAttribute("totalPartners", partners.size());
         model.addAttribute("partnersWithVehicles", partnersWithVehicles);
         model.addAttribute("partnersWithoutVehicles", partners.size() - partnersWithVehicles);
@@ -135,6 +143,7 @@ public class ReportController {
         model.addAttribute("partnersByCity", partnersByCity);
         model.addAttribute("averageVehiclesPerPartner", averageFormat.format(averageVehicles));
         model.addAttribute("partnerVehicleCount", partnerVehicleCount);
+        model.addAttribute("partnerAddressSummary", partnerAddressSummary);
 
         return "relatorio_associados";
     }
@@ -160,6 +169,75 @@ public class ReportController {
 
     private String normalizeCity(String city) {
         return normalizeText(city, "Não informado");
+    }
+
+    private String formatFullAddress(Address address) {
+        if (address == null) {
+            return "Não informado";
+        }
+
+        String main = combineAddressAndNumber(address.getAddress(), address.getNumber());
+        String neighborhood = safeValue(address.getNeighborhood());
+        String cityState = combineCityAndState(address.getCity(), address.getStates());
+        String zipcode = safeValue(address.getZipcode());
+
+        StringBuilder builder = new StringBuilder();
+
+        appendPart(builder, main);
+        appendPart(builder, neighborhood);
+        appendPart(builder, cityState);
+
+        if (!isBlank(zipcode)) {
+            if (builder.length() > 0) {
+                builder.append(" • ");
+            }
+            builder.append("CEP ").append(zipcode);
+        }
+
+        return builder.length() > 0 ? builder.toString() : "Não informado";
+    }
+
+    private void appendPart(StringBuilder builder, String value) {
+        if (!isBlank(value)) {
+            if (builder.length() > 0) {
+                builder.append(" - ");
+            }
+            builder.append(value);
+        }
+    }
+
+    private String combineAddressAndNumber(String address, String number) {
+        if (isBlank(address) && isBlank(number)) {
+            return null;
+        }
+        if (isBlank(number)) {
+            return address != null ? address.trim() : null;
+        }
+        if (isBlank(address)) {
+            return number.trim();
+        }
+        return address.trim() + ", " + number.trim();
+    }
+
+    private String combineCityAndState(String city, String state) {
+        if (isBlank(city) && isBlank(state)) {
+            return null;
+        }
+        if (isBlank(state)) {
+            return city != null ? city.trim() : null;
+        }
+        if (isBlank(city)) {
+            return state.trim();
+        }
+        return city.trim() + "/" + state.trim();
+    }
+
+    private String safeValue(String value) {
+        return isBlank(value) ? null : value.trim();
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
 
