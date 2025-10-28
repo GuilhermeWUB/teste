@@ -56,7 +56,7 @@
 
         /* Base Body */
         body {
-            background-color: var(--bg-light);
+            background: linear-gradient(135deg, #f8fafc 0%, #e7e9ef 100%);
             color: var(--text-light);
             transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: 100vh;
@@ -125,33 +125,16 @@
             width: 80%;
         }
 
-        /* Dropdown - melhor controle com JavaScript */
+        /* Dropdown - simples e eficiente */
         .dropdown-menu {
             border: none;
             box-shadow: var(--shadow-lg);
-            margin-top: 0.5rem;
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            margin-top: 0.5rem !important;
+            min-width: 250px;
         }
 
-        .dropdown-menu.show {
+        .dropdown:hover .dropdown-menu {
             display: block;
-            opacity: 1;
-            transform: translateY(0);
-            animation: fadeInDropdown 0.3s ease-in-out;
-        }
-
-        @keyframes fadeInDropdown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .dropdown-menu-dark {
@@ -217,14 +200,14 @@
 
         /* Content Card - Premium */
         .content-card {
-            background-color: var(--card-light);
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
             border-radius: 1rem;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
             padding: 2.5rem;
             margin-top: 2rem;
             margin-bottom: 2rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--border-light);
+            border: 1px solid rgba(124, 58, 237, 0.1);
         }
 
         body.dark-mode .content-card {
@@ -274,6 +257,31 @@
         }
 
         /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--ub-purple) 0%, var(--ub-purple-dark) 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--ub-purple-hover) 0%, var(--ub-purple) 100%);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #545b62 100%);
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.3);
+            transform: translateY(-2px);
+        }
+
         body.dark-mode .btn-primary {
             background-color: var(--ub-purple-light);
             border-color: var(--ub-purple-light);
@@ -417,10 +425,33 @@
         }
 
         /* Cards */
+        .card {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.05) 0%, rgba(124, 58, 237, 0.02) 100%);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+            font-weight: 600;
+        }
+
         body.dark-mode .card {
             background-color: var(--card-dark);
             border-color: var(--border-dark);
             color: var(--text-dark);
+            box-shadow: var(--shadow-dark-md);
+        }
+
+        body.dark-mode .card:hover {
+            box-shadow: var(--shadow-dark-lg);
         }
 
         body.dark-mode .card-header {
@@ -570,37 +601,6 @@
             const isDark = body.classList.toggle('dark-mode');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon();
-        });
-    }
-
-    // Melhorar dropdown de relatórios para funcionar com hover e clique
-    const dropdown = document.querySelector('.dropdown');
-    const dropdownToggle = document.getElementById('reportsDropdown');
-    const dropdownMenu = dropdown?.querySelector('.dropdown-menu');
-
-    if (dropdown && dropdownToggle && dropdownMenu) {
-        // Para desktop: mostrar no hover
-        dropdown.addEventListener('mouseenter', function() {
-            dropdownMenu.classList.add('show');
-            dropdownToggle.setAttribute('aria-expanded', 'true');
-        });
-
-        dropdown.addEventListener('mouseleave', function() {
-            dropdownMenu.classList.remove('show');
-            dropdownToggle.setAttribute('aria-expanded', 'false');
-        });
-
-        // Para mobile: toggle no clique
-        dropdownToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const isShown = dropdownMenu.classList.contains('show');
-            if (isShown) {
-                dropdownMenu.classList.remove('show');
-                dropdownToggle.setAttribute('aria-expanded', 'false');
-            } else {
-                dropdownMenu.classList.add('show');
-                dropdownToggle.setAttribute('aria-expanded', 'true');
-            }
         });
     }
 </script>
