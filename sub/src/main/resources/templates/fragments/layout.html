@@ -380,15 +380,6 @@
                 <li class="nav-item" th:if="${isAdmin}">
                     <a class="nav-link" th:href="@{/admin/users}">Usuários</a>
                 </li>
-                <li class="nav-item dropdown" th:if="${isAdmin}">
-                    <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Relatórios
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="reportsDropdown">
-                        <li><a class="dropdown-item" th:href="@{/reports/vehicles}"><i class="bi bi-car-front me-2"></i>Relatório de Veículos</a></li>
-                        <li><a class="dropdown-item" th:href="@{/reports/partners}"><i class="bi bi-people me-2"></i>Relatório de Associados</a></li>
-                    </ul>
-                </li>
                 <li class="nav-item" th:if="${!isAdmin}">
                     <a class="nav-link" th:href="@{/me/vehicles}">Meus Veículos</a>
                 </li>
