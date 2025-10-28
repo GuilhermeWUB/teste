@@ -44,7 +44,7 @@ public class ReportController {
         return "relatorio_associados";
     }
 
-    @PostMapping("/vehicles/generate")
+    @PostMapping({"/vehicles", "/vehicles/generate"})
     public ResponseEntity<byte[]> generateVehicleReport(@RequestBody ReportConfig config) {
         try {
             logger.info("Gerando relatório de veículos - Formato: {}, Campos: {}",
@@ -72,7 +72,7 @@ public class ReportController {
         }
     }
 
-    @PostMapping("/partners/generate")
+    @PostMapping({"/partners", "/partners/generate"})
     public ResponseEntity<byte[]> generatePartnerReport(@RequestBody ReportConfig config) {
         try {
             logger.info("Gerando relatório de associados - Formato: {}, Campos: {}",
