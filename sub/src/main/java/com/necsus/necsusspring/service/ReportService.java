@@ -1,14 +1,35 @@
 package com.necsus.necsusspring.service;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.necsus.necsusspring.dto.ReportConfig;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +37,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReportService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     @Autowired
     private VehicleRepository vehicleRepository;
@@ -84,25 +110,47 @@ public class ReportService {
         PARTNER_FIELD_LABELS.put("vehicleCount", "Quantidade de Veículos");
     }
 
-    public byte[] generateVehicleReport(ReportConfig config) throws DocumentException, IOException {
-        List<Vehicle> vehicles = vehicleRepository.findAll();
-        List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), VEHICLE_FIELD_LABELS);
+    public byte[] generateVehicleReport(ReportConfig config) {
+        try {
+            logger.info("Iniciando geração de relatório de veículos");
+            List<Vehicle> vehicles = vehicleRepository.findAll();
+            logger.info("Total de veículos encontrados: {}", vehicles.size());
 
-        if ("pdf".equalsIgnoreCase(config.getFormat())) {
-            return generateVehiclePDF(vehicles, selectedFields);
-        } else {
-            return generateVehicleExcel(vehicles, selectedFields);
+            List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), VEHICLE_FIELD_LABELS);
+            logger.info("Campos selecionados: {}", selectedFields);
+
+            if ("pdf".equalsIgnoreCase(config.getFormat())) {
+                logger.info("Gerando relatório em formato PDF");
+                return generateVehiclePDF(vehicles, selectedFields);
+            } else {
+                logger.info("Gerando relatório em formato Excel");
+                return generateVehicleExcel(vehicles, selectedFields);
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao gerar relatório de veículos: {}", e.getMessage(), e);
+            throw new RuntimeException("Erro ao gerar relatório de veículos", e);
         }
     }
 
-    public byte[] generatePartnerReport(ReportConfig config) throws DocumentException, IOException {
-        List<Partner> partners = partnerRepository.findAll();
-        List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), PARTNER_FIELD_LABELS);
+    public byte[] generatePartnerReport(ReportConfig config) {
+        try {
+            logger.info("Iniciando geração de relatório de associados");
+            List<Partner> partners = partnerRepository.findAll();
+            logger.info("Total de associados encontrados: {}", partners.size());
 
-        if ("pdf".equalsIgnoreCase(config.getFormat())) {
-            return generatePartnerPDF(partners, selectedFields);
-        } else {
-            return generatePartnerExcel(partners, selectedFields);
+            List<String> selectedFields = resolveSelectedFields(config.getSelectedFields(), PARTNER_FIELD_LABELS);
+            logger.info("Campos selecionados: {}", selectedFields);
+
+            if ("pdf".equalsIgnoreCase(config.getFormat())) {
+                logger.info("Gerando relatório em formato PDF");
+                return generatePartnerPDF(partners, selectedFields);
+            } else {
+                logger.info("Gerando relatório em formato Excel");
+                return generatePartnerExcel(partners, selectedFields);
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao gerar relatório de associados: {}", e.getMessage(), e);
+            throw new RuntimeException("Erro ao gerar relatório de associados", e);
         }
     }
 
