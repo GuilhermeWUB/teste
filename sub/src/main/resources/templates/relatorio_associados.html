@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Relatório de Associados</title>
+    <style>
+        .field-checkbox {
+            transition: all 0.2s ease;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+        }
+
+        body.dark-mode .field-checkbox {
+            border-color: var(--border-dark);
+        }
+
+        .field-checkbox:hover {
+            background-color: rgba(124, 58, 237, 0.05);
+            border-color: var(--ub-purple-light);
+        }
+
+        body.dark-mode .field-checkbox:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+
+        .field-checkbox input[type="checkbox"]:checked + label {
+            color: var(--ub-purple);
+            font-weight: 500;
+        }
+
+        body.dark-mode .field-checkbox input[type="checkbox"]:checked + label {
+            color: var(--ub-purple-light);
+        }
+
+        .format-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        body.dark-mode .format-option {
+            border-color: var(--border-dark);
+        }
+
+        .format-option:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--ub-purple-light);
+        }
+
+        .format-option input[type="radio"]:checked + .format-content {
+            border-color: var(--ub-purple);
+        }
+
+        .format-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--ub-purple) 0%, var(--ub-purple-dark) 100%);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .select-all-btn {
+            cursor: pointer;
+            color: var(--ub-purple);
+            text-decoration: underline;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .select-all-btn:hover {
+            color: var(--ub-purple-dark);
+        }
+
+        body.dark-mode .select-all-btn {
+            color: var(--ub-purple-light);
+        }
+
+        body.dark-mode .select-all-btn:hover {
+            color: var(--ub-purple);
+        }
+    </style>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="mb-4">
+        <h1 class="mb-2"><i class="bi bi-people me-2"></i>Relatório de Associados</h1>
+        <p class="text-muted">Selecione os campos que deseja incluir no relatório e escolha o formato de exportação.</p>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Campos do Relatório</h5>
+                    <div>
+                        <span class="select-all-btn me-3" onclick="selectAll()">Selecionar todos</span>
+                        <span class="select-all-btn" onclick="deselectAll()">Desmarcar todos</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3" id="fieldsContainer">
+                        <div class="col-md-6 col-lg-4 col-xl-3" th:each="field : ${fieldLabels}">
+                            <div class="field-checkbox">
+                                <div class="form-check">
+                                    <input class="form-check-input field-check" type="checkbox"
+                                           th:id="${'field_' + field.key}"
+                                           th:value="${field.key}"
+                                           th:checked="${field.key == 'id' || field.key == 'name' || field.key == 'cpf' || field.key == 'email' || field.key == 'status'}">
+                                    <label class="form-check-label" th:for="${'field_' + field.key}" th:text="${field.value}">
+                                        Campo
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Formato de Exportação</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="format-option">
+                                <input type="radio" name="format" value="pdf" class="d-none" checked>
+                                <div class="format-content">
+                                    <span class="format-icon">📄</span>
+                                    <h5>PDF</h5>
+                                    <p class="text-muted mb-0">Documento formatado e pronto para impressão</p>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="format-option">
+                                <input type="radio" name="format" value="excel" class="d-none">
+                                <div class="format-content">
+                                    <span class="format-icon">📊</span>
+                                    <h5>Excel</h5>
+                                    <p class="text-muted mb-0">Planilha editável para análise de dados</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3">
+        <button type="button" class="btn btn-generate" onclick="generateReport()">
+            <i class="bi bi-file-earmark-arrow-down me-2"></i>Gerar Relatório
+        </button>
+        <a th:href="@{/partners}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Voltar
+        </a>
+    </div>
+
+    <div id="loadingMessage" class="alert alert-info mt-4" style="display: none;">
+        <div class="d-flex align-items-center">
+            <div class="spinner-border spinner-border-sm me-3" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <span>Gerando relatório, aguarde...</span>
+        </div>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger mt-4" style="display: none;"></div>
+
+</section>
+
+<script layout:fragment="scripts">
+    function selectAll() {
+        document.querySelectorAll('.field-check').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+    function deselectAll() {
+        document.querySelectorAll('.field-check').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    }
+
+    function generateReport() {
+        const selectedFields = [];
+        document.querySelectorAll('.field-check:checked').forEach(checkbox => {
+            selectedFields.push(checkbox.value);
+        });
+
+        if (selectedFields.length === 0) {
+            document.getElementById('errorMessage').textContent = 'Por favor, selecione pelo menos um campo para o relatório.';
+            document.getElementById('errorMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('errorMessage').style.display = 'none';
+            }, 5000);
+            return;
+        }
+
+        const format = document.querySelector('input[name="format"]:checked').value;
+
+        const config = {
+            reportType: 'partner',
+            format: format,
+            selectedFields: selectedFields
+        };
+
+        document.getElementById('loadingMessage').style.display = 'block';
+        document.getElementById('errorMessage').style.display = 'none';
+
+        fetch('/reports/partners/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao gerar relatório');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            a.download = `relatorio_associados_${timestamp}.${format === 'pdf' ? 'pdf' : 'xlsx'}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.getElementById('loadingMessage').style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            document.getElementById('errorMessage').textContent = 'Erro ao gerar relatório. Por favor, tente novamente.';
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('loadingMessage').style.display = 'none';
+        });
+    }
+
+    // Adicionar efeito visual ao selecionar formato
+    document.querySelectorAll('.format-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.format-option').forEach(opt => {
+                opt.style.borderColor = '';
+                opt.style.backgroundColor = '';
+            });
+            this.style.borderColor = 'var(--ub-purple)';
+            this.style.backgroundColor = 'rgba(124, 58, 237, 0.05)';
+        });
+    });
+
+    // Inicializar estilo do formato selecionado
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkedFormat = document.querySelector('input[name="format"]:checked').closest('.format-option');
+        if (checkedFormat) {
+            checkedFormat.style.borderColor = 'var(--ub-purple)';
+            checkedFormat.style.backgroundColor = 'rgba(124, 58, 237, 0.05)';
+        }
+    });
+</script>
+
+</body>
+</html>
