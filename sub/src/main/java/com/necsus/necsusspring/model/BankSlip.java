@@ -3,9 +3,17 @@ package com.necsus.necsusspring.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "bank_slips")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BankSlip {
 
     @Id
@@ -75,148 +83,4 @@ public class BankSlip {
     @ManyToOne
     @JoinColumn(name = "slips_briefing_id", insertable = false, updatable = false)
     private SlipsBriefing slipsBriefing;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
-
-    public Partner getPartner() {
-        return partner;
-    }
-
-    public void setPartner(Partner partner) {
-        this.partner = partner;
-    }
-
-    public Date getVencimento() {
-        return vencimento;
-    }
-
-    public void setVencimento(Date vencimento) {
-        this.vencimento = vencimento;
-    }
-
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getNossoNumero() {
-        return nossoNumero;
-    }
-
-    public void setNossoNumero(String nossoNumero) {
-        this.nossoNumero = nossoNumero;
-    }
-
-    public String getNumeroDocumento() {
-        return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public Date getDataPagamento() {
-        return dataPagamento;
-    }
-
-    public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = dataPagamento;
-    }
-
-    public BigDecimal getValorRecebido() {
-        return valorRecebido;
-    }
-
-    public void setValorRecebido(BigDecimal valorRecebido) {
-        this.valorRecebido = valorRecebido;
-    }
-
-    public Date getDataDocumento() {
-        return dataDocumento;
-    }
-
-    public void setDataDocumento(Date dataDocumento) {
-        this.dataDocumento = dataDocumento;
-    }
-
-    public Date getDataProcessamento() {
-        return dataProcessamento;
-    }
-
-    public void setDataProcessamento(Date dataProcessamento) {
-        this.dataProcessamento = dataProcessamento;
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
-    }
-
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public Long getSlipsBriefingId() {
-        return slipsBriefingId;
-    }
-
-    public void setSlipsBriefingId(Long slipsBriefingId) {
-        this.slipsBriefingId = slipsBriefingId;
-    }
-
-    public Integer getStatusRemessa() {
-        return statusRemessa;
-    }
-
-    public void setStatusRemessa(Integer statusRemessa) {
-        this.statusRemessa = statusRemessa;
-    }
-
-    public Adhesion getAdhesion() {
-        return adhesion;
-    }
-
-    public void setAdhesion(Adhesion adhesion) {
-        this.adhesion = adhesion;
-    }
-
-    public BankShipment getBankShipment() {
-        return bankShipment;
-    }
-
-    public void setBankShipment(BankShipment bankShipment) {
-        this.bankShipment = bankShipment;
-    }
-
-    public SlipsBriefing getSlipsBriefing() {
-        return slipsBriefing;
-    }
-
-    public void setSlipsBriefing(SlipsBriefing slipsBriefing) {
-        this.slipsBriefing = slipsBriefing;
-    }
 }

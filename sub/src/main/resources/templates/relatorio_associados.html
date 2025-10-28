@@ -233,11 +233,21 @@
         document.getElementById('loadingMessage').style.display = 'block';
         document.getElementById('errorMessage').style.display = 'none';
 
+        // Obter CSRF token
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
         fetch('/reports/partners/generate', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify(config)
         })
         .then(response => {

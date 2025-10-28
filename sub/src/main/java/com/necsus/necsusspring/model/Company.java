@@ -2,9 +2,17 @@ package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "companies")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Company {
 
     @Id
@@ -19,36 +27,4 @@ public class Company {
 
     @OneToMany(mappedBy = "company")
     private List<BankAccount> bankAccounts;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    public List<BankAccount> getBankAccounts() {
-        return bankAccounts;
-    }
-
-    public void setBankAccounts(List<BankAccount> bankAccounts) {
-        this.bankAccounts = bankAccounts;
-    }
 }

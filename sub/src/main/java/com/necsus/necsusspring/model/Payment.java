@@ -5,12 +5,20 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 @Table(name = "info_payment")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
 
     @Id
@@ -39,52 +47,4 @@ public class Payment {
     @Column(name = "date_create")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
-    public Partner getPartner() {
-        return partner;
-    }
-
-    public void setPartner(Partner partner) {
-        this.partner = partner;
-    }
-
-    public BigDecimal getMonthly() {
-        return monthly;
-    }
-
-    public void setMonthly(BigDecimal monthly) {
-        this.monthly = monthly;
-    }
-
-    public Integer getVencimento() {
-        return vencimento;
-    }
-
-    public void setVencimento(Integer vencimento) {
-        this.vencimento = vencimento;
-    }
-
-    public Date getDateCreate() {
-        return dateCreate;
-    }
-
-    public void setDateCreate(Date dateCreate) {
-        this.dateCreate = dateCreate;
-    }
 }
