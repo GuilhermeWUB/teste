@@ -350,6 +350,80 @@
         body.dark-mode small {
             color: var(--text-muted-dark);
         }
+
+        /* Report overlay */
+        .report-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: rgba(13, 17, 23, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1080;
+        }
+
+        .report-overlay.is-visible {
+            display: flex;
+        }
+
+        .report-overlay-dialog {
+            background-color: var(--card-light);
+            border-radius: 0.75rem;
+            max-width: 720px;
+            width: 100%;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .report-overlay-dialog .btn-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .report-overlay-body {
+            margin-top: 0.5rem;
+        }
+
+        body.dark-mode .report-overlay-dialog {
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+        }
+
+        /* Report results */
+        .report-results-card {
+            background-color: var(--card-light);
+            border-radius: 0.75rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        body.dark-mode .report-results-card {
+            background-color: var(--card-dark);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.45);
+        }
+
+        .report-section + .report-section {
+            margin-top: 2rem;
+        }
+
+        .report-results-table table {
+            min-width: 100%;
+        }
+
+        .report-results-table tbody tr:not(:last-child) td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .report-results-table tbody tr:not(:last-child) td {
+            border-bottom: 1px solid var(--border-dark);
+        }
     </style>
 </head>
 <body>
@@ -455,6 +529,581 @@
             updateThemeIcon();
         });
     }
+</script>
+<script>
+    (function () {
+        const FETCH_HEADERS = {'X-Requested-With': 'XMLHttpRequest'};
+        const DATE_TIME_FORMATTER = new Intl.DateTimeFormat('pt-BR', {dateStyle: 'short', timeStyle: 'short'});
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function toDisplay(value, fallback = '—') {
+            if (value === null || value === undefined || value === '') {
+                return escapeHtml(fallback);
+            }
+            return escapeHtml(String(value));
+        }
+
+        function renderVehicleResults(data) {
+            if (!data || data.hasVehicles === false) {
+                const message = data && data.message ? data.message : 'Não há veículos cadastrados para gerar o relatório.';
+                return '<div class="alert alert-warning d-flex align-items-center gap-2"><i class="bi bi-exclamation-triangle-fill fs-4"></i><span>' + toDisplay(message) + '</span></div>';
+            }
+
+            const sections = [];
+
+            if (data.summary) {
+                sections.push(renderVehicleSummary(data.summary));
+            }
+
+            const distributionColumns = [];
+            if (Object.prototype.hasOwnProperty.call(data, 'fuelDistribution')) {
+                distributionColumns.push(renderDistributionColumn('Distribuição por combustível', 'bi bi-fuel-pump-fill', data.fuelDistribution, 'Nenhuma informação disponível.'));
+            }
+            if (Object.prototype.hasOwnProperty.call(data, 'makerDistribution')) {
+                distributionColumns.push(renderDistributionColumn('Montadoras com mais veículos', 'bi bi-building', data.makerDistribution, 'Nenhuma informação disponível.'));
+            }
+            if (distributionColumns.length) {
+                sections.push('<div class="report-section"><div class="row g-4">' + distributionColumns.join('') + '</div></div>');
+            }
+
+            if (Object.prototype.hasOwnProperty.call(data, 'vehicles')) {
+                sections.push(renderVehicleTable(Array.isArray(data.vehicles) ? data.vehicles : []));
+            }
+
+            if (!sections.length) {
+                sections.push('<div class="alert alert-info mb-0">Nenhuma seção foi selecionada para exibição.</div>');
+            }
+
+            return sections.join('');
+        }
+
+        function renderVehicleSummary(summary) {
+            return `
+                <div class="report-section">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Veículos cadastrados</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.totalVehicles ?? 0, "0")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-car-front"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Quantidade total de veículos ativos no sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Associados impactados</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.distinctPartners ?? 0, "0")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-people-fill"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Associados com pelo menos um veículo vinculado.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Mensalidades estimadas</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.totalMonthlyValueFormatted, "R$ 0,00")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-cash-coin"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Somatório das mensalidades configuradas para os veículos.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Média mensal</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.averageMonthlyValue, "R$ 0,00")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-speedometer2"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Valor médio da mensalidade por veículo cadastrado.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDistributionColumn(title, iconClass, items, emptyText) {
+            const hasItems = Array.isArray(items) && items.length;
+            const listItems = hasItems
+                ? items.map((item) => `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>${toDisplay(item.label, 'Não informado')}</span>
+                            <span class="badge bg-primary rounded-pill">${toDisplay(item.value, '0')}</span>
+                        </li>
+                    `).join('')
+                : '';
+
+            return `
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                                <i class="${iconClass} text-primary"></i>
+                                <span>${escapeHtml(title)}</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            ${hasItems ? `<ul class="list-group list-group-flush">${listItems}</ul>` : `<div class="text-muted">${escapeHtml(emptyText)}</div>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderVehicleTable(items) {
+            const hasItems = Array.isArray(items) && items.length;
+            const rows = hasItems
+                ? items.map((item) => `
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">${toDisplay(item.model, 'Não informado')}</div>
+                                <small class="text-muted">${toDisplay(item.maker, '—')}</small>
+                            </td>
+                            <td>${toDisplay(item.plaque, '—')}</td>
+                            <td>${toDisplay(item.partnerName, '—')}</td>
+                            <td><span class="badge bg-light text-dark">${toDisplay(item.status, 'Não informado')}</span></td>
+                            <td>${toDisplay(item.fuelType, 'Não informado')}</td>
+                            <td>${toDisplay(item.monthlyValue, '—')}</td>
+                        </tr>
+                    `).join('')
+                : '';
+
+            return `
+                <div class="report-section report-results-table card border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pb-0">
+                        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-card-checklist text-primary"></i>
+                            <span>Detalhamento dos veículos</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        ${hasItems ? `
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Veículo</th>
+                                            <th>Placa</th>
+                                            <th>Associado</th>
+                                            <th>Status</th>
+                                            <th>Combustível</th>
+                                            <th>Mensalidade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>` : '<div class="p-4 text-muted">Nenhum veículo encontrado para os filtros selecionados.</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPartnerResults(data) {
+            if (!data || data.hasPartners === false) {
+                const message = data && data.message ? data.message : 'Não há associados cadastrados para gerar o relatório.';
+                return '<div class="alert alert-warning d-flex align-items-center gap-2"><i class="bi bi-exclamation-triangle-fill fs-4"></i><span>' + toDisplay(message) + '</span></div>';
+            }
+
+            const sections = [];
+
+            if (data.summary) {
+                sections.push(renderPartnerSummary(data.summary));
+            }
+
+            const insights = [];
+            if (Object.prototype.hasOwnProperty.call(data, 'topCities')) {
+                insights.push(renderTopCitiesColumn(Array.isArray(data.topCities) ? data.topCities : []));
+            }
+            if (Object.prototype.hasOwnProperty.call(data, 'generalIndicators')) {
+                insights.push(renderPartnerIndicatorsColumn(data.generalIndicators || {}));
+            }
+            if (insights.length) {
+                sections.push('<div class="report-section"><div class="row g-4">' + insights.join('') + '</div></div>');
+            }
+
+            if (Object.prototype.hasOwnProperty.call(data, 'partners')) {
+                sections.push(renderPartnerTable(Array.isArray(data.partners) ? data.partners : []));
+            }
+
+            if (!sections.length) {
+                sections.push('<div class="alert alert-info mb-0">Nenhuma seção foi selecionada para exibição.</div>');
+            }
+
+            return sections.join('');
+        }
+
+        function renderPartnerSummary(summary) {
+            return `
+                <div class="report-section">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Associados cadastrados</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.totalPartners ?? 0, "0")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-people"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Todos os associados ativos no sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Com veículos</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.partnersWithVehicles ?? 0, "0")}</h2>
+                                        <span class="display-6 text-success"><i class="bi bi-truck"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Associados que possuem pelo menos um veículo ativo.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Sem veículos</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.partnersWithoutVehicles ?? 0, "0")}</h2>
+                                        <span class="display-6 text-warning"><i class="bi bi-person-dash"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Associados que ainda não possuem veículos cadastrados.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <span class="text-muted text-uppercase fw-semibold small">Média de veículos</span>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.averageVehiclesPerPartner, "0,00")}</h2>
+                                        <span class="display-6 text-primary"><i class="bi bi-speedometer2"></i></span>
+                                    </div>
+                                    <p class="text-muted small mb-0">Quantidade média de veículos por associado.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTopCitiesColumn(items) {
+            const hasItems = Array.isArray(items) && items.length;
+            const limited = hasItems ? items.slice(0, 5) : [];
+            const listItems = limited
+                .map((item) => `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>${toDisplay(item.label, 'Não informado')}</span>
+                            <span class="badge bg-primary rounded-pill">${toDisplay(item.value, '0')}</span>
+                        </li>
+                    `).join('');
+
+            return `
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-geo-alt-fill text-primary"></i>
+                                <span>Cidades com mais associados</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            ${hasItems ? `<ul class="list-group list-group-flush">${listItems}</ul><p class="text-muted small mb-0 mt-3">Exibindo as cinco cidades com maior volume de associados.</p>` : '<div class="text-muted">Nenhuma informação disponível.</div>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPartnerIndicatorsColumn(indicators) {
+            return `
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-transparent border-0 pb-0">
+                            <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                                <i class="bi bi-graph-up text-primary"></i>
+                                <span>Indicadores gerais</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <span class="text-muted text-uppercase small">Total de veículos</span>
+                                        <h4 class="fw-bold mt-2 mb-0">${toDisplay(indicators.totalVehicles ?? 0, "0")}</h4>
+                                        <p class="text-muted small mb-0">Veículos vinculados a todos os associados.</p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="border rounded-3 p-3 h-100">
+                                        <span class="text-muted text-uppercase small">Percentual ativo</span>
+                                        <h4 class="fw-bold mt-2 mb-0">${toDisplay(indicators.activePercentage, '0%')}</h4>
+                                        <p class="text-muted small mb-0">Participação de associados com veículos cadastrados.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPartnerTable(items) {
+            const hasItems = Array.isArray(items) && items.length;
+            const rows = hasItems
+                ? items.map((item) => `
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">${toDisplay(item.name, 'Não informado')}</div>
+                                <small class="text-muted">${toDisplay(item.addressSummary, 'Não informado')}</small>
+                            </td>
+                            <td>${toDisplay(item.cpf, 'Não informado')}</td>
+                            <td>${toDisplay(item.email, 'Não informado')}</td>
+                            <td>${toDisplay(item.city, '—')}</td>
+                            <td>${toDisplay(item.vehicleCount ?? 0, '0')}</td>
+                            <td><span class="badge bg-light text-dark">${toDisplay(item.status, 'Não informado')}</span></td>
+                            <td>${toDisplay(item.registrationDate, '—')}</td>
+                        </tr>
+                    `).join('')
+                : '';
+
+            return `
+                <div class="report-section report-results-table card border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pb-0">
+                        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-list-check text-primary"></i>
+                            <span>Lista de associados</span>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        ${hasItems ? `
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Associado</th>
+                                            <th>CPF</th>
+                                            <th>E-mail</th>
+                                            <th>Cidade</th>
+                                            <th>Veículos</th>
+                                            <th>Status</th>
+                                            <th>Cadastro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>` : '<div class="p-4 text-muted">Nenhum associado encontrado para os filtros selecionados.</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.initializeReportPage = function (type, options) {
+            const settings = Object.assign({autoOpen: false, title: ''}, options || {});
+            const page = document.querySelector('[data-report-page="' + type + '"]');
+            if (!page) {
+                return;
+            }
+
+            const overlay = page.querySelector('[data-report-overlay]');
+            const overlayContent = overlay ? overlay.querySelector('[data-report-overlay-content]') : null;
+            const resultsWrapper = page.querySelector('[data-report-results-wrapper]');
+            const resultsContainer = page.querySelector('[data-report-results]');
+            const resultsTitle = page.querySelector('[data-report-results-title]');
+            const resultsSubtitle = page.querySelector('[data-report-results-subtitle]');
+            const emptyState = page.querySelector('[data-report-empty]');
+            const openButtons = page.querySelectorAll('[data-report-open]');
+            const clearButton = page.querySelector('[data-report-clear]');
+
+            const pageTitle = settings.title || page.dataset.reportTitle || '';
+
+            function onKeyDown(event) {
+                if (event.key === 'Escape') {
+                    closeOverlay();
+                }
+            }
+
+            function showOverlay() {
+                if (!overlay || !overlayContent) {
+                    return;
+                }
+                overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 mb-0">Carregando opções do relatório...</p></div>';
+                overlay.classList.add('is-visible');
+                document.addEventListener('keydown', onKeyDown);
+
+                fetch('/reports/' + type + '/filters', {headers: FETCH_HEADERS})
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Erro ao carregar filtros: ' + response.status);
+                        }
+                        return response.text();
+                    })
+                    .then(function (html) {
+                        overlayContent.innerHTML = html;
+                        bindForm();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        overlayContent.innerHTML = '<div class="alert alert-danger mb-0">Não foi possível carregar os filtros do relatório. Tente novamente.</div>';
+                    });
+            }
+
+            function bindForm() {
+                if (!overlayContent) {
+                    return;
+                }
+                const form = overlayContent.querySelector('[data-report-form]');
+                if (!form) {
+                    return;
+                }
+                const errorBox = overlayContent.querySelector('[data-report-error]');
+
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const selectedSections = form.querySelectorAll('input[name="sections"]:checked');
+                    if (!selectedSections.length) {
+                        if (errorBox) {
+                            errorBox.textContent = 'Selecione pelo menos uma seção para gerar o relatório.';
+                            errorBox.classList.remove('d-none');
+                        }
+                        return;
+                    }
+                    if (errorBox) {
+                        errorBox.classList.add('d-none');
+                    }
+
+                    overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 mb-0">Gerando relatório...</p></div>';
+                    const params = new URLSearchParams(new FormData(form));
+                    fetchReportData(params);
+                });
+            }
+
+            function fetchReportData(params) {
+                const query = params.toString();
+                const url = '/reports/' + type + '/data' + (query ? '?' + query : '');
+                fetch(url, {headers: FETCH_HEADERS})
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw new Error('Erro ao buscar dados do relatório: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        renderResults(data);
+                        closeOverlay();
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        if (overlayContent) {
+                            overlayContent.innerHTML = '<div class="alert alert-danger mb-0">Não foi possível gerar o relatório. Tente novamente.</div>';
+                        }
+                    });
+            }
+
+            function renderResults(data) {
+                if (!resultsContainer || !resultsWrapper) {
+                    return;
+                }
+                const executedAt = DATE_TIME_FORMATTER.format(new Date());
+                const renderer = type === 'vehicles' ? renderVehicleResults : renderPartnerResults;
+                const content = renderer(data);
+                const finalTitle = pageTitle || (type === 'vehicles' ? 'Relatório de Veículos' : 'Relatório de Associados');
+
+                if (resultsTitle) {
+                    resultsTitle.textContent = finalTitle;
+                }
+                if (resultsSubtitle) {
+                    resultsSubtitle.textContent = 'Consulta realizada em ' + executedAt + '.';
+                }
+
+                resultsContainer.innerHTML = content;
+                resultsWrapper.classList.remove('d-none');
+                if (emptyState) {
+                    emptyState.classList.add('d-none');
+                }
+                resultsWrapper.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }
+
+            function closeOverlay() {
+                if (overlay) {
+                    overlay.classList.remove('is-visible');
+                }
+                document.removeEventListener('keydown', onKeyDown);
+            }
+
+            function clearResults() {
+                if (resultsContainer) {
+                    resultsContainer.innerHTML = '';
+                }
+                if (resultsWrapper) {
+                    resultsWrapper.classList.add('d-none');
+                }
+                if (emptyState) {
+                    emptyState.classList.remove('d-none');
+                }
+                if (resultsSubtitle) {
+                    resultsSubtitle.textContent = 'Consulta dinâmica do relatório.';
+                }
+            }
+
+            openButtons.forEach(function (button) {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    showOverlay();
+                });
+            });
+
+            if (clearButton) {
+                clearButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    clearResults();
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function (event) {
+                    const closeTrigger = event.target.closest('[data-report-close]');
+                    if (closeTrigger) {
+                        event.preventDefault();
+                        closeOverlay();
+                        return;
+                    }
+                    if (event.target === overlay) {
+                        closeOverlay();
+                    }
+                });
+            }
+
+            if (settings.autoOpen) {
+                showOverlay();
+            }
+        };
+    })();
 </script>
 </body>
 </html>
