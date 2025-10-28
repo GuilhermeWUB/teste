@@ -62,164 +62,35 @@
 
 <script th:inline="javascript">
 (function() {
-    console.log('=== INICIO DO SCRIPT STANDALONE ===');
+    'use strict';
 
-    // Função standalone que NÃO depende do layout.html
-    function initStandaloneReport() {
-        console.log('✅ initStandaloneReport executando...');
+    let retryCount = 0;
+    const maxRetries = 20;
 
-        const overlay = document.querySelector('[data-report-overlay]');
-        const overlayContent = document.querySelector('[data-report-overlay-content]');
-        const btnNovaConsulta = document.getElementById('btnNovaConsulta');
-        const allOpenButtons = document.querySelectorAll('[data-report-open]');
-
-        console.log('Overlay encontrado?', overlay !== null);
-        console.log('OverlayContent encontrado?', overlayContent !== null);
-        console.log('btnNovaConsulta encontrado?', btnNovaConsulta !== null);
-        console.log('Total de botões [data-report-open]:', allOpenButtons.length);
-
-        if (!overlay || !overlayContent) {
-            console.error('❌ ERRO: Overlay ou overlayContent não encontrado!');
-            return;
-        }
-
-        function abrirModal() {
-            console.log('🚀 ABRINDO MODAL...');
-            overlay.classList.add('is-visible');
-            overlay.style.display = 'flex';
-            console.log('✅ Classe is-visible adicionada e display flex aplicado');
-
-            // Carregar filtros via AJAX
-            fetch('/reports/vehicles/filters', {
-                headers: {'X-Requested-With': 'XMLHttpRequest'}
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) throw new Error('Erro ' + response.status);
-                return response.text();
-            })
-            .then(html => {
-                console.log('✅ HTML carregado, tamanho:', html.length);
-                overlayContent.innerHTML = html;
-                bindFormEvents();
-            })
-            .catch(error => {
-                console.error('❌ Erro ao carregar filtros:', error);
-                overlayContent.innerHTML = '<div class="alert alert-danger m-4">Erro ao carregar filtros: ' + error.message + '</div>';
-            });
-        }
-
-        function fecharModal() {
-            console.log('🔒 Fechando modal...');
-            overlay.classList.remove('is-visible');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 300);
-        }
-
-        function bindFormEvents() {
-            const form = overlayContent.querySelector('[data-report-form]');
-            const closeButtons = overlay.querySelectorAll('[data-report-close]');
-
-            console.log('Form encontrado?', form !== null);
-            console.log('Botões fechar encontrados:', closeButtons.length);
-
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    console.log('📝 Form submetido!');
-
-                    const formData = new FormData(form);
-                    const params = new URLSearchParams(formData);
-
-                    overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div><p class="fw-bold">Gerando relatório...</p></div>';
-
-                    fetch('/reports/vehicles/data?' + params.toString(), {
-                        headers: {'X-Requested-With': 'XMLHttpRequest'}
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('✅ Dados recebidos:', data);
-                        mostrarResultados(data);
-                        fecharModal();
-                    })
-                    .catch(error => {
-                        console.error('❌ Erro:', error);
-                        overlayContent.innerHTML = '<div class="alert alert-danger m-4">Erro ao gerar relatório: ' + error.message + '</div>';
-                    });
-                });
-            }
-
-            closeButtons.forEach(btn => {
-                btn.addEventListener('click', fecharModal);
-            });
-
-            overlay.addEventListener('click', function(e) {
-                if (e.target === overlay) {
-                    fecharModal();
-                }
-            });
-        }
-
-        function mostrarResultados(data) {
-            const resultsWrapper = document.querySelector('[data-report-results-wrapper]');
-            const resultsContainer = document.querySelector('[data-report-results]');
-            const emptyState = document.querySelector('[data-report-empty]');
-
-            if (!resultsWrapper || !resultsContainer) return;
-
-            let html = '<div class="alert alert-success">Relatório gerado com sucesso!</div>';
-            html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-
-            resultsContainer.innerHTML = html;
-            resultsWrapper.classList.remove('d-none');
-            if (emptyState) emptyState.classList.add('d-none');
-        }
-
-        // ADICIONAR EVENTOS NOS BOTÕES
-        console.log('📌 Adicionando eventos...');
-
-        if (btnNovaConsulta) {
-            btnNovaConsulta.addEventListener('click', function(e) {
-                console.log('🔵 CLIQUE DETECTADO no btnNovaConsulta!');
-                e.preventDefault();
-                abrirModal();
-            });
-            console.log('✅ Evento adicionado ao btnNovaConsulta');
-        }
-
-        allOpenButtons.forEach((btn, index) => {
-            btn.addEventListener('click', function(e) {
-                console.log('🔵 CLIQUE no botão index', index);
-                e.preventDefault();
-                abrirModal();
-            });
-        });
-
-        console.log('✅ TODOS OS EVENTOS FORAM ADICIONADOS!');
-
-        // Fechar com ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && overlay.classList.contains('is-visible')) {
-                fecharModal();
-            }
-        });
-    }
-
-    // Executar quando DOM estiver pronto
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initStandaloneReport);
-    } else {
-        initStandaloneReport();
-    }
-
-    // TAMBÉM tentar com window.initializeReportPage se existir
-    document.addEventListener('DOMContentLoaded', function() {
+    function initializeReport() {
         if (typeof window.initializeReportPage === 'function') {
-            console.log('🟢 window.initializeReportPage existe, chamando também...');
-            window.initializeReportPage('vehicles', {autoOpen: false, title: 'Relatório de Veículos'});
+            console.log('✅ Inicializando relatório de veículos...');
+            window.initializeReportPage('vehicles', {
+                autoOpen: false,
+                title: 'Relatório de Veículos'
+            });
+            console.log('✅ Relatório de veículos inicializado com sucesso!');
+        } else {
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log('⏳ Aguardando layout.html carregar... (tentativa ' + retryCount + '/' + maxRetries + ')');
+                setTimeout(initializeReport, 50);
+            } else {
+                console.error('❌ ERRO: window.initializeReportPage não foi carregado após ' + maxRetries + ' tentativas');
+            }
         }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeReport);
+    } else {
+        initializeReport();
+    }
 })();
 </script>
 </body>

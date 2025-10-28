@@ -61,11 +61,37 @@
 </section>
 
 <script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.initializeReportPage) {
-            window.initializeReportPage('partners', {autoOpen: true, title: 'Relatório de Associados'});
+(function() {
+    'use strict';
+
+    let retryCount = 0;
+    const maxRetries = 20;
+
+    function initializeReport() {
+        if (typeof window.initializeReportPage === 'function') {
+            console.log('✅ Inicializando relatório de associados...');
+            window.initializeReportPage('partners', {
+                autoOpen: false,
+                title: 'Relatório de Associados'
+            });
+            console.log('✅ Relatório de associados inicializado com sucesso!');
+        } else {
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log('⏳ Aguardando layout.html carregar... (tentativa ' + retryCount + '/' + maxRetries + ')');
+                setTimeout(initializeReport, 50);
+            } else {
+                console.error('❌ ERRO: window.initializeReportPage não foi carregado após ' + maxRetries + ' tentativas');
+            }
         }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeReport);
+    } else {
+        initializeReport();
+    }
+})();
 </script>
 </body>
 </html>
