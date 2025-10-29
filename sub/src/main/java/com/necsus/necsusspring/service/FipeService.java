@@ -16,25 +16,27 @@ public class FipeService {
     }
 
     /**
-     * Busca informações do veículo na API da Fipe
-     * @param codigoFipe Código Fipe do veículo (ex: 005340-6)
-     * @param ano Ano do modelo (ex: 2014-3)
-     * @param referencia Referência da tabela (ex: 278)
-     * @param codigoCarro Código do carro na API (ex: 004278-1)
+     * Busca informações do veículo na API da Fipe usando o código FIPE
+     * @param codigoFipe Código FIPE do veículo (formato: 001004-9)
+     * @param tabelaReferencia Código da tabela FIPE de referência (opcional, usa a mais atual se não especificado)
      * @return Dados do veículo
      */
-    public FipeResponseDTO buscarVeiculoPorCodigo(String codigoFipe, String ano, String referencia, String codigoCarro) {
+    public FipeResponseDTO buscarVeiculoPorCodigoFipe(String codigoFipe, Integer tabelaReferencia) {
         try {
-            // Monta a URL completa
-            String url = String.format("%s/cars/%s/years/%s?reference=%s",
-                FIPE_API_BASE_URL, codigoCarro, ano, referencia);
+            // Monta a URL completa conforme documentação
+            String url = String.format("%s/cars/%s", FIPE_API_BASE_URL, codigoFipe);
+
+            // Adiciona tabela_referencia se fornecido
+            if (tabelaReferencia != null) {
+                url += "?tabela_referencia=" + tabelaReferencia;
+            }
+
+            System.out.println("Buscando dados da Fipe - URL: " + url);
 
             // Configura os headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("accept", "application/json");
-            // Nota: X-Subscription-Token pode ser necessário dependendo do plano da API
-            // headers.set("X-Subscription-Token", "YOUR_TOKEN_HERE");
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
@@ -46,39 +48,19 @@ public class FipeService {
                 FipeResponseDTO.class
             );
 
+            System.out.println("Resposta da API Fipe recebida com sucesso!");
             return response.getBody();
         } catch (Exception e) {
+            System.err.println("Erro ao buscar dados da Fipe: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Erro ao buscar dados da Fipe: " + e.getMessage());
         }
     }
 
     /**
-     * Versão simplificada que tenta buscar apenas com código e ano
-     * Útil se o código do carro for igual ao código Fipe
+     * Versão simplificada que busca usando a tabela mais atual
      */
-    public FipeResponseDTO buscarVeiculoSimplificado(String codigoFipe, String ano) {
-        try {
-            // Tenta usar o código Fipe como código do carro
-            // Nota: isso pode não funcionar em todos os casos, dependendo da API
-            String url = String.format("%s/cars/%s/years/%s",
-                FIPE_API_BASE_URL, codigoFipe, ano);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("accept", "application/json");
-
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<FipeResponseDTO> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                FipeResponseDTO.class
-            );
-
-            return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar dados da Fipe: " + e.getMessage());
-        }
+    public FipeResponseDTO buscarVeiculoPorCodigoFipe(String codigoFipe) {
+        return buscarVeiculoPorCodigoFipe(codigoFipe, null);
     }
 }
