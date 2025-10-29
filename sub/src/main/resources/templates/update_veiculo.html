@@ -132,8 +132,11 @@
 </section>
 
 <script th:inline="javascript">
+    // Alert imediato para confirmar que JavaScript está carregando
+    alert('JavaScript carregado! Sistema Fipe iniciando...');
+
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Página carregada - Sistema de busca Fipe iniciado');
+        alert('DOMContentLoaded executado!');
 
         const codigoFipeInput = document.getElementById('codigo_fipe');
         const fipeValueInput = document.getElementById('fipe_value');
@@ -142,29 +145,56 @@
         const yearModInput = document.getElementById('year_mod');
         const tipoCombustivelInput = document.getElementById('tipo_combustivel');
 
+        // Verifica se os elementos foram encontrados
+        if (!codigoFipeInput) {
+            alert('ERRO: Campo codigo_fipe não encontrado!');
+            return;
+        }
+        alert('Todos os campos encontrados! Event listeners serão adicionados.');
+
         let timeoutId = null;
+
+        // Previne Enter de submeter o formulário no campo Código Fipe
+        codigoFipeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                alert('Enter pressionado - Iniciando busca Fipe...');
+                buscarDadosFipe();
+            }
+        });
 
         // Busca automática enquanto digita (com delay de 1 segundo)
         codigoFipeInput.addEventListener('input', function() {
-            console.log('Input detectado no campo Código Fipe');
+            alert('Input detectado! Código: ' + codigoFipeInput.value);
             clearTimeout(timeoutId);
             timeoutId = setTimeout(buscarDadosFipe, 1000);
         });
 
         // Também busca quando sair do campo (TAB)
         codigoFipeInput.addEventListener('blur', function() {
-            console.log('Campo Código Fipe perdeu o foco (blur)');
+            alert('Blur detectado (TAB ou clique fora)');
             clearTimeout(timeoutId);
             buscarDadosFipe();
         });
 
+        // Adiciona botão de teste visível
+        const testeBtn = document.createElement('button');
+        testeBtn.type = 'button';
+        testeBtn.className = 'btn btn-info btn-sm mt-1';
+        testeBtn.textContent = '🔍 Testar Busca Fipe';
+        testeBtn.onclick = function() {
+            alert('Botão de teste clicado!');
+            buscarDadosFipe();
+        };
+        codigoFipeInput.parentElement.appendChild(testeBtn);
+
         function buscarDadosFipe() {
             const codigoFipe = codigoFipeInput.value.trim();
 
-            console.log('Função buscarDadosFipe chamada. Código Fipe:', codigoFipe);
+            alert('buscarDadosFipe chamada! Código: ' + codigoFipe);
 
             if (!codigoFipe) {
-                console.log('Código Fipe vazio, busca cancelada');
+                alert('Código Fipe vazio - busca cancelada');
                 return;
             }
 
@@ -172,65 +202,58 @@
             const valorOriginal = fipeValueInput.value;
             fipeValueInput.value = 'Buscando...';
 
-            console.log('Iniciando requisição para /vehicles/fipe');
+            alert('Iniciando fetch para: /vehicles/fipe?codigoFipe=' + codigoFipe);
 
             // Faz a requisição para o endpoint
             fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
                 .then(response => {
-                    console.log('Resposta recebida. Status:', response.status);
+                    alert('Resposta recebida! Status: ' + response.status);
                     if (!response.ok) {
                         throw new Error('Dados não encontrados - Status: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('✓ Dados retornados da API:', data);
+                    alert('✓ Dados recebidos da API! Brand: ' + data.brand);
 
                     // Mapeamento exato conforme solicitado:
                     // brand → Montadora
                     if (data.brand) {
                         makerInput.value = data.brand;
-                        console.log('Montadora preenchida:', data.brand);
                     }
 
                     // fuel → Tipo de combustível
                     if (data.fuel) {
                         tipoCombustivelInput.value = data.fuel;
-                        console.log('Tipo de combustível preenchido:', data.fuel);
                     }
 
                     // model → Modelo
                     if (data.model) {
                         modelInput.value = data.model;
-                        console.log('Modelo preenchido:', data.model);
                     }
 
                     // modelYear → Ano/Modelo
                     if (data.modelYear) {
                         yearModInput.value = data.modelYear;
-                        console.log('Ano/Modelo preenchido:', data.modelYear);
                     }
 
                     // price → Valor Tabela Fipe
                     if (data.price) {
                         fipeValueInput.value = data.price;
-                        console.log('Valor Tabela Fipe preenchido:', data.price);
                     }
 
                     // Mostra mensagem de sucesso
                     mostrarMensagem('Dados da Fipe carregados com sucesso!', 'success');
-                    console.log('✓ Todos os campos preenchidos com sucesso');
+                    alert('✓ Campos preenchidos com sucesso!');
                 })
                 .catch(error => {
-                    console.error('✗ Erro ao buscar dados da Fipe:', error);
+                    alert('✗ ERRO: ' + error.message);
                     fipeValueInput.value = valorOriginal;
                     mostrarMensagem('Não foi possível buscar os dados da Fipe. Código: ' + codigoFipe, 'warning');
                 });
         }
 
         function mostrarMensagem(mensagem, tipo) {
-            console.log('Mostrando mensagem:', mensagem, '- Tipo:', tipo);
-
             // Remove mensagens anteriores
             const alertasAntigos = document.querySelectorAll('.alert-fipe');
             alertasAntigos.forEach(alerta => alerta.remove());
@@ -253,6 +276,8 @@
                 alerta.remove();
             }, 5000);
         }
+
+        alert('Setup completo! Sistema Fipe pronto.');
     });
 </script>
 
