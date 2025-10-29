@@ -64,12 +64,32 @@ public class VehicleController {
 
     @GetMapping("/new")
     public String showCreateForm(@RequestParam(value = "partnerId", required = false) Long partnerId,
+                                 @RequestParam(value = "codigoFipe", required = false) String codigoFipe,
                                  Model model) {
         Vehicle vehicle = new Vehicle();
         vehicle.setPayment(new Payment());
         if (partnerId != null) {
             vehicle.setPartnerId(partnerId);
         }
+
+        // Se código FIPE foi fornecido, buscar dados automaticamente
+        if (codigoFipe != null && !codigoFipe.trim().isEmpty()) {
+            try {
+                FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
+                vehicle.setCodigo_fipe(fipeData.getCodeFipe());
+                vehicle.setFipe_value(fipeData.getPrice());
+                vehicle.setMaker(fipeData.getBrand());
+                vehicle.setModel(fipeData.getModel());
+                vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
+                vehicle.setTipo_combustivel(fipeData.getFuel());
+                vehicle.setType_vehicle(fipeData.getVehicleType());
+                model.addAttribute("fipeSuccess", "Dados da FIPE carregados com sucesso!");
+            } catch (Exception e) {
+                model.addAttribute("fipeError", "Erro ao buscar dados da FIPE: " + e.getMessage());
+                vehicle.setCodigo_fipe(codigoFipe);
+            }
+        }
+
         model.addAttribute("vehicle", vehicle);
         model.addAttribute("partnerId", partnerId);
         return "cadastro_veiculo";
@@ -110,12 +130,32 @@ public class VehicleController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id,
                                @RequestParam(value = "partnerId", required = false) Long partnerId,
+                               @RequestParam(value = "codigoFipe", required = false) String codigoFipe,
                                Model model) {
         Vehicle vehicle = vehicleService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
         if (vehicle.getPayment() == null) {
             vehicle.setPayment(new Payment());
         }
+
+        // Se código FIPE foi fornecido, buscar dados automaticamente
+        if (codigoFipe != null && !codigoFipe.trim().isEmpty()) {
+            try {
+                FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
+                vehicle.setCodigo_fipe(fipeData.getCodeFipe());
+                vehicle.setFipe_value(fipeData.getPrice());
+                vehicle.setMaker(fipeData.getBrand());
+                vehicle.setModel(fipeData.getModel());
+                vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
+                vehicle.setTipo_combustivel(fipeData.getFuel());
+                vehicle.setType_vehicle(fipeData.getVehicleType());
+                model.addAttribute("fipeSuccess", "Dados da FIPE carregados com sucesso!");
+            } catch (Exception e) {
+                model.addAttribute("fipeError", "Erro ao buscar dados da FIPE: " + e.getMessage());
+                vehicle.setCodigo_fipe(codigoFipe);
+            }
+        }
+
         model.addAttribute("vehicle", vehicle);
         model.addAttribute("partnerId", partnerId != null ? partnerId : vehicle.getPartnerId());
         return "update_veiculo";

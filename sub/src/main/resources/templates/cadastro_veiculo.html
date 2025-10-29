@@ -3,17 +3,70 @@
       layout:decorate="~{fragments/layout}">
 <head>
     <title>SUB - Cadastrar Veículo</title>
+    <style>
+        .fipe-lookup-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        .fipe-lookup-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+        .fipe-lookup-form .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 <body>
 
 <section layout:fragment="content">
     <h1 class="mb-4">Cadastrar Veículo</h1>
+
+    <!-- Mensagens de sucesso/erro da busca FIPE -->
+    <div th:if="${fipeSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${fipeSuccess}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${fipeError}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${fipeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Formulário de Busca FIPE -->
+    <div class="fipe-lookup-box">
+        <h5 class="mb-3">
+            <i class="bi bi-search"></i> Buscar Dados da Tabela FIPE
+        </h5>
+        <p class="text-muted small mb-3">Digite o código FIPE e clique em "Buscar Dados" para preencher automaticamente as informações do veículo.</p>
+
+        <form th:action="@{/vehicles/new}" method="get" class="fipe-lookup-form">
+            <input type="hidden" name="partnerId" th:value="${partnerId}" th:if="${partnerId}"/>
+            <div class="form-group flex-grow-1">
+                <label for="codigoFipeLookup" class="form-label">Código FIPE</label>
+                <input type="text" id="codigoFipeLookup" name="codigoFipe" class="form-control"
+                       placeholder="Ex: 001004-9" th:value="${vehicle.codigo_fipe}" required/>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-arrow-repeat"></i> Buscar Dados
+            </button>
+        </form>
+    </div>
+
+    <!-- Formulário Principal -->
     <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
         <!-- Campos da Tabela FIPE -->
+        <h3 class="h5 mt-4">Dados da Tabela FIPE</h3>
         <div class="col-md-4">
             <label for="codigo_fipe" class="form-label">Código Fipe</label>
             <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 001004-9" />
-            <small class="form-text text-muted">Digite o código e pressione TAB para buscar automaticamente</small>
         </div>
         <div class="col-md-4">
             <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
@@ -33,6 +86,7 @@
 
         <hr class="my-3" />
 
+        <h3 class="h5">Dados do Veículo</h3>
         <div class="col-md-6">
             <label for="maker" class="form-label">Montadora</label>
             <input type="text" id="maker" class="form-control" th:field="*{maker}" />
@@ -71,6 +125,8 @@
             </select>
             <div class="text-danger" th:if="${#fields.hasErrors('partnerId')}" th:errors="*{partnerId}"></div>
         </div>
+
+        <h3 class="h5 mt-4">Dados de Pagamento</h3>
         <div class="col-md-6">
             <label for="monthly" class="form-label">Mensalidade</label>
             <input type="number" step="0.01" id="monthly" class="form-control" th:field="*{payment.monthly}" />
@@ -82,7 +138,7 @@
             <div class="text-danger" th:if="${#fields.hasErrors('payment.vencimento')}" th:errors="*{payment.vencimento}"></div>
         </div>
 
-        <h2 class="mt-4 h5">Situação e Documentação</h2>
+        <h3 class="h5 mt-4">Situação e Documentação</h3>
         <div class="col-md-12">
             <label for="vehicleStatus" class="form-label">Situação do Veículo</label>
             <select id="vehicleStatus" class="form-select" th:field="*{vehicleStatus}">
@@ -104,179 +160,16 @@
             <small class="form-text text-muted">Você pode selecionar múltiplos arquivos (imagens ou PDFs)</small>
         </div>
 
-        <div class="col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Salvar</button>
-            <a th:href="${partnerId != null} ? @{/vehicles(partnerId=${partnerId})} : @{/vehicles}" class="btn btn-secondary">Cancelar</a>
+        <div class="col-12 d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Salvar
+            </button>
+            <a th:href="${partnerId != null} ? @{/vehicles(partnerId=${partnerId})} : @{/vehicles}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancelar
+            </a>
         </div>
     </form>
 </section>
-
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        const codigoFipeInput = document.getElementById('codigo_fipe');
-        const fipeValueInput = document.getElementById('fipe_value');
-        const makerInput = document.getElementById('maker');
-        const modelInput = document.getElementById('model');
-        const yearModInput = document.getElementById('year_mod');
-        const tipoCombustivelInput = document.getElementById('tipo_combustivel');
-        const typeVehicleSelect = document.getElementById('type_vehicle');
-
-        if (!codigoFipeInput || !fipeValueInput) {
-            console.error('Campos obrigatórios para consulta da Fipe não encontrados.');
-            return;
-        }
-
-        let timeoutId;
-
-        codigoFipeInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                buscarDadosFipe();
-            }
-        });
-
-        codigoFipeInput.addEventListener('input', () => {
-            clearTimeout(timeoutId);
-            const codigo = codigoFipeInput.value.trim();
-            if (codigo.length >= 7) {
-                timeoutId = setTimeout(buscarDadosFipe, 1500);
-            }
-        });
-
-        codigoFipeInput.addEventListener('blur', () => {
-            clearTimeout(timeoutId);
-            if (codigoFipeInput.value.trim().length >= 7) {
-                buscarDadosFipe();
-            }
-        });
-
-        function buscarDadosFipe() {
-            const codigoFipe = codigoFipeInput.value.trim();
-
-            if (!codigoFipe || codigoFipe.length < 7) {
-                return;
-            }
-
-            const valorAnterior = fipeValueInput.value;
-            definirEstadoCarregamento(true, valorAnterior);
-
-            fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Dados não encontrados');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    aplicarDadosFipe(data);
-                    definirEstadoCarregamento(false);
-                    mostrarMensagem('Dados da Fipe carregados com sucesso!', 'success');
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar dados Fipe:', error);
-                    const anterior = fipeValueInput.dataset.previousValue ?? valorAnterior;
-                    definirEstadoCarregamento(false, anterior);
-                    mostrarMensagem('Não foi possível buscar os dados da Fipe. Verifique o código informado.', 'warning');
-                });
-        }
-
-        function aplicarDadosFipe(data) {
-            if (!data) {
-                return;
-            }
-
-            if (data.brand) makerInput.value = data.brand;
-            if (data.fuel) tipoCombustivelInput.value = data.fuel;
-            if (data.model) modelInput.value = data.model;
-            if (data.modelYear) yearModInput.value = data.modelYear;
-
-            if (data.price) {
-                const normalizado = normalizarValorMonetario(data.price);
-                fipeValueInput.value = normalizado || data.price;
-            }
-
-            if (typeVehicleSelect && data.vehicleType) {
-                const tipo = mapearTipoVeiculo(data.vehicleType);
-                if (tipo) {
-                    typeVehicleSelect.value = tipo;
-                }
-            }
-        }
-
-        function definirEstadoCarregamento(emCarregamento, valorParaRestaurar) {
-            if (emCarregamento) {
-                fipeValueInput.dataset.previousValue = valorParaRestaurar ?? fipeValueInput.value;
-                fipeValueInput.value = 'Buscando...';
-                fipeValueInput.disabled = true;
-                return;
-            }
-
-            fipeValueInput.disabled = false;
-            if (typeof valorParaRestaurar === 'string') {
-                fipeValueInput.value = valorParaRestaurar;
-            }
-            delete fipeValueInput.dataset.previousValue;
-        }
-
-        function normalizarValorMonetario(valor) {
-            if (typeof valor !== 'string') {
-                return '';
-            }
-
-            const somenteNumeros = valor
-                .replace(/[^0-9,.-]/g, '')
-                .replace(/\.(?=\d{3})/g, '')
-                .replace(',', '.');
-
-            const numero = Number.parseFloat(somenteNumeros);
-            if (Number.isNaN(numero)) {
-                return '';
-            }
-
-            return numero.toFixed(2);
-        }
-
-        function mapearTipoVeiculo(codigoTipo) {
-            const mapa = {
-                1: 'Carro',
-                2: 'Moto',
-                3: 'Caminhão',
-                4: 'Ônibus',
-                5: 'Micro-ônibus'
-            };
-
-            const tipo = mapa[codigoTipo];
-            if (!tipo || !typeVehicleSelect) {
-                return '';
-            }
-
-            const existeNoSelect = Array.from(typeVehicleSelect.options)
-                .some(option => option.value === tipo);
-
-            return existeNoSelect ? tipo : '';
-        }
-
-        function mostrarMensagem(mensagem, tipo) {
-            const alertasAntigos = document.querySelectorAll('.alert-fipe');
-            alertasAntigos.forEach(alerta => alerta.remove());
-
-            const alerta = document.createElement('div');
-            alerta.className = `alert alert-${tipo} alert-dismissible fade show alert-fipe`;
-            alerta.setAttribute('role', 'alert');
-            alerta.innerHTML = `
-                ${mensagem}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-
-            const form = document.querySelector('form');
-            form.insertBefore(alerta, form.firstChild);
-
-            setTimeout(() => {
-                alerta.remove();
-            }, 5000);
-        }
-    });
-</script>
 
 </body>
 </html>
