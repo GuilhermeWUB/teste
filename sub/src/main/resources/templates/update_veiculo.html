@@ -11,6 +11,24 @@
     <form th:action="@{/vehicles/update/{id}(id=${vehicle.id})}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
         <input type="hidden" th:field="*{id}" />
         <input type="hidden" th:field="*{payment.id}" />
+
+        <!-- Campos da Tabela FIPE -->
+        <div class="col-md-4">
+            <label for="codigo_fipe" class="form-label">Código Fipe</label>
+            <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 005340-6" />
+            <small class="form-text text-muted">Digite o código para buscar automaticamente</small>
+        </div>
+        <div class="col-md-4">
+            <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
+            <input type="text" id="fipe_value" class="form-control" th:field="*{fipe_value}" readonly />
+        </div>
+        <div class="col-md-4">
+            <label for="type_vehicle" class="form-label">Tipo</label>
+            <input type="text" id="type_vehicle" class="form-control" th:field="*{type_vehicle}" readonly />
+        </div>
+
+        <hr class="my-3" />
+
         <div class="col-md-6">
             <label for="maker" class="form-label">Montadora</label>
             <input type="text" id="maker" class="form-control" th:field="*{maker}" />
@@ -108,6 +126,116 @@
         </div>
     </form>
 </section>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const codigoFipeInput = document.getElementById('codigo_fipe');
+        const fipeValueInput = document.getElementById('fipe_value');
+        const typeVehicleInput = document.getElementById('type_vehicle');
+        const makerInput = document.getElementById('maker');
+        const modelInput = document.getElementById('model');
+        const colorInput = document.getElementById('color');
+        const yearModInput = document.getElementById('year_mod');
+        const tipoCombustivelInput = document.getElementById('tipo_combustivel');
+
+        // Adiciona listener para quando o usuário sair do campo (blur) ou pressionar Enter
+        codigoFipeInput.addEventListener('blur', buscarDadosFipe);
+        codigoFipeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarDadosFipe();
+            }
+        });
+
+        function buscarDadosFipe() {
+            const codigoFipe = codigoFipeInput.value.trim();
+
+            if (!codigoFipe) {
+                return;
+            }
+
+            // Mostra indicador de loading
+            fipeValueInput.value = 'Buscando...';
+            typeVehicleInput.value = 'Buscando...';
+
+            // Faz a requisição para o endpoint
+            fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Dados não encontrados');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Preenche os campos com os dados retornados
+                    fipeValueInput.value = data.price || '';
+
+                    // Mapeia o tipo de veículo
+                    const tipoVeiculo = mapearTipoVeiculo(data.vehicleType);
+                    typeVehicleInput.value = tipoVeiculo;
+
+                    // Preenche outros campos se estiverem vazios
+                    if (!makerInput.value && data.brand) {
+                        makerInput.value = data.brand;
+                    }
+
+                    if (!modelInput.value && data.model) {
+                        modelInput.value = data.model;
+                    }
+
+                    if (!yearModInput.value && data.modelYear) {
+                        yearModInput.value = data.modelYear;
+                    }
+
+                    if (!tipoCombustivelInput.value && data.fuel) {
+                        tipoCombustivelInput.value = data.fuel;
+                    }
+
+                    // Mostra mensagem de sucesso
+                    mostrarMensagem('Dados da Fipe carregados com sucesso!', 'success');
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar dados da Fipe:', error);
+                    fipeValueInput.value = '';
+                    typeVehicleInput.value = '';
+                    mostrarMensagem('Não foi possível buscar os dados da Fipe. Verifique o código informado.', 'warning');
+                });
+        }
+
+        function mapearTipoVeiculo(vehicleType) {
+            const tipos = {
+                1: 'Carro',
+                2: 'Moto',
+                3: 'Caminhão'
+            };
+            return tipos[vehicleType] || 'Não especificado';
+        }
+
+        function mostrarMensagem(mensagem, tipo) {
+            // Remove mensagens anteriores
+            const alertasAntigos = document.querySelectorAll('.alert-fipe');
+            alertasAntigos.forEach(alerta => alerta.remove());
+
+            // Cria nova mensagem
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo} alert-dismissible fade show alert-fipe`;
+            alerta.setAttribute('role', 'alert');
+            alerta.innerHTML = `
+                ${mensagem}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            // Insere a mensagem no topo do formulário
+            const form = document.querySelector('form');
+            form.insertBefore(alerta, form.firstChild);
+
+            // Remove a mensagem após 5 segundos
+            setTimeout(() => {
+                alerta.remove();
+            }, 5000);
+        }
+    });
+</script>
 
 </body>
 </html>

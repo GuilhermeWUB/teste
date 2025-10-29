@@ -1,11 +1,13 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.dto.FipeResponseDTO;
 import com.necsus.necsusspring.model.Payment;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
 import com.necsus.necsusspring.service.FileStorageService;
+import com.necsus.necsusspring.service.FipeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,11 +35,13 @@ public class VehicleController {
     private final VehicleService vehicleService;
     private final PartnerService partnerService;
     private final FileStorageService fileStorageService;
+    private final FipeService fipeService;
 
-    public VehicleController(VehicleService vehicleService, PartnerService partnerService, FileStorageService fileStorageService) {
+    public VehicleController(VehicleService vehicleService, PartnerService partnerService, FileStorageService fileStorageService, FipeService fipeService) {
         this.vehicleService = vehicleService;
         this.partnerService = partnerService;
         this.fileStorageService = fileStorageService;
+        this.fipeService = fipeService;
     }
 
     @ModelAttribute("partners")
@@ -177,5 +183,43 @@ public class VehicleController {
             return "redirect:/vehicles?partnerId=" + partnerId;
         }
         return "redirect:/vehicles";
+    }
+
+    /**
+     * Endpoint REST para buscar dados da Fipe
+     * Aceita diferentes combinações de parâmetros para flexibilidade
+     */
+    @GetMapping("/fipe")
+    @ResponseBody
+    public ResponseEntity<?> buscarDadosFipe(
+            @RequestParam(required = false) String codigoFipe,
+            @RequestParam(required = false) String ano,
+            @RequestParam(required = false) String referencia,
+            @RequestParam(required = false) String codigoCarro) {
+        try {
+            FipeResponseDTO fipeData;
+
+            // Se todos os parâmetros foram fornecidos, usa o método completo
+            if (codigoCarro != null && ano != null && referencia != null) {
+                fipeData = fipeService.buscarVeiculoPorCodigo(codigoFipe, ano, referencia, codigoCarro);
+            }
+            // Se apenas código e ano foram fornecidos, usa o método simplificado
+            else if (codigoFipe != null && ano != null) {
+                fipeData = fipeService.buscarVeiculoSimplificado(codigoFipe, ano);
+            }
+            // Se apenas código Fipe foi fornecido, tenta com ano vazio/padrão
+            else if (codigoFipe != null) {
+                // Tenta buscar sem ano
+                fipeData = fipeService.buscarVeiculoSimplificado(codigoFipe, "");
+            }
+            else {
+                return ResponseEntity.badRequest().body("Parâmetros insuficientes. Forneça pelo menos o código Fipe.");
+            }
+
+            return ResponseEntity.ok(fipeData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao buscar dados da Fipe: " + e.getMessage());
+        }
     }
 }
