@@ -25,6 +25,9 @@
                 <option value="">Selecione o tipo</option>
                 <option value="Carro">Carro</option>
                 <option value="Moto">Moto</option>
+                <option value="Caminhão">Caminhão</option>
+                <option value="Ônibus">Ônibus</option>
+                <option value="Micro-ônibus">Micro-ônibus</option>
             </select>
         </div>
 
@@ -109,31 +112,30 @@
 </section>
 
 <script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
         const codigoFipeInput = document.getElementById('codigo_fipe');
         const fipeValueInput = document.getElementById('fipe_value');
         const makerInput = document.getElementById('maker');
         const modelInput = document.getElementById('model');
         const yearModInput = document.getElementById('year_mod');
         const tipoCombustivelInput = document.getElementById('tipo_combustivel');
+        const typeVehicleSelect = document.getElementById('type_vehicle');
 
-        if (!codigoFipeInput) {
-            console.error('Campo codigo_fipe não encontrado');
+        if (!codigoFipeInput || !fipeValueInput) {
+            console.error('Campos obrigatórios para consulta da Fipe não encontrados.');
             return;
         }
 
-        let timeoutId = null;
+        let timeoutId;
 
-        // Previne Enter de submeter o formulário no campo Código Fipe
-        codigoFipeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
+        codigoFipeInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
                 buscarDadosFipe();
             }
         });
 
-        // Busca automática enquanto digita (com delay de 1.5 segundos)
-        codigoFipeInput.addEventListener('input', function() {
+        codigoFipeInput.addEventListener('input', () => {
             clearTimeout(timeoutId);
             const codigo = codigoFipeInput.value.trim();
             if (codigo.length >= 7) {
@@ -141,8 +143,7 @@
             }
         });
 
-        // Também busca quando sair do campo (TAB)
-        codigoFipeInput.addEventListener('blur', function() {
+        codigoFipeInput.addEventListener('blur', () => {
             clearTimeout(timeoutId);
             if (codigoFipeInput.value.trim().length >= 7) {
                 buscarDadosFipe();
@@ -156,14 +157,9 @@
                 return;
             }
 
-            // Mostra indicador de loading
-            const valorOriginal = fipeValueInput.value;
-            fipeValueInput.value = 'Buscando...';
-            fipeValueInput.disabled = true;
+            const valorAnterior = fipeValueInput.value;
+            definirEstadoCarregamento(true, valorAnterior);
 
-            console.log('Buscando dados Fipe para código:', codigoFipe);
-
-            // Faz a requisição para o endpoint
             fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
                 .then(response => {
                     if (!response.ok) {
@@ -172,32 +168,98 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Dados Fipe recebidos:', data);
-
-                    // Preenche os campos com os dados da API
-                    if (data.brand) makerInput.value = data.brand;
-                    if (data.fuel) tipoCombustivelInput.value = data.fuel;
-                    if (data.model) modelInput.value = data.model;
-                    if (data.modelYear) yearModInput.value = data.modelYear;
-                    if (data.price) fipeValueInput.value = data.price;
-
-                    fipeValueInput.disabled = false;
+                    aplicarDadosFipe(data);
+                    definirEstadoCarregamento(false);
                     mostrarMensagem('Dados da Fipe carregados com sucesso!', 'success');
                 })
                 .catch(error => {
                     console.error('Erro ao buscar dados Fipe:', error);
-                    fipeValueInput.value = valorOriginal;
-                    fipeValueInput.disabled = false;
+                    const anterior = fipeValueInput.dataset.previousValue ?? valorAnterior;
+                    definirEstadoCarregamento(false, anterior);
                     mostrarMensagem('Não foi possível buscar os dados da Fipe. Verifique o código informado.', 'warning');
                 });
         }
 
+        function aplicarDadosFipe(data) {
+            if (!data) {
+                return;
+            }
+
+            if (data.brand) makerInput.value = data.brand;
+            if (data.fuel) tipoCombustivelInput.value = data.fuel;
+            if (data.model) modelInput.value = data.model;
+            if (data.modelYear) yearModInput.value = data.modelYear;
+
+            if (data.price) {
+                const normalizado = normalizarValorMonetario(data.price);
+                fipeValueInput.value = normalizado || data.price;
+            }
+
+            if (typeVehicleSelect && data.vehicleType) {
+                const tipo = mapearTipoVeiculo(data.vehicleType);
+                if (tipo) {
+                    typeVehicleSelect.value = tipo;
+                }
+            }
+        }
+
+        function definirEstadoCarregamento(emCarregamento, valorParaRestaurar) {
+            if (emCarregamento) {
+                fipeValueInput.dataset.previousValue = valorParaRestaurar ?? fipeValueInput.value;
+                fipeValueInput.value = 'Buscando...';
+                fipeValueInput.disabled = true;
+                return;
+            }
+
+            fipeValueInput.disabled = false;
+            if (typeof valorParaRestaurar === 'string') {
+                fipeValueInput.value = valorParaRestaurar;
+            }
+            delete fipeValueInput.dataset.previousValue;
+        }
+
+        function normalizarValorMonetario(valor) {
+            if (typeof valor !== 'string') {
+                return '';
+            }
+
+            const somenteNumeros = valor
+                .replace(/[^0-9,.-]/g, '')
+                .replace(/\.(?=\d{3})/g, '')
+                .replace(',', '.');
+
+            const numero = Number.parseFloat(somenteNumeros);
+            if (Number.isNaN(numero)) {
+                return '';
+            }
+
+            return numero.toFixed(2);
+        }
+
+        function mapearTipoVeiculo(codigoTipo) {
+            const mapa = {
+                1: 'Carro',
+                2: 'Moto',
+                3: 'Caminhão',
+                4: 'Ônibus',
+                5: 'Micro-ônibus'
+            };
+
+            const tipo = mapa[codigoTipo];
+            if (!tipo || !typeVehicleSelect) {
+                return '';
+            }
+
+            const existeNoSelect = Array.from(typeVehicleSelect.options)
+                .some(option => option.value === tipo);
+
+            return existeNoSelect ? tipo : '';
+        }
+
         function mostrarMensagem(mensagem, tipo) {
-            // Remove mensagens anteriores
             const alertasAntigos = document.querySelectorAll('.alert-fipe');
             alertasAntigos.forEach(alerta => alerta.remove());
 
-            // Cria nova mensagem
             const alerta = document.createElement('div');
             alerta.className = `alert alert-${tipo} alert-dismissible fade show alert-fipe`;
             alerta.setAttribute('role', 'alert');
@@ -206,11 +268,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
 
-            // Insere a mensagem no topo do formulário
             const form = document.querySelector('form');
             form.insertBefore(alerta, form.firstChild);
 
-            // Remove a mensagem após 5 segundos
             setTimeout(() => {
                 alerta.remove();
             }, 5000);
