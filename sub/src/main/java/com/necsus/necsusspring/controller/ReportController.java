@@ -51,14 +51,80 @@ public class ReportController {
     }
 
     @GetMapping("/vehicles")
-    public String vehicleReport(Model model) {
+    public String vehicleReport(@RequestParam(value = "sections", required = false) List<String> sections,
+                               @RequestParam(value = "generate", defaultValue = "false") boolean generate,
+                               Model model) {
         model.addAttribute("pageTitle", "SUB - Relatório de Veículos");
+        model.addAttribute("generated", false);
+
+        if (generate) {
+            VehicleReportData reportData = reportDataService.loadVehicleReportData();
+            model.addAttribute("hasVehicles", reportData.hasVehicles());
+
+            if (reportData.hasVehicles()) {
+                Set<String> selectedSections = normalizeSections(sections, VEHICLE_SECTIONS);
+
+                if (selectedSections.contains("summary")) {
+                    model.addAttribute("summary", buildVehicleSummary(reportData));
+                }
+                if (selectedSections.contains("fuelDistribution")) {
+                    model.addAttribute("fuelDistribution", buildDistributionList(reportData.vehiclesByFuel()));
+                }
+                if (selectedSections.contains("makerDistribution")) {
+                    model.addAttribute("makerDistribution", buildDistributionList(reportData.vehiclesByMaker()));
+                }
+                if (selectedSections.contains("vehicleList")) {
+                    model.addAttribute("vehicles", reportData.vehicles().stream()
+                            .map(this::buildVehicleRow)
+                            .collect(Collectors.toList()));
+                }
+
+                model.addAttribute("selectedSections", selectedSections);
+                model.addAttribute("generated", true);
+            } else {
+                model.addAttribute("errorMessage", "Não há veículos cadastrados para gerar o relatório.");
+            }
+        }
+
         return "relatorio_veiculos";
     }
 
     @GetMapping("/partners")
-    public String partnerReport(Model model) {
+    public String partnerReport(@RequestParam(value = "sections", required = false) List<String> sections,
+                               @RequestParam(value = "generate", defaultValue = "false") boolean generate,
+                               Model model) {
         model.addAttribute("pageTitle", "SUB - Relatório de Associados");
+        model.addAttribute("generated", false);
+
+        if (generate) {
+            PartnerReportData reportData = reportDataService.loadPartnerReportData();
+            model.addAttribute("hasPartners", reportData.hasPartners());
+
+            if (reportData.hasPartners()) {
+                Set<String> selectedSections = normalizeSections(sections, PARTNER_SECTIONS);
+
+                if (selectedSections.contains("summary")) {
+                    model.addAttribute("summary", buildPartnerSummary(reportData));
+                }
+                if (selectedSections.contains("topCities")) {
+                    model.addAttribute("topCities", buildDistributionList(reportData.partnersByCity()));
+                }
+                if (selectedSections.contains("generalIndicators")) {
+                    model.addAttribute("generalIndicators", buildPartnerIndicators(reportData));
+                }
+                if (selectedSections.contains("partnerList")) {
+                    model.addAttribute("partners", reportData.partners().stream()
+                            .map(partner -> buildPartnerRow(partner, reportData))
+                            .collect(Collectors.toList()));
+                }
+
+                model.addAttribute("selectedSections", selectedSections);
+                model.addAttribute("generated", true);
+            } else {
+                model.addAttribute("errorMessage", "Não há associados cadastrados para gerar o relatório.");
+            }
+        }
+
         return "relatorio_associados";
     }
 
