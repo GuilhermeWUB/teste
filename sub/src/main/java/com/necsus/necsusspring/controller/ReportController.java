@@ -55,6 +55,7 @@ public class ReportController {
                                @RequestParam(value = "generate", defaultValue = "false") boolean generate,
                                Model model) {
         model.addAttribute("pageTitle", "SUB - Relatório de Veículos");
+        model.addAttribute("generated", false);
 
         if (generate) {
             VehicleReportData reportData = reportDataService.loadVehicleReportData();
@@ -93,6 +94,7 @@ public class ReportController {
                                @RequestParam(value = "generate", defaultValue = "false") boolean generate,
                                Model model) {
         model.addAttribute("pageTitle", "SUB - Relatório de Associados");
+        model.addAttribute("generated", false);
 
         if (generate) {
             PartnerReportData reportData = reportDataService.loadPartnerReportData();

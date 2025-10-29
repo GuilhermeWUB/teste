@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 public class FipeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FipeService.class);
-    private static final String FIPE_API_BASE_URL = "https://fipe.parallelum.com.br/api/v2";
     private static final String BRASIL_API_BASE_URL = "https://brasilapi.com.br/api/fipe/preco/v2";
     private static final Locale PT_BR = new Locale("pt", "BR");
     private static final DateTimeFormatter MES_REFERENCIA_FORMATTER = new DateTimeFormatterBuilder()
@@ -67,22 +66,12 @@ public class FipeService {
      * @return Dados do veículo
      */
     public FipeResponseDTO buscarVeiculoPorCodigoFipe(String codigoFipe, Integer tabelaReferencia) {
-        RuntimeException lastException = null;
-
         try {
+            LOGGER.info("Buscando dados do veículo com código FIPE: {}", codigoFipe);
             return buscarDadosBrasilApi(codigoFipe, tabelaReferencia);
         } catch (RuntimeException brasilApiError) {
-            lastException = brasilApiError;
-            LOGGER.warn("Falha ao consultar BrasilAPI para o código FIPE {}: {}", codigoFipe, brasilApiError.getMessage());
-        }
-
-        try {
-            return buscarDadosFipeOficial(codigoFipe, tabelaReferencia);
-        } catch (RuntimeException fipeApiError) {
-            if (lastException != null) {
-                fipeApiError.addSuppressed(lastException);
-            }
-            throw fipeApiError;
+            LOGGER.error("Erro ao consultar BrasilAPI para o código FIPE {}: {}", codigoFipe, brasilApiError.getMessage());
+            throw new RuntimeException("Não foi possível buscar os dados do veículo. Verifique se o código FIPE está correto: " + codigoFipe, brasilApiError);
         }
     }
 
@@ -152,44 +141,6 @@ public class FipeService {
         dto.setReferenceMonth(origem.getMesReferencia());
         dto.setVehicleType(origem.getTipoVeiculo());
         return dto;
-    }
-
-    private FipeResponseDTO buscarDadosFipeOficial(String codigoFipe, Integer tabelaReferencia) {
-        try {
-            String encodedCode = URLEncoder.encode(codigoFipe, StandardCharsets.UTF_8);
-            StringBuilder urlBuilder = new StringBuilder(FIPE_API_BASE_URL)
-                    .append("/cars/")
-                    .append(encodedCode);
-
-            if (tabelaReferencia != null) {
-                urlBuilder.append("?tabela_referencia=").append(tabelaReferencia);
-            }
-
-            String url = urlBuilder.toString();
-            LOGGER.info("Consultando API FIPE oficial: {}", url);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<FipeResponseDTO> response = restTemplate.exchange(
-                    URI.create(url),
-                    HttpMethod.GET,
-                    entity,
-                    FipeResponseDTO.class
-            );
-
-            FipeResponseDTO body = response.getBody();
-            if (body == null) {
-                throw new RuntimeException("Resposta vazia da API FIPE oficial.");
-            }
-
-            return body;
-        } catch (RestClientException ex) {
-            throw new RuntimeException("Erro ao consultar a API FIPE oficial: " + ex.getMessage(), ex);
-        }
     }
 
     private static boolean isLikelyModelYear(Integer value) {
