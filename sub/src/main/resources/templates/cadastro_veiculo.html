@@ -10,14 +10,22 @@
     <h1 class="mb-4">Cadastrar Veículo</h1>
     <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
         <!-- Campos da Tabela FIPE -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label for="codigo_fipe" class="form-label">Código Fipe</label>
-            <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 005340-6" />
+            <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 001004-9" />
             <small class="form-text text-muted">Digite o código e pressione TAB para buscar automaticamente</small>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
             <input type="text" id="fipe_value" class="form-control" th:field="*{fipe_value}" />
+        </div>
+        <div class="col-md-4">
+            <label for="type_vehicle" class="form-label">Tipo</label>
+            <select id="type_vehicle" class="form-select" th:field="*{type_vehicle}">
+                <option value="">Selecione o tipo</option>
+                <option value="Carro">Carro</option>
+                <option value="Moto">Moto</option>
+            </select>
         </div>
 
         <hr class="my-3" />
@@ -102,6 +110,8 @@
 
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página carregada - Sistema de busca Fipe iniciado');
+
         const codigoFipeInput = document.getElementById('codigo_fipe');
         const fipeValueInput = document.getElementById('fipe_value');
         const makerInput = document.getElementById('maker');
@@ -109,13 +119,29 @@
         const yearModInput = document.getElementById('year_mod');
         const tipoCombustivelInput = document.getElementById('tipo_combustivel');
 
-        // Adiciona listener para quando o usuário sair do campo (blur) - funciona com TAB
-        codigoFipeInput.addEventListener('blur', buscarDadosFipe);
+        let timeoutId = null;
+
+        // Busca automática enquanto digita (com delay de 1 segundo)
+        codigoFipeInput.addEventListener('input', function() {
+            console.log('Input detectado no campo Código Fipe');
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(buscarDadosFipe, 1000);
+        });
+
+        // Também busca quando sair do campo (TAB)
+        codigoFipeInput.addEventListener('blur', function() {
+            console.log('Campo Código Fipe perdeu o foco (blur)');
+            clearTimeout(timeoutId);
+            buscarDadosFipe();
+        });
 
         function buscarDadosFipe() {
             const codigoFipe = codigoFipeInput.value.trim();
 
+            console.log('Função buscarDadosFipe chamada. Código Fipe:', codigoFipe);
+
             if (!codigoFipe) {
+                console.log('Código Fipe vazio, busca cancelada');
                 return;
             }
 
@@ -123,54 +149,65 @@
             const valorOriginal = fipeValueInput.value;
             fipeValueInput.value = 'Buscando...';
 
+            console.log('Iniciando requisição para /vehicles/fipe');
+
             // Faz a requisição para o endpoint
             fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
                 .then(response => {
+                    console.log('Resposta recebida. Status:', response.status);
                     if (!response.ok) {
-                        throw new Error('Dados não encontrados');
+                        throw new Error('Dados não encontrados - Status: ' + response.status);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Dados retornados da API:', data);
+                    console.log('✓ Dados retornados da API:', data);
 
                     // Mapeamento exato conforme solicitado:
                     // brand → Montadora
                     if (data.brand) {
                         makerInput.value = data.brand;
+                        console.log('Montadora preenchida:', data.brand);
                     }
 
                     // fuel → Tipo de combustível
                     if (data.fuel) {
                         tipoCombustivelInput.value = data.fuel;
+                        console.log('Tipo de combustível preenchido:', data.fuel);
                     }
 
                     // model → Modelo
                     if (data.model) {
                         modelInput.value = data.model;
+                        console.log('Modelo preenchido:', data.model);
                     }
 
                     // modelYear → Ano/Modelo
                     if (data.modelYear) {
                         yearModInput.value = data.modelYear;
+                        console.log('Ano/Modelo preenchido:', data.modelYear);
                     }
 
                     // price → Valor Tabela Fipe
                     if (data.price) {
                         fipeValueInput.value = data.price;
+                        console.log('Valor Tabela Fipe preenchido:', data.price);
                     }
 
                     // Mostra mensagem de sucesso
                     mostrarMensagem('Dados da Fipe carregados com sucesso!', 'success');
+                    console.log('✓ Todos os campos preenchidos com sucesso');
                 })
                 .catch(error => {
-                    console.error('Erro ao buscar dados da Fipe:', error);
+                    console.error('✗ Erro ao buscar dados da Fipe:', error);
                     fipeValueInput.value = valorOriginal;
-                    mostrarMensagem('Não foi possível buscar os dados da Fipe. Verifique o código informado.', 'warning');
+                    mostrarMensagem('Não foi possível buscar os dados da Fipe. Código: ' + codigoFipe, 'warning');
                 });
         }
 
         function mostrarMensagem(mensagem, tipo) {
+            console.log('Mostrando mensagem:', mensagem, '- Tipo:', tipo);
+
             // Remove mensagens anteriores
             const alertasAntigos = document.querySelectorAll('.alert-fipe');
             alertasAntigos.forEach(alerta => alerta.remove());

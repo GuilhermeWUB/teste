@@ -187,37 +187,28 @@ public class VehicleController {
 
     /**
      * Endpoint REST para buscar dados da Fipe
-     * Aceita diferentes combinações de parâmetros para flexibilidade
+     * Conforme documentação da API v2
      */
     @GetMapping("/fipe")
     @ResponseBody
     public ResponseEntity<?> buscarDadosFipe(
-            @RequestParam(required = false) String codigoFipe,
-            @RequestParam(required = false) String ano,
-            @RequestParam(required = false) String referencia,
-            @RequestParam(required = false) String codigoCarro) {
+            @RequestParam String codigoFipe,
+            @RequestParam(required = false) Integer tabelaReferencia) {
         try {
-            FipeResponseDTO fipeData;
+            System.out.println("Endpoint /vehicles/fipe chamado com codigoFipe: " + codigoFipe);
 
-            // Se todos os parâmetros foram fornecidos, usa o método completo
-            if (codigoCarro != null && ano != null && referencia != null) {
-                fipeData = fipeService.buscarVeiculoPorCodigo(codigoFipe, ano, referencia, codigoCarro);
-            }
-            // Se apenas código e ano foram fornecidos, usa o método simplificado
-            else if (codigoFipe != null && ano != null) {
-                fipeData = fipeService.buscarVeiculoSimplificado(codigoFipe, ano);
-            }
-            // Se apenas código Fipe foi fornecido, tenta com ano vazio/padrão
-            else if (codigoFipe != null) {
-                // Tenta buscar sem ano
-                fipeData = fipeService.buscarVeiculoSimplificado(codigoFipe, "");
-            }
-            else {
-                return ResponseEntity.badRequest().body("Parâmetros insuficientes. Forneça pelo menos o código Fipe.");
+            if (codigoFipe == null || codigoFipe.trim().isEmpty()) {
+                System.out.println("Código Fipe vazio ou nulo");
+                return ResponseEntity.badRequest().body("Código Fipe é obrigatório.");
             }
 
+            FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe, tabelaReferencia);
+
+            System.out.println("Dados retornados com sucesso para o frontend");
             return ResponseEntity.ok(fipeData);
         } catch (Exception e) {
+            System.err.println("Erro no endpoint: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao buscar dados da Fipe: " + e.getMessage());
         }
