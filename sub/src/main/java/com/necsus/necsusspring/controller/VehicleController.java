@@ -227,30 +227,37 @@ public class VehicleController {
 
     /**
      * Endpoint REST para buscar dados da Fipe
-     * Conforme documentação da API v2
+     * Usado para debug e testes
      */
-    @GetMapping("/fipe")
+    @GetMapping("/fipe/test")
     @ResponseBody
-    public ResponseEntity<?> buscarDadosFipe(
-            @RequestParam String codigoFipe,
-            @RequestParam(required = false) Integer tabelaReferencia) {
+    public ResponseEntity<?> testarBuscaFipe(@RequestParam String codigoFipe) {
         try {
-            System.out.println("Endpoint /vehicles/fipe chamado com codigoFipe: " + codigoFipe);
+            System.out.println("=== TESTE DE BUSCA FIPE ===");
+            System.out.println("Código fornecido: " + codigoFipe);
+            System.out.println("URL que será consultada: https://brasilapi.com.br/api/fipe/preco/v2/" + codigoFipe);
 
-            if (codigoFipe == null || codigoFipe.trim().isEmpty()) {
-                System.out.println("Código Fipe vazio ou nulo");
-                return ResponseEntity.badRequest().body("Código Fipe é obrigatório.");
-            }
+            FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
 
-            FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe, tabelaReferencia);
+            System.out.println("Sucesso! Dados encontrados:");
+            System.out.println("- Marca: " + fipeData.getBrand());
+            System.out.println("- Modelo: " + fipeData.getModel());
+            System.out.println("- Ano: " + fipeData.getModelYear());
 
-            System.out.println("Dados retornados com sucesso para o frontend");
             return ResponseEntity.ok(fipeData);
         } catch (Exception e) {
-            System.err.println("Erro no endpoint: " + e.getMessage());
+            System.err.println("ERRO: " + e.getMessage());
+            if (e.getCause() != null) {
+                System.err.println("Causa: " + e.getCause().getMessage());
+            }
             e.printStackTrace();
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao buscar dados da Fipe: " + e.getMessage());
+                    .body(java.util.Map.of(
+                        "erro", e.getMessage(),
+                        "codigo", codigoFipe,
+                        "sugestao", "Verifique se o código FIPE está no formato correto (ex: 001004-9) e se existe na base de dados da FIPE"
+                    ));
         }
     }
 }

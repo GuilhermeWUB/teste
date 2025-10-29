@@ -96,13 +96,22 @@ public class FipeService {
             BrasilApiFipeResponse[] body = response.getBody();
 
             if (body == null || body.length == 0) {
-                throw new RuntimeException("Nenhum dado retornado pela BrasilAPI para o código informado.");
+                throw new RuntimeException("Código FIPE '" + codigoFipe + "' não encontrado na base de dados da FIPE. Verifique se o código está correto.");
             }
 
             BrasilApiFipeResponse selecionado = selecionarEntradaMaisRecente(body, tabelaReferencia);
             return converterBrasilApi(selecionado);
         } catch (RestClientException ex) {
-            throw new RuntimeException("Erro ao consultar a BrasilAPI: " + ex.getMessage(), ex);
+            String errorMessage = ex.getMessage();
+            LOGGER.error("Erro ao consultar BrasilAPI para código {}: {}", codigoFipe, errorMessage);
+
+            // Verificar se é erro 404 (código não encontrado)
+            if (errorMessage != null && (errorMessage.contains("404") || errorMessage.contains("Not Found"))) {
+                throw new RuntimeException("Código FIPE '" + codigoFipe + "' não foi encontrado na base de dados. Por favor, verifique se o código está correto.", ex);
+            }
+
+            // Outros erros
+            throw new RuntimeException("Erro ao consultar a BrasilAPI. Tente novamente mais tarde ou verifique sua conexão com a internet.", ex);
         }
     }
 
