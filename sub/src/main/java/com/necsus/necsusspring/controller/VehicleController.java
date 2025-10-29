@@ -77,12 +77,12 @@ public class VehicleController {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
                 vehicle.setCodigo_fipe(fipeData.getCodeFipe());
-                vehicle.setFipe_value(fipeData.getPrice());
+                vehicle.setFipe_value(parseValorMonetario(fipeData.getPrice()));
                 vehicle.setMaker(fipeData.getBrand());
                 vehicle.setModel(fipeData.getModel());
                 vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
                 vehicle.setTipo_combustivel(fipeData.getFuel());
-                vehicle.setType_vehicle(fipeData.getVehicleType());
+                vehicle.setType_vehicle(mapearTipoVeiculo(fipeData.getVehicleType()));
                 model.addAttribute("fipeSuccess", "Dados da FIPE carregados com sucesso!");
             } catch (Exception e) {
                 model.addAttribute("fipeError", "Erro ao buscar dados da FIPE: " + e.getMessage());
@@ -175,12 +175,12 @@ public class VehicleController {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
                 vehicle.setCodigo_fipe(fipeData.getCodeFipe());
-                vehicle.setFipe_value(fipeData.getPrice());
+                vehicle.setFipe_value(parseValorMonetario(fipeData.getPrice()));
                 vehicle.setMaker(fipeData.getBrand());
                 vehicle.setModel(fipeData.getModel());
                 vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
                 vehicle.setTipo_combustivel(fipeData.getFuel());
-                vehicle.setType_vehicle(fipeData.getVehicleType());
+                vehicle.setType_vehicle(mapearTipoVeiculo(fipeData.getVehicleType()));
                 model.addAttribute("fipeSuccess", "Dados da FIPE carregados com sucesso!");
             } catch (Exception e) {
                 model.addAttribute("fipeError", "Erro ao buscar dados da FIPE: " + e.getMessage());
