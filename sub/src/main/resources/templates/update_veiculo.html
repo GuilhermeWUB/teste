@@ -13,18 +13,14 @@
         <input type="hidden" th:field="*{payment.id}" />
 
         <!-- Campos da Tabela FIPE -->
-        <div class="col-md-4">
+        <div class="col-md-6">
             <label for="codigo_fipe" class="form-label">Código Fipe</label>
             <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 005340-6" />
-            <small class="form-text text-muted">Digite o código para buscar automaticamente</small>
+            <small class="form-text text-muted">Digite o código e pressione TAB para buscar automaticamente</small>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
-            <input type="text" id="fipe_value" class="form-control" th:field="*{fipe_value}" readonly />
-        </div>
-        <div class="col-md-4">
-            <label for="type_vehicle" class="form-label">Tipo</label>
-            <input type="text" id="type_vehicle" class="form-control" th:field="*{type_vehicle}" readonly />
+            <input type="text" id="fipe_value" class="form-control" th:field="*{fipe_value}" />
         </div>
 
         <hr class="my-3" />
@@ -131,21 +127,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         const codigoFipeInput = document.getElementById('codigo_fipe');
         const fipeValueInput = document.getElementById('fipe_value');
-        const typeVehicleInput = document.getElementById('type_vehicle');
         const makerInput = document.getElementById('maker');
         const modelInput = document.getElementById('model');
-        const colorInput = document.getElementById('color');
         const yearModInput = document.getElementById('year_mod');
         const tipoCombustivelInput = document.getElementById('tipo_combustivel');
 
-        // Adiciona listener para quando o usuário sair do campo (blur) ou pressionar Enter
+        // Adiciona listener para quando o usuário sair do campo (blur) - funciona com TAB
         codigoFipeInput.addEventListener('blur', buscarDadosFipe);
-        codigoFipeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                buscarDadosFipe();
-            }
-        });
 
         function buscarDadosFipe() {
             const codigoFipe = codigoFipeInput.value.trim();
@@ -155,8 +143,8 @@
             }
 
             // Mostra indicador de loading
+            const valorOriginal = fipeValueInput.value;
             fipeValueInput.value = 'Buscando...';
-            typeVehicleInput.value = 'Buscando...';
 
             // Faz a requisição para o endpoint
             fetch(`/vehicles/fipe?codigoFipe=${encodeURIComponent(codigoFipe)}`)
@@ -167,28 +155,32 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Preenche os campos com os dados retornados
-                    fipeValueInput.value = data.price || '';
+                    console.log('Dados retornados da API:', data);
 
-                    // Mapeia o tipo de veículo
-                    const tipoVeiculo = mapearTipoVeiculo(data.vehicleType);
-                    typeVehicleInput.value = tipoVeiculo;
-
-                    // Preenche outros campos se estiverem vazios
-                    if (!makerInput.value && data.brand) {
+                    // Mapeamento exato conforme solicitado:
+                    // brand → Montadora
+                    if (data.brand) {
                         makerInput.value = data.brand;
                     }
 
-                    if (!modelInput.value && data.model) {
+                    // fuel → Tipo de combustível
+                    if (data.fuel) {
+                        tipoCombustivelInput.value = data.fuel;
+                    }
+
+                    // model → Modelo
+                    if (data.model) {
                         modelInput.value = data.model;
                     }
 
-                    if (!yearModInput.value && data.modelYear) {
+                    // modelYear → Ano/Modelo
+                    if (data.modelYear) {
                         yearModInput.value = data.modelYear;
                     }
 
-                    if (!tipoCombustivelInput.value && data.fuel) {
-                        tipoCombustivelInput.value = data.fuel;
+                    // price → Valor Tabela Fipe
+                    if (data.price) {
+                        fipeValueInput.value = data.price;
                     }
 
                     // Mostra mensagem de sucesso
@@ -196,19 +188,9 @@
                 })
                 .catch(error => {
                     console.error('Erro ao buscar dados da Fipe:', error);
-                    fipeValueInput.value = '';
-                    typeVehicleInput.value = '';
+                    fipeValueInput.value = valorOriginal;
                     mostrarMensagem('Não foi possível buscar os dados da Fipe. Verifique o código informado.', 'warning');
                 });
-        }
-
-        function mapearTipoVeiculo(vehicleType) {
-            const tipos = {
-                1: 'Carro',
-                2: 'Moto',
-                3: 'Caminhão'
-            };
-            return tipos[vehicleType] || 'Não especificado';
         }
 
         function mostrarMensagem(mensagem, tipo) {
