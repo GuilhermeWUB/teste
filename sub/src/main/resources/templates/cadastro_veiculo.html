@@ -71,11 +71,17 @@
 
     <!-- Formulário Principal -->
     <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
+        <input type="hidden" name="contextPartnerId" th:value="${partnerId}" />
+
+        <div th:if="${fipeSuccessMessage}" class="alert alert-success" th:text="${fipeSuccessMessage}"></div>
+        <div th:if="${fipeErrorMessage}" class="alert alert-warning" th:text="${fipeErrorMessage}"></div>
+
         <!-- Campos da Tabela FIPE -->
         <h3 class="h5 mt-4">Dados da Tabela FIPE</h3>
         <div class="col-md-4">
             <label for="codigo_fipe" class="form-label">Código Fipe</label>
             <input type="text" id="codigo_fipe" class="form-control" th:field="*{codigo_fipe}" placeholder="Ex: 001004-9" />
+            <small class="form-text text-muted">Digite o código e clique em "Buscar dados da Fipe"</small>
         </div>
         <div class="col-md-4">
             <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
@@ -91,6 +97,10 @@
                 <option value="Ônibus">Ônibus</option>
                 <option value="Micro-ônibus">Micro-ônibus</option>
             </select>
+        </div>
+
+        <div class="col-md-4 align-self-end">
+            <button type="submit" name="acao" value="buscarFipe" class="btn btn-outline-primary w-100">Buscar dados da Fipe</button>
         </div>
 
         <hr class="my-3" />
@@ -178,6 +188,7 @@
             </a>
         </div>
     </form>
+
 </section>
 
 </body>
