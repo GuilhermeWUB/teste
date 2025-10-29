@@ -4,6 +4,7 @@ import com.necsus.necsusspring.dto.BrasilApiFipeResponse;
 import com.necsus.necsusspring.dto.FipeResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,6 +48,7 @@ public class FipeService {
 
     private final RestTemplate restTemplate;
 
+    @Autowired
     public FipeService(RestTemplateBuilder restTemplateBuilder) {
         this(restTemplateBuilder
                 .setConnectTimeout(Duration.ofSeconds(5))
