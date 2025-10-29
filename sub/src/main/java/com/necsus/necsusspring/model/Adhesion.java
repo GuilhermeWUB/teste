@@ -4,15 +4,10 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "adhesion")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Adhesion {
@@ -33,12 +28,4 @@ public class Adhesion {
     @Temporal(TemporalType.DATE)
     private Date vencimento;
 
-    // Getter customizado para compatibilidade
-    public BigDecimal getValue() {
-        return amount;
-    }
-
-    public void setValue(BigDecimal value) {
-        this.amount = value;
-    }
 }

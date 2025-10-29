@@ -1,9 +1,12 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 
 @Entity
+@Data
 @Table(name = "prices")
 public class Price {
 

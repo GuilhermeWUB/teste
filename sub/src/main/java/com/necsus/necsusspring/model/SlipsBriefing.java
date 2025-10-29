@@ -1,8 +1,10 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "slips_briefing")
 public class SlipsBriefing {
 

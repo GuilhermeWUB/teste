@@ -1,8 +1,10 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "bank_account")
 public class BankAccount {
 
@@ -24,43 +26,4 @@ public class BankAccount {
     @JoinColumn(name = "companies_id")
     private Company company;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAccountCode() {
-        return accountCode;
-    }
-
-    public void setAccountCode(String accountCode) {
-        this.accountCode = accountCode;
-    }
-
-    public String getAccountDv() {
-        return accountDv;
-    }
-
-    public void setAccountDv(String accountDv) {
-        this.accountDv = accountDv;
-    }
-
-    public BankAgency getBankAgency() {
-        return bankAgency;
-    }
-
-    public void setBankAgency(BankAgency bankAgency) {
-        this.bankAgency = bankAgency;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
 }

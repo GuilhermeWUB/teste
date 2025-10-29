@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">
+    <defs>
+        <linearGradient id="ubGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7E22CE"/>
+            <stop offset="50%" stop-color="#A855F7"/>
+            <stop offset="100%" stop-color="#C084FC"/>
+        </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#ubGradient)"/>
+    <text x="32" y="41" text-anchor="middle" font-family="'Poppins', 'Segoe UI', sans-serif"
+          font-size="26" font-weight="700" fill="#ffffff">UB</text>
+</svg>

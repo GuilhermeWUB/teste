@@ -112,7 +112,8 @@
         <h2 class="mt-4 h5">Informações de adesão</h2>
         <div class="mb-3">
             <label for="value" class="form-label">Valor da adesão</label>
-            <input type="text" id="value" class="form-control" th:field="*{adhesion.value}" />
+            <input type="text" id="value" class="form-control" th:field="*{adhesion.amount}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('adhesion.amount')}" th:errors="*{adhesion.amount}"></div>
         </div>
 
         <button type="submit" class="btn btn-primary">Cadastrar</button>

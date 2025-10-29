@@ -1,10 +1,13 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@Data
 @Table(name = "bank_shipment")
 public class BankShipment {
 
@@ -26,43 +29,4 @@ public class BankShipment {
     @OneToMany(mappedBy = "bankShipment")
     private List<BankSlip> bankSlips;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
-    public Date getDateCreate() {
-        return dateCreate;
-    }
-
-    public void setDateCreate(Date dateCreate) {
-        this.dateCreate = dateCreate;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public List<BankSlip> getBankSlips() {
-        return bankSlips;
-    }
-
-    public void setBankSlips(List<BankSlip> bankSlips) {
-        this.bankSlips = bankSlips;
-    }
 }

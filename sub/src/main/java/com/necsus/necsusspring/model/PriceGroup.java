@@ -1,9 +1,12 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.List;
 
 @Entity
+@Data
 @Table(name = "price_groups")
 public class PriceGroup {
 
