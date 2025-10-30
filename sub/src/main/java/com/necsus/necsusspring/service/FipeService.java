@@ -83,8 +83,20 @@ public class FipeService {
     }
 
     private FipeResponseDTO buscarDadosBrasilApi(String codigoFipe, Integer tabelaReferencia) {
+        // Validar formato básico do código FIPE
+        if (codigoFipe == null || codigoFipe.trim().isEmpty()) {
+            throw new RuntimeException("O código FIPE não pode ser vazio.");
+        }
+
+        String codigoLimpo = codigoFipe.trim();
+
+        // Verificar se o código tem um formato válido (geralmente XXX-XXXX-X ou similar)
+        if (!codigoLimpo.matches("^[0-9]{6}-[0-9]$") && !codigoLimpo.matches("^[0-9]{3}-[0-9]{3,4}-[0-9]$")) {
+            LOGGER.warn("Código FIPE '{}' não segue o formato esperado (000000-0 ou 000-0000-0)", codigoLimpo);
+        }
+
         try {
-            String encodedCode = URLEncoder.encode(codigoFipe, StandardCharsets.UTF_8);
+            String encodedCode = URLEncoder.encode(codigoLimpo, StandardCharsets.UTF_8);
             String url = BRASIL_API_BASE_URL + "/" + encodedCode;
             if (tabelaReferencia != null && isLikelyModelYear(tabelaReferencia)) {
                 url += "?anoModelo=" + tabelaReferencia;
@@ -96,22 +108,30 @@ public class FipeService {
             BrasilApiFipeResponse[] body = response.getBody();
 
             if (body == null || body.length == 0) {
-                throw new RuntimeException("Código FIPE '" + codigoFipe + "' não encontrado na base de dados da FIPE. Verifique se o código está correto.");
+                throw new RuntimeException("Código FIPE '" + codigoLimpo + "' não encontrado na base de dados da FIPE. Verifique se o código está correto e se corresponde a um veículo válido.");
             }
 
             BrasilApiFipeResponse selecionado = selecionarEntradaMaisRecente(body, tabelaReferencia);
             return converterBrasilApi(selecionado);
         } catch (RestClientException ex) {
             String errorMessage = ex.getMessage();
-            LOGGER.error("Erro ao consultar BrasilAPI para código {}: {}", codigoFipe, errorMessage);
+            LOGGER.error("Erro ao consultar BrasilAPI para código {}: {}", codigoLimpo, errorMessage);
 
             // Verificar se é erro 404 (código não encontrado)
             if (errorMessage != null && (errorMessage.contains("404") || errorMessage.contains("Not Found"))) {
-                throw new RuntimeException("Código FIPE '" + codigoFipe + "' não foi encontrado na base de dados. Por favor, verifique se o código está correto.", ex);
+                throw new RuntimeException(
+                    String.format("Código FIPE '%s' não encontrado na BrasilAPI. " +
+                        "Possíveis causas:\n" +
+                        "• O código pode estar incorreto ou desatualizado\n" +
+                        "• Verifique se o formato está correto (ex: 005340-6)\n" +
+                        "• Consulte a tabela FIPE oficial para validar o código", codigoLimpo),
+                    ex
+                );
             }
 
-            // Outros erros
-            throw new RuntimeException("Erro ao consultar a BrasilAPI. Tente novamente mais tarde ou verifique sua conexão com a internet.", ex);
+            // Outros erros (timeout, conexão, etc)
+            throw new RuntimeException("Erro ao consultar a BrasilAPI FIPE: " + errorMessage +
+                ". Tente novamente mais tarde ou verifique sua conexão com a internet.", ex);
         }
     }
 
