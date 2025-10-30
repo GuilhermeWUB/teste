@@ -354,3 +354,31 @@ body.dark-mode .form-select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* Estilos para a Página de Relatórios */
+body.dark-mode .report-form {
+    background: var(--card-dark);
+    border: 1px solid var(--border-dark);
+}
+
+body.dark-mode .report-section {
+    background: var(--card-dark);
+    border: 1px solid var(--border-dark);
+}
+
+body.dark-mode .stat-card {
+    background: var(--bg-dark-secondary);
+    border: 1px solid var(--border-dark);
+}
+
+body.dark-mode .stat-label {
+    color: var(--text-muted-dark);
+}
+
+body.dark-mode .stat-value {
+    color: var(--text-dark);
+}
+
+body.dark-mode .distribution-item {
+    border-bottom-color: var(--border-dark);
+}
