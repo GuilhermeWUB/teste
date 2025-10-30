@@ -11,7 +11,7 @@
             <h1 class="mb-1">Visão geral</h1>
             <p class="text-muted mb-0">Acompanhe rapidamente os principais indicadores do SUB.</p>
         </div>
-        <span class="badge rounded-pill" style="background-color: var(--ub-purple);">
+        <span class="badge badge-soft badge-soft-primary">
             <i class="bi bi-lightning-charge me-1"></i>Atualizado há poucos minutos
         </span>
     </div>
@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="card-title text-uppercase text-muted mb-0">Associados</h5>
-                        <span class="badge bg-opacity-10" style="background-color: rgba(106,13,173,0.15); color: var(--ub-purple);">
+                        <span class="metric-icon">
                             <i class="bi bi-people-fill"></i>
                         </span>
                     </div>
@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="card-title text-uppercase text-muted mb-0">Veículos</h5>
-                        <span class="badge bg-opacity-10" style="background-color: rgba(106,13,173,0.15); color: var(--ub-purple);">
+                        <span class="metric-icon">
                             <i class="bi bi-truck"></i>
                         </span>
                     </div>
@@ -50,7 +50,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="card-title text-uppercase text-muted mb-0">Boletos pendentes</h5>
-                        <span class="badge bg-opacity-10" style="background-color: rgba(106,13,173,0.15); color: var(--ub-purple);">
+                        <span class="metric-icon">
                             <i class="bi bi-receipt"></i>
                         </span>
                     </div>
@@ -69,9 +69,9 @@
                         <h5 class="card-title mb-0">Progresso de arrecadação</h5>
                         <span class="text-muted small">Meta mensal</span>
                     </div>
-                    <div class="progress" style="height: 1rem;">
-                        <div class="progress-bar" role="progressbar"
-                             th:style="'background-color: var(--ub-purple); width: ' + ${collectionProgress} + '%;'"
+                    <div class="progress progress--thick">
+                        <div class="progress-bar progress-bar-primary" role="progressbar"
+                             th:style="'width: ' + ${collectionProgress} + '%;'"
                              th:aria-valuenow="${collectionProgress}" aria-valuemin="0" aria-valuemax="100"
                              th:text="${collectionProgress} + '%'">0%</div>
                     </div>
@@ -85,21 +85,21 @@
                     <h5 class="card-title">Próximas ações</h5>
                     <ul class="list-unstyled mb-0">
                         <li class="d-flex align-items-start mb-3">
-                            <i class="bi bi-calendar2-week me-3 fs-4" style="color: var(--ub-purple);"></i>
+                            <i class="bi bi-calendar2-week me-3 fs-4 icon-primary"></i>
                             <div>
                                 <h6 class="mb-1">Envio de boletos</h6>
                                 <small class="text-muted">Programar disparo do próximo lote automático.</small>
                             </div>
                         </li>
                         <li class="d-flex align-items-start mb-3">
-                            <i class="bi bi-chat-dots me-3 fs-4" style="color: var(--ub-purple);"></i>
+                            <i class="bi bi-chat-dots me-3 fs-4 icon-primary"></i>
                             <div>
                                 <h6 class="mb-1">Atendimento aos associados</h6>
                                 <small class="text-muted">Responder solicitações pendentes na central.</small>
                             </div>
                         </li>
                         <li class="d-flex align-items-start">
-                            <i class="bi bi-graph-up-arrow me-3 fs-4" style="color: var(--ub-purple);"></i>
+                            <i class="bi bi-graph-up-arrow me-3 fs-4 icon-primary"></i>
                             <div>
                                 <h6 class="mb-1">Planejamento financeiro</h6>
                                 <small class="text-muted">Revisar projeções e ajustar metas do trimestre.</small>
