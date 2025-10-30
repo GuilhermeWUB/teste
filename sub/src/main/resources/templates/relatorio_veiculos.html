@@ -63,11 +63,11 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="report-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-file-earmark-bar-graph"></i> Gerar Relatório
                 </button>
-                <a th:href="@{/reports/vehicles}" class="btn btn-secondary">
+                <a th:href="@{/reports/vehicles}" class="btn btn-outline">
                     <i class="bi bi-x-circle"></i> Limpar
                 </a>
             </div>
@@ -84,7 +84,7 @@
     <div th:if="${generated}" class="report-results">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="h4 mb-0">Resultados do Relatório</h2>
-            <button onclick="window.print()" class="btn btn-outline-primary btn-sm">
+            <button onclick="window.print()" class="btn btn-outline btn-sm">
                 <i class="bi bi-printer"></i> Imprimir
             </button>
         </div>
@@ -131,7 +131,7 @@
                 <span th:text="${item.label}">Tipo</span>
                 <strong th:text="${item.value}">0</strong>
             </div>
-            <div th:if="${#lists.isEmpty(fuelDistribution)}" class="text-muted text-center py-3">
+            <div th:if="${#lists.isEmpty(fuelDistribution)}" class="report-empty py-3">
                 Nenhum dado disponível
             </div>
         </div>
@@ -145,7 +145,7 @@
                 <span th:text="${item.label}">Montadora</span>
                 <strong th:text="${item.value}">0</strong>
             </div>
-            <div th:if="${#lists.isEmpty(makerDistribution)}" class="text-muted text-center py-3">
+            <div th:if="${#lists.isEmpty(makerDistribution)}" class="report-empty py-3">
                 Nenhum dado disponível
             </div>
         </div>
@@ -183,7 +183,7 @@
                     </tbody>
                 </table>
             </div>
-            <div th:if="${#lists.isEmpty(vehicles)}" class="text-muted text-center py-3">
+            <div th:if="${#lists.isEmpty(vehicles)}" class="report-empty py-3">
                 Nenhum veículo encontrado
             </div>
         </div>

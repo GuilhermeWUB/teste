@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,679 +7,119 @@
     <meta name="_csrf_header" th:content="${_csrf?.headerName}"/>
     <title th:text="${pageTitle} ?: 'SUB'">SUB</title>
     <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/custom-dark-mode.css}">
-    <style>
-        :root {
-            --ub-purple: #6a0dad;
-            --ub-purple-light: #8a2be2;
-            --ub-purple-dark: #4b0082;
-            --bg-light: #f8f9fa;
-            --bg-dark: #0d1117;
-            --card-light: #ffffff;
-            --card-dark: #161b22;
-            --text-light: #212529;
-            --text-dark: #c9d1d9;
-            --text-muted-dark: #8b949e;
-            --border-dark: #30363d;
-            --hover-dark: #21262d;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        body.dark-mode {
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-        }
-
-        /* Navbar */
-        .navbar {
-            background-color: var(--ub-purple) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        body.dark-mode .navbar {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .navbar-brand img {
-            height: 40px;
-        }
-
-        .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .nav-link:hover {
-            color: #e0d0f5 !important;
-        }
-
-        .navbar-toggler {
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255,0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-        }
-
-        /* Dropdown - Melhorado */
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            margin-top: 0.125rem;
-            min-width: 250px;
-            background: linear-gradient(135deg, var(--ub-purple) 0%, var(--ub-purple-dark) 100%);
-        }
-
-        .dropdown-menu-dark {
-            background: linear-gradient(135deg, var(--ub-purple-dark) 0%, var(--ub-purple) 100%);
-        }
-
-        .dropdown-item {
-            color: rgba(255, 255, 255, 0.9);
-            padding: 0.6rem 1.2rem;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        /* Content Card */
-        .content-card {
-            background-color: var(--card-light);
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            padding: 2rem;
-            margin-top: 2rem;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        body.dark-mode .content-card {
-            background-color: var(--card-dark);
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
-        }
-
-        /* Tables */
-        body.dark-mode .table {
-            --bs-table-bg: var(--card-dark);
-            --bs-table-striped-bg: #1c2128;
-            --bs-table-hover-bg: var(--hover-dark);
-            color: var(--text-dark);
-            border-color: var(--border-dark);
-        }
-
-        body.dark-mode .table-bordered,
-        body.dark-mode .table-bordered td,
-        body.dark-mode .table-bordered th {
-            border-color: var(--border-dark);
-        }
-
-        body.dark-mode .table thead th {
-            border-bottom-color: var(--border-dark);
-            background-color: #1c2128;
-        }
-
-        /* Buttons */
-        body.dark-mode .btn-primary {
-            background-color: var(--ub-purple-light);
-            border-color: var(--ub-purple-light);
-        }
-
-        body.dark-mode .btn-primary:hover {
-            background-color: var(--ub-purple);
-            border-color: var(--ub-purple);
-        }
-
-        body.dark-mode .btn-secondary {
-            background-color: #30363d;
-            border-color: #30363d;
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .btn-secondary:hover {
-            background-color: #3d444d;
-            border-color: #3d444d;
-        }
-
-        body.dark-mode .btn-info {
-            background-color: #1f6feb;
-            border-color: #1f6feb;
-            color: #fff;
-        }
-
-        body.dark-mode .btn-warning {
-            background-color: #d29922;
-            border-color: #d29922;
-            color: #0d1117;
-        }
-
-        body.dark-mode .btn-danger {
-            background-color: #da3633;
-            border-color: #da3633;
-            color: #fff;
-        }
-
-        body.dark-mode .btn-success {
-            background-color: #238636;
-            border-color: #238636;
-            color: #fff;
-        }
-
-        body.dark-mode .btn-outline-light {
-            color: var(--text-dark);
-            border-color: var(--border-dark);
-        }
-
-        body.dark-mode .btn-outline-light:hover {
-            background-color: var(--hover-dark);
-            border-color: var(--border-dark);
-            color: var(--text-dark);
-        }
-
-        /* Forms */
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background-color: #0d1117;
-            border-color: var(--border-dark);
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            background-color: #0d1117;
-            border-color: var(--ub-purple-light);
-            color: var(--text-dark);
-            box-shadow: 0 0 0 0.25rem rgba(138, 43, 226, 0.25);
-        }
-
-        body.dark-mode .form-control::placeholder {
-            color: var(--text-muted-dark);
-        }
-
-        body.dark-mode .form-label {
-            color: var(--text-dark);
-        }
-
-        /* Alerts */
-        body.dark-mode .alert-success {
-            background-color: #1c3d2c;
-            border-color: #2ea44f;
-            color: #7ee787;
-        }
-
-        body.dark-mode .alert-danger {
-            background-color: #3d1e1e;
-            border-color: #da3633;
-            color: #ff7b72;
-        }
-
-        body.dark-mode .alert-warning {
-            background-color: #3d3119;
-            border-color: #d29922;
-            color: #f0b72f;
-        }
-
-        body.dark-mode .alert-info {
-            background-color: #1c2d41;
-            border-color: #1f6feb;
-            color: #79c0ff;
-        }
-
-        /* Text Colors */
-        body.dark-mode .text-muted {
-            color: var(--text-muted-dark) !important;
-        }
-
-        body.dark-mode h1,
-        body.dark-mode h2,
-        body.dark-mode h3,
-        body.dark-mode h4,
-        body.dark-mode h5,
-        body.dark-mode h6 {
-            color: var(--text-dark);
-        }
-
-        /* Badges */
-        body.dark-mode .badge {
-            background-color: #30363d;
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .badge.bg-primary {
-            background-color: var(--ub-purple-light) !important;
-        }
-
-        body.dark-mode .badge.bg-success {
-            background-color: #238636 !important;
-        }
-
-        body.dark-mode .badge.bg-danger {
-            background-color: #da3633 !important;
-        }
-
-        body.dark-mode .badge.bg-warning {
-            background-color: #d29922 !important;
-            color: #0d1117 !important;
-        }
-
-        /* Cards */
-        body.dark-mode .card {
-            background-color: var(--card-dark);
-            border-color: var(--border-dark);
-            color: var(--text-dark);
-        }
-
-        body.dark-mode .card-header {
-            background-color: #1c2128;
-            border-bottom-color: var(--border-dark);
-        }
-
-        /* Links */
-        body.dark-mode a:not(.btn):not(.nav-link) {
-            color: #58a6ff;
-        }
-
-        body.dark-mode a:not(.btn):not(.nav-link):hover {
-            color: #79c0ff;
-        }
-
-        /* Dividers */
-        body.dark-mode hr {
-            border-color: var(--border-dark);
-        }
-
-        /* Text danger/success/warning */
-        body.dark-mode .text-danger {
-            color: #ff7b72 !important;
-        }
-
-        body.dark-mode .text-success {
-            color: #7ee787 !important;
-        }
-
-        body.dark-mode .text-warning {
-            color: #f0b72f !important;
-        }
-
-        body.dark-mode .text-info {
-            color: #79c0ff !important;
-        }
-
-        /* Garantir legibilidade de todos os textos */
-        body.dark-mode td,
-        body.dark-mode th,
-        body.dark-mode p,
-        body.dark-mode span,
-        body.dark-mode div,
-        body.dark-mode label {
-            color: var(--text-dark);
-        }
-
-        /* Opções de select */
-        body.dark-mode option {
-            background-color: #0d1117;
-            color: var(--text-dark);
-        }
-
-        /* Small text */
-        body.dark-mode small {
-            color: var(--text-muted-dark);
-        }
-
-        /* Report overlay - Versão Profissional com Animações */
-        .report-overlay {
-            position: fixed;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background: rgba(13, 17, 23, 0);
-            backdrop-filter: blur(0px);
-            z-index: 1080;
-            transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        backdrop-filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .report-overlay.is-visible {
-            display: flex;
-            background: rgba(13, 17, 23, 0.75);
-            backdrop-filter: blur(8px);
-            animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .report-overlay-dialog {
-            background-color: var(--card-light);
-            border-radius: 1rem;
-            max-width: 720px;
-            width: 100%;
-            max-height: calc(100vh - 3rem);
-            overflow-y: auto;
-            padding: 2.5rem;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9) translateY(20px);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .report-overlay.is-visible .report-overlay-dialog {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-
-        .report-overlay-dialog .btn-close {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            opacity: 0.7;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            z-index: 10;
-        }
-
-        .report-overlay-dialog .btn-close:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .report-overlay-body {
-            margin-top: 0.5rem;
-        }
-
-        body.dark-mode .report-overlay {
-            background: rgba(13, 17, 23, 0);
-        }
-
-        body.dark-mode .report-overlay.is-visible {
-            background: rgba(0, 0, 0, 0.85);
-        }
-
-        body.dark-mode .report-overlay-dialog {
-            background-color: var(--card-dark);
-            color: var(--text-dark);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6),
-                        0 0 0 1px var(--border-dark);
-        }
-
-        @keyframes overlayFadeIn {
-            from {
-                background: rgba(13, 17, 23, 0);
-                backdrop-filter: blur(0px);
-            }
-            to {
-                background: rgba(13, 17, 23, 0.75);
-                backdrop-filter: blur(8px);
-            }
-        }
-
-        /* Report results */
-        .report-results-card {
-            background-color: var(--card-light);
-            border-radius: 0.75rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-top: 1.5rem;
-        }
-
-        body.dark-mode .report-results-card {
-            background-color: var(--card-dark);
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.45);
-        }
-
-        .report-section + .report-section {
-            margin-top: 2rem;
-        }
-
-        .report-results-table table {
-            min-width: 100%;
-        }
-
-        .report-results-table tbody tr:not(:last-child) td {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        body.dark-mode .report-results-table tbody tr:not(:last-child) td {
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        /* Report filter cards - Design Profissional */
-        .report-filter-form .form-check {
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-        }
-
-        .report-filter-form .form-check:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
-            border-color: var(--ub-purple-light);
-        }
-
-        body.dark-mode .report-filter-form .form-check:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4) !important;
-        }
-
-        .report-filter-form .form-check:has(input:checked) {
-            border-color: var(--ub-purple);
-            background-color: rgba(106, 13, 173, 0.05);
-        }
-
-        body.dark-mode .report-filter-form .form-check:has(input:checked) {
-            background-color: rgba(138, 43, 226, 0.15);
-        }
-
-        .report-filter-form .form-check-input {
-            cursor: pointer;
-            width: 1.25rem;
-            height: 1.25rem;
-            border-width: 2px;
-        }
-
-        .report-filter-form .form-check-input:checked {
-            background-color: var(--ub-purple);
-            border-color: var(--ub-purple);
-        }
-
-        /* Loading states com animação */
-        .spinner-border {
-            animation: spinner-border 0.75s linear infinite;
-        }
-
-        @keyframes spinner-border {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Smooth scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Botões com hover elegante */
-        .btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        /* Report results aparecem com fade */
-        .report-results-card {
-            animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Cards de resumo com hover */
-        .report-section .card {
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .report-section .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        body.dark-mode .report-section .card:hover {
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5) !important;
-        }
-
-        /* Scrollbar personalizada */
-        .report-overlay-dialog::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .report-overlay-dialog::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 4px;
-        }
-
-        .report-overlay-dialog::-webkit-scrollbar-thumb {
-            background: rgba(106, 13, 173, 0.3);
-            border-radius: 4px;
-        }
-
-        .report-overlay-dialog::-webkit-scrollbar-thumb:hover {
-            background: rgba(106, 13, 173, 0.5);
-        }
-
-        body.dark-mode .report-overlay-dialog::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        body.dark-mode .report-overlay-dialog::-webkit-scrollbar-thumb {
-            background: rgba(138, 43, 226, 0.5);
-        }
-
-        body.dark-mode .report-overlay-dialog::-webkit-scrollbar-thumb:hover {
-            background: rgba(138, 43, 226, 0.7);
-        }
-    </style>
 </head>
 <body>
-
-<!-- NAVBAR (apenas quando logado) -->
-<nav class="navbar navbar-expand-lg navbar-light border-bottom" th:if="${isLoggedIn}">
-    <div class="container">
-        <a class="navbar-brand" th:href="${isAdmin} ? @{/dashboard} : @{/me/vehicles}">
-            <img th:src="@{/images/ub_02_2.jpeg}" alt="UB Logo" title="Voltar para a página de associados">
+<header class="topbar">
+    <div class="brand">
+        <a class="brand-link" th:href="${isLoggedIn} ? (${isAdmin} ? @{/dashboard} : @{/me/vehicles}) : @{/}">
+            <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Ir para a página inicial">
+            <span class="brand-title">SUB Gestão</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item" th:if="${isAdmin}">
-                    <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
-                </li>
-                <li class="nav-item" th:if="${isAdmin}">
-                    <a class="nav-link" th:href="@{/partners}">Associados</a>
-                </li>
-                <li class="nav-item" th:if="${isAdmin}">
-                    <a class="nav-link" th:href="@{/vehicles}">Veículos</a>
-                </li>
-                <li class="nav-item dropdown" th:if="${isAdmin}">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="reportsDropdown"
-                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span>Relatórios</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark border-0 shadow" aria-labelledby="reportsDropdown">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{/reports/vehicles}">
-                                <i class="bi bi-car-front-fill"></i>
-                                <span>Relatório de Veículos</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2" th:href="@{/reports/partners}">
-                                <i class="bi bi-people-fill"></i>
-                                <span>Relatório de Associados</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item" th:if="${isAdmin}">
-                    <a class="nav-link" th:href="@{/events}">Eventos</a>
-                </li>
-                <li class="nav-item" th:if="${isAdmin}">
-                    <a class="nav-link" th:href="@{/admin/users}">Usuários</a>
-                </li>
-                <li class="nav-item" th:if="${!isAdmin}">
-                    <a class="nav-link" th:href="@{/me/vehicles}">Meus Veículos</a>
-                </li>
-            </ul>
+    </div>
 
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-white fw-semibold d-none d-lg-inline" th:if="${currentUserFullName != null}"
-                      th:text="${currentUserFullName}"></span>
-                <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-                    <span id="themeIcon">🌙</span>
+    <input type="checkbox" id="navToggle" class="nav-toggle" aria-hidden="true">
+    <label class="nav-toggle-label" for="navToggle" aria-label="Alternar navegação">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+
+    <nav class="topbar-nav" aria-label="Navegação principal">
+        <ul class="nav-links">
+            <li th:if="${isAdmin}">
+                <a th:href="@{/dashboard}">Dashboard</a>
+            </li>
+            <li th:if="${isAdmin}">
+                <a th:href="@{/partners}">Associados</a>
+            </li>
+            <li th:if="${isAdmin}">
+                <a th:href="@{/vehicles}">Veículos</a>
+            </li>
+            <li th:if="${isAdmin}">
+                <a th:href="@{/events}">Eventos</a>
+            </li>
+            <li th:if="${isAdmin}">
+                <a th:href="@{/admin/users}">Usuários</a>
+            </li>
+            <li th:if="${isAdmin}" class="nav-item-notifications">
+                <a th:href="@{/reports/vehicles}">Relatórios</a>
+            </li>
+            <li th:if="${!isAdmin and isLoggedIn}">
+                <a th:href="@{/me/vehicles}">Meus Veículos</a>
+            </li>
+            <li th:if="${!isLoggedIn}">
+                <a th:href="@{/register}">Quero ser associado</a>
+            </li>
+            <li class="nav-item-theme nav-item-mobile-action">
+                <button type="button" class="theme-toggle" data-theme-toggle>
+                    <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">🌙</span>
+                    <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀️</span>
+                    <span class="theme-toggle__label">Tema</span>
                 </button>
-                <a class="btn btn-outline-light" th:href="@{/logout}">
-                    <i class="bi bi-box-arrow-right me-1"></i>Sair
+            </li>
+            <li class="nav-item-mobile-action" th:if="${isLoggedIn}">
+                <a class="btn btn-outline" th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    <span>Sair</span>
                 </a>
-            </div>
+            </li>
+            <li class="nav-item-mobile-action" th:unless="${isLoggedIn}">
+                <a class="btn btn-primary" th:href="@{/login}">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                    <span>Entrar</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="topbar-actions">
+        <span class="topbar-action fw-semibold" th:if="${currentUserFullName != null}" th:text="${currentUserFullName}"></span>
+        <button type="button" class="theme-toggle" data-theme-toggle>
+            <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">🌙</span>
+            <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀️</span>
+            <span class="theme-toggle__label">Tema</span>
+        </button>
+        <a class="btn btn-outline" th:if="${isLoggedIn}" th:href="@{/logout}">
+            <i class="bi bi-box-arrow-right me-1"></i>
+            <span>Sair</span>
+        </a>
+        <a class="btn btn-primary" th:unless="${isLoggedIn}" th:href="@{/login}">
+            <i class="bi bi-box-arrow-in-right me-1"></i>
+            <span>Entrar</span>
+        </a>
+    </div>
+</header>
+
+<main class="page">
+    <div class="container">
+        <div class="page-content">
+            <section layout:fragment="content"></section>
         </div>
     </div>
-</nav>
-
-<!-- CONTEÚDO -->
-<main class="container">
-    <div class="content-card" layout:fragment="content">
-        <!-- conteúdo da página -->
-    </div>
 </main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; <span th:text="${T(java.time.Year).now()}"></span> SUB - Sistema Unificado de Benefícios. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<button type="button" class="back-to-top" id="backToTop">
+    <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+    <span class="back-to-top__text">Voltar ao topo</span>
+</button>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (function () {
-        // Obter token CSRF das meta tags
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-
-        // Incluir CSRF token em todas as requisições AJAX
         const FETCH_HEADERS = {
             'X-Requested-With': 'XMLHttpRequest'
         };
@@ -687,6 +127,7 @@
         if (csrfToken && csrfHeader) {
             FETCH_HEADERS[csrfHeader] = csrfToken;
         }
+
         const DATE_TIME_FORMATTER = new Intl.DateTimeFormat('pt-BR', {dateStyle: 'short', timeStyle: 'short'});
 
         function escapeHtml(value) {
@@ -761,36 +202,36 @@
                         <div class="col-md-3">
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body">
-                                    <span class="text-muted text-uppercase fw-semibold small">Associados impactados</span>
+                                    <span class="text-muted text-uppercase fw-semibold small">Veículos ativos</span>
                                     <div class="d-flex align-items-center justify-content-between mt-2">
-                                        <h2 class="fw-bold mb-0">${toDisplay(summary.distinctPartners ?? 0, "0")}</h2>
-                                        <span class="display-6 text-primary"><i class="bi bi-people-fill"></i></span>
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.activeVehicles ?? 0, "0")}</h2>
+                                        <span class="display-6 text-success"><i class="bi bi-check-circle"></i></span>
                                     </div>
-                                    <p class="text-muted small mb-0">Associados com pelo menos um veículo vinculado.</p>
+                                    <p class="text-muted small mb-0">Veículos com mensalidade em dia.</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body">
-                                    <span class="text-muted text-uppercase fw-semibold small">Mensalidades estimadas</span>
+                                    <span class="text-muted text-uppercase fw-semibold small">Veículos pendentes</span>
                                     <div class="d-flex align-items-center justify-content-between mt-2">
-                                        <h2 class="fw-bold mb-0">${toDisplay(summary.totalMonthlyValueFormatted, "R$ 0,00")}</h2>
-                                        <span class="display-6 text-primary"><i class="bi bi-cash-coin"></i></span>
+                                        <h2 class="fw-bold mb-0">${toDisplay(summary.pendingVehicles ?? 0, "0")}</h2>
+                                        <span class="display-6 text-warning"><i class="bi bi-hourglass-split"></i></span>
                                     </div>
-                                    <p class="text-muted small mb-0">Somatório das mensalidades configuradas para os veículos.</p>
+                                    <p class="text-muted small mb-0">Veículos aguardando regularização.</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body">
-                                    <span class="text-muted text-uppercase fw-semibold small">Média mensal</span>
+                                    <span class="text-muted text-uppercase fw-semibold small">Mensalidade média</span>
                                     <div class="d-flex align-items-center justify-content-between mt-2">
                                         <h2 class="fw-bold mb-0">${toDisplay(summary.averageMonthlyValue, "R$ 0,00")}</h2>
-                                        <span class="display-6 text-primary"><i class="bi bi-speedometer2"></i></span>
+                                        <span class="display-6 text-primary"><i class="bi bi-coin"></i></span>
                                     </div>
-                                    <p class="text-muted small mb-0">Valor médio da mensalidade por veículo cadastrado.</p>
+                                    <p class="text-muted small mb-0">Valor médio das mensalidades registradas.</p>
                                 </div>
                             </div>
                         </div>
@@ -799,10 +240,10 @@
             `;
         }
 
-        function renderDistributionColumn(title, iconClass, items, emptyText) {
-            const hasItems = Array.isArray(items) && items.length;
+        function renderDistributionColumn(title, icon, distribution, emptyMessage) {
+            const hasItems = distribution && Array.isArray(distribution.items) && distribution.items.length;
             const listItems = hasItems
-                ? items.map((item) => `
+                ? distribution.items.map((item) => `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>${toDisplay(item.label, 'Não informado')}</span>
                             <span class="badge bg-primary rounded-pill">${toDisplay(item.value, '0')}</span>
@@ -815,12 +256,12 @@
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-transparent border-0 pb-0">
                             <h5 class="card-title mb-0 d-flex align-items-center gap-2">
-                                <i class="${iconClass} text-primary"></i>
-                                <span>${escapeHtml(title)}</span>
+                                <i class="${icon} text-primary"></i>
+                                <span>${toDisplay(title, 'Distribuição')}</span>
                             </h5>
                         </div>
                         <div class="card-body">
-                            ${hasItems ? `<ul class="list-group list-group-flush">${listItems}</ul>` : `<div class="text-muted">${escapeHtml(emptyText)}</div>`}
+                            ${hasItems ? `<ul class="list-group list-group-flush">${listItems}</ul>` : `<div class="text-muted">${toDisplay(emptyMessage)}</div>`}
                         </div>
                     </div>
                 </div>
@@ -833,8 +274,8 @@
                 ? items.map((item) => `
                         <tr>
                             <td>
-                                <div class="fw-semibold">${toDisplay(item.model, 'Não informado')}</div>
-                                <small class="text-muted">${toDisplay(item.maker, '—')}</small>
+                                <div class="fw-semibold">${toDisplay(item.description, 'Não informado')}</div>
+                                <small class="text-muted">${toDisplay(item.modelYear, 'Ano não informado')}</small>
                             </td>
                             <td>${toDisplay(item.plaque, '—')}</td>
                             <td>${toDisplay(item.partnerName, '—')}</td>
@@ -1077,19 +518,24 @@
             `;
         }
 
-        window.initializeReportPage = function (type, options) {
-            console.log('🟢 initializeReportPage chamado! Type:', type, 'Options:', options);
-
-            const settings = Object.assign({autoOpen: false, title: ''}, options || {});
-            const page = document.querySelector('[data-report-page="' + type + '"]');
-
-            console.log('🟢 Página encontrada?', page !== null);
-
-            if (!page) {
-                console.error('❌ ERRO: Página não encontrada com selector: [data-report-page="' + type + '"]');
+        function initializeReportPages() {
+            const reportPages = document.querySelectorAll('[data-report-page]');
+            if (!reportPages.length) {
                 return;
             }
 
+            reportPages.forEach(function (page) {
+                const type = page.getAttribute('data-report-page');
+                setupReportPage({page, type});
+            });
+        }
+
+        function setupReportPage(settings) {
+            if (!settings || !settings.page || !settings.type) {
+                return;
+            }
+
+            const {page, type} = settings;
             const overlay = page.querySelector('[data-report-overlay]');
             const overlayContent = overlay ? overlay.querySelector('[data-report-overlay-content]') : null;
             const resultsWrapper = page.querySelector('[data-report-results-wrapper]');
@@ -1099,11 +545,36 @@
             const emptyState = page.querySelector('[data-report-empty]');
             const openButtons = page.querySelectorAll('[data-report-open]');
             const clearButton = page.querySelector('[data-report-clear]');
+            const pageTitle = page.getAttribute('data-report-title');
 
-            console.log('🟢 Overlay:', overlay !== null);
-            console.log('🟢 Botões encontrados:', openButtons.length);
+            function showOverlay() {
+                if (!overlay) {
+                    return;
+                }
 
-            const pageTitle = settings.title || page.dataset.reportTitle || '';
+                overlay.classList.add('is-visible');
+                document.addEventListener('keydown', onKeyDown);
+
+                if (!overlayContent) {
+                    return;
+                }
+
+                overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary mb-3" role="status" aria-label="Carregando filtros" style="width: 3rem; height: 3rem;"></div><p class="mb-2 fw-bold fs-5">Carregando filtros...</p><p class="text-muted small mb-0">Estamos preparando as opções do relatório para você.</p></div>';
+
+                const templateId = 'report-filters-' + type;
+                fetchReportFilters(templateId)
+                    .then(function (html) {
+                        overlayContent.innerHTML = html;
+                        bindFilterForm();
+                    })
+                    .catch(function () {
+                        overlayContent.innerHTML = '<div class="alert alert-danger mb-0 d-flex align-items-start gap-3"><i class="bi bi-exclamation-octagon-fill fs-3"></i><div><strong>Não foi possível carregar os filtros</strong><p class="mb-2 mt-1">Verifique sua conexão e tente novamente.</p><button type="button" class="btn btn-sm btn-outline-danger" data-report-close>Fechar</button></div></div>';
+                        const closeBtn = overlayContent.querySelector('[data-report-close]');
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', closeOverlay);
+                        }
+                    });
+            }
 
             function onKeyDown(event) {
                 if (event.key === 'Escape') {
@@ -1111,54 +582,17 @@
                 }
             }
 
-            function showOverlay() {
-                console.log('🔵 showOverlay() chamado!');
-                console.log('🔵 Overlay:', overlay);
-                console.log('🔵 OverlayContent:', overlayContent);
-
-                if (!overlay || !overlayContent) {
-                    console.error('❌ Overlay ou overlayContent não existe!');
-                    return;
-                }
-
-                console.log('🔵 Abrindo modal...');
-                overlayContent.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status" aria-label="Carregando"></div><p class="mt-3 mb-0 fw-semibold">Carregando opções do relatório...</p></div>';
-                overlay.classList.add('is-visible');
-                console.log('🔵 Classe is-visible adicionada!');
-                document.addEventListener('keydown', onKeyDown);
-
-                // Foco no modal para acessibilidade
-                setTimeout(function() {
-                    if (overlay) {
-                        const dialog = overlay.querySelector('.report-overlay-dialog');
-                        if (dialog) dialog.focus();
-                    }
-                }, 300);
-
-                fetch('/reports/' + type + '/filters', {headers: FETCH_HEADERS})
+            function fetchReportFilters(templateId) {
+                return fetch('/reports/' + templateId + '.html', {headers: FETCH_HEADERS})
                     .then(function (response) {
                         if (!response.ok) {
                             throw new Error('Erro ao carregar filtros: ' + response.status);
                         }
                         return response.text();
-                    })
-                    .then(function (html) {
-                        overlayContent.innerHTML = html;
-                        bindForm();
-
-                        // Foca no primeiro checkbox após carregar
-                        const firstCheckbox = overlayContent.querySelector('input[type="checkbox"]');
-                        if (firstCheckbox) {
-                            setTimeout(function() { firstCheckbox.focus(); }, 100);
-                        }
-                    })
-                    .catch(function (error) {
-                        console.error(error);
-                        overlayContent.innerHTML = '<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Não foi possível carregar os filtros do relatório. Tente novamente.</div>';
                     });
             }
 
-            function bindForm() {
+            function bindFilterForm() {
                 if (!overlayContent) {
                     return;
                 }
@@ -1199,12 +633,10 @@
                         return response.json();
                     })
                     .then(function (data) {
-                        // Feedback de sucesso antes de fechar
                         if (overlayContent) {
                             overlayContent.innerHTML = '<div class="text-center py-5"><div class="text-success mb-3" style="font-size: 4rem;"><i class="bi bi-check-circle-fill"></i></div><p class="mb-2 fw-bold fs-5 text-success">Relatório gerado com sucesso!</p><p class="text-muted small mb-0">Carregando visualização...</p></div>';
                         }
 
-                        // Pequeno delay para mostrar o sucesso
                         setTimeout(function() {
                             renderResults(data);
                             closeOverlay();
@@ -1215,7 +647,6 @@
                         if (overlayContent) {
                             overlayContent.innerHTML = '<div class="alert alert-danger mb-0 d-flex align-items-start gap-3"><i class="bi bi-exclamation-triangle-fill fs-3"></i><div><strong>Não foi possível gerar o relatório</strong><p class="mb-2 mt-1">Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.</p><button type="button" class="btn btn-sm btn-outline-danger" data-report-close>Fechar</button></div></div>';
 
-                            // Re-bind botão de fechar no erro
                             const closeBtn = overlayContent.querySelector('[data-report-close]');
                             if (closeBtn) {
                                 closeBtn.addEventListener('click', closeOverlay);
@@ -1251,14 +682,12 @@
             function closeOverlay() {
                 if (!overlay) return;
 
-                // Animação suave de fechamento
                 const dialog = overlay.querySelector('.report-overlay-dialog');
                 if (dialog) {
                     dialog.style.opacity = '0';
                     dialog.style.transform = 'scale(0.9) translateY(20px)';
                 }
 
-                // Aguarda animação antes de remover
                 setTimeout(function() {
                     overlay.classList.remove('is-visible');
                     if (dialog) {
@@ -1285,16 +714,15 @@
                 }
             }
 
-            console.log('🟢 Adicionando event listeners aos botões...');
-            openButtons.forEach(function (button, index) {
-                console.log('🟢 Botão', index + 1, 'encontrado:', button);
+            openButtons.forEach(function (button) {
                 button.addEventListener('click', function (event) {
-                    console.log('🔵 CLIQUE DETECTADO no botão', index + 1);
                     event.preventDefault();
-                    showOverlay();
+                    const targetType = button.getAttribute('data-report-type') || type;
+                    if (targetType === type) {
+                        showOverlay();
+                    }
                 });
             });
-            console.log('🟢 Event listeners adicionados com sucesso!');
 
             if (clearButton) {
                 clearButton.addEventListener('click', function (event) {
@@ -1316,39 +744,73 @@
                     }
                 });
             }
+        }
 
-            if (settings.autoOpen) {
-                showOverlay();
-            }
-        };
+        initializeReportPages();
     })();
 </script>
 <script>
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const body = document.body;
-    const savedTheme = localStorage.getItem('theme');
+    (function () {
+        const docElement = document.documentElement;
+        const themeToggles = document.querySelectorAll('[data-theme-toggle]');
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        const backToTopButton = document.getElementById('backToTop');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-    if (savedTheme === 'dark') {
-        body.classList.add('dark-mode');
-    }
-
-    const updateThemeIcon = () => {
-        if (!themeIcon) {
-            return;
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark' || (!storedTheme && prefersDarkScheme.matches)) {
+            docElement.setAttribute('data-theme', 'dark');
         }
-        themeIcon.textContent = body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    };
 
-    updateThemeIcon();
+        function toggleTheme() {
+            const isDark = docElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            docElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
 
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-            const isDark = body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcon();
+        themeToggles.forEach(function (button) {
+            button.addEventListener('click', function () {
+                toggleTheme();
+            });
         });
-    }
+
+        prefersDarkScheme.addEventListener('change', function (event) {
+            const saved = localStorage.getItem('theme');
+            if (!saved) {
+                docElement.setAttribute('data-theme', event.matches ? 'dark' : 'light');
+            }
+        });
+
+        navLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (navToggle && navToggle.checked) {
+                    navToggle.checked = false;
+                }
+            });
+        });
+
+        function handleBackToTopVisibility() {
+            if (!backToTopButton) {
+                return;
+            }
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('is-visible');
+            } else {
+                backToTopButton.classList.remove('is-visible');
+            }
+        }
+
+        if (backToTopButton) {
+            backToTopButton.addEventListener('click', function () {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        }
+
+        window.addEventListener('scroll', handleBackToTopVisibility, {passive: true});
+        handleBackToTopVisibility();
+    })();
 </script>
 </body>
 </html>

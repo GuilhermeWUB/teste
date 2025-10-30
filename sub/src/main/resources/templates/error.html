@@ -1,77 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erro - Sistema</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .error-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            max-width: 600px;
-            text-align: center;
-        }
-        h1 {
-            color: #f5576c;
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .error-details {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .error-details p {
-            margin: 10px 0;
-            color: #666;
-        }
-        .error-details strong {
-            color: #333;
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: 600;
-            margin-top: 20px;
-            transition: transform 0.2s;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom-dark-mode.css}">
 </head>
-<body>
-<div class="error-container">
-    <h1>⚠️ Erro</h1>
-    <h2 th:text="${status} ? ${status} + ' - ' + ${error} : 'Erro no Servidor'">500 - Internal Server Error</h2>
+<body class="error-page">
+<div class="error-card">
+    <div>
+        <h1 class="error-card__title">⚠️</h1>
+        <h2 class="error-card__subtitle" th:text="${status} ? ${status} + ' - ' + ${error} : 'Erro no Servidor'">
+            500 - Internal Server Error
+        </h2>
+        <p class="auth-card__subtitle" th:if="${message}" th:text="${message}"></p>
+    </div>
 
-    <div class="error-details">
+    <div class="error-card__details">
         <p><strong>Timestamp:</strong> <span th:text="${timestamp}">-</span></p>
         <p><strong>Status:</strong> <span th:text="${status}">500</span></p>
         <p><strong>Erro:</strong> <span th:text="${error}">Internal Server Error</span></p>
@@ -79,7 +27,30 @@
         <p><strong>Path:</strong> <span th:text="${path}">-</span></p>
     </div>
 
-    <a href="/login" class="btn">← Voltar para o Login</a>
+    <div class="report-actions report-actions--center">
+        <a href="/login" class="btn btn-primary">
+            ← Voltar para o Login
+        </a>
+    </div>
 </div>
+
+<script>
+    (function () {
+        const docElement = document.documentElement;
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark' || (!storedTheme && prefersDarkScheme.matches)) {
+            docElement.setAttribute('data-theme', 'dark');
+        }
+
+        prefersDarkScheme.addEventListener('change', function (event) {
+            const saved = localStorage.getItem('theme');
+            if (!saved) {
+                docElement.setAttribute('data-theme', event.matches ? 'dark' : 'light');
+            }
+        });
+    })();
+</script>
 </body>
 </html>

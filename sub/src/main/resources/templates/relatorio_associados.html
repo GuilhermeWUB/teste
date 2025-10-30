@@ -3,53 +3,6 @@
       layout:decorate="~{fragments/layout}">
 <head>
     <title>SUB - Relatório de Associados</title>
-    <style>
-        .report-form {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 0.375rem;
-            margin-bottom: 2rem;
-        }
-        .report-results {
-            margin-top: 2rem;
-        }
-        .report-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.375rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #dee2e6;
-        }
-        .stat-card {
-            background: #e7f1ff;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            text-align: center;
-        }
-        .stat-label {
-            font-size: 0.875rem;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-        }
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #0d6efd;
-        }
-        .distribution-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .distribution-item:last-child {
-            border-bottom: none;
-        }
-        table {
-            width: 100%;
-            font-size: 0.9rem;
-        }
-    </style>
 </head>
 <body>
 <section layout:fragment="content">
@@ -110,11 +63,11 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="report-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-file-earmark-bar-graph"></i> Gerar Relatório
                 </button>
-                <a th:href="@{/reports/partners}" class="btn btn-secondary">
+                <a th:href="@{/reports/partners}" class="btn btn-outline">
                     <i class="bi bi-x-circle"></i> Limpar
                 </a>
             </div>
@@ -131,7 +84,7 @@
     <div th:if="${generated}" class="report-results">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="h4 mb-0">Resultados do Relatório</h2>
-            <button onclick="window.print()" class="btn btn-outline-primary btn-sm">
+            <button onclick="window.print()" class="btn btn-outline btn-sm">
                 <i class="bi bi-printer"></i> Imprimir
             </button>
         </div>
@@ -178,7 +131,7 @@
                 <span th:text="${item.label}">Cidade</span>
                 <strong th:text="${item.value}">0</strong>
             </div>
-            <div th:if="${#lists.isEmpty(topCities)}" class="text-muted text-center py-3">
+            <div th:if="${#lists.isEmpty(topCities)}" class="report-empty py-3">
                 Nenhum dado disponível
             </div>
         </div>
@@ -237,7 +190,7 @@
                     </tbody>
                 </table>
             </div>
-            <div th:if="${#lists.isEmpty(partners)}" class="text-muted text-center py-3">
+            <div th:if="${#lists.isEmpty(partners)}" class="report-empty py-3">
                 Nenhum associado encontrado
             </div>
         </div>
