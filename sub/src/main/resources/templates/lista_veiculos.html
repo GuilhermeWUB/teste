@@ -70,17 +70,19 @@
                 <td th:text="${vehicle.payment != null ? 'R$ ' + #numbers.formatDecimal(vehicle.payment.monthly, 1, 2, 'COMMA') : 'R$ 0,00'}"></td>
                 <td th:text="${vehicle.payment != null ? vehicle.payment.vencimento : '-'}"></td>
                 <td class="text-center">
-                    <a class="btn btn-warning btn-sm"
-                       th:href="${partnerId != null} ? @{/vehicles/edit/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/edit/{id}(id=${vehicle.id})}">
-                        Editar
-                    </a>
-                    <form th:action="${partnerId != null} ? @{/vehicles/delete/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/delete/{id}(id=${vehicle.id})}"
-                          method="post" class="d-inline">
-                        <button type="submit" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Confirma a remoção deste veículo?');">
-                            Remover
-                        </button>
-                    </form>
+                    <div class="table-actions justify-content-center flex-wrap">
+                        <a class="btn btn-warning btn-sm"
+                           th:href="${partnerId != null} ? @{/vehicles/edit/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/edit/{id}(id=${vehicle.id})}">
+                            Editar
+                        </a>
+                        <form th:action="${partnerId != null} ? @{/vehicles/delete/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/delete/{id}(id=${vehicle.id})}"
+                              method="post" class="inline-form">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Confirma a remoção deste veículo?');">
+                                Remover
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             </tbody>
