@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class FipeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FipeService.class);
-    private static final String BRASIL_API_BASE_URL = "https://brasilapi.com.br/api/fipe/preco/v2";
+    private static final String BRASIL_API_BASE_URL = "https://brasilapi.com.br/api/fipe/preco/v1";
     private static final Locale PT_BR = new Locale("pt", "BR");
     private static final DateTimeFormatter MES_REFERENCIA_FORMATTER = new DateTimeFormatterBuilder()
             .parseCaseInsensitive()
@@ -60,13 +60,8 @@ public class FipeService {
      * @return Dados do veículo
      */
     public FipeResponseDTO buscarVeiculoPorCodigoFipe(String codigoFipe, Integer tabelaReferencia) {
-        try {
-            LOGGER.info("Buscando dados do veículo com código FIPE: {}", codigoFipe);
-            return buscarDadosBrasilApi(codigoFipe, tabelaReferencia);
-        } catch (RuntimeException brasilApiError) {
-            LOGGER.error("Erro ao consultar BrasilAPI para o código FIPE {}: {}", codigoFipe, brasilApiError.getMessage());
-            throw new RuntimeException("Não foi possível buscar os dados do veículo. Verifique se o código FIPE está correto: " + codigoFipe, brasilApiError);
-        }
+        LOGGER.info("Buscando dados do veículo com código FIPE: {}", codigoFipe);
+        return buscarDadosBrasilApi(codigoFipe, tabelaReferencia);
     }
 
     /**
