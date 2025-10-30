@@ -1277,6 +1277,11 @@ tr + tr {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.table-actions .form-select {
+    min-width: 120px;
 }
 
 .inline-form {
