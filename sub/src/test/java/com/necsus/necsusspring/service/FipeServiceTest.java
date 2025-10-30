@@ -11,6 +11,7 @@ import org.springframework.test.web.client.response.DefaultResponseCreator;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -60,7 +61,7 @@ class FipeServiceTest {
                 ]
                 """;
 
-        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v2/" + codigoFipe))
+        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v1/" + codigoFipe))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(brasilApiResponse, MediaType.APPLICATION_JSON));
 
@@ -76,43 +77,21 @@ class FipeServiceTest {
     }
 
     @Test
-    void deveFazerFallbackParaApiOficialQuandoBrasilApiFalhar() {
+    void lancaExcecaoQuandoBrasilApiFalhar() {
         String codigoFipe = "001004-9";
         DefaultResponseCreator brasilApiErro = withStatus(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"message\":\"not found\"}");
 
-        String apiOficialResponse = """
-                {
-                  "marca": "Chevrolet",
-                  "modelo": "Onix 1.0",
-                  "anoModelo": 2021,
-                  "combustivel": "Gasolina",
-                  "siglaCombustivel": "G",
-                  "codigoFipe": "001004-9",
-                  "valor": "R$ 49.500,00",
-                  "mesReferencia": "abril de 2024",
-                  "tipoVeiculo": 1
-                }
-                """;
-
-        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v2/" + codigoFipe))
+        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v1/" + codigoFipe))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(brasilApiErro);
 
-        mockServer.expect(requestTo("https://fipe.parallelum.com.br/api/v2/cars/" + codigoFipe))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(apiOficialResponse, MediaType.APPLICATION_JSON));
-
-        FipeResponseDTO resultado = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe, null);
+        assertThatThrownBy(() -> fipeService.buscarVeiculoPorCodigoFipe(codigoFipe, null))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Código FIPE '" + codigoFipe + "' não encontrado na BrasilAPI");
 
         mockServer.verify();
-
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.getBrand()).isEqualTo("Chevrolet");
-        assertThat(resultado.getModelYear()).isEqualTo(2021);
-        assertThat(resultado.getPrice()).isEqualTo("R$ 49.500,00");
-        assertThat(resultado.getVehicleType()).isEqualTo(1);
     }
 
     @Test
@@ -134,7 +113,7 @@ class FipeServiceTest {
                 ]
                 """;
 
-        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v2/" + codigoFipe))
+        mockServer.expect(requestTo("https://brasilapi.com.br/api/fipe/preco/v1/" + codigoFipe))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(brasilApiResponse, MediaType.APPLICATION_JSON));
 
