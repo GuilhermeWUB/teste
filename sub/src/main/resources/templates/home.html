@@ -3,139 +3,41 @@
       layout:decorate="~{fragments/layout}">
 <head>
     <title>SUB - Gestão Simplificada</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, rgba(106, 13, 173, 0.15), rgba(106, 13, 173, 0.4));
-        }
-
-        .content-card {
-            background: transparent;
-            box-shadow: none;
-            padding: 0;
-            margin-top: 0;
-        }
-
-        .hero {
-            min-height: calc(100vh - 120px);
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-card {
-            background: rgba(255, 255, 255, 0.92);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            box-shadow: 0 1.5rem 3rem rgba(106, 13, 173, 0.15);
-        }
-
-        .hero h1 {
-            font-weight: 700;
-            color: #3b026c;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            color: #4a4a4a;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--ub-purple);
-            border-color: var(--ub-purple);
-            padding: 0.85rem 2.5rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-outline-primary {
-            color: var(--ub-purple);
-            border-color: var(--ub-purple);
-            padding: 0.85rem 2.5rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-primary:hover {
-            background-color: #580cae;
-            border-color: #580cae;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: rgba(106, 13, 173, 0.1);
-        }
-
-        .feature-list {
-            margin-top: 2.5rem;
-        }
-
-        .feature-list li {
-            font-size: 1.05rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .highlight-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(106, 13, 173, 0.1);
-            color: var(--ub-purple);
-            padding: 0.5rem 1rem;
-            border-radius: 999px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 992px) {
-            .hero {
-                padding: 2rem 0;
-                min-height: auto;
-            }
-
-            .hero-card {
-                padding: 2rem;
-            }
-        }
-    </style>
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="hero">
+<section layout:fragment="content" class="landing">
+    <div class="landing__hero">
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
-                    <div class="hero-card">
-                        <span class="highlight-badge">
+                    <div class="landing__card">
+                        <span class="landing__badge">
                             <i class="bi bi-rocket-takeoff-fill"></i>
                             Plataforma SUB
                         </span>
-                        <h1 class="mt-4">Gestão inteligente para associações veiculares</h1>
-                        <p class="mt-3">
+                        <h1 class="landing__title">Gestão inteligente para associações veiculares</h1>
+                        <p class="landing__lead">
                             Organize associados, gerencie veículos e acompanhe mensalidades em um único painel intuitivo.
                         </p>
-                        <div class="hero-actions">
+                        <div class="landing__actions">
                             <a class="btn btn-primary" th:href="@{/login}">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>
                                 Entrar / Registrar
                             </a>
-                            <a class="btn btn-outline-primary" href="#recursos">
+                            <a class="btn btn-outline" href="#recursos">
                                 <i class="bi bi-info-circle me-2"></i>
                                 Conheça os recursos
                             </a>
                         </div>
-                        <ul class="feature-list list-unstyled mt-4">
-                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Dashboard com indicadores em tempo real</li>
-                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Controle completo de associados e veículos</li>
-                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Geração rápida de mensalidades e cobranças</li>
+                        <ul class="landing__list">
+                            <li class="landing__list-item"><i class="bi bi-check-circle-fill text-success"></i>Dashboard com indicadores em tempo real</li>
+                            <li class="landing__list-item"><i class="bi bi-check-circle-fill text-success"></i>Controle completo de associados e veículos</li>
+                            <li class="landing__list-item"><i class="bi bi-check-circle-fill text-success"></i>Geração rápida de mensalidades e cobranças</li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img class="img-fluid" th:src="@{/images/ub_logo_branca.png}" alt="Logotipo SUB" style="max-width: 420px;">
+                    <img class="img-fluid landing__illustration" th:src="@{/images/ub_logo_branca.png}" alt="Logotipo SUB">
                 </div>
             </div>
         </div>
@@ -144,24 +46,24 @@
     <div class="container py-5" id="recursos">
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="p-4 h-100 bg-white rounded-4 shadow-sm">
-                    <div class="text-primary fs-3 mb-3"><i class="bi bi-speedometer2"></i></div>
-                    <h3 class="h5">Indicadores completos</h3>
-                    <p class="text-muted mb-0">Visualize rapidamente a saúde da sua associação com cards e gráficos atualizados.</p>
+                <div class="landing-feature">
+                    <div class="landing-feature__icon"><i class="bi bi-speedometer2"></i></div>
+                    <h3 class="landing-feature__title">Indicadores completos</h3>
+                    <p class="landing-feature__text">Visualize rapidamente a saúde da sua associação com cards e gráficos atualizados.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="p-4 h-100 bg-white rounded-4 shadow-sm">
-                    <div class="text-primary fs-3 mb-3"><i class="bi bi-people-fill"></i></div>
-                    <h3 class="h5">Gestão de associados</h3>
-                    <p class="text-muted mb-0">Registre, edite e acompanhe cada associado com facilidade e precisão.</p>
+                <div class="landing-feature">
+                    <div class="landing-feature__icon"><i class="bi bi-people-fill"></i></div>
+                    <h3 class="landing-feature__title">Gestão de associados</h3>
+                    <p class="landing-feature__text">Registre, edite e acompanhe cada associado com facilidade e precisão.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="p-4 h-100 bg-white rounded-4 shadow-sm">
-                    <div class="text-primary fs-3 mb-3"><i class="bi bi-car-front-fill"></i></div>
-                    <h3 class="h5">Controle de veículos</h3>
-                    <p class="text-muted mb-0">Mantenha o cadastro veicular sempre atualizado e integrado aos associados.</p>
+                <div class="landing-feature">
+                    <div class="landing-feature__icon"><i class="bi bi-car-front-fill"></i></div>
+                    <h3 class="landing-feature__title">Controle de veículos</h3>
+                    <p class="landing-feature__text">Mantenha o cadastro veicular sempre atualizado e integrado aos associados.</p>
                 </div>
             </div>
         </div>
