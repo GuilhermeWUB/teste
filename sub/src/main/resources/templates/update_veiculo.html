@@ -169,5 +169,19 @@
     </form>
 </section>
 
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", function() {
+        var fipeValueFormatted = /*[[${fipeValueFormatted}]]*/ null;
+        if (fipeValueFormatted) {
+            var fipeValueInput = document.getElementById("fipe_value");
+            if (fipeValueInput) {
+                fipeValueInput.value = fipeValueFormatted;
+            }
+        }
+    });
+    /*]]>*/
+</script>
+
 </body>
 </html>

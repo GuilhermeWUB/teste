@@ -25,8 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Controller
 @RequestMapping("/vehicles")
@@ -77,7 +79,9 @@ public class VehicleController {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
                 vehicle.setCodigo_fipe(fipeData.getCodeFipe());
-                vehicle.setFipe_value(parseValorMonetario(fipeData.getPrice()));
+                Double fipeValue = parseValorMonetario(fipeData.getPrice());
+                vehicle.setFipe_value(fipeValue);
+                model.addAttribute("fipeValueFormatted", formatCurrency(fipeValue));
                 vehicle.setMaker(fipeData.getBrand());
                 vehicle.setModel(fipeData.getModel());
                 vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
@@ -119,6 +123,7 @@ public class VehicleController {
         try {
             FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe.trim(), tabelaReferencia);
             aplicarDadosFipeNoVeiculo(vehicle, fipeData);
+            model.addAttribute("fipeValueFormatted", formatCurrency(vehicle.getFipe_value()));
             model.addAttribute("fipeSuccessMessage", "Dados da Fipe carregados com sucesso!");
         } catch (Exception ex) {
             // Mostrar a mensagem específica do erro ao usuário
@@ -181,7 +186,9 @@ public class VehicleController {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
                 vehicle.setCodigo_fipe(fipeData.getCodeFipe());
-                vehicle.setFipe_value(parseValorMonetario(fipeData.getPrice()));
+                Double fipeValue = parseValorMonetario(fipeData.getPrice());
+                vehicle.setFipe_value(fipeValue);
+                model.addAttribute("fipeValueFormatted", formatCurrency(fipeValue));
                 vehicle.setMaker(fipeData.getBrand());
                 vehicle.setModel(fipeData.getModel());
                 vehicle.setYear_mod(fipeData.getModelYear() != null ? String.valueOf(fipeData.getModelYear()) : null);
@@ -192,6 +199,8 @@ public class VehicleController {
                 model.addAttribute("fipeError", "Erro ao buscar dados da FIPE: " + e.getMessage());
                 vehicle.setCodigo_fipe(codigoFipe);
             }
+        } else {
+            model.addAttribute("fipeValueFormatted", formatCurrency(vehicle.getFipe_value()));
         }
 
         model.addAttribute("vehicle", vehicle);
@@ -330,6 +339,14 @@ public class VehicleController {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private String formatCurrency(Double value) {
+        if (value == null) {
+            return "";
+        }
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+        return currencyFormatter.format(value);
     }
 
     /**
