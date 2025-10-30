@@ -121,7 +121,13 @@ public class VehicleController {
             aplicarDadosFipeNoVeiculo(vehicle, fipeData);
             model.addAttribute("fipeSuccessMessage", "Dados da Fipe carregados com sucesso!");
         } catch (Exception ex) {
-            model.addAttribute("fipeErrorMessage", "Não foi possível buscar os dados da Fipe. Verifique o código informado.");
+            // Mostrar a mensagem específica do erro ao usuário
+            String errorMessage = ex.getMessage();
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                model.addAttribute("fipeErrorMessage", errorMessage);
+            } else {
+                model.addAttribute("fipeErrorMessage", "Não foi possível buscar os dados da Fipe. Verifique o código informado.");
+            }
         }
 
         return "cadastro_veiculo";
