@@ -6,18 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Year;
 import java.time.YearMonth;
@@ -96,8 +90,9 @@ public class FipeService {
         }
 
         try {
-            String encodedCode = URLEncoder.encode(codigoLimpo, StandardCharsets.UTF_8);
-            String url = BRASIL_API_BASE_URL + "/" + encodedCode;
+            // Não usar URLEncoder pois ele codifica o hífen (-) como %2D, o que causa erro 404
+            // O código FIPE contém apenas números e hífens, que são caracteres válidos em URLs
+            String url = BRASIL_API_BASE_URL + "/" + codigoLimpo;
             if (tabelaReferencia != null && isLikelyModelYear(tabelaReferencia)) {
                 url += "?anoModelo=" + tabelaReferencia;
             }
