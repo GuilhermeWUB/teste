@@ -6,13 +6,13 @@
 </head>
 <body>
 
-<section layout:fragment="content">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-        <div>
-            <h1 class="mb-0">Veículos</h1>
-            <p class="text-muted mb-0" th:if="${selectedPartner != null}" th:text="${'Associado: ' + selectedPartner.name}"></p>
+<section layout:fragment="content" class="vehicles-page">
+    <div class="vehicles-page__header">
+        <div class="vehicles-page__title">
+            <h1 class="vehicles-page__heading">Veículos</h1>
+            <p class="vehicles-page__subtitle" th:if="${selectedPartner != null}" th:text="${'Associado: ' + selectedPartner.name}"></p>
         </div>
-        <a class="btn btn-primary"
+        <a class="btn btn-primary vehicles-page__new"
            th:href="${partnerId != null} ? @{/vehicles/new(partnerId=${partnerId})} : @{/vehicles/new}">
             Novo Veículo
         </a>
@@ -20,73 +20,75 @@
 
     <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
 
-    <form class="row g-3 mb-4" th:action="@{/vehicles}" method="get">
-        <div class="col-md-6">
-            <label for="partnerId" class="form-label">Filtrar por associado</label>
-            <select id="partnerId" name="partnerId" class="form-select">
-                <option value="" th:selected="${partnerId == null}">Todos os associados</option>
-                <option th:each="partner : ${partners}"
-                        th:value="${partner.id}"
-                        th:text="${partner.name}"
-                        th:selected="${partnerId != null and partnerId == partner.id}"></option>
-            </select>
+    <form class="vehicles-filter" th:action="@{/vehicles}" method="get">
+        <div class="vehicles-filter__field">
+            <label for="partnerId" class="vehicles-filter__label">Filtrar por associado</label>
+            <div class="vehicles-filter__control">
+                <select id="partnerId" name="partnerId" class="vehicles-filter__select">
+                    <option value="" th:selected="${partnerId == null}">Todos os associados</option>
+                    <option th:each="partner : ${partners}"
+                            th:value="${partner.id}"
+                            th:text="${partner.name}"
+                            th:selected="${partnerId != null and partnerId == partner.id}"></option>
+                </select>
+            </div>
         </div>
-        <div class="col-md-6 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
-            <a class="btn btn-secondary" th:href="@{/vehicles}">Limpar</a>
-        </div>
+        <button type="submit" class="btn btn-primary vehicles-filter__action">Filtrar</button>
+        <a class="btn btn-outline vehicles-filter__action" th:href="@{/vehicles}">Limpar</a>
     </form>
 
     <div th:if="${#lists.isEmpty(vehicles)}" class="alert alert-info" role="alert">
         Nenhum veículo cadastrado.
     </div>
 
-    <div th:if="${!#lists.isEmpty(vehicles)}" class="table-responsive">
-        <table class="table table-striped align-middle">
-            <thead>
-            <tr>
-                <th>Veículo</th>
-                <th>Placa</th>
-                <th>Cor</th>
-                <th>Ano/Modelo</th>
-                <th>Combustível</th>
-                <th>Associado</th>
-                <th>Mensalidade</th>
-                <th>Vencimento</th>
-                <th class="text-center">Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="vehicle : ${vehicles}">
-                <td>
-                    <span class="fw-semibold" th:text="${vehicle.maker}"></span>
-                    <span th:text="${' - ' + vehicle.model}"></span>
-                </td>
-                <td th:text="${vehicle.plaque}"></td>
-                <td th:text="${vehicle.color}"></td>
-                <td th:text="${vehicle.year_mod}"></td>
-                <td th:text="${vehicle.tipo_combustivel}"></td>
-                <td th:text="${vehicle.partner != null ? vehicle.partner.name : 'N/I'}"></td>
-                <td th:text="${vehicle.payment != null ? 'R$ ' + #numbers.formatDecimal(vehicle.payment.monthly, 1, 2, 'COMMA') : 'R$ 0,00'}"></td>
-                <td th:text="${vehicle.payment != null ? vehicle.payment.vencimento : '-'}"></td>
-                <td class="text-center">
-                    <div class="table-actions justify-content-center flex-wrap">
-                        <a class="btn btn-warning btn-sm"
-                           th:href="${partnerId != null} ? @{/vehicles/edit/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/edit/{id}(id=${vehicle.id})}">
-                            Editar
-                        </a>
-                        <form th:action="${partnerId != null} ? @{/vehicles/delete/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/delete/{id}(id=${vehicle.id})}"
-                              method="post" class="inline-form">
-                            <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Confirma a remoção deste veículo?');">
-                                Remover
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div th:if="${!#lists.isEmpty(vehicles)}" class="vehicles-table">
+        <div class="vehicles-table__scroll">
+            <table class="table align-middle vehicles-table__table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Placa</th>
+                        <th>Cor</th>
+                        <th>Ano/Modelo</th>
+                        <th>Combustível</th>
+                        <th>Associado</th>
+                        <th>Mensalidade</th>
+                        <th>Vencimento</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="vehicle : ${vehicles}">
+                        <td>
+                            <span class="fw-semibold" th:text="${vehicle.maker}"></span>
+                            <span th:text="${' - ' + vehicle.model}"></span>
+                        </td>
+                        <td th:text="${vehicle.plaque}"></td>
+                        <td th:text="${vehicle.color}"></td>
+                        <td th:text="${vehicle.year_mod}"></td>
+                        <td th:text="${vehicle.tipo_combustivel}"></td>
+                        <td th:text="${vehicle.partner != null ? vehicle.partner.name : 'N/I'}"></td>
+                        <td th:text="${vehicle.payment != null ? 'R$ ' + #numbers.formatDecimal(vehicle.payment.monthly, 1, 2, 'COMMA') : 'R$ 0,00'}"></td>
+                        <td th:text="${vehicle.payment != null ? vehicle.payment.vencimento : '-'}"></td>
+                        <td class="text-center">
+                            <div class="table-actions justify-content-center flex-wrap">
+                                <a class="btn btn-warning btn-sm"
+                                   th:href="${partnerId != null} ? @{/vehicles/edit/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/edit/{id}(id=${vehicle.id})}">
+                                    Editar
+                                </a>
+                                <form th:action="${partnerId != null} ? @{/vehicles/delete/{id}(id=${vehicle.id}, partnerId=${partnerId})} : @{/vehicles/delete/{id}(id=${vehicle.id})}"
+                                      method="post" class="inline-form">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Confirma a remoção deste veículo?');">
+                                        Remover
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 
