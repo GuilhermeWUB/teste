@@ -5,116 +5,127 @@
     <title>SUB - Relatório de Veículos</title>
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+<section layout:fragment="content" class="report-page">
+    <div class="report-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div>
             <h1 class="mb-1 d-flex align-items-center gap-2">
                 <i class="bi bi-car-front-fill text-primary"></i>
                 <span>Relatório de Veículos</span>
             </h1>
-            <p class="text-muted mb-0">Selecione as seções que deseja visualizar no relatório</p>
+            <p class="text-muted mb-0">Selecione as seções que deseja visualizar no relatório personalizado.</p>
         </div>
     </div>
 
-    <!-- Formulário de Filtros -->
-    <div class="report-form">
+    <div class="report-card report-form">
         <form method="get" th:action="@{/reports/vehicles}">
             <input type="hidden" name="generate" value="true" />
 
-            <h5 class="mb-3">Seções do Relatório</h5>
-            <div class="row mb-3">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div>
+                    <h5 class="mb-1">Seções do Relatório</h5>
+                    <p class="text-muted mb-0">Marque as informações que deseja incluir antes de gerar o relatório.</p>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                    <div class="form-check">
+                    <div class="form-check h-100">
                         <input class="form-check-input" type="checkbox" name="sections" value="summary" id="summary"
                                th:checked="${selectedSections != null and selectedSections.contains('summary')}">
                         <label class="form-check-label" for="summary">
-                            <strong>Resumo Geral</strong> - Total de veículos, associados e valores
+                            <strong>Resumo Geral</strong>
+                            <span class="d-block text-muted">Total de veículos cadastrados, associados relacionados e valores de mensalidade.</span>
                         </label>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-check">
+                    <div class="form-check h-100">
                         <input class="form-check-input" type="checkbox" name="sections" value="fuelDistribution" id="fuelDistribution"
                                th:checked="${selectedSections != null and selectedSections.contains('fuelDistribution')}">
                         <label class="form-check-label" for="fuelDistribution">
-                            <strong>Distribuição por Combustível</strong> - Quantidade por tipo
+                            <strong>Distribuição por Combustível</strong>
+                            <span class="d-block text-muted">Quantidade de veículos por tipo de combustível informado.</span>
                         </label>
                     </div>
                 </div>
-            </div>
-            <div class="row mb-3">
                 <div class="col-md-6">
-                    <div class="form-check">
+                    <div class="form-check h-100">
                         <input class="form-check-input" type="checkbox" name="sections" value="makerDistribution" id="makerDistribution"
                                th:checked="${selectedSections != null and selectedSections.contains('makerDistribution')}">
                         <label class="form-check-label" for="makerDistribution">
-                            <strong>Distribuição por Montadora</strong> - Quantidade por fabricante
+                            <strong>Distribuição por Montadora</strong>
+                            <span class="d-block text-muted">Total de veículos separados por fabricante.</span>
                         </label>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-check">
+                    <div class="form-check h-100">
                         <input class="form-check-input" type="checkbox" name="sections" value="vehicleList" id="vehicleList"
                                th:checked="${selectedSections != null and selectedSections.contains('vehicleList')}">
                         <label class="form-check-label" for="vehicleList">
-                            <strong>Listagem Completa</strong> - Todos os veículos cadastrados
+                            <strong>Listagem Completa</strong>
+                            <span class="d-block text-muted">Todos os veículos cadastrados com status, associado e mensalidade.</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="report-actions mt-3">
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-file-earmark-bar-graph"></i> Gerar Relatório
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Gerar Relatório</span>
                 </button>
-                <a th:href="@{/reports/vehicles}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Limpar
+                <a th:href="@{/reports/vehicles}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                    <span>Limpar</span>
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Mensagem de Erro -->
     <div th:if="${errorMessage}" class="alert alert-warning" role="alert">
         <i class="bi bi-exclamation-triangle-fill"></i>
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <!-- Resultados do Relatório -->
-    <div th:if="${generated}" class="report-results">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 mb-0">Resultados do Relatório</h2>
-            <button onclick="window.print()" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-printer"></i> Imprimir
+    <div th:if="${generated}" class="report-card report-results">
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+            <div>
+                <h2 class="h4 mb-1">Resultados do Relatório</h2>
+                <p class="text-muted mb-0">Dados atualizados conforme as opções selecionadas acima.</p>
+            </div>
+            <button type="button" onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-printer"></i>
+                <span>Imprimir</span>
             </button>
         </div>
 
-        <!-- Resumo Geral -->
         <div th:if="${summary}" class="report-section">
-            <h3 class="h5 mb-3">
-                <i class="bi bi-clipboard-data"></i> Resumo Geral
+            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-clipboard-data"></i>
+                <span>Resumo Geral</span>
             </h3>
             <div class="row g-3">
-                <div class="col-md-3">
-                    <div class="stat-card">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card h-100">
                         <div class="stat-label">Total de Veículos</div>
                         <div class="stat-value" th:text="${summary.totalVehicles}">0</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card h-100">
                         <div class="stat-label">Associados</div>
                         <div class="stat-value" th:text="${summary.distinctPartners}">0</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card h-100">
                         <div class="stat-label">Total Mensalidades</div>
                         <div class="stat-value" th:text="${summary.totalMonthlyValueFormatted}">R$ 0,00</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="stat-card h-100">
                         <div class="stat-label">Média por Veículo</div>
                         <div class="stat-value" th:text="${summary.averageMonthlyValue}">R$ 0,00</div>
                     </div>
@@ -122,77 +133,77 @@
             </div>
         </div>
 
-        <!-- Distribuição por Combustível -->
         <div th:if="${fuelDistribution}" class="report-section">
-            <h3 class="h5 mb-3">
-                <i class="bi bi-fuel-pump"></i> Distribuição por Combustível
+            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-fuel-pump"></i>
+                <span>Distribuição por Combustível</span>
             </h3>
             <div th:each="item : ${fuelDistribution}" class="distribution-item">
                 <span th:text="${item.label}">Tipo</span>
                 <strong th:text="${item.value}">0</strong>
             </div>
-            <div th:if="${#lists.isEmpty(fuelDistribution)}" class="text-muted text-center py-3">
-                Nenhum dado disponível
+            <div th:if="${#lists.isEmpty(fuelDistribution)}" class="text-muted text-center pt-3">
+                Nenhum dado disponível para os filtros selecionados.
             </div>
         </div>
 
-        <!-- Distribuição por Montadora -->
         <div th:if="${makerDistribution}" class="report-section">
-            <h3 class="h5 mb-3">
-                <i class="bi bi-building"></i> Distribuição por Montadora
+            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-building"></i>
+                <span>Distribuição por Montadora</span>
             </h3>
             <div th:each="item : ${makerDistribution}" class="distribution-item">
                 <span th:text="${item.label}">Montadora</span>
                 <strong th:text="${item.value}">0</strong>
             </div>
-            <div th:if="${#lists.isEmpty(makerDistribution)}" class="text-muted text-center py-3">
-                Nenhum dado disponível
+            <div th:if="${#lists.isEmpty(makerDistribution)}" class="text-muted text-center pt-3">
+                Nenhum dado disponível para os filtros selecionados.
             </div>
         </div>
 
-        <!-- Listagem Completa -->
         <div th:if="${vehicles}" class="report-section">
-            <h3 class="h5 mb-3">
-                <i class="bi bi-list-ul"></i> Listagem Completa de Veículos
+            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-list-ul"></i>
+                <span>Listagem Completa de Veículos</span>
             </h3>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
+            <div class="report-table-wrapper">
+                <table class="table table-striped table-hover mb-0">
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Montadora</th>
-                            <th>Modelo</th>
-                            <th>Placa</th>
-                            <th>Combustível</th>
-                            <th>Status</th>
-                            <th>Associado</th>
-                            <th>Mensalidade</th>
-                        </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Montadora</th>
+                        <th>Modelo</th>
+                        <th>Placa</th>
+                        <th>Combustível</th>
+                        <th>Status</th>
+                        <th>Associado</th>
+                        <th>Mensalidade</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="vehicle : ${vehicles}">
-                            <td th:text="${vehicle.id}">1</td>
-                            <td th:text="${vehicle.maker} ?: '-'">-</td>
-                            <td th:text="${vehicle.model} ?: '-'">-</td>
-                            <td th:text="${vehicle.plaque} ?: '-'">-</td>
-                            <td th:text="${vehicle.fuelType} ?: '-'">-</td>
-                            <td th:text="${vehicle.status} ?: '-'">-</td>
-                            <td th:text="${vehicle.partnerName} ?: '-'">-</td>
-                            <td th:text="${vehicle.monthlyValue} ?: '-'">-</td>
-                        </tr>
+                    <tr th:each="vehicle : ${vehicles}">
+                        <td th:text="${vehicle.id}">1</td>
+                        <td th:text="${vehicle.maker} ?: '-'">-</td>
+                        <td th:text="${vehicle.model} ?: '-'">-</td>
+                        <td th:text="${vehicle.plaque} ?: '-'">-</td>
+                        <td th:text="${vehicle.fuelType} ?: '-'">-</td>
+                        <td th:text="${vehicle.status} ?: '-'">-</td>
+                        <td th:text="${vehicle.partnerName} ?: '-'">-</td>
+                        <td th:text="${vehicle.monthlyValue} ?: '-'">-</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
-            <div th:if="${#lists.isEmpty(vehicles)}" class="text-muted text-center py-3">
-                Nenhum veículo encontrado
+            <div th:if="${#lists.isEmpty(vehicles)}" class="text-muted text-center pt-3">
+                Nenhum veículo encontrado para os filtros aplicados.
             </div>
         </div>
     </div>
 
-    <!-- Mensagem Inicial -->
-    <div th:if="${!generated and errorMessage == null}" class="alert alert-info">
-        <i class="bi bi-info-circle-fill"></i>
-        Preencha o formulário acima e clique em <strong>Gerar Relatório</strong> para visualizar os dados.
+    <div th:if="${!generated and errorMessage == null}" class="report-empty">
+        <i class="bi bi-info-circle-fill text-primary"></i>
+        <p class="mb-1 fw-semibold">Gerar relatório personalizado</p>
+        <p class="mb-0 text-muted">Preencha o formulário acima e clique em <strong>Gerar Relatório</strong> para visualizar os dados.</p>
     </div>
 </section>
 </body>
