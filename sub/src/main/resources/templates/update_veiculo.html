@@ -4,22 +4,6 @@
 <head>
     <title>SUB - Atualizar Veículo</title>
     <style>
-        .fipe-lookup-box {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            border: 2px dashed #dee2e6;
-            margin-bottom: 1.5rem;
-        }
-        .fipe-lookup-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-end;
-        }
-        .fipe-lookup-form .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
         .photos-preview {
             display: flex;
             flex-wrap: wrap;
@@ -45,48 +29,6 @@
 
 <section layout:fragment="content">
     <h1 class="mb-4">Atualizar Veículo</h1>
-
-    <!-- Mensagens de sucesso/erro da busca FIPE -->
-    <div th:if="${fipeSuccess}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill"></i>
-        <span th:text="${fipeSuccess}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <div th:if="${fipeError}" class="alert alert-warning alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        <span th:text="${fipeError}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    <!-- Formulário de Busca FIPE -->
-    <div class="fipe-lookup-box">
-        <h5 class="mb-3">
-            <i class="bi bi-search"></i> Atualizar Dados da Tabela FIPE
-        </h5>
-        <p class="text-muted small mb-2">Digite o código FIPE e clique em "Buscar Dados" para atualizar automaticamente as informações do veículo.</p>
-
-        <div class="alert alert-info alert-sm mb-3" style="padding: 0.5rem; font-size: 0.875rem;">
-            <strong>💡 Dica:</strong> O código FIPE deve estar no formato <code>XXXXXX-X</code> (ex: 001004-9).
-            Você pode encontrar o código FIPE do seu veículo em sites como
-            <a href="https://veiculos.fipe.org.br/" target="_blank" rel="noopener">veiculos.fipe.org.br</a> ou
-            <a href="https://www.tabelafipebrasil.com/" target="_blank" rel="noopener">tabelafipebrasil.com</a>
-        </div>
-
-        <form th:action="@{/vehicles/edit/{id}(id=${vehicle.id})}" method="get" class="fipe-lookup-form">
-            <input type="hidden" name="partnerId" th:value="${partnerId}" th:if="${partnerId}"/>
-            <div class="form-group flex-grow-1">
-                <label for="codigoFipeLookup" class="form-label">Código FIPE</label>
-                <input type="text" id="codigoFipeLookup" name="codigoFipe" class="form-control"
-                       placeholder="Ex: 001004-9" th:value="${vehicle.codigo_fipe}" required
-                       pattern="[0-9]{6}-[0-9]" title="Formato: 000000-0"/>
-                <small class="form-text text-muted">Formato: 6 dígitos + hífen + 1 dígito</small>
-            </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-arrow-repeat"></i> Buscar Dados
-            </button>
-        </form>
-    </div>
 
     <!-- Formulário Principal -->
     <form th:action="@{/vehicles/update/{id}(id=${vehicle.id})}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
