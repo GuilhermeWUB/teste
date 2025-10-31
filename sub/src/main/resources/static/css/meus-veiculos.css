@@ -1,0 +1,381 @@
+/* meus-veiculos.css - Estilos para a página do usuário comum */
+
+/* Animações */
+@keyframes slideInUser {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardFlip {
+    from {
+        opacity: 0;
+        transform: rotateY(-20deg);
+    }
+    to {
+        opacity: 1;
+        transform: rotateY(0);
+    }
+}
+
+@keyframes vehiclePulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    }
+    50% {
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+}
+
+/* Container principal */
+section {
+    animation: slideInUser 0.6s ease-out;
+}
+
+/* Título personalizado */
+h1 {
+    animation: slideInUser 0.5s ease-out;
+    position: relative;
+    padding-left: 3rem;
+}
+
+h1::before {
+    content: '🚗';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(-50%) translateX(0);
+    }
+    50% {
+        transform: translateY(-50%) translateX(10px);
+    }
+}
+
+/* Mensagens de boas-vindas */
+.welcome-message {
+    animation: slideInUser 0.6s ease-out 0.2s both;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: white;
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-message::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: rotate 15s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.welcome-message__content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Cards de veículos */
+.vehicle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    animation: slideInUser 0.7s ease-out 0.3s both;
+}
+
+.vehicle-card {
+    animation: cardFlip 0.6s ease-out both;
+    padding: 1.5rem;
+    background: var(--color-surface-elevated);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-border);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.vehicle-card:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+.vehicle-card:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.vehicle-card:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.vehicle-card:nth-child(n+4) {
+    animation-delay: 0.7s;
+}
+
+.vehicle-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--color-primary);
+    animation: vehiclePulse 2s ease-in-out infinite;
+}
+
+.vehicle-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Ícone do veículo */
+.vehicle-card__icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.vehicle-card:hover .vehicle-card__icon {
+    transform: scale(1.2);
+}
+
+/* Informações do veículo */
+.vehicle-card__info {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.vehicle-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    transition: all 0.3s ease;
+}
+
+.vehicle-info-item:hover {
+    background: var(--color-surface-alt);
+    transform: translateX(5px);
+}
+
+.vehicle-info-item__label {
+    font-weight: 600;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+}
+
+.vehicle-info-item__value {
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+/* Status de pagamento */
+.payment-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.payment-status.paid {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--color-success);
+}
+
+.payment-status.paid::before {
+    content: '✓';
+    font-weight: 700;
+}
+
+.payment-status.pending {
+    background: rgba(251, 191, 36, 0.2);
+    color: #f59e0b;
+}
+
+.payment-status.pending::before {
+    content: '⏱';
+}
+
+.payment-status.overdue {
+    background: rgba(248, 113, 113, 0.2);
+    color: var(--color-danger);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.payment-status.overdue::before {
+    content: '⚠';
+}
+
+/* Ações do veículo */
+.vehicle-card__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.vehicle-card__actions .btn {
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.vehicle-card__actions .btn:hover {
+    transform: scale(1.05);
+}
+
+/* Empty state */
+.no-vehicles {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--color-surface-elevated);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--color-border);
+    animation: slideInUser 0.7s ease-out 0.4s both;
+}
+
+.no-vehicles__icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.no-vehicles__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.no-vehicles__description {
+    color: var(--color-muted);
+    margin-bottom: 2rem;
+}
+
+/* Quick stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: slideInUser 0.6s ease-out 0.2s both;
+}
+
+.quick-stat {
+    padding: 1.25rem;
+    background: var(--color-surface-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.quick-stat:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.quick-stat__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.quick-stat__label {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .vehicle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        padding-left: 2.5rem;
+    }
+
+    h1::before {
+        font-size: 1.5rem;
+    }
+
+    .vehicle-card:hover {
+        transform: translateY(-5px);
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .welcome-message {
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+}
+
+html[data-theme="dark"] .vehicle-card:hover {
+    border-color: var(--color-accent);
+}
+
+html[data-theme="dark"] .quick-stat:hover {
+    box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3);
+}
+
+/* Print styles */
+@media print {
+    .vehicle-card__actions,
+    .btn {
+        display: none !important;
+    }
+
+    .vehicle-card {
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}

@@ -1,0 +1,295 @@
+/* cadastro.css - Estilos para páginas de cadastro (associado, veículo, evento) */
+
+/* Animações */
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes expandWidth {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Título da página */
+h1.mb-4 {
+    animation: slideInFromTop 0.5s ease-out;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+h1.mb-4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+    animation: expandWidth 0.8s ease-out 0.3s both;
+}
+
+/* Títulos das seções */
+h2.mt-4, h2.h5 {
+    animation: slideInFromTop 0.6s ease-out both;
+    position: relative;
+    padding-left: 1rem;
+}
+
+h2.mt-4::before, h2.h5::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 70%;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+/* Formulário */
+form {
+    animation: slideInFromTop 0.7s ease-out 0.2s both;
+}
+
+/* Rows com animação escalonada */
+.row {
+    opacity: 0;
+    animation: slideInFromTop 0.5s ease-out forwards;
+}
+
+.row:nth-of-type(1) {
+    animation-delay: 0.3s;
+}
+
+.row:nth-of-type(2) {
+    animation-delay: 0.4s;
+}
+
+.row:nth-of-type(3) {
+    animation-delay: 0.5s;
+}
+
+.row:nth-of-type(4) {
+    animation-delay: 0.6s;
+}
+
+.row:nth-of-type(5) {
+    animation-delay: 0.7s;
+}
+
+/* Labels com destaque */
+.form-label {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.form-label:hover {
+    color: var(--color-primary);
+}
+
+/* Inputs com efeito de foco aprimorado */
+.form-control, .form-select {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.form-control:focus, .form-select:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2) !important;
+}
+
+.form-control:hover:not(:focus), .form-select:hover:not(:focus) {
+    border-color: var(--color-primary);
+}
+
+/* Mensagens de erro */
+.text-danger {
+    animation: slideInFromTop 0.3s ease-out;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* Campo de arquivo */
+input[type="file"] {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover {
+    background: var(--color-surface-alt);
+}
+
+/* Texto auxiliar */
+.form-text, small.form-text {
+    opacity: 0;
+    animation: slideInFromTop 0.4s ease-out 0.5s forwards;
+    font-style: italic;
+}
+
+/* Select customizado */
+select.form-select {
+    cursor: pointer;
+    background-position: right 1rem center;
+}
+
+select.form-select:hover {
+    background-color: var(--color-surface-alt);
+}
+
+/* Botão de submit */
+button[type="submit"] {
+    animation: slideInFromTop 0.6s ease-out 0.8s both;
+    position: relative;
+    overflow: hidden;
+}
+
+button[type="submit"]::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+button[type="submit"]:hover::before {
+    width: 400px;
+    height: 400px;
+}
+
+/* Campos obrigatórios com indicador visual */
+.form-control:required,
+.form-select:required {
+    border-left: 3px solid var(--color-primary);
+}
+
+.form-control:required:valid,
+.form-select:required:valid {
+    border-left-color: var(--color-success);
+}
+
+.form-control:required:invalid:not(:placeholder-shown),
+.form-select:required:invalid:not(:placeholder-shown) {
+    border-left-color: var(--color-danger);
+}
+
+/* Grid de campos */
+.mb-3 {
+    animation: slideInFromTop 0.5s ease-out both;
+}
+
+.mb-3:nth-of-type(odd) {
+    animation-delay: calc(0.1s * var(--index, 1));
+}
+
+.mb-3:nth-of-type(even) {
+    animation-delay: calc(0.15s * var(--index, 1));
+}
+
+/* Input group com ícones */
+.input-group {
+    transition: all 0.3s ease;
+}
+
+.input-group:focus-within {
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    h1.mb-4::after {
+        width: 80px;
+    }
+
+    .col-md-6, .col-md-4, .col-md-8 {
+        animation: slideInFromTop 0.4s ease-out forwards !important;
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .form-control:focus,
+html[data-theme="dark"] .form-select:focus {
+    box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3) !important;
+}
+
+html[data-theme="dark"] input[type="file"]:hover {
+    background: rgba(88, 28, 135, 0.2);
+}
+
+html[data-theme="dark"] select.form-select:hover {
+    background-color: rgba(88, 28, 135, 0.3);
+}
+
+/* Feedback visual para campos preenchidos */
+.form-control:not(:placeholder-shown),
+.form-select:not([value=""]) {
+    background: var(--color-surface-alt);
+}
+
+/* Efeito de preenchimento progressivo */
+@keyframes fillProgress {
+    from {
+        background-size: 0% 100%;
+    }
+    to {
+        background-size: 100% 100%;
+    }
+}
+
+.form-control:focus {
+    background-image: linear-gradient(
+        to right,
+        rgba(139, 92, 246, 0.05),
+        rgba(139, 92, 246, 0.05)
+    );
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    animation: fillProgress 0.3s ease-out forwards;
+}
+
+/* Contador de caracteres (se necessário) */
+.char-counter {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+/* Dica flutuante */
+.form-help {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    cursor: help;
+}
+
+.form-help::after {
+    content: '?';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

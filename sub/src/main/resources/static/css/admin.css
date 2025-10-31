@@ -1,0 +1,377 @@
+/* admin.css - Estilos para páginas administrativas */
+
+/* Animações */
+@keyframes slideInAdmin {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes highlightRow {
+    0%, 100% {
+        background: transparent;
+    }
+    50% {
+        background: rgba(139, 92, 246, 0.1);
+    }
+}
+
+/* Container principal */
+section {
+    animation: slideInAdmin 0.6s ease-out;
+}
+
+/* Título da página admin */
+h1 {
+    animation: slideInAdmin 0.5s ease-out;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+h1::before {
+    content: '⚙';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    animation: rotate 4s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: translateY(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* Botão de adicionar */
+.btn-primary {
+    animation: slideInAdmin 0.6s ease-out 0.2s both;
+}
+
+/* Tabela de usuários */
+.table {
+    animation: slideInAdmin 0.7s ease-out 0.3s both;
+}
+
+/* Cabeçalho da tabela com estilo admin */
+.table thead {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+    color: white;
+}
+
+.table thead th {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.875rem;
+    border: none;
+}
+
+/* Linhas da tabela com efeito especial */
+.table tbody tr {
+    animation: slideInAdmin 0.4s ease-out both;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.table tbody tr:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+.table tbody tr:nth-child(2) {
+    animation-delay: 0.45s;
+}
+
+.table tbody tr:nth-child(3) {
+    animation-delay: 0.5s;
+}
+
+.table tbody tr:nth-child(4) {
+    animation-delay: 0.55s;
+}
+
+.table tbody tr:nth-child(5) {
+    animation-delay: 0.6s;
+}
+
+.table tbody tr:nth-child(n+6) {
+    animation-delay: 0.65s;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(90deg, var(--color-surface-alt), transparent);
+    transform: translateX(5px);
+    box-shadow: -4px 0 0 var(--color-primary);
+}
+
+/* Badge de role/função */
+.badge {
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.badge:hover {
+    transform: scale(1.1);
+}
+
+/* Botões de ação admin */
+.btn-warning,
+.btn-danger {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-warning::before,
+.btn-danger::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+}
+
+.btn-warning:hover::before,
+.btn-danger:hover::before {
+    width: 200px;
+    height: 200px;
+}
+
+.btn-warning:hover,
+.btn-danger:hover {
+    transform: translateY(-2px);
+}
+
+/* Formulário inline */
+.inline-form {
+    display: inline-block;
+}
+
+/* Status do usuário */
+.user-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-success);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+/* Email com ícone */
+td[data-email]::before {
+    content: '📧 ';
+    margin-right: 0.25rem;
+}
+
+/* Username com ícone */
+td[data-username]::before {
+    content: '👤 ';
+    margin-right: 0.25rem;
+}
+
+/* Highlight para novo usuário */
+.table tbody tr.new-user {
+    animation: highlightRow 2s ease-in-out;
+}
+
+/* Empty state para admin */
+.empty-admin {
+    text-align: center;
+    padding: 3rem;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--color-border);
+}
+
+.empty-admin::before {
+    content: '🚫';
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Filtros de admin */
+.admin-filters {
+    animation: slideInAdmin 0.6s ease-out 0.2s both;
+    padding: 1.5rem;
+    background: var(--color-surface-elevated);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--color-border);
+}
+
+/* Stats cards para admin */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: slideInAdmin 0.6s ease-out 0.1s both;
+}
+
+.admin-stat-card {
+    padding: 1.5rem;
+    background: var(--color-surface-elevated);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    transition: all 0.3s ease;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.admin-stat-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.admin-stat-card__label {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Ações em massa */
+.bulk-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.bulk-actions.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Checkbox para seleção */
+.table input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+        padding-left: 2rem;
+    }
+
+    h1::before {
+        font-size: 1.25rem;
+    }
+
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .table tbody tr:hover {
+        transform: none;
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .table thead {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%);
+}
+
+html[data-theme="dark"] .table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(88, 28, 135, 0.3), transparent);
+    box-shadow: -4px 0 0 var(--color-accent);
+}
+
+html[data-theme="dark"] .admin-stat-card:hover {
+    box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3);
+}
+
+/* Indicador de permissões */
+.permission-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background: var(--color-surface-alt);
+}
+
+.permission-indicator.admin {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--color-primary);
+}
+
+.permission-indicator.user {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--color-success);
+}
+
+/* Loading state */
+.table.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.table.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--color-surface-alt);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
