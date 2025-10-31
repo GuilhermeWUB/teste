@@ -310,6 +310,11 @@ html[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(168, 85, 247, 0.08);
 }
 
+html[data-theme="dark"] .table td,
+html[data-theme="dark"] .table th {
+    color: var(--color-text-primary);
+}
+
 html[data-theme="dark"] .table tbody tr:hover {
     box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
     background: rgba(168, 85, 247, 0.12);
