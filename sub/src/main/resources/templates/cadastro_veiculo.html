@@ -1,10 +1,90 @@
 <!DOCTYPE html>
-<script src="/js/cadastro-veiculo.js"></script>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
     <title>SUB - Cadastrar Veículo</title>
     <link rel="stylesheet" th:href="@{/css/cadastro.css}">
+    <script src="/js/cadastro-veiculo.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const fipeCodeInput = document.getElementById("codigo_fipe");
+            const helpText = document.getElementById("fipe_help_text");
+
+            fipeCodeInput.addEventListener("blur", function() {
+                const fipeCode = this.value.replace(/[^0-9]/g, ''); // Limpa a máscara
+                if (fipeCode.length >= 7) { // Validação básica do tamanho do código
+                    fetchFipeData(fipeCode);
+                }
+            });
+
+            async function fetchFipeData(fipeCode) {
+                // Mapeamento de tipo de veículo da API para os valores do select
+                const vehicleTypeMap = {
+                    "carros": "Carro",
+                    "motos": "Moto",
+                    "caminhoes": "Caminhão"
+                };
+
+                const originalHelpText = helpText.textContent;
+                helpText.textContent = "Buscando dados da Fipe...";
+                helpText.classList.remove("text-danger");
+                helpText.classList.add("text-primary");
+
+                try {
+                    const response = await fetch(`https://brasilapi.com.br/api/fipe/preco/v1/${fipeCode}`);
+
+                    if (!response.ok) {
+                        throw new Error('Código Fipe não encontrado ou inválido.');
+                    }
+
+                    const data = await response.json();
+
+                    // A BrasilAPI retorna um array, pegamos o primeiro resultado que geralmente é o mais relevante
+                    if (data && data.length > 0) {
+                        const vehicle = data[0];
+
+                        // Preenche os campos
+                        document.getElementById("maker").value = vehicle.marca || '';
+                        document.getElementById("model").value = vehicle.modelo || '';
+                        document.getElementById("year_mod").value = `${vehicle.anoModelo}`;
+                        document.getElementById("tipo_combustivel").value = vehicle.combustivel || '';
+
+                        // Formata o valor como moeda brasileira
+                        const formattedValue = new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        }).format(parseFloat(vehicle.valor.replace(/[^0-9,-]+/g, "").replace(",", ".")));
+                        document.getElementById("fipe_value").value = formattedValue;
+
+                        // Seleciona o tipo de veículo
+                        const vehicleType = vehicle.tipoVeiculo ? vehicleTypeMap[vehicle.tipoVeiculo] : '';
+                        if (vehicleType) {
+                            document.getElementById("type_vehicle").value = vehicleType;
+                        }
+
+                        helpText.textContent = "Dados preenchidos com sucesso!";
+                        helpText.classList.remove("text-primary");
+                        helpText.classList.add("text-success");
+                    } else {
+                        throw new Error('Nenhum dado encontrado para este código Fipe.');
+                    }
+
+                } catch (error) {
+                    console.error("Erro ao buscar dados da Fipe:", error);
+                    helpText.textContent = error.message;
+                    helpText.classList.remove("text-primary", "text-success");
+                    helpText.classList.add("text-danger");
+
+                    // Opcional: Limpar os campos em caso de erro
+                    // document.getElementById("maker").value = '';
+                    // document.getElementById("model").value = '';
+                    // document.getElementById("year_mod").value = '';
+                    // document.getElementById("tipo_combustivel").value = '';
+                    // document.getElementById("fipe_value").value = '';
+                }
+            }
+        });
+    </script>
 </head>
 <body>
 
@@ -128,87 +208,6 @@
     </form>
 
 </section>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const fipeCodeInput = document.getElementById("codigo_fipe");
-    const helpText = document.getElementById("fipe_help_text");
-
-    fipeCodeInput.addEventListener("blur", function() {
-        const fipeCode = this.value.replace(/[^0-9]/g, ''); // Limpa a máscara
-        if (fipeCode.length >= 7) { // Validação básica do tamanho do código
-            fetchFipeData(fipeCode);
-        }
-    });
-
-    async function fetchFipeData(fipeCode) {
-        // Mapeamento de tipo de veículo da API para os valores do select
-        const vehicleTypeMap = {
-            "carros": "Carro",
-            "motos": "Moto",
-            "caminhoes": "Caminhão"
-        };
-
-        const originalHelpText = helpText.textContent;
-        helpText.textContent = "Buscando dados da Fipe...";
-        helpText.classList.remove("text-danger");
-        helpText.classList.add("text-primary");
-
-        try {
-            const response = await fetch(`https://brasilapi.com.br/api/fipe/preco/v1/${fipeCode}`);
-
-            if (!response.ok) {
-                throw new Error('Código Fipe não encontrado ou inválido.');
-            }
-
-            const data = await response.json();
-
-            // A BrasilAPI retorna um array, pegamos o primeiro resultado que geralmente é o mais relevante
-            if (data && data.length > 0) {
-                const vehicle = data[0];
-
-                // Preenche os campos
-                document.getElementById("maker").value = vehicle.marca || '';
-                document.getElementById("model").value = vehicle.modelo || '';
-                document.getElementById("year_mod").value = `${vehicle.anoModelo}`;
-                document.getElementById("tipo_combustivel").value = vehicle.combustivel || '';
-
-                // Formata o valor como moeda brasileira
-                const formattedValue = new Intl.NumberFormat('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                }).format(parseFloat(vehicle.valor.replace(/[^0-9,-]+/g, "").replace(",", ".")));
-                document.getElementById("fipe_value").value = formattedValue;
-
-                // Seleciona o tipo de veículo
-                const vehicleType = vehicle.tipoVeiculo ? vehicleTypeMap[vehicle.tipoVeiculo] : '';
-                if (vehicleType) {
-                    document.getElementById("type_vehicle").value = vehicleType;
-                }
-
-                helpText.textContent = "Dados preenchidos com sucesso!";
-                helpText.classList.remove("text-primary");
-                helpText.classList.add("text-success");
-            } else {
-                throw new Error('Nenhum dado encontrado para este código Fipe.');
-            }
-
-        } catch (error) {
-            console.error("Erro ao buscar dados da Fipe:", error);
-            helpText.textContent = error.message;
-            helpText.classList.remove("text-primary", "text-success");
-            helpText.classList.add("text-danger");
-
-            // Opcional: Limpar os campos em caso de erro
-            // document.getElementById("maker").value = '';
-            // document.getElementById("model").value = '';
-            // document.getElementById("year_mod").value = '';
-            // document.getElementById("tipo_combustivel").value = '';
-            // document.getElementById("fipe_value").value = '';
-        }
-    }
-});
-</script>
 
 </body>
 </html>
