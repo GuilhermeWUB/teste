@@ -1982,11 +1982,16 @@ td {
     text-align: left;
     padding: 0.9rem 1rem;
     font-size: 0.95rem;
+    color: var(--color-text-primary);
 }
 
 th {
     font-weight: 600;
     color: var(--color-muted);
+}
+
+td {
+    color: var(--color-text-primary);
 }
 
 tr + tr {
@@ -2587,4 +2592,274 @@ html {
     .back-to-top__text {
         display: none;
     }
+}
+
+/* =============================================
+   CORREÇÃO DEFINITIVA - MODO ESCURO - TEXTOS
+   ============================================= */
+
+/* Força cor do texto no body e em todos os elementos */
+html[data-theme="dark"] body {
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] * {
+    color: inherit;
+}
+
+/* Títulos - TODOS os níveis */
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6 {
+    color: var(--color-text-primary) !important;
+}
+
+/* Parágrafos, divs, spans e listas */
+html[data-theme="dark"] p,
+html[data-theme="dark"] div,
+html[data-theme="dark"] span:not(.badge *):not(.btn *),
+html[data-theme="dark"] li {
+    color: var(--color-text-primary);
+}
+
+/* Tabelas - FORÇAR cor em TODAS as células */
+html[data-theme="dark"] table,
+html[data-theme="dark"] .table {
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] th,
+html[data-theme="dark"] td {
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] thead th {
+    color: var(--color-text-secondary) !important;
+}
+
+html[data-theme="dark"] tbody td {
+    color: var(--color-text-primary) !important;
+}
+
+/* Cards e containers */
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .card *:not(.btn):not(.btn *):not(.badge):not(.badge *),
+html[data-theme="dark"] .form-card,
+html[data-theme="dark"] .form-card *:not(.btn):not(.btn *):not(.badge):not(.badge *),
+html[data-theme="dark"] .report-card,
+html[data-theme="dark"] .report-card *:not(.btn):not(.btn *):not(.badge):not(.badge *) {
+    color: var(--color-text-primary);
+}
+
+/* Labels e textos de formulário */
+html[data-theme="dark"] label,
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] .form-field-label {
+    color: var(--color-text-primary) !important;
+}
+
+/* =============================================
+   CORREÇÃO NAVBAR - Links e Botões
+   ============================================= */
+
+/* Links da navbar */
+html[data-theme="dark"] .nav-links a,
+html[data-theme="dark"] .nav-links li a {
+    color: var(--color-nav-link) !important;
+}
+
+html[data-theme="dark"] .nav-links a:hover,
+html[data-theme="dark"] .nav-links a:focus,
+html[data-theme="dark"] .nav-links li a:hover,
+html[data-theme="dark"] .nav-links li a:focus {
+    color: var(--color-nav-link-hover) !important;
+}
+
+/* BOTÃO dropdown (Relatórios) - IMPORTANTE */
+html[data-theme="dark"] .nav-dropdown-toggle,
+html[data-theme="dark"] .nav-dropdown-toggle span,
+html[data-theme="dark"] button.nav-dropdown-toggle,
+html[data-theme="dark"] button.nav-dropdown-toggle span {
+    color: var(--color-nav-link) !important;
+}
+
+html[data-theme="dark"] .nav-dropdown-toggle:hover,
+html[data-theme="dark"] .nav-dropdown-toggle:focus,
+html[data-theme="dark"] .nav-dropdown-toggle:hover span,
+html[data-theme="dark"] .nav-dropdown-toggle:focus span {
+    color: var(--color-nav-link-hover) !important;
+}
+
+/* Ícone do dropdown */
+html[data-theme="dark"] .nav-dropdown-icon {
+    color: var(--color-nav-link) !important;
+}
+
+html[data-theme="dark"] .nav-dropdown-toggle:hover .nav-dropdown-icon,
+html[data-theme="dark"] .nav-dropdown-toggle:focus .nav-dropdown-icon {
+    color: var(--color-nav-link-hover) !important;
+}
+
+/* Links dentro do menu dropdown */
+html[data-theme="dark"] .nav-dropdown-menu a,
+html[data-theme="dark"] .nav-dropdown-link,
+html[data-theme="dark"] .nav-dropdown-link span {
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] .nav-dropdown-menu a:hover,
+html[data-theme="dark"] .nav-dropdown-menu a:focus,
+html[data-theme="dark"] .nav-dropdown-link:hover,
+html[data-theme="dark"] .nav-dropdown-link:focus {
+    color: var(--color-nav-link-hover) !important;
+}
+
+/* Brand e topbar */
+html[data-theme="dark"] .brand-link,
+html[data-theme="dark"] .brand-link *,
+html[data-theme="dark"] .brand-title {
+    color: var(--color-topbar-text) !important;
+}
+
+html[data-theme="dark"] .topbar-action.btn-link {
+    color: var(--color-topbar-text) !important;
+}
+
+html[data-theme="dark"] .topbar-action {
+    color: var(--color-topbar-text) !important;
+}
+
+/* Links gerais (resto da página) */
+html[data-theme="dark"] .page a:not(.btn),
+html[data-theme="dark"] .container a:not(.btn),
+html[data-theme="dark"] .card a:not(.btn),
+html[data-theme="dark"] table a:not(.btn) {
+    color: var(--color-primary) !important;
+}
+
+html[data-theme="dark"] .page a:not(.btn):hover,
+html[data-theme="dark"] .container a:not(.btn):hover,
+html[data-theme="dark"] .card a:not(.btn):hover,
+html[data-theme="dark"] table a:not(.btn):hover {
+    color: var(--color-primary-dark) !important;
+}
+
+/* Preserva cor dos botões */
+html[data-theme="dark"] .btn,
+html[data-theme="dark"] .btn * {
+    color: var(--btn-color, #ffffff) !important;
+}
+
+/* Preserva cor dos badges */
+html[data-theme="dark"] .badge,
+html[data-theme="dark"] .badge * {
+    color: var(--color-text-primary) !important;
+}
+
+/* Força especificamente para o conteúdo das páginas */
+html[data-theme="dark"] .page,
+html[data-theme="dark"] .page-content,
+html[data-theme="dark"] section,
+html[data-theme="dark"] .container {
+    color: var(--color-text-primary);
+}
+
+/* Veículos page específico */
+html[data-theme="dark"] .vehicles-page__heading,
+html[data-theme="dark"] .vehicles-page__subtitle {
+    color: var(--color-text-primary) !important;
+}
+
+/* Card titles */
+html[data-theme="dark"] .card-title,
+html[data-theme="dark"] .section-title {
+    color: var(--color-text-primary) !important;
+}
+/* =============================================
+   DESTAQUE DE PÁGINA ATIVA NA NAVBAR
+   ============================================= */
+
+/* Links ativos - Modo Claro */
+.nav-links a.active,
+.nav-dropdown-toggle.active,
+.nav-dropdown-toggle.active span {
+    color: var(--color-primary) !important;
+    font-weight: 600;
+}
+
+/* Links ativos - Modo Escuro */
+html[data-theme="dark"] .nav-links a.active,
+html[data-theme="dark"] .nav-dropdown-toggle.active,
+html[data-theme="dark"] .nav-dropdown-toggle.active span {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Ícone do dropdown ativo também muda */
+html[data-theme="dark"] .nav-dropdown-toggle.active .nav-dropdown-icon {
+    color: #ffffff !important;
+}
+
+.nav-dropdown-toggle.active .nav-dropdown-icon {
+    color: var(--color-primary) !important;
+}
+
+/* Efeito hover nos itens ativos */
+.nav-links a.active:hover,
+.nav-dropdown-toggle.active:hover,
+html[data-theme="dark"] .nav-links a.active:hover,
+html[data-theme="dark"] .nav-dropdown-toggle.active:hover {
+    opacity: 0.85;
+}
+
+/* Sublinhado opcional para destacar ainda mais */
+.nav-links a.active {
+    position: relative;
+}
+
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+html[data-theme="dark"] .nav-links a.active::after {
+    background: #ffffff;
+}
+
+/* =============================================
+   AJUSTE DE COR DAS OPÇÕES DO DROPDOWN (NOVO)
+   ============================================= */
+
+/* Modo claro - opções mais escuras */
+.nav-dropdown-menu a,
+.dropdown-menu a {
+  color: #1f1147 !important;
+}
+
+.nav-dropdown-menu a:hover,
+.dropdown-menu a:hover {
+  color: #ffffff !important;
+  background-color: #6f3cae !important;
+}
+
+/* Modo escuro - mantém legibilidade */
+html[data-theme="dark"] .nav-dropdown-menu a,
+html[data-theme="dark"] .dropdown-menu a {
+  color: #e9ddf7 !important;
+}
+
+html[data-theme="dark"] .nav-dropdown-menu a:hover,
+html[data-theme="dark"] .dropdown-menu a:hover {
+  color: #ffffff !important;
+  background-color: #6f3cae !important;
 }

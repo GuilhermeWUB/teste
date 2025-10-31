@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" data-theme="light">
+<script src="/js/layout.js"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,7 @@
     <div class="brand">
         <a class="brand-link" th:href="${isLoggedIn} ? (${isAdmin} ? @{/dashboard} : @{/me/vehicles}) : @{/}">
             <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Ir para a página inicial">
-            <span class="brand-title">SUB Gestão</span>
+            <span class="brand-title">SUB</span>
         </a>
     </div>
 
@@ -44,9 +45,7 @@
             <li th:if="${isAdmin}">
                 <a th:href="@{/events}">Eventos</a>
             </li>
-            <li th:if="${isAdmin}">
-                <a th:href="@{/admin/users}">Usuários</a>
-            </li>
+
             <li th:if="${isAdmin}" class="nav-item nav-item-dropdown">
                 <button type="button" class="nav-dropdown-toggle" data-nav-dropdown aria-expanded="false" aria-haspopup="true">
                     <span>Relatórios</span>
@@ -66,6 +65,9 @@
                         </a>
                     </li>
                 </ul>
+            </li>
+            <li th:if="${isAdmin}">
+                <a th:href="@{/admin/users}">Usuários</a>
             </li>
             <li th:if="${!isAdmin and isLoggedIn}">
                 <a th:href="@{/me/vehicles}">Meus Veículos</a>
@@ -123,7 +125,7 @@
 
 <footer class="site-footer">
     <div class="container">
-        <p>&copy; <span th:text="${T(java.time.Year).now()}"></span> SUB - Sistema Unificado de Benefícios. Todos os direitos reservados.</p>
+        <p>&copy; <span th:text="${T(java.time.Year).now()}"></span> SUB - System. Todos os direitos reservados.</p>
     </div>
 </footer>
 
@@ -880,6 +882,75 @@
 
         window.addEventListener('scroll', handleBackToTopVisibility, {passive: true});
         handleBackToTopVisibility();
+    })();
+</script>
+
+<!-- ========================================
+     SCRIPT PARA DESTACAR PÁGINA ATIVA
+     ======================================== -->
+<script>
+    (function () {
+        'use strict';
+
+        // Aguarda o DOM estar pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', highlightActiveNavItem);
+        } else {
+            highlightActiveNavItem();
+        }
+
+        function highlightActiveNavItem() {
+            // Pega o caminho atual da URL
+            const currentPath = window.location.pathname;
+
+            // Seleciona todos os links da navbar (exceto botões)
+            const navLinks = document.querySelectorAll('.nav-links a:not(.btn)');
+            const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
+            const dropdownLinks = document.querySelectorAll('.nav-dropdown-link');
+
+            // Remove qualquer classe 'active' existente
+            navLinks.forEach(link => link.classList.remove('active'));
+            dropdownToggles.forEach(toggle => toggle.classList.remove('active'));
+            dropdownLinks.forEach(link => link.classList.remove('active'));
+
+            // Marca o link correspondente como ativo
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+
+                // Ignora links vazios ou apenas '#'
+                if (!href || href === '#' || href === '/') {
+                    return;
+                }
+
+                // Verifica se o caminho atual começa com o href do link
+                if (currentPath === href || currentPath.startsWith(href + '/')) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Marca o dropdown "Relatórios" como ativo se estiver em uma página de relatório
+            if (currentPath.includes('/reports/')) {
+                dropdownToggles.forEach(toggle => {
+                    const parentLi = toggle.closest('li');
+                    const dropdownMenu = parentLi?.querySelector('.nav-dropdown-menu');
+
+                    if (dropdownMenu) {
+                        const links = dropdownMenu.querySelectorAll('a');
+
+                        links.forEach(link => {
+                            const href = link.getAttribute('href');
+
+                            if (href && (currentPath === href || currentPath.startsWith(href + '/'))) {
+                                toggle.classList.add('active');
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            console.log('✅ Página ativa destacada na navbar:', currentPath);
+        }
     })();
 </script>
 </body>
