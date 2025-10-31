@@ -1309,6 +1309,13 @@ html[data-theme="dark"] .table {
     color: var(--color-text-primary);
     background: rgba(27, 20, 48, 0.94);
     border-color: rgba(168, 85, 247, 0.35);
+    --bs-table-color: var(--color-text-primary);
+    --bs-table-bg: rgba(27, 20, 48, 0.94);
+    --bs-table-border-color: rgba(168, 85, 247, 0.35);
+    --bs-table-striped-bg: rgba(124, 58, 237, 0.12);
+    --bs-table-striped-color: var(--color-text-primary);
+    --bs-table-hover-bg: rgba(124, 58, 237, 0.18);
+    --bs-table-hover-color: var(--color-text-primary);
 }
 
 html[data-theme="dark"] .report-table-wrapper .table thead th {
