@@ -23,7 +23,7 @@
 
 /* Hero section com animação */
 .landing__hero {
-    animation: fadeInUp 0.8s ease-out;
+    animation: fadeInUp 0.5s ease-out;
 }
 
 .landing__card {
@@ -52,29 +52,29 @@
 }
 
 .landing__badge {
-    animation: fadeInUp 0.8s ease-out 0.2s both;
+    animation: fadeInUp 0.5s ease-out 0.1s both;
 }
 
 .landing__title {
-    animation: fadeInUp 0.8s ease-out 0.3s both;
+    animation: fadeInUp 0.5s ease-out 0.15s both;
     line-height: 1.2;
 }
 
 .landing__lead {
-    animation: fadeInUp 0.8s ease-out 0.4s both;
+    animation: fadeInUp 0.5s ease-out 0.2s both;
 }
 
 .landing__actions {
-    animation: fadeInUp 0.8s ease-out 0.5s both;
+    animation: fadeInUp 0.5s ease-out 0.25s both;
 }
 
 .landing__list {
-    animation: fadeInUp 0.8s ease-out 0.6s both;
+    animation: fadeInUp 0.5s ease-out 0.3s both;
 }
 
 /* Ilustração com efeito flutuante */
 .landing__illustration {
-    animation: float 6s ease-in-out infinite;
+    animation: float 4s ease-in-out infinite;
     filter: drop-shadow(0 20px 40px rgba(139, 92, 246, 0.3));
 }
 
@@ -97,7 +97,7 @@
         rgba(139, 92, 246, 0.1),
         transparent
     );
-    transition: left 0.5s ease;
+    transition: left 0.35s ease;
 }
 
 .landing-feature:hover::after {
@@ -105,7 +105,7 @@
 }
 
 .landing-feature__icon {
-    transition: transform 0.3s ease, background 0.3s ease;
+    transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .landing-feature:hover .landing-feature__icon {
@@ -130,7 +130,7 @@
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.2);
     transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
+    transition: width 0.4s ease, height 0.4s ease;
 }
 
 .landing__actions .btn:hover::before {
@@ -140,7 +140,7 @@
 
 /* Lista de benefícios com ícones animados */
 .landing__list-item {
-    transition: transform 0.2s ease;
+    transition: transform 0.15s ease;
 }
 
 .landing__list-item:hover {
@@ -148,7 +148,7 @@
 }
 
 .landing__list-item i {
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .landing__list-item:hover i {
@@ -158,19 +158,19 @@
 /* Seção de recursos com scroll reveal */
 .landing-feature {
     opacity: 0;
-    animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.35s ease-out forwards;
 }
 
 .landing-feature:nth-child(1) {
-    animation-delay: 0.1s;
+    animation-delay: 0.05s;
 }
 
 .landing-feature:nth-child(2) {
-    animation-delay: 0.2s;
+    animation-delay: 0.1s;
 }
 
 .landing-feature:nth-child(3) {
-    animation-delay: 0.3s;
+    animation-delay: 0.15s;
 }
 
 /* Responsividade aprimorada */

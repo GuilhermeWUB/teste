@@ -34,12 +34,12 @@
 
 /* Container principal */
 section {
-    animation: slideInUser 0.6s ease-out;
+    animation: slideInUser 0.35s ease-out;
 }
 
 /* Título personalizado */
 h1 {
-    animation: slideInUser 0.5s ease-out;
+    animation: slideInUser 0.3s ease-out;
     position: relative;
     padding-left: 3rem;
 }
@@ -51,7 +51,7 @@ h1::before {
     top: 50%;
     transform: translateY(-50%);
     font-size: 2rem;
-    animation: bounce 2s ease-in-out infinite;
+    animation: bounce 1.5s ease-in-out infinite;
 }
 
 @keyframes bounce {
@@ -65,7 +65,7 @@ h1::before {
 
 /* Mensagens de boas-vindas */
 .welcome-message {
-    animation: slideInUser 0.6s ease-out 0.2s both;
+    animation: slideInUser 0.35s ease-out 0.1s both;
     padding: 1.5rem;
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: white;
@@ -83,7 +83,7 @@ h1::before {
     width: 200%;
     height: 200%;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: rotate 15s linear infinite;
+    animation: rotate 10s linear infinite;
 }
 
 @keyframes rotate {
@@ -105,34 +105,34 @@ h1::before {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-    animation: slideInUser 0.7s ease-out 0.3s both;
+    animation: slideInUser 0.4s ease-out 0.15s both;
 }
 
 .vehicle-card {
-    animation: cardFlip 0.6s ease-out both;
+    animation: cardFlip 0.35s ease-out both;
     padding: 1.5rem;
     background: var(--color-surface-elevated);
     border-radius: var(--radius-lg);
     border: 2px solid var(--color-border);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
 }
 
 .vehicle-card:nth-child(1) {
-    animation-delay: 0.4s;
+    animation-delay: 0.2s;
 }
 
 .vehicle-card:nth-child(2) {
-    animation-delay: 0.5s;
+    animation-delay: 0.25s;
 }
 
 .vehicle-card:nth-child(3) {
-    animation-delay: 0.6s;
+    animation-delay: 0.3s;
 }
 
 .vehicle-card:nth-child(n+4) {
-    animation-delay: 0.7s;
+    animation-delay: 0.35s;
 }
 
 .vehicle-card::before {
@@ -145,13 +145,13 @@ h1::before {
     background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .vehicle-card:hover {
     transform: translateY(-10px);
     border-color: var(--color-primary);
-    animation: vehiclePulse 2s ease-in-out infinite;
+    animation: vehiclePulse 1.5s ease-in-out infinite;
 }
 
 .vehicle-card:hover::before {
@@ -163,7 +163,7 @@ h1::before {
     font-size: 3rem;
     text-align: center;
     margin-bottom: 1rem;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .vehicle-card:hover .vehicle-card__icon {
@@ -183,7 +183,7 @@ h1::before {
     padding: 0.5rem;
     background: var(--color-surface);
     border-radius: var(--radius-sm);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .vehicle-info-item:hover {
@@ -235,7 +235,7 @@ h1::before {
 .payment-status.overdue {
     background: rgba(248, 113, 113, 0.2);
     color: var(--color-danger);
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
@@ -262,7 +262,7 @@ h1::before {
 
 .vehicle-card__actions .btn {
     flex: 1;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .vehicle-card__actions .btn:hover {
@@ -276,7 +276,7 @@ h1::before {
     background: var(--color-surface-elevated);
     border-radius: var(--radius-lg);
     border: 2px dashed var(--color-border);
-    animation: slideInUser 0.7s ease-out 0.4s both;
+    animation: slideInUser 0.4s ease-out 0.2s both;
 }
 
 .no-vehicles__icon {
@@ -303,7 +303,7 @@ h1::before {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
-    animation: slideInUser 0.6s ease-out 0.2s both;
+    animation: slideInUser 0.35s ease-out 0.1s both;
 }
 
 .quick-stat {
@@ -312,7 +312,7 @@ h1::before {
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     text-align: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .quick-stat:hover {

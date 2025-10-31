@@ -23,7 +23,7 @@
 
 /* Título da página */
 h1.mb-4 {
-    animation: slideInFromTop 0.5s ease-out;
+    animation: slideInFromTop 0.3s ease-out;
     position: relative;
     padding-bottom: 1rem;
 }
@@ -36,12 +36,12 @@ h1.mb-4::after {
     height: 3px;
     background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
     border-radius: 2px;
-    animation: expandWidth 0.8s ease-out 0.3s both;
+    animation: expandWidth 0.5s ease-out 0.15s both;
 }
 
 /* Títulos das seções */
 h2.mt-4, h2.h5 {
-    animation: slideInFromTop 0.6s ease-out both;
+    animation: slideInFromTop 0.35s ease-out both;
     position: relative;
     padding-left: 1rem;
 }
@@ -60,39 +60,39 @@ h2.mt-4::before, h2.h5::before {
 
 /* Formulário */
 form {
-    animation: slideInFromTop 0.7s ease-out 0.2s both;
+    animation: slideInFromTop 0.4s ease-out 0.1s both;
 }
 
 /* Rows com animação escalonada */
 .row {
     opacity: 0;
-    animation: slideInFromTop 0.5s ease-out forwards;
+    animation: slideInFromTop 0.3s ease-out forwards;
 }
 
 .row:nth-of-type(1) {
-    animation-delay: 0.3s;
+    animation-delay: 0.15s;
 }
 
 .row:nth-of-type(2) {
-    animation-delay: 0.4s;
+    animation-delay: 0.2s;
 }
 
 .row:nth-of-type(3) {
-    animation-delay: 0.5s;
+    animation-delay: 0.25s;
 }
 
 .row:nth-of-type(4) {
-    animation-delay: 0.6s;
+    animation-delay: 0.3s;
 }
 
 .row:nth-of-type(5) {
-    animation-delay: 0.7s;
+    animation-delay: 0.35s;
 }
 
 /* Labels com destaque */
 .form-label {
     position: relative;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .form-label:hover {
@@ -101,7 +101,7 @@ form {
 
 /* Inputs com efeito de foco aprimorado */
 .form-control, .form-select {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     position: relative;
 }
 
@@ -116,7 +116,7 @@ form {
 
 /* Mensagens de erro */
 .text-danger {
-    animation: slideInFromTop 0.3s ease-out;
+    animation: slideInFromTop 0.2s ease-out;
     font-size: 0.875rem;
     font-weight: 500;
     margin-top: 0.25rem;
@@ -125,7 +125,7 @@ form {
 /* Campo de arquivo */
 input[type="file"] {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 input[type="file"]:hover {
@@ -135,7 +135,7 @@ input[type="file"]:hover {
 /* Texto auxiliar */
 .form-text, small.form-text {
     opacity: 0;
-    animation: slideInFromTop 0.4s ease-out 0.5s forwards;
+    animation: slideInFromTop 0.25s ease-out 0.3s forwards;
     font-style: italic;
 }
 
@@ -151,7 +151,7 @@ select.form-select:hover {
 
 /* Botão de submit */
 button[type="submit"] {
-    animation: slideInFromTop 0.6s ease-out 0.8s both;
+    animation: slideInFromTop 0.35s ease-out 0.4s both;
     position: relative;
     overflow: hidden;
 }
@@ -166,7 +166,7 @@ button[type="submit"]::before {
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.3);
     transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
+    transition: width 0.4s ease, height 0.4s ease;
 }
 
 button[type="submit"]:hover::before {
@@ -192,7 +192,7 @@ button[type="submit"]:hover::before {
 
 /* Grid de campos */
 .mb-3 {
-    animation: slideInFromTop 0.5s ease-out both;
+    animation: slideInFromTop 0.3s ease-out both;
 }
 
 .mb-3:nth-of-type(odd) {
@@ -205,7 +205,7 @@ button[type="submit"]:hover::before {
 
 /* Input group com ícones */
 .input-group {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .input-group:focus-within {
@@ -219,7 +219,7 @@ button[type="submit"]:hover::before {
     }
 
     .col-md-6, .col-md-4, .col-md-8 {
-        animation: slideInFromTop 0.4s ease-out forwards !important;
+        animation: slideInFromTop 0.25s ease-out forwards !important;
     }
 }
 
@@ -261,7 +261,7 @@ html[data-theme="dark"] select.form-select:hover {
     );
     background-repeat: no-repeat;
     background-position: 0 0;
-    animation: fillProgress 0.3s ease-out forwards;
+    animation: fillProgress 0.2s ease-out forwards;
 }
 
 /* Contador de caracteres (se necessário) */

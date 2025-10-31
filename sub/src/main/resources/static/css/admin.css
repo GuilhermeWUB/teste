@@ -23,12 +23,12 @@
 
 /* Container principal */
 section {
-    animation: slideInAdmin 0.6s ease-out;
+    animation: slideInAdmin 0.35s ease-out;
 }
 
 /* Título da página admin */
 h1 {
-    animation: slideInAdmin 0.5s ease-out;
+    animation: slideInAdmin 0.3s ease-out;
     position: relative;
     padding-left: 1.5rem;
 }
@@ -40,7 +40,7 @@ h1::before {
     top: 50%;
     transform: translateY(-50%);
     font-size: 1.5rem;
-    animation: rotate 4s linear infinite;
+    animation: rotate 3s linear infinite;
 }
 
 @keyframes rotate {
@@ -54,12 +54,12 @@ h1::before {
 
 /* Botão de adicionar */
 .btn-primary {
-    animation: slideInAdmin 0.6s ease-out 0.2s both;
+    animation: slideInAdmin 0.35s ease-out 0.1s both;
 }
 
 /* Tabela de usuários */
 .table {
-    animation: slideInAdmin 0.7s ease-out 0.3s both;
+    animation: slideInAdmin 0.4s ease-out 0.15s both;
 }
 
 /* Cabeçalho da tabela com estilo admin */
@@ -78,33 +78,33 @@ h1::before {
 
 /* Linhas da tabela com efeito especial */
 .table tbody tr {
-    animation: slideInAdmin 0.4s ease-out both;
-    transition: all 0.3s ease;
+    animation: slideInAdmin 0.25s ease-out both;
+    transition: all 0.2s ease;
     position: relative;
 }
 
 .table tbody tr:nth-child(1) {
-    animation-delay: 0.4s;
+    animation-delay: 0.2s;
 }
 
 .table tbody tr:nth-child(2) {
-    animation-delay: 0.45s;
+    animation-delay: 0.25s;
 }
 
 .table tbody tr:nth-child(3) {
-    animation-delay: 0.5s;
+    animation-delay: 0.3s;
 }
 
 .table tbody tr:nth-child(4) {
-    animation-delay: 0.55s;
+    animation-delay: 0.35s;
 }
 
 .table tbody tr:nth-child(5) {
-    animation-delay: 0.6s;
+    animation-delay: 0.4s;
 }
 
 .table tbody tr:nth-child(n+6) {
-    animation-delay: 0.65s;
+    animation-delay: 0.45s;
 }
 
 .table tbody tr:hover {
@@ -115,7 +115,7 @@ h1::before {
 
 /* Badge de role/função */
 .badge {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     font-weight: 600;
 }
 
@@ -126,7 +126,7 @@ h1::before {
 /* Botões de ação admin */
 .btn-warning,
 .btn-danger {
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -142,7 +142,7 @@ h1::before {
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.3);
     transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
+    transition: width 0.3s ease, height 0.3s ease;
 }
 
 .btn-warning:hover::before,
@@ -223,7 +223,7 @@ td[data-username]::before {
 
 /* Filtros de admin */
 .admin-filters {
-    animation: slideInAdmin 0.6s ease-out 0.2s both;
+    animation: slideInAdmin 0.35s ease-out 0.1s both;
     padding: 1.5rem;
     background: var(--color-surface-elevated);
     border-radius: var(--radius-lg);
@@ -237,7 +237,7 @@ td[data-username]::before {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
-    animation: slideInAdmin 0.6s ease-out 0.1s both;
+    animation: slideInAdmin 0.35s ease-out 0.05s both;
 }
 
 .admin-stat-card {
@@ -245,7 +245,7 @@ td[data-username]::before {
     background: var(--color-surface-elevated);
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .admin-stat-card:hover {
@@ -277,7 +277,7 @@ td[data-username]::before {
     margin-bottom: 1rem;
     opacity: 0;
     transform: translateY(-10px);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .bulk-actions.active {
