@@ -1,0 +1,285 @@
+/* logout.css - Estilos para páginas de logout */
+
+/* Animações */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes checkmarkDraw {
+    0% {
+        stroke-dashoffset: 100;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes waveGoodbye {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(15deg);
+    }
+    75% {
+        transform: rotate(-15deg);
+    }
+}
+
+/* Container */
+.py-5 {
+    animation: zoomIn 0.6s ease-out;
+}
+
+/* Card */
+.form-card {
+    animation: zoomIn 0.7s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* Ícone de sucesso */
+.form-card .bi-check-circle-fill,
+.form-card .bi-box-arrow-right {
+    animation: zoomIn 0.8s ease-out 0.3s both, waveGoodbye 1s ease-in-out 1s;
+    color: var(--color-success);
+}
+
+/* Título */
+.form-card h1 {
+    animation: zoomIn 0.7s ease-out 0.4s both;
+}
+
+/* Descrição */
+.form-card p.text-muted {
+    animation: zoomIn 0.7s ease-out 0.5s both;
+}
+
+/* Mensagem de sucesso */
+.alert-success {
+    animation: zoomIn 0.6s ease-out 0.6s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-success::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--color-success);
+    border-radius: 2px 0 0 2px;
+}
+
+/* Botões */
+.btn {
+    animation: zoomIn 0.7s ease-out 0.7s both;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+}
+
+/* Ícone no botão */
+.btn i {
+    transition: transform 0.3s ease;
+}
+
+.btn:hover i {
+    transform: translateX(5px);
+}
+
+/* Link adicional */
+.btn-outline {
+    position: relative;
+}
+
+.btn-outline::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.btn-outline:hover::after {
+    width: 80%;
+}
+
+/* Border-top */
+.border-top {
+    animation: zoomIn 0.7s ease-out 0.8s both;
+}
+
+/* Efeito de confetti (sutil) */
+.form-card::after {
+    content: '🎉';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    animation: confettiFall 2s ease-out 0.5s;
+    pointer-events: none;
+}
+
+@keyframes confettiFall {
+    0% {
+        top: -100px;
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        top: 50%;
+        opacity: 0;
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+/* Countdown (se houver redirecionamento automático) */
+.countdown {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Background decorativo */
+.py-5::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(circle, rgba(34, 197, 94, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    animation: backgroundMove 20s linear infinite;
+}
+
+@keyframes backgroundMove {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .form-card::after {
+        font-size: 2rem;
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .form-card::before {
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+html[data-theme="dark"] .py-5::before {
+    background-image: radial-gradient(circle, rgba(74, 222, 128, 0.08) 1px, transparent 1px);
+}
+
+/* Sucesso message específico */
+.logout-success {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.logout-success::before {
+    content: '✓';
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+    animation: zoomIn 0.5s ease-out 0.5s both;
+}
+
+/* Mensagem de redirecionamento */
+.redirect-message {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}

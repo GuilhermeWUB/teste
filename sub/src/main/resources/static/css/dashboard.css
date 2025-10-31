@@ -1,0 +1,302 @@
+/* dashboard.css - Estilos personalizados para o painel de controle */
+
+/* Animações do dashboard */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cabeçalho do dashboard */
+.d-flex.justify-content-between.align-items-center.mb-4 {
+    animation: fadeInScale 0.5s ease-out;
+}
+
+.d-flex.justify-content-between.align-items-center.mb-4 h1 {
+    position: relative;
+    display: inline-block;
+}
+
+.d-flex.justify-content-between.align-items-center.mb-4 h1::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+}
+
+/* Badge de atualização */
+.badge-soft {
+    animation: fadeInScale 0.6s ease-out 0.2s both;
+}
+
+/* Cards de métricas */
+.row.g-4 .col-md-4 {
+    animation: slideInRight 0.5s ease-out both;
+}
+
+.row.g-4 .col-md-4:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.row.g-4 .col-md-4:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.row.g-4 .col-md-4:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* Card com hover effect */
+.card.h-100 {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card.h-100::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(139, 92, 246, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.card.h-100:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px rgba(139, 92, 246, 0.2) !important;
+}
+
+.card.h-100:hover::before {
+    left: 100%;
+}
+
+/* Ícones de métricas */
+.metric-icon {
+    animation: countUp 0.6s ease-out;
+    transition: all 0.3s ease;
+}
+
+.card:hover .metric-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+/* Números das métricas */
+.card h2 {
+    animation: countUp 0.6s ease-out 0.3s both;
+    font-feature-settings: 'tnum';
+    transition: color 0.3s ease;
+}
+
+.card:hover h2 {
+    color: var(--color-primary);
+}
+
+/* Barra de progresso */
+.progress {
+    position: relative;
+    overflow: visible;
+}
+
+.progress-bar {
+    animation: progressFill 1.5s ease-out;
+    position: relative;
+}
+
+@keyframes progressFill {
+    from {
+        width: 0 !important;
+    }
+}
+
+.progress-bar::after {
+    content: attr(aria-valuenow) '%';
+    position: absolute;
+    right: -45px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+/* Seção de próximas ações */
+.list-unstyled li {
+    opacity: 0;
+    animation: slideInRight 0.5s ease-out forwards;
+    transition: all 0.3s ease;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+}
+
+.list-unstyled li:nth-child(1) {
+    animation-delay: 0.4s;
+}
+
+.list-unstyled li:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.list-unstyled li:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.list-unstyled li:hover {
+    background: var(--color-surface-alt);
+    transform: translateX(5px);
+}
+
+/* Ícones das ações */
+.icon-primary {
+    transition: all 0.3s ease;
+}
+
+.list-unstyled li:hover .icon-primary {
+    transform: scale(1.2);
+    color: var(--color-primary);
+}
+
+/* Grid responsivo aprimorado */
+.row.g-4.mb-4 {
+    animation: fadeInScale 0.5s ease-out 0.2s both;
+}
+
+.row.g-4:last-child {
+    animation: fadeInScale 0.5s ease-out 0.4s both;
+}
+
+/* Títulos dos cards */
+.card-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 1px;
+}
+
+/* Texto uppercase nas métricas */
+.text-uppercase {
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+    .progress-bar::after {
+        position: static;
+        display: block;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .card.h-100:hover {
+        transform: translateY(-4px);
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+}
+
+/* Tema escuro - ajustes específicos */
+html[data-theme="dark"] .card.h-100:hover {
+    box-shadow: 0 16px 32px rgba(168, 85, 247, 0.3) !important;
+}
+
+html[data-theme="dark"] .card.h-100::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.15),
+        transparent
+    );
+}
+
+html[data-theme="dark"] .list-unstyled li:hover {
+    background: rgba(88, 28, 135, 0.2);
+}
+
+/* Contador animado */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+    }
+}
+
+.badge-soft-primary {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Loading skeleton para números (caso necessário no futuro) */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.loading-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--color-surface) 0%,
+        var(--color-surface-alt) 50%,
+        var(--color-surface) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}

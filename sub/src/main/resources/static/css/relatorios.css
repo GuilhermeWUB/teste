@@ -1,0 +1,440 @@
+/* relatorios.css - Estilos para páginas de relatórios */
+
+/* Animações */
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleInCenter {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Container da página */
+.report-page {
+    animation: slideInFromBottom 0.6s ease-out;
+}
+
+/* Cabeçalho do relatório */
+.report-header {
+    animation: slideInFromBottom 0.5s ease-out 0.1s both;
+}
+
+.report-header h1 {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.75rem;
+}
+
+.report-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+}
+
+/* Ações do relatório */
+.report-actions {
+    animation: slideInFromBottom 0.6s ease-out 0.2s both;
+}
+
+.report-actions .btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.report-actions .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.report-actions .btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Card do relatório */
+.report-card {
+    animation: scaleInCenter 0.6s ease-out 0.3s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.report-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(139, 92, 246, 0.05),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.report-card:hover::before {
+    left: 100%;
+}
+
+/* Formulário de filtros */
+.report-form {
+    animation: slideInFromBottom 0.5s ease-out 0.4s both;
+}
+
+.report-form .form-check {
+    opacity: 0;
+    animation: slideInFromBottom 0.4s ease-out forwards;
+    cursor: pointer;
+}
+
+.report-form .form-check:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.report-form .form-check:nth-child(2) {
+    animation-delay: 0.55s;
+}
+
+.report-form .form-check:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.report-form .form-check:nth-child(4) {
+    animation-delay: 0.65s;
+}
+
+.report-form .form-check:nth-child(5) {
+    animation-delay: 0.7s;
+}
+
+.report-form .form-check:hover {
+    border-color: var(--color-primary);
+}
+
+.report-form .form-check-input {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.report-form .form-check-input:checked {
+    transform: scale(1.1);
+}
+
+.report-form .form-check-label {
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Resultados do relatório */
+.report-results {
+    animation: slideInFromBottom 0.6s ease-out 0.5s both;
+}
+
+/* Seção de resultados */
+.report-section {
+    animation: slideInFromBottom 0.5s ease-out both;
+    position: relative;
+}
+
+.report-section h5 {
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+.report-section h5 i {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+}
+
+/* Cards de estatísticas */
+.stat-card {
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.stat-value {
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-value {
+    transform: scale(1.05);
+    color: var(--color-accent);
+}
+
+/* Distribuição de itens */
+.distribution-item {
+    transition: all 0.3s ease;
+}
+
+.distribution-item:hover {
+    background: var(--color-surface-alt);
+    transform: translateX(5px);
+    padding-left: 1rem;
+}
+
+/* Tabela de resultados */
+.report-table-wrapper {
+    animation: slideInFromBottom 0.6s ease-out 0.6s both;
+}
+
+.report-table-wrapper table {
+    opacity: 0;
+    animation: slideInFromBottom 0.5s ease-out 0.7s both;
+}
+
+.report-table-wrapper tbody tr {
+    transition: all 0.3s ease;
+}
+
+.report-table-wrapper tbody tr:hover {
+    transform: translateX(5px);
+    background: var(--color-surface-alt);
+}
+
+/* Empty state */
+.report-empty {
+    animation: scaleInCenter 0.6s ease-out 0.5s both;
+}
+
+.report-empty .bi {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+}
+
+/* Overlay do modal */
+.report-overlay {
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.report-overlay.is-visible {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Dialog do modal */
+.report-overlay-dialog {
+    animation: modalSlideIn 0.4s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Botão de fechar */
+.btn-close {
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    transform: rotate(90deg) scale(1.2);
+}
+
+/* Loading spinner */
+.spinner-border {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Cards de métricas do dashboard de relatórios */
+.report-section .card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.report-section .card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(139, 92, 246, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.report-section .card:hover::after {
+    left: 100%;
+}
+
+.report-section .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Ícones dos cards */
+.report-section .display-6 {
+    transition: all 0.3s ease;
+}
+
+.report-section .card:hover .display-6 {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* List group */
+.list-group-item {
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background: var(--color-surface-alt);
+    transform: translateX(3px);
+}
+
+.list-group-item .badge {
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover .badge {
+    transform: scale(1.1);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .report-header h1::after {
+        width: 60px;
+    }
+
+    .report-section h5 {
+        padding-left: 2rem;
+    }
+
+    .report-section h5 i {
+        font-size: 1.25rem;
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .report-card::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.1),
+        transparent
+    );
+}
+
+html[data-theme="dark"] .stat-card:hover {
+    box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3);
+}
+
+html[data-theme="dark"] .distribution-item:hover {
+    background: rgba(88, 28, 135, 0.3);
+}
+
+html[data-theme="dark"] .report-section .card:hover {
+    box-shadow: 0 12px 24px rgba(168, 85, 247, 0.3) !important;
+}
+
+html[data-theme="dark"] .report-section .card::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.15),
+        transparent
+    );
+}
+
+/* Print styles */
+@media print {
+    .report-actions,
+    .btn,
+    .report-overlay {
+        display: none !important;
+    }
+
+    .report-section {
+        page-break-inside: avoid;
+    }
+
+    .report-section .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}

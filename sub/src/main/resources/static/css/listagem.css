@@ -1,0 +1,369 @@
+/* listagem.css - Estilos para páginas de listagem (associados, veículos, eventos) */
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rowAppear {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Cabeçalho da página */
+h1.mb-4 {
+    animation: slideUp 0.5s ease-out;
+    position: relative;
+    display: inline-block;
+}
+
+h1.mb-4::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 2px;
+}
+
+/* Botão de cadastro */
+.btn-primary.mb-3 {
+    animation: slideUp 0.6s ease-out 0.2s both;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.mb-3:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+/* Tabela */
+.table {
+    animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+/* Cabeçalho da tabela */
+.table thead {
+    position: relative;
+}
+
+.table thead tr {
+    animation: slideUp 0.5s ease-out 0.4s both;
+}
+
+.table thead th {
+    position: relative;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+}
+
+.table thead th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+.table thead th:hover::after {
+    width: 100%;
+}
+
+/* Linhas da tabela */
+.table tbody tr {
+    animation: rowAppear 0.4s ease-out both;
+    transition: all 0.3s ease;
+}
+
+.table tbody tr:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.table tbody tr:nth-child(2) {
+    animation-delay: 0.55s;
+}
+
+.table tbody tr:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.table tbody tr:nth-child(4) {
+    animation-delay: 0.65s;
+}
+
+.table tbody tr:nth-child(5) {
+    animation-delay: 0.7s;
+}
+
+.table tbody tr:nth-child(n+6) {
+    animation-delay: 0.75s;
+}
+
+.table tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    z-index: 1;
+}
+
+/* Células da tabela */
+.table td {
+    vertical-align: middle;
+    transition: all 0.3s ease;
+}
+
+/* Ações da tabela */
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-actions .btn {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.table-actions .btn:hover {
+    transform: translateY(-2px);
+}
+
+.table-actions .btn-info {
+    border-color: #17a2b8;
+}
+
+.table-actions .btn-warning {
+    border-color: #ffc107;
+}
+
+.table-actions .btn-secondary {
+    border-color: #6c757d;
+}
+
+.table-actions .btn-success {
+    border-color: #28a745;
+}
+
+.table-actions .btn-danger {
+    border-color: #dc3545;
+}
+
+/* Form inline */
+.inline-form {
+    display: inline-block;
+}
+
+/* Select dentro das ações */
+.table-actions .form-select {
+    min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.table-actions .form-select:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.table-actions .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* Striped table enhancement */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(139, 92, 246, 0.03);
+}
+
+/* Responsive table scroll */
+.table-wrapper {
+    position: relative;
+    overflow-x: auto;
+}
+
+.table-wrapper::after {
+    content: '←  Deslize para ver mais  →';
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 992px) {
+    .table-wrapper::after {
+        opacity: 1;
+    }
+}
+
+/* Empty state */
+.alert-info {
+    animation: slideUp 0.5s ease-out 0.5s both;
+}
+
+/* Filtros */
+.vehicles-filter,
+.form-inline {
+    animation: slideUp 0.6s ease-out 0.3s both;
+}
+
+/* Success message */
+.alert-success {
+    animation: slideUp 0.4s ease-out;
+}
+
+/* Vehicles page specific */
+.vehicles-page__header {
+    animation: slideUp 0.5s ease-out;
+}
+
+.vehicles-page__heading {
+    position: relative;
+    display: inline-block;
+}
+
+.vehicles-page__heading::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary), transparent);
+    border-radius: 2px;
+}
+
+/* Vehicles table */
+.vehicles-table {
+    animation: slideUp 0.7s ease-out 0.4s both;
+}
+
+.vehicles-table__table tbody tr:hover {
+    background: rgba(139, 92, 246, 0.08);
+}
+
+/* Badges */
+.badge {
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table-actions {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .table-actions .btn,
+    .table-actions .form-select {
+        width: 100%;
+    }
+
+    h1.mb-4::after {
+        width: 60px;
+    }
+}
+
+/* Tema escuro */
+html[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(168, 85, 247, 0.08);
+}
+
+html[data-theme="dark"] .table tbody tr:hover {
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+    background: rgba(168, 85, 247, 0.12);
+}
+
+html[data-theme="dark"] .vehicles-table__table tbody tr:hover {
+    background: rgba(168, 85, 247, 0.15);
+}
+
+/* Loading state */
+.table.loading tbody tr {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Indicador de ordenação (se implementado) */
+.table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.table thead th.sortable:hover {
+    background: var(--color-surface-alt);
+}
+
+.table thead th.sortable::before {
+    content: '⇅';
+    margin-right: 0.5rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.table thead th.sortable:hover::before {
+    opacity: 1;
+}
+
+/* Pagination (se houver) */
+.pagination {
+    animation: slideUp 0.8s ease-out 0.6s both;
+}
+
+/* Tooltips para ações */
+.table-actions .btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    background: var(--color-text-primary);
+    color: var(--color-surface-elevated);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    z-index: 1000;
+}
