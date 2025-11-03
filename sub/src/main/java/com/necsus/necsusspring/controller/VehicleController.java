@@ -32,6 +32,8 @@ import java.util.HashMap;
 @RequestMapping("/vehicles")
 public class VehicleController {
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(VehicleController.class);
+
     private final VehicleService vehicleService;
     private final PartnerService partnerService;
     private final FileStorageService fileStorageService;
@@ -371,18 +373,11 @@ public class VehicleController {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<Map<String, Object>> responseData = (List<Map<String, Object>>) response.getBody().get("response");
+                Object responseData = response.getBody().get("response");
 
-                if (responseData != null && !responseData.isEmpty()) {
-                    Map<String, Object> vehicleData = responseData.get(0);
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("maker", vehicleData.get("marca"));
-                    result.put("model", vehicleData.get("modelo"));
-                    result.put("fipe_value", vehicleData.get("valor"));
-                    result.put("year_mod", vehicleData.get("anoModelo"));
-                    result.put("tipo_combustivel", vehicleData.get("combustivel"));
-                    result.put("color", vehicleData.get("cor"));
-                    return ResponseEntity.ok(result);
+                if (responseData instanceof Map) {
+                    Map<String, Object> vehicleData = (Map<String, Object>) responseData;
+                    return ResponseEntity.ok(prepareSuccessResponse(vehicleData));
                 }
             }
 
@@ -391,14 +386,27 @@ public class VehicleController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
 
         } catch (HttpClientErrorException e) {
+            logger.error("Erro ao consultar a API da ApiBrasil para a placa {}: {} - {}", placa, e.getStatusCode(), e.getResponseBodyAsString(), e);
             Map<String, Object> error = new HashMap<>();
-            error.put("message", "Erro ao consultar a placa: " + e.getResponseBodyAsString());
+            error.put("message", "Erro ao consultar a placa. Verifique se a placa está correta.");
             return ResponseEntity.status(e.getStatusCode()).body(error);
         } catch (Exception e) {
+            logger.error("Erro inesperado ao processar a placa {}: Tipo de exceção: {}, Mensagem: {}", placa, e.getClass().getName(), e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("message", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
+    }
+
+    private Map<String, Object> prepareSuccessResponse(Map<String, Object> vehicleData) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("maker", vehicleData.get("marca"));
+        result.put("model", vehicleData.get("modelo"));
+        result.put("fipe_value", vehicleData.get("valor"));
+        result.put("year_mod", vehicleData.get("anoModelo"));
+        result.put("tipo_combustivel", vehicleData.get("combustivel"));
+        result.put("color", vehicleData.get("cor"));
+        return result;
     }
 
     /**
