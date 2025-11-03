@@ -22,7 +22,7 @@
         initAlerts();
         initScrollBehavior();
         initNavigationHighlight();
-        initBackToTop();
+        // initBackToTop(); // Desativado para remover o botão "Voltar ao Topo" duplicado
         initFormAnimations();
     }
 
