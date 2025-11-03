@@ -83,6 +83,43 @@
                     // document.getElementById("fipe_value").value = '';
                 }
             }
+
+            const placaInput = document.getElementById("plaque");
+            const placaHelpText = document.getElementById("placa_help_text");
+
+            placaInput.addEventListener("blur", async function() {
+                const placa = this.value.trim();
+                if (placa.length < 7) {
+                    return;
+                }
+
+                placaHelpText.textContent = "Buscando dados da placa...";
+                placaHelpText.className = "form-text text-primary";
+
+                try {
+                    const response = await fetch(`/vehicles/api/placa/${placa}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "Placa não encontrada");
+                    }
+
+                    const data = await response.json();
+                    document.getElementById("maker").value = data.maker || '';
+                    document.getElementById("model").value = data.model || '';
+                    document.getElementById("fipe_value").value = data.fipe_value || '';
+                    document.getElementById("year_mod").value = data.year_mod || '';
+                    document.getElementById("tipo_combustivel").value = data.tipo_combustivel || '';
+                    document.getElementById("color").value = data.color || '';
+
+                    placaHelpText.textContent = "Dados preenchidos com sucesso!";
+                    placaHelpText.className = "form-text text-success";
+
+                } catch (error) {
+                    console.error("Erro ao buscar dados da placa:", error);
+                    placaHelpText.textContent = error.message;
+                    placaHelpText.className = "form-text text-danger";
+                }
+            });
         });
     </script>
 </head>
@@ -137,6 +174,7 @@
         <div class="col-md-4">
             <label for="plaque" class="form-label">Placa</label>
             <input type="text" id="plaque" class="form-control" th:field="*{plaque}" />
+            <small id="placa_help_text" class="form-text text-muted">Digite a placa para preenchimento automático.</small>
             <div class="text-danger" th:if="${#fields.hasErrors('plaque')}" th:errors="*{plaque}"></div>
         </div>
         <div class="col-md-4">

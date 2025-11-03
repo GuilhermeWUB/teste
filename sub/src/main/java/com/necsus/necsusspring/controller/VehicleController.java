@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.config.ApiBrasilConfig;
 import com.necsus.necsusspring.dto.FipeResponseDTO;
 import com.necsus.necsusspring.model.Payment;
 import com.necsus.necsusspring.model.Partner;
@@ -9,19 +10,14 @@ import com.necsus.necsusspring.service.VehicleService;
 import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.FipeService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,6 +25,8 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/vehicles")
@@ -38,14 +36,19 @@ public class VehicleController {
     private final PartnerService partnerService;
     private final FileStorageService fileStorageService;
     private final FipeService fipeService;
+    private final ApiBrasilConfig apiBrasilConfig;
+    private final RestTemplate restTemplate;
 
-    public VehicleController(VehicleService vehicleService, PartnerService partnerService, FileStorageService fileStorageService, FipeService fipeService) {
+    public VehicleController(VehicleService vehicleService, PartnerService partnerService, FileStorageService fileStorageService, FipeService fipeService, ApiBrasilConfig apiBrasilConfig, RestTemplate restTemplate) {
         this.vehicleService = vehicleService;
         this.partnerService = partnerService;
         this.fileStorageService = fileStorageService;
         this.fipeService = fipeService;
+        this.apiBrasilConfig = apiBrasilConfig;
+        this.restTemplate = restTemplate;
     }
 
+    // ... (código existente sem alterações)
     @ModelAttribute("partners")
     public List<Partner> partners() {
         return partnerService.getAllPartners();
@@ -349,6 +352,55 @@ public class VehicleController {
         return currencyFormatter.format(value);
     }
 
+    @GetMapping("/api/placa/{placa}")
+    @ResponseBody
+    public ResponseEntity<?> buscarPorPlaca(@PathVariable String placa) {
+        String url = "https://gateway.apibrasil.io/api/v2/vehicles/fipe";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(apiBrasilConfig.getBearerToken());
+        headers.set("DeviceToken", apiBrasilConfig.getDeviceToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("placa", placa);
+
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                List<Map<String, Object>> responseData = (List<Map<String, Object>>) response.getBody().get("response");
+
+                if (responseData != null && !responseData.isEmpty()) {
+                    Map<String, Object> vehicleData = responseData.get(0);
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("maker", vehicleData.get("marca"));
+                    result.put("model", vehicleData.get("modelo"));
+                    result.put("fipe_value", vehicleData.get("valor"));
+                    result.put("year_mod", vehicleData.get("anoModelo"));
+                    result.put("tipo_combustivel", vehicleData.get("combustivel"));
+                    result.put("color", vehicleData.get("cor"));
+                    return ResponseEntity.ok(result);
+                }
+            }
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("message", "Nenhum veículo encontrado para a placa informada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+
+        } catch (HttpClientErrorException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("message", "Erro ao consultar a placa: " + e.getResponseBodyAsString());
+            return ResponseEntity.status(e.getStatusCode()).body(error);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("message", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
     /**
      * Endpoint REST para buscar dados da Fipe
      * Usado para debug e testes
@@ -377,10 +429,10 @@ public class VehicleController {
             e.printStackTrace();
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(java.util.Map.of(
-                        "erro", e.getMessage(),
-                        "codigo", codigoFipe,
-                        "sugestao", "Verifique se o código FIPE está no formato correto (ex: 001004-9) e se existe na base de dados da FIPE"
+                    .body(Map.of(
+                            "erro", e.getMessage(),
+                            "codigo", codigoFipe,
+                            "sugestao", "Verifique se o código FIPE está no formato correto (ex: 001004-9) e se existe na base de dados da FIPE"
                     ));
         }
     }
