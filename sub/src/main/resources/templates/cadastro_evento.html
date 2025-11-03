@@ -4,17 +4,29 @@
 <head>
     <title>SUB - Cadastrar Comunicação</title>
     <link rel="stylesheet" th:href="@{/css/cadastro.css}">
+    <link rel="stylesheet" th:href="@{/css/cadastro-evento.css}">
 </head>
 <body>
 
 <section layout:fragment="content">
-    <div class="py-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Novo Evento</h4>
+    <div class="event-form py-4">
+        <div class="event-form__intro">
+            <div class="event-form__badge">
+                <i class="bi bi-calendar-event"></i>
+                <span>Nova Comunicação</span>
+            </div>
+            <div class="event-form__headline">
+                <h1>Cadastre um novo evento</h1>
+                <p>Preencha os campos abaixo com as informações do associado, veículo e do ocorrido para registrar uma nova comunicação.</p>
+            </div>
+        </div>
+
+        <div class="card shadow event-form__card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Detalhes do Evento</h4>
             </div>
             <div class="card-body">
-                <form th:action="@{/events}" th:object="${event}" method="post">
+                <form th:action="@{/events}" th:object="${event}" method="post" class="event-form__body">
 
                     <!-- Informações Básicas -->
                     <div class="section-title">
@@ -173,13 +185,21 @@
                     </div>
 
                     <!-- Botões -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a th:href="@{/events}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Voltar
+                    <div class="form-actions">
+                        <a th:href="@{/events}" class="btn btn-light btn-action">
+                            <i class="bi bi-arrow-left"></i>
+                            <span>Voltar para lista</span>
                         </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Cadastrar Evento
-                        </button>
+                        <div class="form-actions__buttons">
+                            <button type="reset" class="btn btn-outline-primary btn-action">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span>Limpar campos</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-action btn-action--primary">
+                                <i class="bi bi-save"></i>
+                                <span>Salvar Evento</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
