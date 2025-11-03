@@ -12,8 +12,4 @@ public class NecsusSpringApplication {
 		SpringApplication.run(NecsusSpringApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
 }

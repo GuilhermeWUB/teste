@@ -1,69 +1,194 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>SUB - Registrar Comunicação</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Evento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/cadastro.css}">
 </head>
 <body>
+<div th:replace="~{fragments/layout :: header}"></div>
 
-<section layout:fragment="content">
-    <h1 class="mb-4">Cadastrar Comunicação</h1>
-    <form th:action="@{/events}" th:object="${event}" method="post" class="row g-3">
-        <div class="col-md-6">
-            <label for="motivo" class="form-label">Motivo</label>
-            <select id="motivo" class="form-select" th:field="*{motivo}">
-                <option value="" th:selected="${event.motivo == null}">--SELECIONE--</option>
-                <option th:each="motivoOption : ${motivoOptions}"
-                        th:value="${motivoOption}"
-                        th:text="${motivoOption.descricao}"></option>
-            </select>
-            <div class="text-danger" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Cadastrar Novo Evento</h4>
         </div>
-        <div class="col-md-6">
-            <label for="envolvimento" class="form-label">Envolvimento</label>
-            <select id="envolvimento" class="form-select" th:field="*{envolvimento}">
-                <option value="" th:selected="${event.envolvimento == null}">--SELECIONE--</option>
-                <option th:each="envolvimentoOption : ${envolvimentoOptions}"
-                        th:value="${envolvimentoOption}"
-                        th:text="${envolvimentoOption.descricao}"></option>
-            </select>
-            <div class="text-danger" th:if="${#fields.hasErrors('envolvimento')}" th:errors="*{envolvimento}"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="dataAconteceu" class="form-label">Data em que aconteceu</label>
-            <input type="date" id="dataAconteceu" class="form-control" th:field="*{dataAconteceu}" />
-            <div class="text-danger" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="horaAconteceu" class="form-label">Horário em que aconteceu (hhmm)</label>
-            <input type="number" id="horaAconteceu" class="form-control" th:field="*{horaAconteceu}" min="0" max="2359" step="1" />
-            <div class="text-danger" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="dataComunicacao" class="form-label">Data da comunicação</label>
-            <input type="date" id="dataComunicacao" class="form-control" th:field="*{dataComunicacao}" />
-            <div class="text-danger" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="horaComunicacao" class="form-label">Horário da comunicação (hhmm)</label>
-            <input type="number" id="horaComunicacao" class="form-control" th:field="*{horaComunicacao}" min="0" max="2359" step="1" />
-            <div class="text-danger" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="idExterno" class="form-label">ID Externo</label>
-            <input type="number" id="idExterno" class="form-control" th:field="*{idExterno}" />
-        </div>
-        <div class="col-md-6">
-            <label for="analistaResponsavel" class="form-label">Analista Responsável</label>
-            <input type="text" id="analistaResponsavel" class="form-control" th:field="*{analistaResponsavel}" />
-        </div>
-        <div class="col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Salvar</button>
-            <a th:href="@{/events}" class="btn btn-secondary">Cancelar</a>
-        </div>
-    </form>
-</section>
+        <div class="card-body">
+            <form th:action="@{/events}" th:object="${event}" method="post">
 
+                <!-- Informações Básicas -->
+                <div class="section-title">
+                    <h5><i class="bi bi-info-circle"></i> Informações Básicas</h5>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="titulo" class="form-label">Título *</label>
+                        <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
+                               placeholder="Ex: Colisão no estacionamento" maxlength="200" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Status *</label>
+                        <select class="form-select" id="status" th:field="*{status}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="status : ${statusOptions}"
+                                    th:value="${status}"
+                                    th:text="${status.displayName}">Status</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="descricao" class="form-label">Descrição *</label>
+                        <textarea class="form-control" id="descricao" th:field="*{descricao}"
+                                  rows="4" placeholder="Descreva o que aconteceu..." required></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="prioridade" class="form-label">Prioridade</label>
+                        <select class="form-select" id="prioridade" th:field="*{prioridade}">
+                            <option value="">Selecione...</option>
+                            <option th:each="prioridade : ${prioridadeOptions}"
+                                    th:value="${prioridade}"
+                                    th:text="${prioridade.displayName}">Prioridade</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="motivo" class="form-label">Motivo *</label>
+                        <select class="form-select" id="motivo" th:field="*{motivo}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="motivo : ${motivoOptions}"
+                                    th:value="${motivo}"
+                                    th:text="${motivo}">Motivo</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="envolvimento" class="form-label">Envolvimento *</label>
+                        <select class="form-select" id="envolvimento" th:field="*{envolvimento}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="envolvimento : ${envolvimentoOptions}"
+                                    th:value="${envolvimento}"
+                                    th:text="${envolvimento}">Envolvimento</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('envolvimento')}" th:errors="*{envolvimento}"></div>
+                    </div>
+                </div>
+
+                <!-- Associado e Veículo -->
+                <div class="section-title">
+                    <h5><i class="bi bi-people"></i> Associado e Veículo</h5>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="partner" class="form-label">Associado *</label>
+                        <select class="form-select" id="partner" th:field="*{partner}" required>
+                            <option value="">Selecione o associado...</option>
+                            <option th:each="partner : ${partners}"
+                                    th:value="${partner.id}"
+                                    th:text="${partner.name + ' - ' + partner.cpf}">Associado</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('partner')}" th:errors="*{partner}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="vehicle" class="form-label">Veículo (Placa) *</label>
+                        <select class="form-select" id="vehicle" th:field="*{vehicle}" required>
+                            <option value="">Selecione o veículo...</option>
+                            <option th:each="vehicle : ${vehicles}"
+                                    th:value="${vehicle.id}"
+                                    th:text="${vehicle.plate + ' - ' + vehicle.maker + ' ' + vehicle.model}">Veículo</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('vehicle')}" th:errors="*{vehicle}"></div>
+                    </div>
+                </div>
+
+                <!-- Datas -->
+                <div class="section-title">
+                    <h5><i class="bi bi-calendar"></i> Datas e Horários</h5>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="dataAconteceu" class="form-label">Data do Ocorrido *</label>
+                        <input type="date" class="form-control" id="dataAconteceu" th:field="*{dataAconteceu}" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="horaAconteceu" class="form-label">Hora *</label>
+                        <input type="time" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dataComunicacao" class="form-label">Data da Comunicação *</label>
+                        <input type="date" class="form-control" id="dataComunicacao" th:field="*{dataComunicacao}" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="horaComunicacao" class="form-label">Hora *</label>
+                        <input type="time" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="dataVencimento" class="form-label">Data de Vencimento *</label>
+                        <input type="date" class="form-control" id="dataVencimento" th:field="*{dataVencimento}" required>
+                        <small class="form-text text-muted">Data limite para resolução do evento</small>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('dataVencimento')}" th:errors="*{dataVencimento}"></div>
+                    </div>
+                </div>
+
+                <!-- Informações Adicionais -->
+                <div class="section-title">
+                    <h5><i class="bi bi-card-text"></i> Informações Adicionais</h5>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="analistaResponsavel" class="form-label">Analista Responsável</label>
+                        <input type="text" class="form-control" id="analistaResponsavel"
+                               th:field="*{analistaResponsavel}" placeholder="Nome do analista">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="idExterno" class="form-label">ID Externo</label>
+                        <input type="number" class="form-control" id="idExterno"
+                               th:field="*{idExterno}" placeholder="ID do sistema externo">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="observacoes" class="form-label">Observações</label>
+                        <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
+                                  rows="3" placeholder="Observações adicionais..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a th:href="@{/events}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Cadastrar Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

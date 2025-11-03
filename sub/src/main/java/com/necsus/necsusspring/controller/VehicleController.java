@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,7 +42,9 @@ public class VehicleController {
     private final ApiBrasilConfig apiBrasilConfig;
     private final RestTemplate restTemplate;
 
-    public VehicleController(VehicleService vehicleService, PartnerService partnerService, FileStorageService fileStorageService, FipeService fipeService, ApiBrasilConfig apiBrasilConfig, RestTemplate restTemplate) {
+    public VehicleController(VehicleService vehicleService, PartnerService partnerService,
+                             FileStorageService fileStorageService, FipeService fipeService,
+                             ApiBrasilConfig apiBrasilConfig, RestTemplate restTemplate) {
         this.vehicleService = vehicleService;
         this.partnerService = partnerService;
         this.fileStorageService = fileStorageService;
@@ -50,7 +53,6 @@ public class VehicleController {
         this.restTemplate = restTemplate;
     }
 
-    // ... (código existente sem alterações)
     @ModelAttribute("partners")
     public List<Partner> partners() {
         return partnerService.getAllPartners();
@@ -79,7 +81,6 @@ public class VehicleController {
             vehicle.setPartnerId(partnerId);
         }
 
-        // Se código FIPE foi fornecido, buscar dados automaticamente
         if (codigoFipe != null && !codigoFipe.trim().isEmpty()) {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
@@ -131,7 +132,6 @@ public class VehicleController {
             model.addAttribute("fipeValueFormatted", formatCurrency(vehicle.getFipe_value()));
             model.addAttribute("fipeSuccessMessage", "Dados da Fipe carregados com sucesso!");
         } catch (Exception ex) {
-            // Mostrar a mensagem específica do erro ao usuário
             String errorMessage = ex.getMessage();
             if (errorMessage != null && !errorMessage.isEmpty()) {
                 model.addAttribute("fipeErrorMessage", errorMessage);
@@ -158,13 +158,11 @@ public class VehicleController {
             return "cadastro_veiculo";
         }
 
-        // Processar upload de fotos de inspeção
         if (inspectionPhotos != null && inspectionPhotos.length > 0) {
             List<String> inspectionPaths = fileStorageService.storeFiles(inspectionPhotos);
             vehicle.setInspectionPhotoPaths(inspectionPaths);
         }
 
-        // Processar upload de fotos de documentação
         if (documentPhotos != null && documentPhotos.length > 0) {
             List<String> documentPaths = fileStorageService.storeFiles(documentPhotos);
             vehicle.setDocumentPhotoPaths(documentPaths);
@@ -186,7 +184,6 @@ public class VehicleController {
             vehicle.setPayment(new Payment());
         }
 
-        // Se código FIPE foi fornecido, buscar dados automaticamente
         if (codigoFipe != null && !codigoFipe.trim().isEmpty()) {
             try {
                 FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
@@ -229,11 +226,9 @@ public class VehicleController {
             return "update_veiculo";
         }
 
-        // Buscar veículo existente para manter fotos antigas
         Vehicle existingVehicle = vehicleService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle not found"));
 
-        // Adicionar novas fotos de inspeção às existentes
         List<String> existingInspectionPhotos = existingVehicle.getInspectionPhotoPaths();
         if (existingInspectionPhotos == null) {
             existingInspectionPhotos = new ArrayList<>();
@@ -244,7 +239,6 @@ public class VehicleController {
         }
         vehicle.setInspectionPhotoPaths(existingInspectionPhotos);
 
-        // Adicionar novas fotos de documentação às existentes
         List<String> existingDocumentPhotos = existingVehicle.getDocumentPhotoPaths();
         if (existingDocumentPhotos == null) {
             existingDocumentPhotos = new ArrayList<>();
@@ -354,53 +348,129 @@ public class VehicleController {
         return currencyFormatter.format(value);
     }
 
+    /**
+     * Endpoint para buscar dados do veículo por placa usando ApiBrasil
+     */
     @GetMapping("/api/placa/{placa}")
     @ResponseBody
     public ResponseEntity<?> buscarPorPlaca(@PathVariable String placa) {
         String url = "https://gateway.apibrasil.io/api/v2/vehicles/fipe";
 
+        logger.info("=== INICIANDO BUSCA POR PLACA ===");
+        logger.info("Placa solicitada: {}", placa);
+        logger.info("URL da API: {}", url);
+
+        // Validar credenciais
         if (!apiBrasilConfig.hasValidCredentials()) {
-            logger.error("Credenciais da ApiBrasil ausentes. Configure as variáveis de ambiente APIBRASIL_BEARER_TOKEN e APIBRASIL_DEVICE_TOKEN antes de realizar consultas.");
+            logger.error("❌ Credenciais da ApiBrasil ausentes ou inválidas");
+            logger.error("Bearer Token presente: {}", apiBrasilConfig.getBearerToken() != null && !apiBrasilConfig.getBearerToken().isEmpty());
+            logger.error("Device Token presente: {}", apiBrasilConfig.getDeviceToken() != null && !apiBrasilConfig.getDeviceToken().isEmpty());
+
             Map<String, Object> error = new HashMap<>();
             error.put("message", "As credenciais da ApiBrasil não estão configuradas. Entre em contato com o administrador do sistema.");
+            error.put("erro", "CREDENCIAIS_AUSENTES");
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
         }
 
+        logger.info("✓ Credenciais validadas com sucesso");
+
+        // Preparar headers
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiBrasilConfig.getBearerToken());
         headers.set("DeviceToken", apiBrasilConfig.getDeviceToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // Preparar body
         Map<String, String> body = new HashMap<>();
         body.put("placa", placa);
 
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
+        logger.info("📤 Enviando requisição para ApiBrasil...");
+        long startTime = System.currentTimeMillis();
+
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
+            long duration = System.currentTimeMillis() - startTime;
+            logger.info("✓ Resposta recebida em {}ms", duration);
+            logger.info("Status Code: {}", response.getStatusCode());
+
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                logger.info("📥 Corpo da resposta recebido");
                 Object responseData = response.getBody().get("response");
 
                 if (responseData instanceof Map) {
                     Map<String, Object> vehicleData = (Map<String, Object>) responseData;
+                    logger.info("✓ Dados do veículo encontrados - Marca: {}, Modelo: {}",
+                            vehicleData.get("marca"), vehicleData.get("modelo"));
                     return ResponseEntity.ok(prepareSuccessResponse(vehicleData));
+                } else {
+                    logger.warn("⚠️ Formato de resposta inesperado. Tipo de 'response': {}",
+                            responseData != null ? responseData.getClass().getName() : "null");
                 }
             }
 
+            logger.warn("⚠️ Nenhum dado de veículo encontrado para a placa: {}", placa);
             Map<String, Object> error = new HashMap<>();
             error.put("message", "Nenhum veículo encontrado para a placa informada.");
+            error.put("placa", placa);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
 
-        } catch (HttpClientErrorException e) {
-            logger.error("Erro ao consultar a API da ApiBrasil para a placa {}: {} - {}", placa, e.getStatusCode(), e.getResponseBodyAsString(), e);
+        } catch (ResourceAccessException e) {
+            // Erro de timeout ou conexão
+            long duration = System.currentTimeMillis() - startTime;
+            logger.error("❌ TIMEOUT/CONEXÃO - Tempo decorrido: {}ms", duration);
+            logger.error("Tipo de erro: {}", e.getClass().getSimpleName());
+            logger.error("Mensagem: {}", e.getMessage());
+
+            if (e.getCause() != null) {
+                logger.error("Causa raiz: {} - {}", e.getCause().getClass().getSimpleName(), e.getCause().getMessage());
+            }
+
             Map<String, Object> error = new HashMap<>();
-            error.put("message", "Erro ao consultar a placa. Verifique se a placa está correta.");
+            error.put("message", "A API externa não respondeu a tempo. Tente novamente em alguns instantes.");
+            error.put("erro", "TIMEOUT");
+            error.put("tempoDecorrido", duration + "ms");
+            error.put("sugestao", "A API da ApiBrasil pode estar lenta ou indisponível no momento. Aguarde alguns instantes e tente novamente.");
+            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(error);
+
+        } catch (HttpClientErrorException e) {
+            // Erro 4xx da API (credenciais inválidas, placa inválida, etc)
+            long duration = System.currentTimeMillis() - startTime;
+            logger.error("❌ ERRO HTTP {} - Tempo: {}ms", e.getStatusCode(), duration);
+            logger.error("Placa: {}", placa);
+            logger.error("Resposta da API: {}", e.getResponseBodyAsString());
+
+            Map<String, Object> error = new HashMap<>();
+
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                error.put("message", "Erro de autenticação com a API. Verifique as credenciais.");
+                error.put("erro", "AUTENTICACAO");
+            } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                error.put("message", "Placa inválida ou formato incorreto.");
+                error.put("erro", "PLACA_INVALIDA");
+            } else {
+                error.put("message", "Erro ao consultar a placa. Verifique se a placa está correta.");
+                error.put("erro", "ERRO_API");
+            }
+
+            error.put("statusCode", e.getStatusCode().value());
+            error.put("placa", placa);
             return ResponseEntity.status(e.getStatusCode()).body(error);
+
         } catch (Exception e) {
-            logger.error("Erro inesperado ao processar a placa {}: Tipo de exceção: {}, Mensagem: {}", placa, e.getClass().getName(), e.getMessage(), e);
+            // Erro inesperado
+            long duration = System.currentTimeMillis() - startTime;
+            logger.error("❌ ERRO INESPERADO - Tempo: {}ms", duration);
+            logger.error("Tipo de exceção: {}", e.getClass().getName());
+            logger.error("Mensagem: {}", e.getMessage());
+            logger.error("Stack trace:", e);
+
             Map<String, Object> error = new HashMap<>();
             error.put("message", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+            error.put("erro", "ERRO_INTERNO");
+            error.put("tipo", e.getClass().getSimpleName());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
@@ -424,24 +494,26 @@ public class VehicleController {
     @ResponseBody
     public ResponseEntity<?> testarBuscaFipe(@RequestParam String codigoFipe) {
         try {
-            System.out.println("=== TESTE DE BUSCA FIPE ===");
-            System.out.println("Código fornecido: " + codigoFipe);
-            System.out.println("URL que será consultada: https://brasilapi.com.br/api/fipe/preco/v2/" + codigoFipe);
+            logger.info("=== TESTE DE BUSCA FIPE ===");
+            logger.info("Código fornecido: {}", codigoFipe);
+            logger.info("URL que será consultada: https://brasilapi.com.br/api/fipe/preco/v2/{}", codigoFipe);
 
             FipeResponseDTO fipeData = fipeService.buscarVeiculoPorCodigoFipe(codigoFipe);
 
-            System.out.println("Sucesso! Dados encontrados:");
-            System.out.println("- Marca: " + fipeData.getBrand());
-            System.out.println("- Modelo: " + fipeData.getModel());
-            System.out.println("- Ano: " + fipeData.getModelYear());
+            logger.info("✓ Sucesso! Dados encontrados:");
+            logger.info("- Marca: {}", fipeData.getBrand());
+            logger.info("- Modelo: {}", fipeData.getModel());
+            logger.info("- Ano: {}", fipeData.getModelYear());
 
             return ResponseEntity.ok(fipeData);
+
+
         } catch (Exception e) {
-            System.err.println("ERRO: " + e.getMessage());
+            logger.error("❌ ERRO: {}", e.getMessage());
             if (e.getCause() != null) {
-                System.err.println("Causa: " + e.getCause().getMessage());
+                logger.error("Causa: {}", e.getCause().getMessage());
             }
-            e.printStackTrace();
+            logger.error("Stack trace:", e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
