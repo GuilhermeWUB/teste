@@ -86,10 +86,12 @@
 
             const placaInput = document.getElementById("plaque");
             const placaHelpText = document.getElementById("placa_help_text");
+            let ultimaPlacaConsultada = '';
 
             placaInput.addEventListener("blur", async function() {
                 const placa = this.value.trim();
-                if (placa.length < 7) {
+
+                if (placa.length < 7 || placa === ultimaPlacaConsultada) {
                     return;
                 }
 
@@ -113,6 +115,8 @@
 
                     placaHelpText.textContent = "Dados preenchidos com sucesso!";
                     placaHelpText.className = "form-text text-success";
+
+                    ultimaPlacaConsultada = placa;
 
                 } catch (error) {
                     console.error("Erro ao buscar dados da placa:", error);
