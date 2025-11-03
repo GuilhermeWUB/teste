@@ -10,17 +10,6 @@
 
 <section layout:fragment="content">
     <div class="event-form py-4">
-        <div class="event-form__intro">
-            <div class="event-form__badge">
-                <i class="bi bi-calendar-event"></i>
-                <span>Nova Comunicação</span>
-            </div>
-            <div class="event-form__headline">
-                <h1>Cadastre um novo evento</h1>
-                <p>Preencha os campos abaixo com as informações do associado, veículo e do ocorrido para registrar uma nova comunicação.</p>
-            </div>
-        </div>
-
         <div class="card shadow event-form__card">
             <div class="card-header">
                 <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Detalhes do Evento</h4>
@@ -206,6 +195,89 @@
         </div>
     </div>
 </section>
+
+<script layout:fragment="scripts">
+    (function () {
+        'use strict';
+
+        const partnerSelect = document.getElementById('partner');
+        const vehicleSelect = document.getElementById('vehicle');
+
+        if (!partnerSelect || !vehicleSelect) {
+            console.error('Dropdown de associado ou veículo não encontrado.');
+            return;
+        }
+
+        const initialVehicleOptions = Array.from(vehicleSelect.options);
+
+        function updateVehicleOptions(vehicles) {
+            vehicleSelect.innerHTML = ''; // Limpa as opções atuais
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Selecione o veículo...';
+            vehicleSelect.appendChild(defaultOption);
+
+            if (Array.isArray(vehicles) && vehicles.length > 0) {
+                vehicles.forEach(vehicle => {
+                    const option = document.createElement('option');
+                    option.value = vehicle.id;
+                    option.textContent = `${vehicle.plaque} - ${vehicle.maker} ${vehicle.model}`;
+                    vehicleSelect.appendChild(option);
+                });
+                vehicleSelect.disabled = false;
+            } else {
+                defaultOption.textContent = 'Nenhum veículo encontrado para este associado';
+                vehicleSelect.disabled = true;
+            }
+        }
+
+        partnerSelect.addEventListener('change', function () {
+            const partnerId = this.value;
+
+            if (!partnerId) {
+                updateVehicleOptions([]);
+                vehicleSelect.disabled = true;
+                vehicleSelect.querySelector('option').textContent = 'Selecione um associado primeiro';
+                return;
+            }
+
+            const url = `/events/api/vehicles/${partnerId}`;
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            const headers = {
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+
+            fetch(url, { headers })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro na rede: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateVehicleOptions(data);
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar veículos:', error);
+                    updateVehicleOptions([]);
+                    vehicleSelect.disabled = true;
+                    vehicleSelect.querySelector('option').textContent = 'Erro ao carregar veículos';
+                });
+        });
+
+        // Inicializar estado do dropdown de veículos
+        if (!partnerSelect.value) {
+            vehicleSelect.disabled = true;
+            vehicleSelect.querySelector('option').textContent = 'Selecione um associado primeiro';
+        }
+    })();
+</script>
 
 </body>
 </html>

@@ -59,11 +59,6 @@ public class EventController {
         return partnerService.getAllPartners();
     }
 
-    @ModelAttribute("vehicles")
-    public List<Vehicle> vehicles() {
-        return vehicleService.listAll(null);
-    }
-
     @GetMapping
     public String listEvents(Model model) {
         List<Event> events = eventService.listAll();
@@ -121,11 +116,20 @@ public class EventController {
         }
     }
 
+    @GetMapping("/api/vehicles/{partnerId}")
+    @ResponseBody
+    public ResponseEntity<List<Vehicle>> getVehiclesByPartner(@PathVariable Long partnerId) {
+        Partner partner = partnerService.getPartnerById(partnerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
+        return ResponseEntity.ok(partner.getVehicles());
+    }
+
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         Event event = new Event();
         event.setStatus(Status.A_FAZER); // Status padrão
         model.addAttribute("event", event);
+        model.addAttribute("vehicles", List.of()); // Inicia com lista vazia
         return "cadastro_evento";
     }
 
