@@ -359,6 +359,13 @@ public class VehicleController {
     public ResponseEntity<?> buscarPorPlaca(@PathVariable String placa) {
         String url = "https://gateway.apibrasil.io/api/v2/vehicles/fipe";
 
+        if (!apiBrasilConfig.hasValidCredentials()) {
+            logger.error("Credenciais da ApiBrasil ausentes. Configure as variáveis de ambiente APIBRASIL_BEARER_TOKEN e APIBRASIL_DEVICE_TOKEN antes de realizar consultas.");
+            Map<String, Object> error = new HashMap<>();
+            error.put("message", "As credenciais da ApiBrasil não estão configuradas. Entre em contato com o administrador do sistema.");
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiBrasilConfig.getBearerToken());
         headers.set("DeviceToken", apiBrasilConfig.getDeviceToken());
