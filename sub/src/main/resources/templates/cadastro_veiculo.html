@@ -6,124 +6,271 @@
     <link rel="stylesheet" th:href="@{/css/cadastro.css}">
     <script src="/js/cadastro-veiculo.js"></script>
     <script>
+        /**
+         * Sistema de Auto-Preenchimento - Cadastro de Veículos
+         * Busca dados por Placa (ApiBrasil) e por Código FIPE (BrasilAPI)
+         */
         document.addEventListener("DOMContentLoaded", function() {
-            const fipeCodeInput = document.getElementById("codigo_fipe");
-            const helpText = document.getElementById("fipe_help_text");
+            console.log('🚗 Sistema de Auto-Preenchimento inicializado');
 
-            fipeCodeInput.addEventListener("blur", function() {
-                const fipeCode = this.value.replace(/[^0-9]/g, ''); // Limpa a máscara
-                if (fipeCode.length >= 7) { // Validação básica do tamanho do código
-                    fetchFipeData(fipeCode);
-                }
-            });
-
-            async function fetchFipeData(fipeCode) {
-                // Mapeamento de tipo de veículo da API para os valores do select
-                const vehicleTypeMap = {
-                    "carros": "Carro",
-                    "motos": "Moto",
-                    "caminhoes": "Caminhão"
-                };
-
-                const originalHelpText = helpText.textContent;
-                helpText.textContent = "Buscando dados da Fipe...";
-                helpText.classList.remove("text-danger");
-                helpText.classList.add("text-primary");
-
-                try {
-                    const response = await fetch(`https://brasilapi.com.br/api/fipe/preco/v1/${fipeCode}`);
-
-                    if (!response.ok) {
-                        throw new Error('Código Fipe não encontrado ou inválido.');
-                    }
-
-                    const data = await response.json();
-
-                    // A BrasilAPI retorna um array, pegamos o primeiro resultado que geralmente é o mais relevante
-                    if (data && data.length > 0) {
-                        const vehicle = data[0];
-
-                        // Preenche os campos
-                        document.getElementById("maker").value = vehicle.marca || '';
-                        document.getElementById("model").value = vehicle.modelo || '';
-                        document.getElementById("year_mod").value = `${vehicle.anoModelo}`;
-                        document.getElementById("tipo_combustivel").value = vehicle.combustivel || '';
-
-                        // Formata o valor como moeda brasileira
-                        const formattedValue = new Intl.NumberFormat('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL'
-                        }).format(parseFloat(vehicle.valor.replace(/[^0-9,-]+/g, "").replace(",", ".")));
-                        document.getElementById("fipe_value").value = formattedValue;
-
-                        // Seleciona o tipo de veículo
-                        const vehicleType = vehicle.tipoVeiculo ? vehicleTypeMap[vehicle.tipoVeiculo] : '';
-                        if (vehicleType) {
-                            document.getElementById("type_vehicle").value = vehicleType;
-                        }
-
-                        helpText.textContent = "Dados preenchidos com sucesso!";
-                        helpText.classList.remove("text-primary");
-                        helpText.classList.add("text-success");
-                    } else {
-                        throw new Error('Nenhum dado encontrado para este código Fipe.');
-                    }
-
-                } catch (error) {
-                    console.error("Erro ao buscar dados da Fipe:", error);
-                    helpText.textContent = error.message;
-                    helpText.classList.remove("text-primary", "text-success");
-                    helpText.classList.add("text-danger");
-
-                    // Opcional: Limpar os campos em caso de erro
-                    // document.getElementById("maker").value = '';
-                    // document.getElementById("model").value = '';
-                    // document.getElementById("year_mod").value = '';
-                    // document.getElementById("tipo_combustivel").value = '';
-                    // document.getElementById("fipe_value").value = '';
-                }
-            }
-
+            // ===== BUSCA POR PLACA (ApiBrasil) =====
             const placaInput = document.getElementById("plaque");
             const placaHelpText = document.getElementById("placa_help_text");
             let ultimaPlacaConsultada = '';
+            let buscandoPlaca = false;
 
-            placaInput.addEventListener("blur", async function() {
-                const placa = this.value.trim();
+            // Formatar placa enquanto digita (ABC1234 ou ABC1D23)
+            placaInput.addEventListener("input", function(e) {
+                let valor = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                if (valor.length > 7) valor = valor.substring(0, 7);
+                e.target.value = valor;
+            });
 
-                if (placa.length < 7 || placa === ultimaPlacaConsultada) {
+            // Buscar ao sair do campo (blur) - acionado pelo TAB ou clique fora
+            placaInput.addEventListener("blur", function() {
+                buscarDadosPorPlaca();
+            });
+
+            // Buscar ao pressionar ENTER
+            placaInput.addEventListener("keypress", function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    buscarDadosPorPlaca();
+                }
+            });
+
+            async function buscarDadosPorPlaca() {
+                const placa = placaInput.value.trim().toUpperCase();
+
+                // Validações
+                if (placa.length < 7) {
+                    placaHelpText.textContent = "Digite uma placa válida (mínimo 7 caracteres)";
+                    placaHelpText.className = "form-text text-muted";
                     return;
                 }
 
-                placaHelpText.textContent = "Buscando dados da placa...";
+                if (placa === ultimaPlacaConsultada) {
+                    placaHelpText.textContent = "Placa já consultada";
+                    placaHelpText.className = "form-text text-info";
+                    return;
+                }
+
+                if (buscandoPlaca) {
+                    console.log('⏳ Busca já em andamento...');
+                    return;
+                }
+
+                console.log('🔍 Buscando dados da placa:', placa);
+                buscandoPlaca = true;
+
+                placaHelpText.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando dados da placa...';
                 placaHelpText.className = "form-text text-primary";
+
+                // Adicionar loading visual no input
+                placaInput.style.borderColor = '#0d6efd';
+                placaInput.style.backgroundColor = '#e7f1ff';
 
                 try {
                     const response = await fetch(`/vehicles/api/placa/${placa}`);
+
                     if (!response.ok) {
                         const errorData = await response.json();
                         throw new Error(errorData.message || "Placa não encontrada");
                     }
 
                     const data = await response.json();
-                    document.getElementById("maker").value = data.maker || '';
-                    document.getElementById("model").value = data.model || '';
-                    document.getElementById("fipe_value").value = data.fipe_value || '';
-                    document.getElementById("year_mod").value = data.year_mod || '';
-                    document.getElementById("tipo_combustivel").value = data.tipo_combustivel || '';
-                    document.getElementById("color").value = data.color || '';
+                    console.log('✅ Dados recebidos:', data);
 
-                    placaHelpText.textContent = "Dados preenchidos com sucesso!";
+                    // Preencher campos
+                    preencherCampo("maker", data.maker);
+                    preencherCampo("model", data.model);
+                    preencherCampo("fipe_value", data.fipe_value);
+                    preencherCampo("year_mod", data.year_mod);
+                    preencherCampo("tipo_combustivel", data.tipo_combustivel);
+                    preencherCampo("color", data.color);
+
+                    placaHelpText.innerHTML = '<i class="bi bi-check-circle-fill"></i> Dados preenchidos com sucesso!';
                     placaHelpText.className = "form-text text-success";
+
+                    placaInput.style.borderColor = '#198754';
+                    placaInput.style.backgroundColor = '#d1e7dd';
 
                     ultimaPlacaConsultada = placa;
 
+                    // Animação de sucesso nos campos preenchidos
+                    animarCamposPreenchidos();
+
                 } catch (error) {
-                    console.error("Erro ao buscar dados da placa:", error);
-                    placaHelpText.textContent = error.message;
+                    console.error("❌ Erro ao buscar dados da placa:", error);
+                    placaHelpText.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i> ${error.message}`;
                     placaHelpText.className = "form-text text-danger";
+
+                    placaInput.style.borderColor = '#dc3545';
+                    placaInput.style.backgroundColor = '#f8d7da';
+                } finally {
+                    buscandoPlaca = false;
+
+                    // Restaurar estilo do input após 3 segundos
+                    setTimeout(() => {
+                        placaInput.style.borderColor = '';
+                        placaInput.style.backgroundColor = '';
+                    }, 3000);
+                }
+            }
+
+            // ===== BUSCA POR CÓDIGO FIPE (BrasilAPI) =====
+            const fipeCodeInput = document.getElementById("codigo_fipe");
+            const fipeHelpText = document.getElementById("fipe_help_text");
+            let buscandoFipe = false;
+
+            // Formatar código FIPE enquanto digita
+            fipeCodeInput.addEventListener("input", function(e) {
+                let valor = e.target.value.replace(/[^0-9-]/g, '');
+                e.target.value = valor;
+            });
+
+            // Buscar ao sair do campo (blur) - acionado pelo TAB
+            fipeCodeInput.addEventListener("blur", function() {
+                buscarDadosPorCodigoFipe();
+            });
+
+            // Buscar ao pressionar ENTER
+            fipeCodeInput.addEventListener("keypress", function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    buscarDadosPorCodigoFipe();
                 }
             });
+
+            async function buscarDadosPorCodigoFipe() {
+                const fipeCode = fipeCodeInput.value.replace(/[^0-9-]/g, '');
+
+                if (fipeCode.length < 7) {
+                    fipeHelpText.textContent = "Digite um código FIPE válido";
+                    fipeHelpText.className = "form-text text-muted";
+                    return;
+                }
+
+                if (buscandoFipe) {
+                    console.log('⏳ Busca FIPE já em andamento...');
+                    return;
+                }
+
+                console.log('🔍 Buscando dados do código FIPE:', fipeCode);
+                buscandoFipe = true;
+
+                fipeHelpText.innerHTML = '<i class="bi bi-arrow-repeat"></i> Buscando dados da FIPE...';
+                fipeHelpText.className = "form-text text-primary";
+
+                fipeCodeInput.style.borderColor = '#0d6efd';
+                fipeCodeInput.style.backgroundColor = '#e7f1ff';
+
+                try {
+                    const response = await fetch(`https://brasilapi.com.br/api/fipe/preco/v1/${fipeCode}`);
+
+                    if (!response.ok) {
+                        throw new Error('Código FIPE não encontrado ou inválido.');
+                    }
+
+                    const data = await response.json();
+
+                    if (data && data.length > 0) {
+                        const vehicle = data[0];
+                        console.log('✅ Dados FIPE recebidos:', vehicle);
+
+                        // Mapeamento de tipo de veículo
+                        const vehicleTypeMap = {
+                            "carros": "Carro",
+                            "motos": "Moto",
+                            "caminhoes": "Caminhão"
+                        };
+
+                        // Preencher campos
+                        preencherCampo("maker", vehicle.marca);
+                        preencherCampo("model", vehicle.modelo);
+                        preencherCampo("year_mod", vehicle.anoModelo);
+                        preencherCampo("tipo_combustivel", vehicle.combustivel);
+
+                        // Formatar valor como moeda
+                        if (vehicle.valor) {
+                            const valorNumerico = parseFloat(vehicle.valor.replace(/[^0-9,-]+/g, "").replace(",", "."));
+                            const valorFormatado = new Intl.NumberFormat('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            }).format(valorNumerico);
+                            preencherCampo("fipe_value", valorFormatado);
+                        }
+
+                        // Selecionar tipo de veículo
+                        const tipoVeiculo = vehicle.tipoVeiculo ? vehicleTypeMap[vehicle.tipoVeiculo] : '';
+                        if (tipoVeiculo) {
+                            preencherCampo("type_vehicle", tipoVeiculo);
+                        }
+
+                        fipeHelpText.innerHTML = '<i class="bi bi-check-circle-fill"></i> Dados FIPE preenchidos com sucesso!';
+                        fipeHelpText.className = "form-text text-success";
+
+                        fipeCodeInput.style.borderColor = '#198754';
+                        fipeCodeInput.style.backgroundColor = '#d1e7dd';
+
+                        animarCamposPreenchidos();
+
+                    } else {
+                        throw new Error('Nenhum dado encontrado para este código FIPE.');
+                    }
+
+                } catch (error) {
+                    console.error("❌ Erro ao buscar dados da FIPE:", error);
+                    fipeHelpText.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i> ${error.message}`;
+                    fipeHelpText.className = "form-text text-danger";
+
+                    fipeCodeInput.style.borderColor = '#dc3545';
+                    fipeCodeInput.style.backgroundColor = '#f8d7da';
+                } finally {
+                    buscandoFipe = false;
+
+                    setTimeout(() => {
+                        fipeCodeInput.style.borderColor = '';
+                        fipeCodeInput.style.backgroundColor = '';
+                    }, 3000);
+                }
+            }
+
+            // ===== FUNÇÕES AUXILIARES =====
+
+            /**
+             * Preenche um campo e adiciona feedback visual
+             */
+            function preencherCampo(fieldId, valor) {
+                const campo = document.getElementById(fieldId);
+                if (campo && valor) {
+                    campo.value = valor;
+                    console.log(`📝 Campo "${fieldId}" preenchido:`, valor);
+                }
+            }
+
+            /**
+             * Anima campos que foram preenchidos
+             */
+            function animarCamposPreenchidos() {
+                const campos = ['maker', 'model', 'fipe_value', 'year_mod', 'tipo_combustivel', 'color'];
+                campos.forEach(id => {
+                    const campo = document.getElementById(id);
+                    if (campo && campo.value) {
+                        campo.style.transition = 'all 0.3s ease';
+                        campo.style.transform = 'scale(1.02)';
+                        campo.style.backgroundColor = '#d1e7dd';
+
+                        setTimeout(() => {
+                            campo.style.transform = 'scale(1)';
+                            campo.style.backgroundColor = '';
+                        }, 500);
+                    }
+                });
+            }
+
+            console.log('✅ Sistema de Auto-Preenchimento pronto!');
+            console.log('💡 Dica: Preencha a PLACA e pressione TAB ou ENTER para buscar os dados automaticamente');
         });
     </script>
 </head>
