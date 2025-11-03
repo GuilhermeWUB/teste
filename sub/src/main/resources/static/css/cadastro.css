@@ -1,5 +1,19 @@
 /* cadastro.css - Estilos para páginas de cadastro (associado, veículo, evento) */
 
+/* Variáveis CSS */
+:root {
+    --color-primary: #667eea;
+    --color-accent: #764ba2;
+    --color-success: #28a745;
+    --color-danger: #dc3545;
+    --color-warning: #ffc107;
+    --color-info: #17a2b8;
+    --color-muted: #6c757d;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f8f9fa;
+    --color-border: #dee2e6;
+}
+
 /* Animações */
 @keyframes slideInFromTop {
     from {
@@ -61,6 +75,51 @@ h2.mt-4::before, h2.h5::before {
 /* Formulário */
 form {
     animation: slideInFromTop 0.4s ease-out 0.1s both;
+}
+
+/* Section Title - Título de Seção */
+.section-title {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+    animation: slideInFromTop 0.35s ease-out both;
+}
+
+.section-title h5 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title h5 i {
+    font-size: 1.5rem;
+}
+
+/* Card do formulário */
+.card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    animation: slideInFromTop 0.3s ease-out both;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-body {
+    padding: 2rem;
 }
 
 /* Rows com animação escalonada */
