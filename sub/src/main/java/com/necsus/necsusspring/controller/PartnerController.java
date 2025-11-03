@@ -80,16 +80,22 @@ public class PartnerController {
     @PostMapping("/update/{id}")
     public String updatePartner(
             @PathVariable Long id,
-            Partner partner,
+            Partner partnerDetails,
             @RequestParam(value = "documents", required = false) MultipartFile[] documents) {
-        partner.setId(id);
 
-        // Buscar o partner existente para manter os documentos antigos
-        Partner existingPartner = partnerService.getPartnerById(id)
+        Partner partnerToUpdate = partnerService.getPartnerById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
 
-        // Adicionar novos documentos aos existentes
-        List<String> existingDocs = existingPartner.getDocumentPaths();
+        partnerToUpdate.setName(partnerDetails.getName());
+        partnerToUpdate.setDateBorn(partnerDetails.getDateBorn());
+        partnerToUpdate.setEmail(partnerDetails.getEmail());
+        partnerToUpdate.setCpf(partnerDetails.getCpf());
+        partnerToUpdate.setPhone(partnerDetails.getPhone());
+        partnerToUpdate.setCell(partnerDetails.getCell());
+        partnerToUpdate.setRg(partnerDetails.getRg());
+        partnerToUpdate.setFax(partnerDetails.getFax());
+
+        List<String> existingDocs = partnerToUpdate.getDocumentPaths();
         if (existingDocs == null) {
             existingDocs = new ArrayList<>();
         }
@@ -98,9 +104,9 @@ public class PartnerController {
             List<String> newDocPaths = fileStorageService.storeFiles(documents);
             existingDocs.addAll(newDocPaths);
         }
+        partnerToUpdate.setDocumentPaths(existingDocs);
 
-        partner.setDocumentPaths(existingDocs);
-        partnerService.updatePartner(partner);
+        partnerService.updatePartner(partnerToUpdate);
         return "redirect:/partners";
     }
 
