@@ -3,6 +3,7 @@ package com.necsus.necsusspring.service;
 import com.necsus.necsusspring.model.Payment;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
+import com.necsus.necsusspring.repository.EventRepository;
 import com.necsus.necsusspring.repository.PaymentRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
@@ -20,13 +21,16 @@ public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final PartnerRepository partnerRepository;
     private final PaymentRepository paymentRepository;
+    private final EventRepository eventRepository;
 
     public VehicleService(VehicleRepository vehicleRepository,
                           PartnerRepository partnerRepository,
-                          PaymentRepository paymentRepository) {
+                          PaymentRepository paymentRepository,
+                          EventRepository eventRepository) {
         this.vehicleRepository = vehicleRepository;
         this.partnerRepository = partnerRepository;
         this.paymentRepository = paymentRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Transactional(readOnly = true)
@@ -108,6 +112,7 @@ public class VehicleService {
         if (!vehicleRepository.existsById(id)) {
             return;
         }
+        eventRepository.deleteByVehicleId(id);
         paymentRepository.deleteByVehicleId(id);
         vehicleRepository.deleteById(id);
     }

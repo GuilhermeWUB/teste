@@ -17,6 +17,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByVehicleId(Long vehicleId);
 
+    void deleteByVehicleId(Long vehicleId);
+
     @EntityGraph(attributePaths = {"partner", "vehicle"})
     List<Event> findAllByOrderByStatusAscDataVencimentoAscIdAsc();
 }
