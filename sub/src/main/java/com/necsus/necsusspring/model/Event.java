@@ -8,8 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -47,16 +45,11 @@ public class Event {
 
     private LocalDate dataAconteceu;
 
-
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime horaAconteceu;
-
+    private Integer horaAconteceu;
 
     private LocalDate dataComunicacao;
 
-
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime horaComunicacao;
+    private Integer horaComunicacao;
 
 
     private LocalDate dataVencimento;
