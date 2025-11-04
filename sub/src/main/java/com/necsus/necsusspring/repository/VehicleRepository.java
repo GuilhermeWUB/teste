@@ -16,4 +16,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     Optional<Vehicle> findWithPartnerAndPaymentById(Long id);
 
     long countByStatus(Integer status);
+
+    Optional<Vehicle> findByPartnerIdAndPlaque(Long partnerId, String plaque);
 }

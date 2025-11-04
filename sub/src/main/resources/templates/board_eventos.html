@@ -128,7 +128,7 @@
                          th:attr="data-event-id=${event.id},
                                   data-title=${event.titulo},
                                   data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plate}">
+                                  data-plate=${event.vehicle.plaque}">
                         <!-- Priority Indicator -->
                         <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
 
@@ -163,7 +163,7 @@
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plate}">Placa</span>
+                                    <span th:text="${event.vehicle.plaque}">Placa</span>
                                 </div>
                             </div>
 
@@ -210,7 +210,7 @@
                          th:attr="data-event-id=${event.id},
                                   data-title=${event.titulo},
                                   data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plate}">
+                                  data-plate=${event.vehicle.plaque}">
                         <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
 
                         <div class="card-header-custom">
@@ -243,7 +243,7 @@
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plate}">Placa</span>
+                                    <span th:text="${event.vehicle.plaque}">Placa</span>
                                 </div>
                             </div>
 
@@ -290,7 +290,7 @@
                          th:attr="data-event-id=${event.id},
                                   data-title=${event.titulo},
                                   data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plate}">
+                                  data-plate=${event.vehicle.plaque}">
                         <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
 
                         <div class="card-header-custom">
@@ -323,7 +323,7 @@
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plate}">Placa</span>
+                                    <span th:text="${event.vehicle.plaque}">Placa</span>
                                 </div>
                             </div>
 

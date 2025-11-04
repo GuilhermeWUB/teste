@@ -11,7 +11,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.ElementCollection;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -79,7 +78,6 @@ public class Vehicle {
     private String tipo_combustivel;
 
     @OneToOne(mappedBy = "vehicle")
-    @Valid
     private Payment payment;
 
     @ManyToOne

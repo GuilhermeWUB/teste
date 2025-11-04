@@ -60,10 +60,8 @@ public class EventController {
     }
 
     @GetMapping
-    public String listEvents(Model model) {
-        List<Event> events = eventService.listAll();
-        model.addAttribute("events", events);
-        return "lista_eventos";
+    public String listEvents() {
+        return "redirect:/events/board";
     }
 
     /**
@@ -119,15 +117,17 @@ public class EventController {
     @GetMapping("/api/vehicles/{partnerId}")
     @ResponseBody
     public ResponseEntity<List<Vehicle>> getVehiclesByPartner(@PathVariable Long partnerId) {
-        Partner partner = partnerService.getPartnerById(partnerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Partner not found"));
-        return ResponseEntity.ok(partner.getVehicles());
+        List<Vehicle> vehicles = vehicleService.listByPartnerId(partnerId);
+        return ResponseEntity.ok(vehicles);
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         Event event = new Event();
         event.setStatus(Status.A_FAZER); // Status padrão
+        // Instanciar objetos aninhados para permitir binding de partner.id e vehicle.id no formulário
+        event.setPartner(new Partner());
+        event.setVehicle(new Vehicle());
         model.addAttribute("event", event);
         model.addAttribute("vehicles", List.of()); // Inicia com lista vazia
         return "cadastro_evento";
@@ -138,12 +138,35 @@ public class EventController {
                               BindingResult result,
                               RedirectAttributes redirectAttributes,
                               Model model) {
+        // Validações manuais para garantir que IDs foram enviados
+        if (event.getPartner() == null || event.getPartner().getId() == null) {
+            result.rejectValue("partner", "NotNull", "Selecione o associado");
+        }
+        if (event.getVehicle() == null || event.getVehicle().getId() == null) {
+            result.rejectValue("vehicle", "NotNull", "Selecione uma placa válida da lista");
+        }
         if (result.hasErrors()) {
+            // Recarrega opções de veículos quando o formulário volta com erro
+            if (event.getPartner() != null && event.getPartner().getId() != null) {
+                model.addAttribute("vehicles", vehicleService.listByPartnerId(event.getPartner().getId()));
+            } else {
+                model.addAttribute("vehicles", List.of());
+            }
             return "cadastro_evento";
         }
-        eventService.create(event);
-        redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
-        return "redirect:/events";
+        try {
+            eventService.create(event);
+            redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
+            return "redirect:/events/board";
+        } catch (Exception ex) {
+            model.addAttribute("formError", ex.getMessage() != null ? ex.getMessage() : "Não foi possível salvar o evento. Verifique os campos e tente novamente.");
+            if (event.getPartner() != null && event.getPartner().getId() != null) {
+                model.addAttribute("vehicles", vehicleService.listByPartnerId(event.getPartner().getId()));
+            } else {
+                model.addAttribute("vehicles", List.of());
+            }
+            return "cadastro_evento";
+        }
     }
 
     @GetMapping("/edit/{id}")

@@ -15,7 +15,9 @@
                 <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Detalhes do Evento</h4>
             </div>
             <div class="card-body">
-                <form th:action="@{/events}" th:object="${event}" method="post" class="event-form__body">
+                <div class="alert alert-danger" th:if="${formError}" th:text="${formError}"></div>
+                <form th:action="@{/events}" th:object="${event}" method="post" class="event-form__body" id="eventForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
                     <!-- Informações Básicas -->
                     <div class="section-title">
@@ -90,7 +92,7 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="partner" class="form-label">Associado *</label>
-                            <select class="form-select" id="partner" th:field="*{partner}" required>
+                            <select class="form-select" id="partner" th:field="*{partner.id}" required>
                                 <option value="">Selecione o associado...</option>
                                 <option th:each="partner : ${partners}"
                                         th:value="${partner.id}"
@@ -99,14 +101,17 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('partner')}" th:errors="*{partner}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="vehicle" class="form-label">Veículo (Placa) *</label>
-                            <select class="form-select" id="vehicle" th:field="*{vehicle}" required>
-                                <option value="">Selecione o veículo...</option>
+                            <label for="vehiclePlate" class="form-label">Veículo (Placa) *</label>
+                            <input type="text" id="vehiclePlate" class="form-control" list="vehicleOptions" placeholder="Digite ou selecione a placa..." autocomplete="off" required />
+                            <datalist id="vehicleOptions">
                                 <option th:each="vehicle : ${vehicles}"
-                                        th:value="${vehicle.id}"
-                                        th:text="${vehicle.plate + ' - ' + vehicle.maker + ' ' + vehicle.model}">Veículo</option>
-                            </select>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('vehicle')}" th:errors="*{vehicle}"></div>
+                                        th:value="${vehicle.plaque}"
+                                        th:data-id="${vehicle.id}"
+                                        th:text="${vehicle.plaque + ' - ' + vehicle.maker + ' ' + vehicle.model}"></option>
+                            </datalist>
+                            <input type="hidden" id="vehicleId" th:field="*{vehicle.id}" />
+                            <input type="hidden" id="vehiclePlateHidden" th:field="*{vehicle.plaque}" />
+                            <div class="invalid-feedback d-block" id="vehicleError" style="display:none">Selecione uma placa válida da lista.</div>
                         </div>
                     </div>
 
@@ -201,34 +206,65 @@
         'use strict';
 
         const partnerSelect = document.getElementById('partner');
-        const vehicleSelect = document.getElementById('vehicle');
+        const vehiclePlateInput = document.getElementById('vehiclePlate');
+        const vehicleIdHidden = document.getElementById('vehicleId');
+        const vehiclePlateHidden = document.getElementById('vehiclePlateHidden');
+        const vehicleOptions = document.getElementById('vehicleOptions');
+        const vehicleError = document.getElementById('vehicleError');
+        const eventForm = document.getElementById('eventForm');
 
-        if (!partnerSelect || !vehicleSelect) {
-            console.error('Dropdown de associado ou veículo não encontrado.');
+        if (!partnerSelect || !vehiclePlateInput || !vehicleOptions) {
+            console.error('Campos de associado/veículo não encontrados.');
             return;
         }
 
-        const initialVehicleOptions = Array.from(vehicleSelect.options);
-
         function updateVehicleOptions(vehicles) {
-            vehicleSelect.innerHTML = ''; // Limpa as opções atuais
-
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Selecione o veículo...';
-            vehicleSelect.appendChild(defaultOption);
-
-            if (Array.isArray(vehicles) && vehicles.length > 0) {
-                vehicles.forEach(vehicle => {
-                    const option = document.createElement('option');
-                    option.value = vehicle.id;
-                    option.textContent = `${vehicle.plaque} - ${vehicle.maker} ${vehicle.model}`;
-                    vehicleSelect.appendChild(option);
+            vehicleOptions.innerHTML = '';
+            if (Array.isArray(vehicles)) {
+                vehicles.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = (v.plaque || '').toUpperCase();
+                    opt.textContent = `${v.plaque} - ${v.maker ?? ''} ${v.model ?? ''}`.trim();
+                    opt.dataset.id = v.id;
+                    vehicleOptions.appendChild(opt);
                 });
-                vehicleSelect.disabled = false;
+            }
+        }
+
+        function syncVehicleIdFromPlate() {
+            const plate = (vehiclePlateInput.value || '').toUpperCase().trim();
+            let matchedId = '';
+            Array.from(vehicleOptions.options).forEach(opt => {
+                if ((opt.value || '').toUpperCase() === plate) {
+                    matchedId = opt.dataset.id || '';
+                }
+            });
+            vehicleIdHidden.value = matchedId;
+            vehiclePlateHidden.value = plate;
+            // feedback visual
+            if (plate && !matchedId) {
+                vehicleError.style.display = 'block';
             } else {
-                defaultOption.textContent = 'Nenhum veículo encontrado para este associado';
-                vehicleSelect.disabled = true;
+                vehicleError.style.display = 'none';
+            }
+        }
+
+        function applyVehicleFilter() {
+            const query = (vehicleFilter?.value || '').toLowerCase();
+            const options = Array.from(vehicleSelect.options);
+            let anyVisible = false;
+            options.forEach((opt, idx) => {
+                if (idx === 0) { // manter opção padrão
+                    opt.hidden = false;
+                    return;
+                }
+                const visible = opt.textContent.toLowerCase().includes(query);
+                opt.hidden = !visible;
+                if (visible) anyVisible = true;
+            });
+            // Se após filtrar não houver itens visíveis, garante opção informativa
+            if (!anyVisible && options.length > 1) {
+                // nada a fazer; as opções ocultas permanecem, o usuário pode limpar o filtro
             }
         }
 
@@ -237,8 +273,8 @@
 
             if (!partnerId) {
                 updateVehicleOptions([]);
-                vehicleSelect.disabled = true;
-                vehicleSelect.querySelector('option').textContent = 'Selecione um associado primeiro';
+                vehiclePlateInput.value = '';
+                vehicleIdHidden.value = '';
                 return;
             }
 
@@ -262,19 +298,44 @@
                 })
                 .then(data => {
                     updateVehicleOptions(data);
+                    syncVehicleIdFromPlate();
                 })
                 .catch(error => {
                     console.error('Erro ao buscar veículos:', error);
                     updateVehicleOptions([]);
-                    vehicleSelect.disabled = true;
-                    vehicleSelect.querySelector('option').textContent = 'Erro ao carregar veículos';
+                    vehiclePlateInput.value = '';
+                    vehicleIdHidden.value = '';
                 });
         });
+        vehiclePlateInput.addEventListener('input', syncVehicleIdFromPlate);
+        vehiclePlateInput.addEventListener('change', syncVehicleIdFromPlate);
 
-        // Inicializar estado do dropdown de veículos
-        if (!partnerSelect.value) {
-            vehicleSelect.disabled = true;
-            vehicleSelect.querySelector('option').textContent = 'Selecione um associado primeiro';
+        // Bloquear submit sem vehicle.id válido
+        if (eventForm) {
+            eventForm.addEventListener('submit', function(e) {
+                syncVehicleIdFromPlate();
+                const hasVehicleId = (vehicleIdHidden.value || '').trim().length > 0;
+                const hasPartnerId = (partnerSelect.value || '').trim().length > 0;
+                if (!hasPartnerId) {
+                    e.preventDefault();
+                    partnerSelect.focus();
+                    return;
+                }
+                if (!hasVehicleId) {
+                    e.preventDefault();
+                    vehicleError.style.display = 'block';
+                    vehiclePlateInput.focus();
+                }
+            });
+        }
+
+        // Inicialização: se já houver associado selecionado (ex.: retorno de validação), carregue as placas
+        if (partnerSelect.value) {
+            partnerSelect.dispatchEvent(new Event('change'));
+        } else {
+            updateVehicleOptions([]);
+            vehiclePlateInput.value = '';
+            vehicleIdHidden.value = '';
         }
     })();
 </script>

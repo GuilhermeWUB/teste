@@ -21,8 +21,8 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id")
+    @OneToOne
+    @JoinColumn(name = "vehicle_id", unique = true)
     private Vehicle vehicle;
 
     @ManyToOne

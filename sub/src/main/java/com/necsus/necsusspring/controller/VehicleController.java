@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -51,6 +52,16 @@ public class VehicleController {
         this.fipeService = fipeService;
         this.apiBrasilConfig = apiBrasilConfig;
         this.restTemplate = restTemplate;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Double.class, "fipe_value", new java.beans.PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                setValue(parseValorMonetario(text));
+            }
+        });
     }
 
     @ModelAttribute("partners")

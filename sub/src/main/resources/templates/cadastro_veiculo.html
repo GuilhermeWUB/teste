@@ -281,6 +281,7 @@
 
     <!-- Formulário Principal -->
     <form th:action="@{/vehicles}" th:object="${vehicle}" method="post" enctype="multipart/form-data" class="row g-3">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <input type="hidden" name="contextPartnerId" th:value="${partnerId}" />
 
         <div th:if="${fipeSuccessMessage}" class="alert alert-success" th:text="${fipeSuccessMessage}"></div>
@@ -296,6 +297,7 @@
         <div class="col-md-4">
             <label for="fipe_value" class="form-label">Valor Tabela Fipe</label>
             <input type="text" id="fipe_value" class="form-control" th:field="*{fipe_value}" />
+            <div class="text-danger" th:if="${#fields.hasErrors('fipe_value')}" th:errors="*{fipe_value}"></div>
         </div>
         <div class="col-md-4">
             <label for="type_vehicle" class="form-label">Tipo</label>
