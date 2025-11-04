@@ -158,6 +158,41 @@ public class EventService {
     }
 
     @Transactional
+    public Event updatePartial(Long id, java.util.Map<String, Object> updates) {
+        Event existing = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
+
+        // Atualiza apenas os campos fornecidos
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "titulo":
+                    if (value != null) existing.setTitulo(value.toString());
+                    break;
+                case "descricao":
+                    existing.setDescricao(value != null ? value.toString() : null);
+                    break;
+                case "status":
+                    if (value != null) existing.setStatus(Status.valueOf(value.toString()));
+                    break;
+                case "prioridade":
+                    existing.setPrioridade(value != null ? Prioridade.valueOf(value.toString()) : null);
+                    break;
+                case "dataVencimento":
+                    existing.setDataVencimento(value != null ? LocalDate.parse(value.toString()) : null);
+                    break;
+                case "analistaResponsavel":
+                    existing.setAnalistaResponsavel(value != null ? value.toString() : null);
+                    break;
+                case "observacoes":
+                    existing.setObservacoes(value != null ? value.toString() : null);
+                    break;
+            }
+        });
+
+        return eventRepository.save(existing);
+    }
+
+    @Transactional
     public void delete(Long id) {
         if (eventRepository.existsById(id)) {
             eventRepository.deleteById(id);

@@ -825,3 +825,565 @@ body.dark-mode .task-deadline,
         transform: translateX(0);
     }
 }
+
+/* ==========================================
+   V3 FEATURES - LIST VIEW
+   ========================================== */
+
+.kanban-list-view {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 1px 3px var(--notion-shadow);
+}
+
+body.dark-mode .kanban-list-view,
+.kanban-wrapper.dark-mode .kanban-list-view {
+    background: var(--notion-bg-dark);
+}
+
+.kanban-list-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.kanban-list-table thead {
+    background: var(--notion-hover);
+    border-bottom: 2px solid var(--notion-border);
+}
+
+body.dark-mode .kanban-list-table thead,
+.kanban-wrapper.dark-mode .kanban-list-table thead {
+    background: var(--notion-bg-dark);
+}
+
+.kanban-list-table th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--notion-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.kanban-list-table th:hover {
+    background: var(--notion-bg);
+}
+
+.kanban-list-table th i {
+    margin-left: 4px;
+    font-size: 10px;
+}
+
+.kanban-list-table tbody tr {
+    border-bottom: 1px solid var(--notion-border);
+    transition: all 0.2s ease;
+}
+
+.kanban-list-table tbody tr:hover {
+    background: var(--notion-hover);
+}
+
+body.dark-mode .kanban-list-table tbody tr:hover,
+.kanban-wrapper.dark-mode .kanban-list-table tbody tr:hover {
+    background: var(--notion-bg-dark);
+}
+
+.kanban-list-table td {
+    padding: var(--spacing-md);
+    font-size: 14px;
+    color: var(--notion-text);
+}
+
+.list-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.list-status-badge.A_FAZER {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.list-status-badge.EM_ANDAMENTO {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.list-status-badge.AGUARDANDO {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.list-status-badge.CONCLUIDO {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+/* ==========================================
+   V3 FEATURES - TOAST NOTIFICATIONS
+   ========================================== */
+
+.kanban-toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.kanban-toast {
+    min-width: 300px;
+    padding: var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    animation: toastSlideIn 0.3s ease;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.kanban-toast.success {
+    border-left: 4px solid var(--accent-green);
+}
+
+.kanban-toast.error {
+    border-left: 4px solid var(--accent-red);
+}
+
+.kanban-toast.warning {
+    border-left: 4px solid var(--priority-media);
+}
+
+.kanban-toast.info {
+    border-left: 4px solid var(--accent-blue);
+}
+
+.kanban-toast i {
+    font-size: 20px;
+}
+
+.kanban-toast.success i {
+    color: var(--accent-green);
+}
+
+.kanban-toast.error i {
+    color: var(--accent-red);
+}
+
+.kanban-toast.warning i {
+    color: var(--priority-media);
+}
+
+.kanban-toast.info i {
+    color: var(--accent-blue);
+}
+
+.kanban-toast-message {
+    flex: 1;
+    font-size: 14px;
+    color: var(--notion-text);
+}
+
+.kanban-toast-close {
+    background: none;
+    border: none;
+    color: var(--notion-text-light);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.kanban-toast-close:hover {
+    background: var(--notion-hover);
+}
+
+/* ==========================================
+   V3 FEATURES - MODALS (Advanced Filters, Export, Theme, History)
+   ========================================== */
+
+.kanban-filter-modal,
+.kanban-export-modal,
+.kanban-theme-modal,
+.kanban-history-modal {
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .kanban-filter-modal,
+body.dark-mode .kanban-export-modal,
+body.dark-mode .kanban-theme-modal,
+body.dark-mode .kanban-history-modal,
+.kanban-wrapper.dark-mode .kanban-filter-modal,
+.kanban-wrapper.dark-mode .kanban-export-modal,
+.kanban-wrapper.dark-mode .kanban-theme-modal,
+.kanban-wrapper.dark-mode .kanban-history-modal {
+    background: var(--notion-hover);
+}
+
+.modal-form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.modal-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--notion-text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--notion-text);
+    background: white;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .modal-form-group input,
+body.dark-mode .modal-form-group select,
+body.dark-mode .modal-form-group textarea,
+.kanban-wrapper.dark-mode .modal-form-group input,
+.kanban-wrapper.dark-mode .modal-form-group select,
+.kanban-wrapper.dark-mode .modal-form-group textarea {
+    background: var(--notion-bg-dark);
+    color: var(--notion-text);
+    border-color: var(--notion-border);
+}
+
+.modal-form-group input:focus,
+.modal-form-group select:focus,
+.modal-form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.1);
+}
+
+.modal-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--notion-border);
+}
+
+.modal-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+.modal-btn-primary:hover {
+    background: #1d72c7;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(35, 131, 226, 0.3);
+}
+
+.modal-btn-secondary {
+    background: white;
+    color: var(--notion-text);
+}
+
+body.dark-mode .modal-btn-secondary,
+.kanban-wrapper.dark-mode .modal-btn-secondary {
+    background: var(--notion-hover);
+}
+
+.modal-btn-secondary:hover {
+    background: var(--notion-hover);
+}
+
+/* Theme Selector Grid */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) 0;
+}
+
+.theme-option {
+    padding: var(--spacing-md);
+    border: 2px solid var(--notion-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.theme-option:hover {
+    border-color: var(--accent-blue);
+    background: var(--notion-hover);
+}
+
+.theme-option.active {
+    border-color: var(--accent-blue);
+    background: rgba(35, 131, 226, 0.1);
+}
+
+.theme-color-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--notion-border);
+}
+
+.theme-info h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--notion-text);
+}
+
+.theme-info p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--notion-text-light);
+}
+
+/* Export Options */
+.export-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.export-option {
+    padding: var(--spacing-md);
+    border: 2px solid var(--notion-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.export-option:hover {
+    border-color: var(--accent-blue);
+    background: var(--notion-hover);
+}
+
+.export-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--notion-hover);
+    border-radius: var(--radius-md);
+    font-size: 24px;
+}
+
+body.dark-mode .export-icon,
+.kanban-wrapper.dark-mode .export-icon {
+    background: var(--notion-bg-dark);
+}
+
+.export-info h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--notion-text);
+}
+
+.export-info p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--notion-text-light);
+}
+
+/* History Timeline */
+.history-timeline {
+    position: relative;
+    padding-left: var(--spacing-lg);
+}
+
+.history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--notion-border);
+}
+
+.history-item {
+    position: relative;
+    padding: var(--spacing-md) 0;
+}
+
+.history-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    border: 2px solid white;
+}
+
+body.dark-mode .history-item::before,
+.kanban-wrapper.dark-mode .history-item::before {
+    border-color: var(--notion-hover);
+}
+
+.history-date {
+    font-size: 12px;
+    color: var(--notion-text-light);
+    margin-bottom: 4px;
+}
+
+.history-action {
+    font-size: 14px;
+    color: var(--notion-text);
+    font-weight: 500;
+}
+
+.history-changes {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--notion-text-light);
+}
+
+/* Custom Themes */
+.kanban-wrapper[data-custom-theme="purple"] {
+    --accent-blue: #9333ea;
+}
+
+.kanban-wrapper[data-custom-theme="green"] {
+    --accent-blue: #16a34a;
+}
+
+.kanban-wrapper[data-custom-theme="orange"] {
+    --accent-blue: #ea580c;
+}
+
+.kanban-wrapper[data-custom-theme="pink"] {
+    --accent-blue: #ec4899;
+}
+
+.kanban-wrapper[data-custom-theme="indigo"] {
+    --accent-blue: #4f46e5;
+}
+
+/* Sortable Container */
+.tasks-container.sortable-active {
+    background: rgba(35, 131, 226, 0.05);
+    border: 2px dashed var(--accent-blue);
+    border-radius: var(--radius-lg);
+}
+
+/* Inline Edit Form */
+.inline-edit-form .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.inline-edit-form .form-row-full {
+    grid-column: 1 / -1;
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--accent-red);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* View Toggle Active State */
+.kanban-view-btn.view-active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+/* Empty State */
+.kanban-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    text-align: center;
+    color: var(--notion-text-light);
+}
+
+.kanban-empty-state i {
+    font-size: 48px;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.kanban-empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 var(--spacing-sm);
+    color: var(--notion-text);
+}
+
+.kanban-empty-state p {
+    font-size: 14px;
+    margin: 0;
+}

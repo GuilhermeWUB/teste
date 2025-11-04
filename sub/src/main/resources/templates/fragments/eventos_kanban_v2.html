@@ -36,8 +36,23 @@
                 </button>
 
                 <!-- View toggle -->
-                <button class="kanban-view-btn" id="kanban-view-toggle" title="Alternar visualização">
+                <button class="kanban-view-btn" id="kanban-view-toggle" title="Alternar visualização (Board/Lista)">
                     <i class="bi bi-list-ul"></i>
+                </button>
+
+                <!-- Advanced Filters -->
+                <button class="kanban-view-btn" id="kanban-advanced-filters" title="Filtros Avançados">
+                    <i class="bi bi-funnel-fill"></i>
+                </button>
+
+                <!-- Export -->
+                <button class="kanban-view-btn" id="kanban-export" title="Exportar">
+                    <i class="bi bi-download"></i>
+                </button>
+
+                <!-- Theme Selector -->
+                <button class="kanban-view-btn" id="kanban-theme-selector" title="Temas">
+                    <i class="bi bi-palette-fill"></i>
                 </button>
 
                 <!-- Settings -->
@@ -129,5 +144,6 @@
 
     <!-- Styles and Scripts -->
     <link rel="stylesheet" th:href="@{/css/kanban-eventos-v2.css}">
-    <script th:src="@{/js/kanban_eventos_v2.js}" defer></script>
+    <script th:src="@{/js/kanban_eventos_v3.js}" defer></script>
+    <script th:src="@{/js/kanban_eventos_v3_methods.js}" defer></script>
 </section>

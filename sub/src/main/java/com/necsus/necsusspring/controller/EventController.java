@@ -234,4 +234,84 @@ public class EventController {
         return "redirect:/events";
     }
 
+    /**
+     * API REST para atualização inline de evento
+     */
+    @PutMapping("/api/{id}/update")
+    @ResponseBody
+    public ResponseEntity<?> updateEventInline(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        try {
+            Event updated = eventService.updatePartial(id, updates);
+            logger.info("Evento {} atualizado inline: {}", id, updates.keySet());
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Evento atualizado com sucesso",
+                "event", updated
+            ));
+        } catch (Exception e) {
+            logger.error("Erro ao atualizar evento {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao atualizar evento"));
+        }
+    }
+
+    /**
+     * API REST para buscar histórico de mudanças
+     */
+    @GetMapping("/api/{id}/history")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getEventHistory(@PathVariable Long id) {
+        try {
+            // Retorna lista vazia por enquanto - implementar persistence de histórico
+            List<Map<String, Object>> history = new ArrayList<>();
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            logger.error("Erro ao buscar histórico do evento {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
+    /**
+     * API REST para registrar mudança no histórico
+     */
+    @PostMapping("/api/{id}/history")
+    @ResponseBody
+    public ResponseEntity<?> logEventChange(@PathVariable Long id, @RequestBody Map<String, Object> change) {
+        try {
+            logger.info("Registrando mudança no evento {}: {}", id, change);
+            // Implementar persistence de histórico aqui se necessário
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (Exception e) {
+            logger.error("Erro ao registrar mudança no evento {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao registrar mudança"));
+        }
+    }
+
+    /**
+     * API REST para exportação PDF
+     */
+    @GetMapping("/api/export/pdf")
+    public ResponseEntity<byte[]> exportToPDF(@RequestParam String ids) {
+        try {
+            logger.info("Exportando eventos para PDF: {}", ids);
+
+            // Implementação simplificada - retorna placeholder
+            String content = "PDF Export - Feature em desenvolvimento\n\nEventos: " + ids;
+            byte[] pdfBytes = content.getBytes();
+
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "eventos.pdf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            logger.error("Erro ao exportar PDF: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }
