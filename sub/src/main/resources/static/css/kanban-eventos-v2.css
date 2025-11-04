@@ -1,0 +1,743 @@
+/* ==========================================
+   KANBAN BOARD - NOTION-INSPIRED DESIGN
+   ========================================== */
+
+:root {
+    /* Color palette - Notion-inspired */
+    --notion-bg: #f7f7f5;
+    --notion-bg-dark: #191919;
+    --notion-text: #37352f;
+    --notion-text-light: #787774;
+    --notion-border: #e0e0e0;
+    --notion-hover: #f1f1ef;
+    --notion-shadow: rgba(15, 15, 15, 0.1);
+    --notion-shadow-lg: rgba(15, 15, 15, 0.2);
+
+    /* Status colors */
+    --status-todo: #e8e8e8;
+    --status-inprogress: #d3e5ef;
+    --status-waiting: #fef3c7;
+    --status-done: #d1f4e0;
+
+    /* Priority colors */
+    --priority-baixa: #0b6e4f;
+    --priority-media: #f59e0b;
+    --priority-alta: #ef4444;
+    --priority-urgente: #b91c1c;
+
+    /* Accent colors */
+    --accent-blue: #2383e2;
+    --accent-purple: #9333ea;
+    --accent-green: #16a34a;
+    --accent-red: #dc2626;
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+}
+
+/* Dark mode support */
+body.dark-mode {
+    --notion-bg: #191919;
+    --notion-bg-dark: #000000;
+    --notion-text: #ffffff;
+    --notion-text-light: #9b9a97;
+    --notion-border: #2f2f2f;
+    --notion-hover: #2f2f2f;
+}
+
+/* ==========================================
+   KANBAN CONTAINER
+   ========================================== */
+
+.kanban-wrapper {
+    min-height: 100vh;
+    background: var(--notion-bg);
+    padding: var(--spacing-lg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.kanban-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--notion-border);
+}
+
+.kanban-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--notion-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.kanban-title i {
+    color: var(--accent-blue);
+}
+
+.kanban-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.kanban-search {
+    position: relative;
+    margin-right: var(--spacing-md);
+}
+
+.kanban-search input {
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 40px;
+    border: 1px solid var(--notion-border);
+    border-radius: var(--radius-lg);
+    background: white;
+    color: var(--notion-text);
+    font-size: 14px;
+    width: 280px;
+    transition: all 0.2s ease;
+}
+
+.kanban-search input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.1);
+}
+
+.kanban-search i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--notion-text-light);
+}
+
+.kanban-filter-btn,
+.kanban-view-btn,
+.kanban-settings-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--notion-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.kanban-filter-btn:hover,
+.kanban-view-btn:hover,
+.kanban-settings-btn:hover {
+    background: var(--notion-hover);
+    border-color: var(--notion-text-light);
+}
+
+.kanban-filter-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+/* ==========================================
+   KANBAN BOARD
+   ========================================== */
+
+.kanban-board {
+    display: flex;
+    gap: var(--spacing-lg);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+    scrollbar-width: thin;
+    scrollbar-color: var(--notion-border) transparent;
+}
+
+.kanban-board::-webkit-scrollbar {
+    height: 8px;
+}
+
+.kanban-board::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+    background: var(--notion-border);
+    border-radius: 4px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb:hover {
+    background: var(--notion-text-light);
+}
+
+.kanban-column {
+    flex: 0 0 340px;
+    display: flex;
+    flex-direction: column;
+    background: var(--notion-hover);
+    border-radius: var(--radius-lg);
+    max-height: calc(100vh - 220px);
+    transition: all 0.3s ease;
+}
+
+.kanban-column.dragover {
+    background: rgba(35, 131, 226, 0.05);
+    border: 2px dashed var(--accent-blue);
+}
+
+/* Column status colors */
+.kanban-column[data-status="A_FAZER"] .column-header {
+    border-left: 4px solid #6b7280;
+}
+
+.kanban-column[data-status="EM_ANDAMENTO"] .column-header {
+    border-left: 4px solid #3b82f6;
+}
+
+.kanban-column[data-status="AGUARDANDO"] .column-header {
+    border-left: 4px solid #f59e0b;
+}
+
+.kanban-column[data-status="CONCLUIDO"] .column-header {
+    border-left: 4px solid #10b981;
+}
+
+.column-header {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--notion-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+}
+
+.column-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.column-title h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--notion-text);
+    margin: 0;
+}
+
+.column-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 var(--spacing-sm);
+    background: var(--notion-bg);
+    color: var(--notion-text-light);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.column-add-btn {
+    padding: 6px 12px;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.column-add-btn:hover {
+    background: #1d72c7;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(35, 131, 226, 0.3);
+}
+
+.column-add-btn i {
+    font-size: 14px;
+}
+
+/* ==========================================
+   TASKS CONTAINER
+   ========================================== */
+
+.tasks-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    scrollbar-width: thin;
+    scrollbar-color: var(--notion-border) transparent;
+}
+
+.tasks-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tasks-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tasks-container::-webkit-scrollbar-thumb {
+    background: var(--notion-border);
+    border-radius: 3px;
+}
+
+.tasks-container.empty::after {
+    content: 'Nenhum evento aqui';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--notion-text-light);
+    font-size: 14px;
+    font-style: italic;
+    padding: var(--spacing-lg);
+}
+
+/* ==========================================
+   TASK CARDS - NOTION STYLE
+   ========================================== */
+
+.task-card {
+    background: white;
+    border: 1px solid var(--notion-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px var(--notion-shadow);
+    position: relative;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--notion-shadow-lg);
+    border-color: var(--accent-blue);
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+    cursor: grabbing;
+}
+
+.task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.task-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--notion-text);
+    margin: 0;
+    line-height: 1.4;
+    flex: 1;
+    word-break: break-word;
+}
+
+.task-card-menu {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-card:hover .task-card-menu {
+    opacity: 1;
+}
+
+.task-card-menu-btn {
+    background: none;
+    border: none;
+    color: var(--notion-text-light);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-card-menu-btn:hover {
+    background: var(--notion-hover);
+}
+
+.task-card-description {
+    font-size: 13px;
+    color: var(--notion-text-light);
+    margin: var(--spacing-sm) 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.task-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.task-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.task-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.task-badge i {
+    font-size: 10px;
+}
+
+/* Priority badges */
+.task-badge.priority-BAIXA {
+    background: #d1fae5;
+    color: var(--priority-baixa);
+}
+
+.task-badge.priority-MEDIA {
+    background: #fef3c7;
+    color: var(--priority-media);
+}
+
+.task-badge.priority-ALTA {
+    background: #fee2e2;
+    color: var(--priority-alta);
+}
+
+.task-badge.priority-URGENTE {
+    background: #fecaca;
+    color: var(--priority-urgente);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Motivo badges */
+.task-badge.motivo {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.task-badge.envolvimento {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.task-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--notion-border);
+}
+
+.task-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--notion-text-light);
+}
+
+.task-info-item i {
+    font-size: 12px;
+    width: 14px;
+}
+
+.task-info-item strong {
+    color: var(--notion-text);
+}
+
+.task-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--notion-border);
+}
+
+.task-deadline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: #f3f4f6;
+    color: var(--notion-text-light);
+}
+
+.task-deadline.overdue {
+    background: #fee2e2;
+    color: var(--accent-red);
+    font-weight: 600;
+}
+
+.task-deadline.today {
+    background: #fef3c7;
+    color: var(--priority-media);
+    font-weight: 600;
+}
+
+.task-deadline.soon {
+    background: #e0f2fe;
+    color: var(--accent-blue);
+}
+
+.task-assignee {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--notion-text-light);
+}
+
+.task-assignee-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-purple);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 10px;
+}
+
+/* ==========================================
+   LOADING STATE
+   ========================================== */
+
+.kanban-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    color: var(--notion-text-light);
+}
+
+.kanban-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--notion-border);
+    border-top-color: var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================
+   MODAL
+   ========================================== */
+
+.kanban-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.kanban-modal.active {
+    display: flex;
+}
+
+.kanban-modal-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideUp 0.3s ease;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kanban-modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--notion-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kanban-modal-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--notion-text);
+}
+
+.kanban-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--notion-text-light);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.kanban-modal-close:hover {
+    background: var(--notion-hover);
+    color: var(--notion-text);
+}
+
+.kanban-modal-body {
+    padding: var(--spacing-lg);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 1024px) {
+    .kanban-column {
+        flex: 0 0 300px;
+    }
+
+    .kanban-search input {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .kanban-wrapper {
+        padding: var(--spacing-md);
+    }
+
+    .kanban-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .kanban-controls {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .kanban-search {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .kanban-search input {
+        width: 100%;
+    }
+
+    .kanban-column {
+        flex: 0 0 280px;
+    }
+}
+
+/* ==========================================
+   UTILITIES
+   ========================================== */
+
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

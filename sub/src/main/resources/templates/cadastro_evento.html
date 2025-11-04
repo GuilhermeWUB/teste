@@ -206,19 +206,25 @@
         const vehicleSelect = document.getElementById('vehicle');
 
         // Pega o ID do veículo selecionado inicialmente (útil em caso de erro de validação)
-        const initialVehicleId = vehicleSelect.value;
+        const initialVehicleId = vehicleSelect?.value || '';
 
         if (!partnerSelect || !vehicleSelect) {
-            console.error('Campos de associado/veículo não encontrados.');
+            console.error('[EVENT FORM] Campos de associado/veículo não encontrados.');
             return;
         }
 
+        console.log('[EVENT FORM] Formulário inicializado. Partner ID inicial:', partnerSelect.value, '| Vehicle ID inicial:', initialVehicleId);
+
         async function fetchAndPopulateVehicles(partnerId, selectedVehicleId) {
+            console.log('[EVENT FORM] Buscando veículos para o parceiro:', partnerId);
+
             // Desabilita o seletor de veículos enquanto carrega
             vehicleSelect.disabled = true;
             vehicleSelect.innerHTML = '<option value="">Carregando...</option>';
 
-            if (!partnerId) {
+            if (!partnerId || partnerId === '') {
+                console.log('[EVENT FORM] Nenhum parceiro selecionado. Resetando dropdown de veículos.');
+                vehicleSelect.disabled = false;
                 vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
                 return;
             }
@@ -227,61 +233,125 @@
                 const url = `/events/api/vehicles/${partnerId}`;
                 const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
                 const csrfHeader = "X-CSRF-TOKEN";
-                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+                const headers = {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                };
+
                 if (csrfToken && csrfHeader) {
                     headers[csrfHeader] = csrfToken;
                 }
 
-                const response = await fetch(url, { headers });
+                console.log('[EVENT FORM] Fazendo requisição para:', url);
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'same-origin'
+                });
 
                 if (!response.ok) {
-                    throw new Error(`Erro na rede: ${response.statusText}`);
+                    throw new Error(`Erro na rede: ${response.status} ${response.statusText}`);
                 }
 
                 const vehicles = await response.json();
+                console.log('[EVENT FORM] Veículos recebidos:', vehicles.length, 'veículos');
 
                 // Limpa e popula o seletor
                 vehicleSelect.innerHTML = '';
                 const defaultOption = document.createElement('option');
                 defaultOption.value = '';
-                defaultOption.textContent = 'Selecione um veículo...';
+                defaultOption.textContent = vehicles.length > 0 ? 'Selecione um veículo...' : 'Nenhum veículo encontrado';
                 vehicleSelect.appendChild(defaultOption);
 
-                if (Array.isArray(vehicles)) {
+                if (Array.isArray(vehicles) && vehicles.length > 0) {
                     vehicles.forEach(v => {
                         const opt = document.createElement('option');
                         opt.value = v.id;
-                        opt.textContent = `${v.plaque} - ${v.maker ?? ''} ${v.model ?? ''}`.trim();
+                        const plaqueText = v.plaque || 'SEM PLACA';
+                        const makerText = v.maker || '';
+                        const modelText = v.model || '';
+                        opt.textContent = `${plaqueText} - ${makerText} ${modelText}`.trim();
                         vehicleSelect.appendChild(opt);
+                        console.log('[EVENT FORM] Veículo adicionado:', opt.textContent);
                     });
+
+                    console.log('[EVENT FORM] Total de', vehicles.length, 'veículos adicionados ao dropdown');
+                } else {
+                    console.warn('[EVENT FORM] Nenhum veículo encontrado para o parceiro:', partnerId);
                 }
 
                 // Se um ID de veículo foi passado (ex: na carga inicial com erro), seleciona-o
                 if (selectedVehicleId) {
                     vehicleSelect.value = selectedVehicleId;
+                    console.log('[EVENT FORM] Veículo pré-selecionado:', selectedVehicleId);
                 }
 
             } catch (error) {
-                console.error('Erro ao buscar veículos:', error);
+                console.error('[EVENT FORM] Erro ao buscar veículos:', error);
                 vehicleSelect.innerHTML = '<option value="">Erro ao carregar veículos</option>';
+
+                // Mostra alerta visual para o usuário
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-2';
+                alertDiv.setAttribute('role', 'alert');
+                alertDiv.innerHTML = `
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Não foi possível carregar os veículos. Por favor, tente novamente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+
+                const vehicleContainer = vehicleSelect.parentElement;
+                const existingAlert = vehicleContainer.querySelector('.alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                vehicleContainer.appendChild(alertDiv);
+
+                // Remove o alerta após 5 segundos
+                setTimeout(() => alertDiv.remove(), 5000);
             } finally {
                 // Reabilita o seletor
                 vehicleSelect.disabled = false;
+                console.log('[EVENT FORM] Dropdown de veículos reabilitado');
             }
         }
 
-        // Adiciona o listener para o evento 'change'
-        partnerSelect.addEventListener('change', function () {
+        // Adiciona o listener para o evento 'change' com log
+        partnerSelect.addEventListener('change', function (event) {
+            console.log('[EVENT FORM] Evento change disparado. Novo valor:', this.value);
             fetchAndPopulateVehicles(this.value, null);
+        });
+
+        // Também adiciona listener para 'input' como fallback
+        partnerSelect.addEventListener('input', function (event) {
+            console.log('[EVENT FORM] Evento input disparado. Novo valor:', this.value);
         });
 
         // Execução inicial ao carregar a página
         // Isso garante que se um parceiro já estiver selecionado (ex: formulário com erro),
         // a lista de veículos seja carregada e o veículo correto seja selecionado.
-        if (partnerSelect.value) {
+        console.log('[EVENT FORM] Verificando se há parceiro pré-selecionado...');
+        if (partnerSelect.value && partnerSelect.value !== '') {
+            console.log('[EVENT FORM] Parceiro pré-selecionado detectado:', partnerSelect.value);
             fetchAndPopulateVehicles(partnerSelect.value, initialVehicleId);
         } else {
-             vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
+            console.log('[EVENT FORM] Nenhum parceiro pré-selecionado');
+            vehicleSelect.disabled = false;
+            vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
+        }
+
+        // Log quando o formulário é submetido
+        const form = document.getElementById('eventForm');
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                console.log('[EVENT FORM] Formulário sendo enviado...');
+                console.log('[EVENT FORM] Parceiro selecionado:', partnerSelect.value);
+                console.log('[EVENT FORM] Veículo selecionado:', vehicleSelect.value);
+
+                if (!vehicleSelect.value || vehicleSelect.value === '') {
+                    console.error('[EVENT FORM] ERRO: Nenhum veículo selecionado!');
+                }
+            });
         }
     });
 </script>
