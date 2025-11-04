@@ -143,6 +143,27 @@ body.dark-mode .task-deadline,
    KANBAN CONTAINER
    ========================================== */
 
+.kanban-page {
+    padding: 0;
+    background: var(--notion-bg);
+}
+
+.kanban-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.kanban-content-stretch {
+    flex: 1;
+    gap: 0;
+}
+
+.kanban-content-stretch > section {
+    flex: 1;
+}
+
 .kanban-wrapper {
     min-height: 100vh;
     background: var(--notion-bg);
