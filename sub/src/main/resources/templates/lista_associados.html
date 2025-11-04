@@ -8,8 +8,40 @@
 <body>
 
 <section layout:fragment="content">
-    <h1 class="mb-4">Lista de Associados</h1>
-    <a href="/partners/new" class="btn btn-primary mb-3">Cadastrar Novo Associado</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Lista de Associados</h1>
+        <a href="/partners/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Cadastrar Novo Associado
+        </a>
+    </div>
+
+    <!-- Controle de Paginação Superior -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <label for="pageSize" class="form-label mb-1">Itens por página:</label>
+                    <select id="pageSize" class="form-select" onchange="changePageSize(this.value)">
+                        <option value="10" th:selected="${pageSize == 10}">10</option>
+                        <option value="20" th:selected="${pageSize == 20}">20</option>
+                        <option value="30" th:selected="${pageSize == 30}">30</option>
+                    </select>
+                </div>
+                <div class="col-md-6 text-center">
+                    <span class="text-muted">
+                        Mostrando <strong th:text="${#lists.size(partners)}">0</strong> de
+                        <strong th:text="${totalItems}">0</strong> associados
+                    </span>
+                </div>
+                <div class="col-md-3 text-end">
+                    <span class="text-muted">
+                        Página <strong th:text="${currentPage + 1}">1</strong> de
+                        <strong th:text="${totalPages}">1</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <table class="table table-striped">
         <thead>
@@ -51,6 +83,55 @@
         </tr>
         </tbody>
     </table>
+
+    <!-- Controles de Navegação -->
+    <nav aria-label="Navegação de páginas">
+        <ul class="pagination justify-content-center">
+            <!-- Primeira Página -->
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{/partners(page=0, size=${pageSize})}">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+
+            <!-- Página Anterior -->
+            <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{/partners(page=${currentPage - 1}, size=${pageSize})}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            <!-- Páginas Numeradas -->
+            <li class="page-item"
+                th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
+                th:classappend="${pageNum == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/partners(page=${pageNum}, size=${pageSize})}"
+                   th:text="${pageNum + 1}">1</a>
+            </li>
+
+            <!-- Próxima Página -->
+            <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{/partners(page=${currentPage + 1}, size=${pageSize})}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+            <!-- Última Página -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/partners(page=${totalPages - 1}, size=${pageSize})}">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        function changePageSize(newSize) {
+            window.location.href = '/partners?page=0&size=' + newSize;
+        }
+    </script>
 </section>
 
 </body>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Minhas Demandas</title>
+    <link rel="stylesheet" th:href="@{/css/listagem.css}">
+    <style>
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .demand-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .demand-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .demand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .demand-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .demand-description {
+            color: #666;
+            margin: 10px 0;
+        }
+        .demand-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .demand-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .badge-priority-BAIXA { background: #10b981; color: white; }
+        .badge-priority-MEDIA { background: #f59e0b; color: white; }
+        .badge-priority-ALTA { background: #ef4444; color: white; }
+        .badge-priority-URGENTE { background: #dc2626; color: white; animation: pulse 2s infinite; }
+
+        .badge-status-PENDENTE { background: #6b7280; color: white; }
+        .badge-status-EM_ANDAMENTO { background: #3b82f6; color: white; }
+        .badge-status-CONCLUIDA { background: #10b981; color: white; }
+        .badge-status-CANCELADA { background: #dc2626; color: white; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .filter-bar {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="container-fluid">
+        <h1 class="mb-4"><i class="bi bi-clipboard2-check"></i> Minhas Demandas</h1>
+
+        <!-- Alertas -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Link para painel diretor (se aplicável) -->
+        <div th:if="${isDirector}" class="mb-3">
+            <a th:href="@{/demands/director}" class="btn btn-primary">
+                <i class="bi bi-gear-fill"></i> Acessar Painel de Gestão
+            </a>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-card">
+            <h4 class="mb-3"><i class="bi bi-graph-up"></i> Visão Geral</h4>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${pendentes}">0</div>
+                    <div class="stat-label">Pendentes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${emAndamento}">0</div>
+                    <div class="stat-label">Em Andamento</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${concluidas}">0</div>
+                    <div class="stat-label">Concluídas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" th:text="${#lists.size(demands)}">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-bar">
+            <form th:action="@{/demands/my-demands}" method="get">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label for="statusFilter" class="form-label">Filtrar por Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">Todos</option>
+                            <option th:each="status : ${statusOptions}"
+                                    th:value="${status}"
+                                    th:text="${status.displayName}"
+                                    th:selected="${statusFilter != null && statusFilter == status}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                    </div>
+                    <div class="col-md-2" th:if="${statusFilter != null}">
+                        <a th:href="@{/demands/my-demands}" class="btn btn-secondary w-100">
+                            <i class="bi bi-x-circle"></i> Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de Demandas (Cards) -->
+        <div class="row">
+            <div class="col-12" th:each="demand : ${demands}">
+                <div class="demand-card">
+                    <div class="demand-header">
+                        <div>
+                            <div class="demand-title" th:text="${demand.titulo}">Título da Demanda</div>
+                            <div class="mt-2">
+                                <span class="badge"
+                                      th:classappend="'badge-status-' + ${demand.status.name()}"
+                                      th:text="${demand.status.displayName}">Status</span>
+                                <span class="badge ms-2"
+                                      th:classappend="'badge-priority-' + ${demand.prioridade.name()}"
+                                      th:text="${demand.prioridade.displayName}">Prioridade</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge bg-secondary">#<span th:text="${demand.id}">1</span></span>
+                        </div>
+                    </div>
+
+                    <div class="demand-description" th:text="${demand.descricao}">
+                        Descrição da demanda...
+                    </div>
+
+                    <div class="demand-meta">
+                        <div class="demand-meta-item">
+                            <i class="bi bi-person-fill"></i>
+                            <span>Criado por: <strong th:text="${demand.createdBy.fullName}">Nome</strong></span>
+                        </div>
+                        <div class="demand-meta-item" th:if="${demand.assignedTo != null}">
+                            <i class="bi bi-person-check-fill"></i>
+                            <span>Atribuído a: <strong th:text="${demand.assignedTo.fullName}">Nome</strong></span>
+                        </div>
+                        <div class="demand-meta-item">
+                            <i class="bi bi-calendar-event"></i>
+                            <span th:text="${#temporals.format(demand.createdAt, 'dd/MM/yyyy HH:mm')}">Data</span>
+                        </div>
+                        <div class="demand-meta-item" th:if="${demand.dueDate != null}">
+                            <i class="bi bi-alarm"></i>
+                            <span>Prazo: <strong th:text="${#temporals.format(demand.dueDate, 'dd/MM/yyyy HH:mm')}">Prazo</strong></span>
+                        </div>
+                        <div class="demand-meta-item">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Para: <strong th:text="${demand.targetRoles}">Cargos</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <a th:href="@{/demands/{id}(id=${demand.id})}" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Ver Detalhes
+                        </a>
+
+                        <!-- Botão Atribuir a Mim (se não atribuída) -->
+                        <form th:if="${demand.assignedTo == null && demand.status.name() == 'PENDENTE'}"
+                              th:action="@{/demands/{id}/assign-to-me(id=${demand.id})}"
+                              method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-hand-thumbs-up"></i> Atribuir a Mim
+                            </button>
+                        </form>
+
+                        <!-- Atualizar Status -->
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-warning dropdown-toggle"
+                                    data-bs-toggle="dropdown">
+                                <i class="bi bi-arrow-repeat"></i> Atualizar Status
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li th:each="status : ${statusOptions}">
+                                    <form th:action="@{/demands/{id}/update-status(id=${demand.id})}"
+                                          method="post" style="margin: 0;">
+                                        <input type="hidden" name="status" th:value="${status}">
+                                        <button type="submit" class="dropdown-item"
+                                                th:text="${status.displayName}">Status</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div th:if="${#lists.isEmpty(demands)}" class="text-center text-muted py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem;"></i>
+            <p class="mt-3 h5">Nenhuma demanda encontrada.</p>
+            <p>Demandas atribuídas a você ou ao seu cargo aparecerão aqui.</p>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

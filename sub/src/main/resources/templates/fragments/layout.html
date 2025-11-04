@@ -45,6 +45,11 @@
             <li th:if="${isAdmin}">
                 <a th:href="@{/events}">Eventos</a>
             </li>
+            <li th:if="${isLoggedIn}">
+                <a th:href="@{/demands}">
+                    <i class="bi bi-clipboard2-check"></i> Demandas
+                </a>
+            </li>
 
             <li th:if="${isAdmin}" class="nav-item nav-item-dropdown">
                 <button type="button" class="nav-dropdown-toggle" data-nav-dropdown aria-expanded="false" aria-haspopup="true">
