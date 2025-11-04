@@ -234,6 +234,7 @@
         function syncVehicleIdFromPlate() {
             const plate = (vehiclePlateInput.value || '').toUpperCase().trim();
             let matchedId = '';
+            // Procurar o ID correspondente na datalist
             Array.from(vehicleOptions.options).forEach(opt => {
                 if ((opt.value || '').toUpperCase() === plate) {
                     matchedId = opt.dataset.id || '';
@@ -241,46 +242,35 @@
             });
             vehicleIdHidden.value = matchedId;
             vehiclePlateHidden.value = plate;
-            // feedback visual
+
+            // Feedback visual para o usuário
             if (plate && !matchedId) {
-                vehicleError.style.display = 'block';
+                vehicleError.style.display = 'block'; // Mostra erro se placa digitada não existe na lista
+                vehiclePlateInput.classList.add('is-invalid');
             } else {
                 vehicleError.style.display = 'none';
-            }
-        }
-
-        function applyVehicleFilter() {
-            const query = (vehicleFilter?.value || '').toLowerCase();
-            const options = Array.from(vehicleSelect.options);
-            let anyVisible = false;
-            options.forEach((opt, idx) => {
-                if (idx === 0) { // manter opção padrão
-                    opt.hidden = false;
-                    return;
-                }
-                const visible = opt.textContent.toLowerCase().includes(query);
-                opt.hidden = !visible;
-                if (visible) anyVisible = true;
-            });
-            // Se após filtrar não houver itens visíveis, garante opção informativa
-            if (!anyVisible && options.length > 1) {
-                // nada a fazer; as opções ocultas permanecem, o usuário pode limpar o filtro
+                vehiclePlateInput.classList.remove('is-invalid');
             }
         }
 
         partnerSelect.addEventListener('change', function () {
             const partnerId = this.value;
 
+            // Limpa o campo de placa ao trocar de associado
+            vehiclePlateInput.value = '';
+            vehicleIdHidden.value = '';
+            vehiclePlateHidden.value = '';
+
             if (!partnerId) {
                 updateVehicleOptions([]);
-                vehiclePlateInput.value = '';
-                vehicleIdHidden.value = '';
+                syncVehicleIdFromPlate(); // Limpa a validação
                 return;
             }
 
             const url = `/events/api/vehicles/${partnerId}`;
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+            // Correção na obtenção do token CSRF
+            const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+            const csrfHeader = "X-CSRF-TOKEN";
 
             const headers = {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -298,33 +288,45 @@
                 })
                 .then(data => {
                     updateVehicleOptions(data);
-                    syncVehicleIdFromPlate();
+                    syncVehicleIdFromPlate(); // Sincroniza caso o campo já tenha valor
                 })
                 .catch(error => {
                     console.error('Erro ao buscar veículos:', error);
                     updateVehicleOptions([]);
-                    vehiclePlateInput.value = '';
-                    vehicleIdHidden.value = '';
+                    syncVehicleIdFromPlate();
                 });
         });
+
+        // Eventos para sincronizar a placa com o ID
         vehiclePlateInput.addEventListener('input', syncVehicleIdFromPlate);
         vehiclePlateInput.addEventListener('change', syncVehicleIdFromPlate);
+        vehiclePlateInput.addEventListener('blur', syncVehicleIdFromPlate);
 
-        // Bloquear submit sem vehicle.id válido
+        // Validação final no momento do submit
         if (eventForm) {
             eventForm.addEventListener('submit', function(e) {
+                // Garante que a sincronia foi feita antes de submeter
                 syncVehicleIdFromPlate();
-                const hasVehicleId = (vehicleIdHidden.value || '').trim().length > 0;
+
                 const hasPartnerId = (partnerSelect.value || '').trim().length > 0;
                 if (!hasPartnerId) {
                     e.preventDefault();
-                    partnerSelect.focus();
+                    partnerSelect.focus(); // Foca no campo do associado se não for selecionado
                     return;
                 }
-                if (!hasVehicleId) {
-                    e.preventDefault();
+
+                // A placa deve ter algum valor E um ID correspondente
+                const hasVehicleId = (vehicleIdHidden.value || '').trim().length > 0;
+                const hasPlateValue = (vehiclePlateInput.value || '').trim().length > 0;
+
+                if (!hasPlateValue || !hasVehicleId) {
+                    e.preventDefault(); // Bloqueia o envio do formulário
                     vehicleError.style.display = 'block';
-                    vehiclePlateInput.focus();
+                    vehiclePlateInput.classList.add('is-invalid');
+                    vehiclePlateInput.focus(); // Foca no campo da placa para correção
+                } else {
+                    vehicleError.style.display = 'none';
+                    vehiclePlateInput.classList.remove('is-invalid');
                 }
             });
         }
@@ -334,8 +336,6 @@
             partnerSelect.dispatchEvent(new Event('change'));
         } else {
             updateVehicleOptions([]);
-            vehiclePlateInput.value = '';
-            vehicleIdHidden.value = '';
         }
     })();
 </script>
