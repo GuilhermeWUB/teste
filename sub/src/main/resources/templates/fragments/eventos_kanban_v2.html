@@ -2,11 +2,6 @@
     <div class="kanban-wrapper">
         <!-- Header -->
         <div class="kanban-header">
-            <h1 class="kanban-title">
-                <i class="bi bi-kanban"></i>
-                Eventos - Kanban Board
-            </h1>
-
             <div class="kanban-controls">
                 <!-- Search -->
                 <div class="kanban-search">
@@ -146,4 +141,22 @@
     <link rel="stylesheet" th:href="@{/css/kanban-eventos-v2.css}">
     <script th:src="@{/js/kanban_eventos_v3.js}" defer></script>
     <script th:src="@{/js/kanban_eventos_v3_methods.js}" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
 </section>
