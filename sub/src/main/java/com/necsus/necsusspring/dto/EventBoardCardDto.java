@@ -28,6 +28,7 @@ public record EventBoardCardDto(
         Long partnerId,
         String vehiclePlate,
         Long vehicleId,
+        String placaManual,
         LocalDate dataVencimento,
         String analistaResponsavel
 ) {
@@ -35,7 +36,7 @@ public record EventBoardCardDto(
     public static EventBoardCardDto from(Event event) {
         if (event == null) {
             return new EventBoardCardDto(null, null, null, Status.A_FAZER.name(), Status.A_FAZER.getDisplayName(),
-                    null, null, "secondary", null, null, null, null, null, null, null, null, null, null);
+                    null, null, "secondary", null, null, null, null, null, null, null, null, null, null, null);
         }
 
         final Status status = Optional.ofNullable(event.getStatus()).orElse(Status.A_FAZER);
@@ -62,6 +63,7 @@ public record EventBoardCardDto(
                 partner != null ? partner.getId() : null,
                 vehicle != null ? vehicle.getPlaque() : null,
                 vehicle != null ? vehicle.getId() : null,
+                event.getPlacaManual(),
                 event.getDataVencimento(),
                 event.getAnalistaResponsavel()
         );

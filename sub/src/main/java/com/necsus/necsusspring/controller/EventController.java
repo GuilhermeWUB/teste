@@ -93,12 +93,16 @@ public class EventController {
 
     /**
      * API REST para buscar eventos por status (usado pelo board)
+     * Retorna DTOs ao invés de entidades para evitar problemas de serialização com vehicle null
      */
     @GetMapping("/api/by-status/{status}")
     @ResponseBody
-    public ResponseEntity<List<Event>> getEventsByStatus(@PathVariable Status status) {
+    public ResponseEntity<List<com.necsus.necsusspring.dto.EventBoardCardDto>> getEventsByStatus(@PathVariable Status status) {
         List<Event> events = eventService.listByStatus(status);
-        return ResponseEntity.ok(events);
+        List<com.necsus.necsusspring.dto.EventBoardCardDto> dtos = events.stream()
+                .map(com.necsus.necsusspring.dto.EventBoardCardDto::from)
+                .toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/api/board")
