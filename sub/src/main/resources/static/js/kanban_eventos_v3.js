@@ -290,8 +290,9 @@ class KanbanBoard {
                 const searchableText = [
                     event.titulo,
                     event.descricao,
-                    event.partner?.name,
-                    event.vehicle?.plaque,
+                    event.partnerName,
+                    event.vehiclePlate,
+                    event.placaManual,
                     event.analistaResponsavel
                 ].join(' ').toLowerCase();
 
@@ -313,11 +314,11 @@ class KanbanBoard {
                 if (eventDate > toDate) return false;
             }
 
-            if (this.advancedFilters.partnerId && event.partner?.id != this.advancedFilters.partnerId) {
+            if (this.advancedFilters.partnerId && event.partnerId != this.advancedFilters.partnerId) {
                 return false;
             }
 
-            if (this.advancedFilters.vehicleId && event.vehicle?.id != this.advancedFilters.vehicleId) {
+            if (this.advancedFilters.vehicleId && event.vehicleId != this.advancedFilters.vehicleId) {
                 return false;
             }
 
@@ -346,11 +347,11 @@ class KanbanBoard {
 
             // Handle nested objects
             if (this.sortBy === 'partner') {
-                aVal = a.partner?.name || '';
-                bVal = b.partner?.name || '';
+                aVal = a.partnerName || '';
+                bVal = b.partnerName || '';
             } else if (this.sortBy === 'vehicle') {
-                aVal = a.vehicle?.plaque || '';
-                bVal = b.vehicle?.plaque || '';
+                aVal = a.vehiclePlate || a.placaManual || '';
+                bVal = b.vehiclePlate || b.placaManual || '';
             }
 
             // Handle dates
@@ -484,8 +485,8 @@ class KanbanBoard {
             </td>
             <td>${statusBadge}</td>
             <td>${priorityBadge}</td>
-            <td>${this.escapeHtml(event.partner?.name || '-')}</td>
-            <td>${this.escapeHtml(event.vehicle?.plaque || '-')}</td>
+            <td>${this.escapeHtml(event.partnerName || '-')}</td>
+            <td>${this.escapeHtml(event.vehiclePlate || event.placaManual || '-')}</td>
             <td>${deadline}</td>
             <td>
                 <div class="btn-group btn-group-sm">
@@ -573,16 +574,16 @@ class KanbanBoard {
             </div>
 
             <div class="task-card-info">
-                ${event.partner ? `
+                ${event.partnerName ? `
                     <div class="task-info-item">
                         <i class="bi bi-person-fill"></i>
-                        <span><strong>${this.escapeHtml(event.partner.name)}</strong></span>
+                        <span><strong>${this.escapeHtml(event.partnerName)}</strong></span>
                     </div>
                 ` : ''}
-                ${event.vehicle ? `
+                ${event.vehiclePlate || event.placaManual ? `
                     <div class="task-info-item">
                         <i class="bi bi-car-front-fill"></i>
-                        <span><strong>${this.escapeHtml(event.vehicle.plaque)}</strong> - ${this.escapeHtml(event.vehicle.maker || '')} ${this.escapeHtml(event.vehicle.model || '')}</span>
+                        <span><strong>${this.escapeHtml(event.vehiclePlate || event.placaManual)}</strong></span>
                     </div>
                 ` : ''}
             </div>
