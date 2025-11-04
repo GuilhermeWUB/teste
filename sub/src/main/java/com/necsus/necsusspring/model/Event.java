@@ -1,3 +1,4 @@
+
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
@@ -43,21 +44,21 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private Envolvimento envolvimento;
 
-    @NotNull(message = "Informe a data do ocorrido")
+
     private LocalDate dataAconteceu;
 
-    @NotNull(message = "Informe o horário do ocorrido")
+
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime horaAconteceu;
 
-    @NotNull(message = "Informe a data da comunicação")
+
     private LocalDate dataComunicacao;
 
-    @NotNull(message = "Informe o horário da comunicação")
+
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime horaComunicacao;
 
-    @NotNull(message = "Informe a data de vencimento")
+
     private LocalDate dataVencimento;
 
     @Column(columnDefinition = "TEXT")

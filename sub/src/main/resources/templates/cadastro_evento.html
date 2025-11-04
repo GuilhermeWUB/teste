@@ -122,31 +122,31 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="dataAconteceu" class="form-label">Data do Ocorrido *</label>
-                            <input type="date" class="form-control" id="dataAconteceu" th:field="*{dataAconteceu}" required>
+                            <label for="dataAconteceu" class="form-label">Data do Ocorrido</label>
+                            <input type="date" class="form-control" id="dataAconteceu" th:field="*{dataAconteceu}">
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
                         </div>
                         <div class="col-md-2">
-                            <label for="horaAconteceu" class="form-label">Hora *</label>
-                            <input type="time" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}" required>
+                            <label for="horaAconteceu" class="form-label">Hora</label>
+                            <input type="time" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}">
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label for="dataComunicacao" class="form-label">Data da Comunicação *</label>
-                            <input type="date" class="form-control" id="dataComunicacao" th:field="*{dataComunicacao}" required>
+                            <label for="dataComunicacao" class="form-label">Data da Comunicação</label>
+                            <input type="date" class="form-control" id="dataComunicacao" th:field="*{dataComunicacao}">
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
                         </div>
                         <div class="col-md-2">
-                            <label for="horaComunicacao" class="form-label">Hora *</label>
-                            <input type="time" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}" required>
+                            <label for="horaComunicacao" class="form-label">Hora</label>
+                            <input type="time" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}">
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="dataVencimento" class="form-label">Data de Vencimento *</label>
-                            <input type="date" class="form-control" id="dataVencimento" th:field="*{dataVencimento}" required>
+                            <label for="dataVencimento" class="form-label">Data de Vencimento</label>
+                            <input type="date" class="form-control" id="dataVencimento" th:field="*{dataVencimento}">
                             <small class="form-text text-muted">Data limite para resolução do evento</small>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataVencimento')}" th:errors="*{dataVencimento}"></div>
                         </div>
