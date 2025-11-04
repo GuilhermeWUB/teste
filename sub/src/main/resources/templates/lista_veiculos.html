@@ -20,22 +20,48 @@
 
     <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
 
-    <form class="vehicles-filter" th:action="@{/vehicles}" method="get">
-        <div class="vehicles-filter__field">
-            <label for="partnerId" class="vehicles-filter__label">Filtrar por associado</label>
-            <div class="vehicles-filter__control">
-                <select id="partnerId" name="partnerId" class="vehicles-filter__select">
-                    <option value="" th:selected="${partnerId == null}">Todos os associados</option>
-                    <option th:each="partner : ${partners}"
-                            th:value="${partner.id}"
-                            th:text="${partner.name}"
-                            th:selected="${partnerId != null and partnerId == partner.id}"></option>
-                </select>
-            </div>
+    <!-- Controles de Paginação e Filtro -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form th:action="@{/vehicles}" method="get">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label for="partnerId" class="form-label">Filtrar por associado</label>
+                        <select id="partnerId" name="partnerId" class="form-select">
+                            <option value="" th:selected="${partnerId == null}">Todos os associados</option>
+                            <option th:each="partner : ${partners}"
+                                    th:value="${partner.id}"
+                                    th:text="${partner.name}"
+                                    th:selected="${partnerId != null and partnerId == partner.id}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="pageSize" class="form-label">Itens por página</label>
+                        <select id="pageSize" name="size" class="form-select">
+                            <option value="10" th:selected="${pageSize == 10}">10</option>
+                            <option value="20" th:selected="${pageSize == 20}">20</option>
+                            <option value="30" th:selected="${pageSize == 30}">30</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-secondary w-100" th:href="@{/vehicles}">
+                            <i class="bi bi-x-circle"></i> Limpar
+                        </a>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <small class="text-muted">
+                            <strong th:text="${totalItems}">0</strong> veículos
+                        </small>
+                    </div>
+                </div>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary vehicles-filter__action">Filtrar</button>
-        <a class="btn btn-outline vehicles-filter__action" th:href="@{/vehicles}">Limpar</a>
-    </form>
+    </div>
 
     <div th:if="${#lists.isEmpty(vehicles)}" class="alert alert-info" role="alert">
         Nenhum veículo cadastrado.
@@ -89,6 +115,53 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Controles de Navegação -->
+        <nav aria-label="Navegação de páginas" class="mt-3">
+            <ul class="pagination justify-content-center">
+                <!-- Primeira Página -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/vehicles(page=0, size=${pageSize}, partnerId=${partnerId})}">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- Página Anterior -->
+                <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/vehicles(page=${currentPage - 1}, size=${pageSize}, partnerId=${partnerId})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                <!-- Páginas Numeradas -->
+                <li class="page-item"
+                    th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
+                    th:classappend="${pageNum == currentPage} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/vehicles(page=${pageNum}, size=${pageSize}, partnerId=${partnerId})}"
+                       th:text="${pageNum + 1}">1</a>
+                </li>
+
+                <!-- Próxima Página -->
+                <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/vehicles(page=${currentPage + 1}, size=${pageSize}, partnerId=${partnerId})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+                <!-- Última Página -->
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/vehicles(page=${totalPages - 1}, size=${pageSize}, partnerId=${partnerId})}">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </section>
 
