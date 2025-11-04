@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Editar Demanda</title>
+    <link rel="stylesheet" th:href="@{/css/cadastro.css}">
+    <style>
+        .role-checkbox {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+        }
+        .badge-priority-BAIXA { background: #10b981; }
+        .badge-priority-MEDIA { background: #f59e0b; }
+        .badge-priority-ALTA { background: #ef4444; }
+        .badge-priority-URGENTE { background: #dc2626; animation: pulse 2s infinite; }
+
+        .badge-status-PENDENTE { background: #6b7280; }
+        .badge-status-EM_ANDAMENTO { background: #3b82f6; }
+        .badge-status-CONCLUIDA { background: #10b981; }
+        .badge-status-CANCELADA { background: #dc2626; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Demanda</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Alertas -->
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Formulário de Edição -->
+                        <form th:action="@{/demands/{id}/update(id=${demand.id})}" th:object="${demand}" method="post">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="titulo" class="form-label">Título *</label>
+                                    <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
+                                           placeholder="Ex: Revisar processo de pagamentos" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Status *</label>
+                                    <select class="form-select" id="status" th:field="*{status}" required>
+                                        <option th:each="status : ${statusOptions}"
+                                                th:value="${status}"
+                                                th:text="${status.displayName}"
+                                                th:selected="${status == demand.status}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="prioridade" class="form-label">Prioridade *</label>
+                                    <select class="form-select" id="prioridade" th:field="*{prioridade}" required>
+                                        <option th:each="priority : ${priorityOptions}"
+                                                th:value="${priority}"
+                                                th:text="${priority.displayName}"
+                                                th:selected="${priority == demand.prioridade}"></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="dueDate" class="form-label">Prazo</label>
+                                    <input type="datetime-local" class="form-control" id="dueDate" th:field="*{dueDate}">
+                                    <small class="text-muted">Data e hora limite para conclusão da demanda</small>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="descricao" class="form-label">Descrição *</label>
+                                <textarea class="form-control" id="descricao" th:field="*{descricao}"
+                                          rows="4" placeholder="Descreva a demanda em detalhes..." required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Cargos Destinatários *</label>
+                                <div class="border rounded p-3">
+                                    <div th:each="role : ${availableRoles}" class="role-checkbox">
+                                        <input type="checkbox" name="targetRolesList" th:value="${role.code}"
+                                               th:id="'role-' + ${role.code}" class="form-check-input"
+                                               th:checked="${selectedRoles != null && selectedRoles.contains(role.code)}">
+                                        <label th:for="'role-' + ${role.code}" class="form-check-label"
+                                               th:text="${role.displayName}"></label>
+                                    </div>
+                                </div>
+                                <small class="text-muted">Selecione os cargos que devem receber esta demanda</small>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/demands/director}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Voltar
+                                </a>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-save"></i> Atualizar Demanda
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Card com informações adicionais -->
+                <div class="card shadow mt-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações da Demanda</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <strong>ID:</strong> <span th:text="${demand.id}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Criado por:</strong> <span th:text="${demand.createdBy.fullName}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <strong>Criado em:</strong> <span th:text="${#temporals.format(demand.createdAt, 'dd/MM/yyyy HH:mm')}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2" th:if="${demand.updatedAt != null}">
+                                <strong>Última atualização:</strong> <span th:text="${#temporals.format(demand.updatedAt, 'dd/MM/yyyy HH:mm')}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2" th:if="${demand.assignedTo != null}">
+                                <strong>Atribuído a:</strong> <span th:text="${demand.assignedTo.fullName}">-</span>
+                            </div>
+                            <div class="col-md-6 mb-2" th:if="${demand.completedAt != null}">
+                                <strong>Concluído em:</strong> <span th:text="${#temporals.format(demand.completedAt, 'dd/MM/yyyy HH:mm')}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

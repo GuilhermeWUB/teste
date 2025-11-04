@@ -185,9 +185,7 @@ public class EventController {
         if (event.getPartner() == null || event.getPartner().getId() == null) {
             result.rejectValue("partner", "NotNull", "Selecione o associado");
         }
-        if (event.getVehicle() == null || event.getVehicle().getId() == null) {
-            result.rejectValue("vehicle", "NotNull", "Selecione uma placa válida da lista");
-        }
+        // Vehicle é agora opcional - placa pode ser informada manualmente no campo placaManual
         if (result.hasErrors()) {
             // Recarrega opções de veículos quando o formulário volta com erro
             if (event.getPartner() != null && event.getPartner().getId() != null) {
