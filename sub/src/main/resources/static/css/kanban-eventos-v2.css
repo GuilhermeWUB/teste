@@ -1296,25 +1296,40 @@ body.dark-mode .history-item::before,
     color: var(--notion-text-light);
 }
 
-/* Custom Themes */
-.kanban-wrapper[data-custom-theme="purple"] {
+/* Custom Themes - Funcionam em modo claro e escuro */
+.kanban-wrapper[data-custom-theme="purple"],
+body.dark-mode .kanban-wrapper[data-custom-theme="purple"],
+.kanban-wrapper.dark-mode[data-custom-theme="purple"] {
     --accent-blue: #9333ea;
 }
 
-.kanban-wrapper[data-custom-theme="green"] {
+.kanban-wrapper[data-custom-theme="green"],
+body.dark-mode .kanban-wrapper[data-custom-theme="green"],
+.kanban-wrapper.dark-mode[data-custom-theme="green"] {
     --accent-blue: #16a34a;
 }
 
-.kanban-wrapper[data-custom-theme="orange"] {
+.kanban-wrapper[data-custom-theme="orange"],
+body.dark-mode .kanban-wrapper[data-custom-theme="orange"],
+.kanban-wrapper.dark-mode[data-custom-theme="orange"] {
     --accent-blue: #ea580c;
 }
 
-.kanban-wrapper[data-custom-theme="pink"] {
+.kanban-wrapper[data-custom-theme="pink"],
+body.dark-mode .kanban-wrapper[data-custom-theme="pink"],
+.kanban-wrapper.dark-mode[data-custom-theme="pink"] {
     --accent-blue: #ec4899;
 }
 
-.kanban-wrapper[data-custom-theme="indigo"] {
+.kanban-wrapper[data-custom-theme="indigo"],
+body.dark-mode .kanban-wrapper[data-custom-theme="indigo"],
+.kanban-wrapper.dark-mode[data-custom-theme="indigo"] {
     --accent-blue: #4f46e5;
+}
+
+/* Custom RGB Theme */
+.kanban-wrapper[data-custom-theme="custom"] {
+    --accent-blue: var(--custom-theme-color, #2383e2);
 }
 
 /* Sortable Container */
@@ -1386,4 +1401,155 @@ body.dark-mode .history-item::before,
 .kanban-empty-state p {
     font-size: 14px;
     margin: 0;
+}
+
+/* ==========================================
+   RGB COLOR PICKER
+   ========================================== */
+
+.color-picker-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+}
+
+.color-picker-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.color-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--notion-border);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.color-preview:hover {
+    transform: scale(1.05);
+}
+
+.color-input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.color-input-wrapper label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--notion-text-light);
+    text-transform: uppercase;
+}
+
+.color-input-wrapper input[type="color"] {
+    width: 100%;
+    height: 50px;
+    border: 2px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    background: none;
+}
+
+.color-input-wrapper input[type="text"] {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.color-saved-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--notion-hover);
+    border-radius: var(--radius-md);
+}
+
+.color-saved-item {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--notion-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-saved-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.color-saved-item .delete-color {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent-red);
+    color: white;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.color-saved-item:hover .delete-color {
+    display: flex;
+}
+
+.theme-text-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--notion-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--notion-text);
+    background: white;
+}
+
+body.dark-mode .theme-text-input,
+.kanban-wrapper.dark-mode .theme-text-input {
+    background: var(--notion-bg-dark);
+    color: var(--notion-text);
+    border-color: var(--notion-border);
+}
+
+.theme-text-input::placeholder {
+    color: var(--notion-text-light);
+}
+
+/* Fix Kanban Board Alignment */
+.kanban-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.kanban-board {
+    display: flex;
+    gap: var(--spacing-lg);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+    scrollbar-width: thin;
+    scrollbar-color: var(--notion-border) transparent;
+    min-height: 400px;
+}
+
+.kanban-column {
+    flex: 0 0 340px;
+    min-width: 340px;
 }

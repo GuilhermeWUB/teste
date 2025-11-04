@@ -56,8 +56,24 @@ public class PartnerController {
     }
 
     @GetMapping
-    public String listPartners(Model model) {
-        model.addAttribute("partners", partnerService.getAllPartners());
+    public String listPartners(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        // Limita o tamanho entre 1 e 30
+        size = Math.min(Math.max(size, 1), 30);
+
+        org.springframework.data.domain.Page<Partner> partnerPage = partnerService.getAllPartnersPaginated(page, size);
+
+        model.addAttribute("partners", partnerPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", partnerPage.getTotalPages());
+        model.addAttribute("totalItems", partnerPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("hasNext", partnerPage.hasNext());
+        model.addAttribute("hasPrevious", partnerPage.hasPrevious());
+
         return "lista_associados";
     }
 

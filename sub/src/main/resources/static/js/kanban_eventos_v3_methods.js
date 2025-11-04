@@ -455,7 +455,11 @@ Object.assign(KanbanBoard.prototype, {
         const modalBody = modal.querySelector('.kanban-modal-body');
         const modalTitle = modal.querySelector('.kanban-modal-header h2');
 
-        if (modalTitle) modalTitle.textContent = 'Selecionar Tema';
+        if (modalTitle) modalTitle.textContent = 'Personalizar Tema';
+
+        // Carrega cores salvas do localStorage
+        const savedColors = JSON.parse(localStorage.getItem('kanban-saved-colors') || '[]');
+        const currentColor = localStorage.getItem('kanban-current-color') || '#2383e2';
 
         const themes = [
             { id: 'default', name: 'Padrão', color: '#2383e2' },
@@ -463,25 +467,81 @@ Object.assign(KanbanBoard.prototype, {
             { id: 'green', name: 'Verde', color: '#16a34a' },
             { id: 'orange', name: 'Laranja', color: '#f59e0b' },
             { id: 'pink', name: 'Rosa', color: '#ec4899' },
-            { id: 'teal', name: 'Azul Petróleo', color: '#14b8a6' }
+            { id: 'indigo', name: 'Índigo', color: '#4f46e5' }
         ];
 
         modalBody.innerHTML = `
             <div class="theme-selector">
-                <div class="row g-3">
-                    ${themes.map(theme => `
-                        <div class="col-md-4">
-                            <button class="btn btn-outline-primary w-100 theme-btn ${this.theme === theme.id ? 'active' : ''}"
-                                    onclick="kanbanBoard.applyCustomTheme('${theme.id}')"
-                                    style="border-color: ${theme.color};">
-                                <div class="theme-preview" style="background: ${theme.color}; width: 100%; height: 60px; border-radius: 8px; margin-bottom: 8px;"></div>
-                                <strong>${theme.name}</strong>
-                            </button>
-                        </div>
-                    `).join('')}
+                <!-- Campo de Texto para Tema (Não Obrigatório) -->
+                <div class="mb-4">
+                    <label class="form-label"><i class="bi bi-chat-text"></i> Nome do Tema (Opcional)</label>
+                    <input type="text" id="theme-name-input" class="theme-text-input"
+                           placeholder="Ex: Meu Tema Favorito..."
+                           value="${localStorage.getItem('kanban-theme-name') || ''}">
+                    <small class="text-muted">Dê um nome ao seu tema personalizado</small>
                 </div>
 
-                <div class="mt-4 d-flex justify-content-end">
+                <!-- Seletor RGB de Cores -->
+                <div class="mb-4">
+                    <label class="form-label"><i class="bi bi-palette-fill"></i> Escolher Cor Principal</label>
+                    <div class="color-picker-container">
+                        <div class="color-picker-row">
+                            <div class="color-preview" id="color-preview-box"
+                                 style="background-color: ${currentColor};"
+                                 title="Clique para usar o seletor"></div>
+                            <div class="color-input-wrapper">
+                                <label>Roda RGB</label>
+                                <input type="color" id="rgb-color-picker" value="${currentColor}">
+                            </div>
+                            <div class="color-input-wrapper">
+                                <label>Código Hex</label>
+                                <input type="text" id="hex-color-input" value="${currentColor}"
+                                       placeholder="#000000" maxlength="7" pattern="#[0-9a-fA-F]{6}">
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100 mt-2" onclick="kanbanBoard.saveCurrentColor()">
+                            <i class="bi bi-bookmark-plus"></i> Salvar Esta Cor nos Favoritos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Temas Pré-definidos -->
+                <div class="mb-4">
+                    <label class="form-label"><i class="bi bi-grid-3x3"></i> Temas Pré-definidos</label>
+                    <div class="row g-2">
+                        ${themes.map(theme => `
+                            <div class="col-4">
+                                <button class="btn btn-sm w-100 ${this.theme === theme.id ? 'btn-primary' : 'btn-outline-secondary'}"
+                                        onclick="kanbanBoard.applyPredefinedTheme('${theme.id}', '${theme.color}')">
+                                    <div style="background: ${theme.color}; width: 100%; height: 30px; border-radius: 4px; margin-bottom: 4px;"></div>
+                                    <small>${theme.name}</small>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Cores Salvas -->
+                ${savedColors.length > 0 ? `
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-star-fill"></i> Cores Favoritas</label>
+                        <div class="color-saved-list">
+                            ${savedColors.map((color, index) => `
+                                <div class="color-saved-item" style="background-color: ${color};"
+                                     onclick="kanbanBoard.applyCustomColor('${color}')"
+                                     title="${color}">
+                                    <span class="delete-color" onclick="event.stopPropagation(); kanbanBoard.deleteSavedColor(${index})">×</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Botões de Ação -->
+                <div class="d-flex justify-content-between gap-2">
+                    <button class="btn btn-primary" onclick="kanbanBoard.applyCustomThemeFromInput()">
+                        <i class="bi bi-check-circle"></i> Aplicar Tema
+                    </button>
                     <button class="btn btn-secondary" onclick="kanbanBoard.closeModal()">
                         <i class="bi bi-x-circle"></i> Fechar
                     </button>
@@ -490,27 +550,161 @@ Object.assign(KanbanBoard.prototype, {
         `;
 
         modal.classList.add('active');
+
+        // Adiciona event listeners
+        setTimeout(() => {
+            const colorPicker = document.getElementById('rgb-color-picker');
+            const hexInput = document.getElementById('hex-color-input');
+            const previewBox = document.getElementById('color-preview-box');
+
+            if (colorPicker) {
+                colorPicker.addEventListener('input', (e) => {
+                    const color = e.target.value;
+                    hexInput.value = color;
+                    previewBox.style.backgroundColor = color;
+                });
+            }
+
+            if (hexInput) {
+                hexInput.addEventListener('input', (e) => {
+                    let color = e.target.value;
+                    if (color.match(/^#[0-9A-Fa-f]{6}$/)) {
+                        colorPicker.value = color;
+                        previewBox.style.backgroundColor = color;
+                    }
+                });
+            }
+
+            if (previewBox) {
+                previewBox.addEventListener('click', () => {
+                    colorPicker.click();
+                });
+            }
+        }, 100);
     },
 
-    applyCustomTheme(themeId) {
-        console.log('[KANBAN V3] 🎨 Aplicando tema:', themeId);
+    applyPredefinedTheme(themeId, color) {
+        console.log('[KANBAN V3] 🎨 Aplicando tema pré-definido:', themeId, color);
 
         this.theme = themeId;
         localStorage.setItem('kanban-custom-theme', themeId);
+        localStorage.setItem('kanban-current-color', color);
 
+        const wrapper = document.querySelector('.kanban-wrapper');
+        if (wrapper) {
+            wrapper.setAttribute('data-custom-theme', themeId);
+            wrapper.style.setProperty('--accent-blue', color);
+        }
+
+        // Atualiza o root também
+        document.documentElement.style.setProperty('--accent-blue', color);
+
+        this.showToast(`✅ Tema ${themeId} aplicado!`, 'success');
+        setTimeout(() => this.showThemeSelector(), 500); // Recarrega o modal
+    },
+
+    applyCustomColor(color) {
+        console.log('[KANBAN V3] 🎨 Aplicando cor customizada:', color);
+
+        this.theme = 'custom';
+        localStorage.setItem('kanban-custom-theme', 'custom');
+        localStorage.setItem('kanban-current-color', color);
+
+        const wrapper = document.querySelector('.kanban-wrapper');
+        if (wrapper) {
+            wrapper.setAttribute('data-custom-theme', 'custom');
+            wrapper.style.setProperty('--custom-theme-color', color);
+        }
+
+        // Atualiza o root também
+        document.documentElement.style.setProperty('--accent-blue', color);
+
+        this.showToast(`✅ Cor ${color} aplicada!`, 'success');
+        setTimeout(() => this.showThemeSelector(), 500); // Recarrega o modal
+    },
+
+    applyCustomThemeFromInput() {
+        const hexInput = document.getElementById('hex-color-input');
+        const themeNameInput = document.getElementById('theme-name-input');
+
+        if (!hexInput) return;
+
+        const color = hexInput.value;
+        const themeName = themeNameInput?.value || '';
+
+        if (!color.match(/^#[0-9A-Fa-f]{6}$/)) {
+            this.showToast('❌ Código de cor inválido! Use formato #RRGGBB', 'error');
+            return;
+        }
+
+        // Salva o nome do tema se fornecido
+        if (themeName) {
+            localStorage.setItem('kanban-theme-name', themeName);
+        }
+
+        this.applyCustomColor(color);
+        this.closeModal();
+    },
+
+    saveCurrentColor() {
+        const hexInput = document.getElementById('hex-color-input');
+        if (!hexInput) return;
+
+        const color = hexInput.value;
+
+        if (!color.match(/^#[0-9A-Fa-f]{6}$/)) {
+            this.showToast('❌ Código de cor inválido!', 'error');
+            return;
+        }
+
+        // Carrega cores salvas
+        let savedColors = JSON.parse(localStorage.getItem('kanban-saved-colors') || '[]');
+
+        // Verifica se a cor já existe
+        if (savedColors.includes(color)) {
+            this.showToast('⚠️ Esta cor já está nos favoritos', 'warning');
+            return;
+        }
+
+        // Adiciona a nova cor
+        savedColors.push(color);
+        localStorage.setItem('kanban-saved-colors', JSON.stringify(savedColors));
+
+        this.showToast('✅ Cor salva nos favoritos!', 'success');
+
+        // Recarrega o modal para mostrar a nova cor
+        setTimeout(() => this.showThemeSelector(), 500);
+    },
+
+    deleteSavedColor(index) {
+        let savedColors = JSON.parse(localStorage.getItem('kanban-saved-colors') || '[]');
+
+        if (index >= 0 && index < savedColors.length) {
+            const deletedColor = savedColors[index];
+            savedColors.splice(index, 1);
+            localStorage.setItem('kanban-saved-colors', JSON.stringify(savedColors));
+
+            this.showToast(`🗑️ Cor ${deletedColor} removida`, 'info');
+
+            // Recarrega o modal
+            setTimeout(() => this.showThemeSelector(), 500);
+        }
+    },
+
+    applyCustomTheme(themeId) {
+        // Mantém compatibilidade com código antigo
         const themes = {
             'default': '#2383e2',
             'purple': '#9333ea',
             'green': '#16a34a',
             'orange': '#f59e0b',
             'pink': '#ec4899',
-            'teal': '#14b8a6'
+            'indigo': '#4f46e5'
         };
 
-        document.documentElement.style.setProperty('--accent-blue', themes[themeId]);
-
-        this.closeModal();
-        this.showToast(`Tema ${themeId} aplicado!`, 'success');
+        if (themes[themeId]) {
+            this.applyPredefinedTheme(themeId, themes[themeId]);
+        }
     },
 
     /**
