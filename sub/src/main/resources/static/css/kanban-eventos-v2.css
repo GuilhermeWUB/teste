@@ -46,13 +46,97 @@
 }
 
 /* Dark mode support */
-body.dark-mode {
-    --notion-bg: #191919;
-    --notion-bg-dark: #000000;
-    --notion-text: #ffffff;
-    --notion-text-light: #9b9a97;
-    --notion-border: #2f2f2f;
-    --notion-hover: #2f2f2f;
+body.dark-mode,
+.kanban-wrapper.dark-mode {
+    --notion-bg: #1a1a1a;
+    --notion-bg-dark: #0d0d0d;
+    --notion-text: #e8e8e8;
+    --notion-text-light: #a0a0a0;
+    --notion-border: #333333;
+    --notion-hover: #2a2a2a;
+    --notion-shadow: rgba(0, 0, 0, 0.3);
+    --notion-shadow-lg: rgba(0, 0, 0, 0.5);
+
+    /* Adjust colors for dark mode */
+    --status-todo: #2d2d2d;
+    --status-inprogress: #1e3a5f;
+    --status-waiting: #4a4020;
+    --status-done: #1a4d2e;
+
+    --accent-blue: #3b9eff;
+    --accent-purple: #a855f7;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+}
+
+/* Apply dark mode styles */
+body.dark-mode .kanban-search input,
+.kanban-wrapper.dark-mode .kanban-search input {
+    background: var(--notion-hover);
+    color: var(--notion-text);
+    border-color: var(--notion-border);
+}
+
+body.dark-mode .kanban-search input::placeholder,
+.kanban-wrapper.dark-mode .kanban-search input::placeholder {
+    color: var(--notion-text-light);
+}
+
+body.dark-mode .kanban-column,
+.kanban-wrapper.dark-mode .kanban-column {
+    background: var(--notion-bg-dark);
+}
+
+body.dark-mode .column-header,
+.kanban-wrapper.dark-mode .column-header {
+    background: var(--notion-hover);
+}
+
+body.dark-mode .task-card,
+.kanban-wrapper.dark-mode .task-card {
+    background: var(--notion-hover);
+    border-color: var(--notion-border);
+}
+
+body.dark-mode .task-card:hover,
+.kanban-wrapper.dark-mode .task-card:hover {
+    background: #333333;
+}
+
+body.dark-mode .kanban-modal-content,
+.kanban-wrapper.dark-mode .kanban-modal-content {
+    background: var(--notion-hover);
+}
+
+body.dark-mode .kanban-filter-btn,
+body.dark-mode .kanban-view-btn,
+body.dark-mode .kanban-settings-btn,
+.kanban-wrapper.dark-mode .kanban-filter-btn,
+.kanban-wrapper.dark-mode .kanban-view-btn,
+.kanban-wrapper.dark-mode .kanban-settings-btn {
+    background: var(--notion-hover);
+    border-color: var(--notion-border);
+    color: var(--notion-text);
+}
+
+body.dark-mode .kanban-filter-btn:hover,
+body.dark-mode .kanban-view-btn:hover,
+body.dark-mode .kanban-settings-btn:hover,
+.kanban-wrapper.dark-mode .kanban-filter-btn:hover,
+.kanban-wrapper.dark-mode .kanban-view-btn:hover,
+.kanban-wrapper.dark-mode .kanban-settings-btn:hover {
+    background: #333333;
+}
+
+body.dark-mode .column-count,
+.kanban-wrapper.dark-mode .column-count {
+    background: var(--notion-bg-dark);
+    color: var(--notion-text-light);
+}
+
+body.dark-mode .task-deadline,
+.kanban-wrapper.dark-mode .task-deadline {
+    background: var(--notion-bg-dark);
 }
 
 /* ==========================================

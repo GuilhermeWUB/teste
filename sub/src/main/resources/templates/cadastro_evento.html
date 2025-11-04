@@ -216,14 +216,14 @@
         console.log('[EVENT FORM] Formulário inicializado. Partner ID inicial:', partnerSelect.value, '| Vehicle ID inicial:', initialVehicleId);
 
         async function fetchAndPopulateVehicles(partnerId, selectedVehicleId) {
-            console.log('[EVENT FORM] Buscando veículos para o parceiro:', partnerId);
+            console.log('[EVENT FORM] 🚀 Buscando veículos para o parceiro:', partnerId);
 
             // Desabilita o seletor de veículos enquanto carrega
             vehicleSelect.disabled = true;
             vehicleSelect.innerHTML = '<option value="">Carregando...</option>';
 
             if (!partnerId || partnerId === '') {
-                console.log('[EVENT FORM] Nenhum parceiro selecionado. Resetando dropdown de veículos.');
+                console.log('[EVENT FORM] ⚠️ Nenhum parceiro selecionado. Resetando dropdown de veículos.');
                 vehicleSelect.disabled = false;
                 vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
                 return;
@@ -242,61 +242,114 @@
                     headers[csrfHeader] = csrfToken;
                 }
 
-                console.log('[EVENT FORM] Fazendo requisição para:', url);
+                console.log('[EVENT FORM] 📡 Fazendo requisição para:', url);
+                console.log('[EVENT FORM] 📋 Headers:', JSON.stringify(headers, null, 2));
+
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: headers,
                     credentials: 'same-origin'
                 });
 
+                console.log('[EVENT FORM] 📨 Response status:', response.status);
+                console.log('[EVENT FORM] ✅ Response OK:', response.ok);
+
                 if (!response.ok) {
                     throw new Error(`Erro na rede: ${response.status} ${response.statusText}`);
                 }
 
-                const vehicles = await response.json();
-                console.log('[EVENT FORM] Veículos recebidos:', vehicles.length, 'veículos');
+                // Pega o texto primeiro para ver o JSON bruto
+                const responseText = await response.text();
+                console.log('[EVENT FORM] 📄 Response RAW (primeiros 500 chars):', responseText.substring(0, 500));
+
+                let vehicles;
+                try {
+                    vehicles = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('[EVENT FORM] ❌ Erro ao fazer parse do JSON:', e);
+                    console.error('[EVENT FORM] 📄 Texto recebido:', responseText);
+                    throw new Error('Resposta inválida do servidor');
+                }
+
+                console.log('[EVENT FORM] 🚗 Veículos recebidos (array):', vehicles);
+                console.log('[EVENT FORM] 📊 Total de veículos:', Array.isArray(vehicles) ? vehicles.length : 'NÃO É ARRAY!');
+
+                if (vehicles && vehicles.length > 0) {
+                    console.log('[EVENT FORM] 🔍 Primeiro veículo (exemplo completo):', JSON.stringify(vehicles[0], null, 2));
+                }
 
                 // Limpa e popula o seletor
                 vehicleSelect.innerHTML = '';
                 const defaultOption = document.createElement('option');
                 defaultOption.value = '';
-                defaultOption.textContent = vehicles.length > 0 ? 'Selecione um veículo...' : 'Nenhum veículo encontrado';
+                defaultOption.textContent = vehicles.length > 0 ? 'Selecione um veículo...' : 'Nenhum veículo cadastrado para este associado';
                 vehicleSelect.appendChild(defaultOption);
 
                 if (Array.isArray(vehicles) && vehicles.length > 0) {
-                    vehicles.forEach(v => {
+                    vehicles.forEach((v, index) => {
+                        console.log(`[EVENT FORM] 🔧 Processando veículo ${index + 1}:`, {
+                            id: v.id,
+                            plaque: v.plaque,
+                            maker: v.maker,
+                            model: v.model,
+                            'typeof id': typeof v.id,
+                            'typeof plaque': typeof v.plaque
+                        });
+
                         const opt = document.createElement('option');
                         opt.value = v.id;
-                        const plaqueText = v.plaque || 'SEM PLACA';
-                        const makerText = v.maker || '';
-                        const modelText = v.model || '';
-                        opt.textContent = `${plaqueText} - ${makerText} ${modelText}`.trim();
+
+                        // Verifica cada propriedade individualmente e trata valores null/undefined
+                        const plaqueText = (v.plaque !== null && v.plaque !== undefined) ? String(v.plaque).trim() : 'SEM PLACA';
+                        const makerText = (v.maker !== null && v.maker !== undefined) ? String(v.maker).trim() : '';
+                        const modelText = (v.model !== null && v.model !== undefined) ? String(v.model).trim() : '';
+
+                        console.log(`[EVENT FORM] 📝 Textos processados:`, {
+                            plaqueText,
+                            makerText,
+                            modelText
+                        });
+
+                        // Monta o texto da opção
+                        let displayText = plaqueText;
+                        if (makerText || modelText) {
+                            const carInfo = [makerText, modelText].filter(Boolean).join(' ').trim();
+                            if (carInfo) {
+                                displayText += ' - ' + carInfo;
+                            }
+                        }
+
+                        opt.textContent = displayText;
                         vehicleSelect.appendChild(opt);
-                        console.log('[EVENT FORM] Veículo adicionado:', opt.textContent);
+
+                        console.log(`[EVENT FORM] ✅ Veículo adicionado - ID: ${v.id} | Texto: "${opt.textContent}"`);
                     });
 
-                    console.log('[EVENT FORM] Total de', vehicles.length, 'veículos adicionados ao dropdown');
+                    console.log(`[EVENT FORM] 🎉 Total de ${vehicles.length} veículos adicionados ao dropdown com sucesso!`);
                 } else {
-                    console.warn('[EVENT FORM] Nenhum veículo encontrado para o parceiro:', partnerId);
+                    console.warn('[EVENT FORM] ⚠️ Nenhum veículo encontrado para o parceiro:', partnerId);
                 }
 
                 // Se um ID de veículo foi passado (ex: na carga inicial com erro), seleciona-o
                 if (selectedVehicleId) {
                     vehicleSelect.value = selectedVehicleId;
-                    console.log('[EVENT FORM] Veículo pré-selecionado:', selectedVehicleId);
+                    console.log('[EVENT FORM] 🎯 Veículo pré-selecionado:', selectedVehicleId);
                 }
 
             } catch (error) {
-                console.error('[EVENT FORM] Erro ao buscar veículos:', error);
+                console.error('[EVENT FORM] ❌ ERRO ao buscar veículos:', error);
+                console.error('[EVENT FORM] 📍 Stack trace:', error.stack);
+
                 vehicleSelect.innerHTML = '<option value="">Erro ao carregar veículos</option>';
 
                 // Mostra alerta visual para o usuário
                 const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-2';
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-2';
                 alertDiv.setAttribute('role', 'alert');
                 alertDiv.innerHTML = `
-                    <i class="bi bi-exclamation-triangle"></i>
-                    Não foi possível carregar os veículos. Por favor, tente novamente.
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Erro ao carregar veículos:</strong> ${error.message}
+                    <br><small>Verifique o console do navegador (F12) para mais detalhes.</small>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
 
@@ -307,12 +360,12 @@
                 }
                 vehicleContainer.appendChild(alertDiv);
 
-                // Remove o alerta após 5 segundos
-                setTimeout(() => alertDiv.remove(), 5000);
+                // Remove o alerta após 8 segundos
+                setTimeout(() => alertDiv.remove(), 8000);
             } finally {
                 // Reabilita o seletor
                 vehicleSelect.disabled = false;
-                console.log('[EVENT FORM] Dropdown de veículos reabilitado');
+                console.log('[EVENT FORM] 🔓 Dropdown de veículos reabilitado');
             }
         }
 
