@@ -199,86 +199,91 @@
 </section>
 
 <script layout:fragment="scripts">
-    (function () {
+    document.addEventListener('DOMContentLoaded', function () {
         'use strict';
 
         const partnerSelect = document.getElementById('partner');
         const vehicleSelect = document.getElementById('vehicle');
+
+        // Pega o ID do veículo selecionado inicialmente (útil em caso de erro de validação)
+        const initialVehicleId = vehicleSelect.value;
 
         if (!partnerSelect || !vehicleSelect) {
             console.error('Campos de associado/veículo não encontrados.');
             return;
         }
 
-        function updateVehicleOptions(vehicles) {
-            // Guarda o valor selecionado, se houver
-            const selectedValue = vehicleSelect.value;
-
-            // Limpa as opções atuais
-            vehicleSelect.innerHTML = '';
-
-            // Adiciona a opção padrão
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Selecione um veículo...';
-            vehicleSelect.appendChild(defaultOption);
-
-            // Adiciona os veículos da lista
-            if (Array.isArray(vehicles)) {
-                vehicles.forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v.id;
-                    opt.textContent = `${v.plaque} - ${v.maker ?? ''} ${v.model ?? ''}`.trim();
-                    vehicleSelect.appendChild(opt);
-                });
-            }
-
-            // Restaura o valor selecionado, se ainda existir na nova lista
-            vehicleSelect.value = selectedValue;
-        }
-
-        partnerSelect.addEventListener('change', function () {
-            const partnerId = this.value;
-
-            // Limpa as opções de veículo ao trocar de associado
-            updateVehicleOptions([]);
+        async function fetchAndPopulateVehicles(partnerId, selectedVehicleId) {
+            // Desabilita o seletor de veículos enquanto carrega
+            vehicleSelect.disabled = true;
+            vehicleSelect.innerHTML = '<option value="">Carregando...</option>';
 
             if (!partnerId) {
+                vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
                 return;
             }
 
-            const url = `/events/api/vehicles/${partnerId}`;
-            const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
-            const csrfHeader = "X-CSRF-TOKEN";
+            try {
+                const url = `/events/api/vehicles/${partnerId}`;
+                const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+                const csrfHeader = "X-CSRF-TOKEN";
+                const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
 
-            const headers = {
-                'X-Requested-With': 'XMLHttpRequest'
-            };
-            if (csrfToken && csrfHeader) {
-                headers[csrfHeader] = csrfToken;
+                const response = await fetch(url, { headers });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na rede: ${response.statusText}`);
+                }
+
+                const vehicles = await response.json();
+
+                // Limpa e popula o seletor
+                vehicleSelect.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Selecione um veículo...';
+                vehicleSelect.appendChild(defaultOption);
+
+                if (Array.isArray(vehicles)) {
+                    vehicles.forEach(v => {
+                        const opt = document.createElement('option');
+                        opt.value = v.id;
+                        opt.textContent = `${v.plaque} - ${v.maker ?? ''} ${v.model ?? ''}`.trim();
+                        vehicleSelect.appendChild(opt);
+                    });
+                }
+
+                // Se um ID de veículo foi passado (ex: na carga inicial com erro), seleciona-o
+                if (selectedVehicleId) {
+                    vehicleSelect.value = selectedVehicleId;
+                }
+
+            } catch (error) {
+                console.error('Erro ao buscar veículos:', error);
+                vehicleSelect.innerHTML = '<option value="">Erro ao carregar veículos</option>';
+            } finally {
+                // Reabilita o seletor
+                vehicleSelect.disabled = false;
             }
+        }
 
-            fetch(url, { headers })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erro na rede: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    updateVehicleOptions(data);
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar veículos:', error);
-                    updateVehicleOptions([]);
-                });
+        // Adiciona o listener para o evento 'change'
+        partnerSelect.addEventListener('change', function () {
+            fetchAndPopulateVehicles(this.value, null);
         });
 
-        // Inicialização: se já houver associado selecionado (ex.: retorno de validação), carregue as placas
+        // Execução inicial ao carregar a página
+        // Isso garante que se um parceiro já estiver selecionado (ex: formulário com erro),
+        // a lista de veículos seja carregada e o veículo correto seja selecionado.
         if (partnerSelect.value) {
-            partnerSelect.dispatchEvent(new Event('change'));
+            fetchAndPopulateVehicles(partnerSelect.value, initialVehicleId);
+        } else {
+             vehicleSelect.innerHTML = '<option value="">Selecione um associado primeiro</option>';
         }
-    })();
+    });
 </script>
 
 </body>
