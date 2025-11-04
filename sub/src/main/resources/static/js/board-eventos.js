@@ -10,7 +10,84 @@ const BoardState = {
     sortableInstances: [],
     searchActive: false,
     currentFilter: '',
-    isDragging: false
+    isDragging: false,
+    columnSortable: null
+};
+
+const BoardMeta = window.BOARD_BOOTSTRAP || {};
+
+const BoardPreferences = {
+    storageKey: 'event-board-preferences',
+    data: {
+        columnOrder: [],
+        columnTitles: {},
+        collapsed: {}
+    },
+    load() {
+        try {
+            const stored = window.localStorage.getItem(this.storageKey);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                this.data = Object.assign({
+                    columnOrder: [],
+                    columnTitles: {},
+                    collapsed: {}
+                }, parsed);
+            }
+        } catch (error) {
+            console.warn('⚠️ Não foi possível carregar preferências do board:', error);
+        }
+    },
+    save() {
+        try {
+            window.localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+        } catch (error) {
+            console.warn('⚠️ Não foi possível salvar preferências do board:', error);
+        }
+    },
+    setOrder(order) {
+        if (!Array.isArray(order)) {
+            return;
+        }
+        this.data.columnOrder = [...new Set(order)];
+        this.save();
+    },
+    getOrder() {
+        return Array.isArray(this.data.columnOrder) ? [...this.data.columnOrder] : [];
+    },
+    getTitle(status, fallback) {
+        if (!status) return fallback;
+        return this.data.columnTitles?.[status] || fallback;
+    },
+    setTitle(status, title) {
+        if (!status) return;
+        if (title && title.trim().length > 0) {
+            this.data.columnTitles[status] = title.trim();
+        } else {
+            delete this.data.columnTitles[status];
+        }
+        this.save();
+    },
+    isCollapsed(status) {
+        if (!status) return false;
+        return Boolean(this.data.collapsed?.[status]);
+    },
+    setCollapsed(status, value) {
+        if (!status) return;
+        if (value) {
+            this.data.collapsed[status] = true;
+        } else {
+            delete this.data.collapsed[status];
+        }
+        this.save();
+    }
+};
+
+BoardPreferences.load();
+
+const ColumnMenuState = {
+    element: null,
+    anchor: null
 };
 
 /**
@@ -19,10 +96,16 @@ const BoardState = {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🎯 Board de Eventos inicializando...');
 
+    applyColumnOrder();
+    applyCustomTitles();
+    applyCollapsedState();
+    initializeColumnControls();
+    initializeColumnSorting();
     initializeSortable();
     initializeSearch();
     initializeEventListeners();
     updateAllCounters();
+    updateColumnProgress();
     animateCards();
 
     console.log('✅ Board de Eventos inicializado com sucesso!');
@@ -32,6 +115,15 @@ document.addEventListener('DOMContentLoaded', function() {
  * Inicializa SortableJS em todas as colunas
  */
 function initializeSortable() {
+    if (BoardState.sortableInstances.length) {
+        BoardState.sortableInstances.forEach(instance => {
+            if (instance && typeof instance.destroy === 'function') {
+                instance.destroy();
+            }
+        });
+    }
+    BoardState.sortableInstances = [];
+
     const columns = document.querySelectorAll('.column-content');
 
     columns.forEach(column => {
@@ -90,6 +182,270 @@ function initializeSortable() {
     });
 
     console.log(`📋 SortableJS inicializado em ${columns.length} colunas`);
+}
+
+function getCurrentColumnOrder() {
+    return Array.from(document.querySelectorAll('.board-column'))
+        .map(column => column.dataset.status)
+        .filter(Boolean);
+}
+
+function getDefaultColumnOrder() {
+    const domOrder = getCurrentColumnOrder();
+    if (Array.isArray(BoardMeta.statuses) && BoardMeta.statuses.length) {
+        const fromMeta = BoardMeta.statuses
+            .map(status => status.code)
+            .filter(Boolean);
+        const normalized = fromMeta.filter(code => domOrder.includes(code));
+        domOrder.forEach(code => {
+            if (!normalized.includes(code)) {
+                normalized.push(code);
+            }
+        });
+        return normalized;
+    }
+    return domOrder;
+}
+
+function applyColumnOrder() {
+    const container = document.querySelector('.board-container');
+    if (!container) {
+        return;
+    }
+
+    const defaultOrder = getDefaultColumnOrder();
+    let storedOrder = BoardPreferences.getOrder();
+
+    if (!storedOrder.length) {
+        storedOrder = defaultOrder;
+        BoardPreferences.setOrder(defaultOrder);
+    } else {
+        const normalized = [...new Set(storedOrder)];
+        defaultOrder.forEach(code => {
+            if (!normalized.includes(code)) {
+                normalized.push(code);
+            }
+        });
+        storedOrder = normalized.filter(code => defaultOrder.includes(code));
+        BoardPreferences.setOrder(storedOrder);
+    }
+
+    const fragment = document.createDocumentFragment();
+    storedOrder.forEach(status => {
+        const column = container.querySelector(`.board-column[data-status="${status}"]`);
+        if (column) {
+            fragment.appendChild(column);
+        }
+    });
+    container.appendChild(fragment);
+}
+
+function applyCustomTitles() {
+    document.querySelectorAll('.column-title-text').forEach(span => {
+        const status = span.dataset.status;
+        const fallback = span.dataset.defaultTitle || span.textContent.trim();
+        span.textContent = BoardPreferences.getTitle(status, fallback);
+    });
+}
+
+function setColumnCollapsed(status, collapsed, persist = true) {
+    const column = document.querySelector(`.board-column[data-status="${status}"]`);
+    if (!column) {
+        return;
+    }
+
+    const content = column.querySelector('.column-content');
+    const icon = column.querySelector('.column-btn--collapse i');
+
+    if (collapsed) {
+        column.classList.add('board-column-collapsed');
+        if (content) {
+            content.dataset.previousDisplay = content.style.display;
+            content.style.display = 'none';
+        }
+        if (icon) {
+            icon.classList.remove('bi-chevron-up');
+            icon.classList.add('bi-chevron-down');
+        }
+    } else {
+        column.classList.remove('board-column-collapsed');
+        if (content) {
+            if (content.dataset.previousDisplay !== undefined) {
+                content.style.display = content.dataset.previousDisplay;
+                delete content.dataset.previousDisplay;
+            } else {
+                content.style.display = '';
+            }
+        }
+        if (icon) {
+            icon.classList.add('bi-chevron-up');
+            icon.classList.remove('bi-chevron-down');
+        }
+    }
+
+    if (persist) {
+        BoardPreferences.setCollapsed(status, collapsed);
+    }
+
+    updateEmptyColumnMessages();
+    updateColumnIndicators();
+}
+
+function applyCollapsedState() {
+    const order = getCurrentColumnOrder();
+    order.forEach(status => {
+        const shouldCollapse = BoardPreferences.isCollapsed(status);
+        setColumnCollapsed(status, shouldCollapse, false);
+    });
+}
+
+function toggleColumnCollapse(status) {
+    if (!status) return;
+    const column = document.querySelector(`.board-column[data-status="${status}"]`);
+    if (!column) return;
+    const isCollapsed = column.classList.contains('board-column-collapsed');
+    setColumnCollapsed(status, !isCollapsed, true);
+    showToast(!isCollapsed ? 'Coluna recolhida.' : 'Coluna expandida.', 'info');
+}
+
+function initializeColumnControls() {
+    document.querySelectorAll('.column-btn--collapse').forEach(button => {
+        button.addEventListener('click', event => {
+            event.stopPropagation();
+            toggleColumnCollapse(button.dataset.status);
+        });
+    });
+
+    document.querySelectorAll('.column-btn--options').forEach(button => {
+        button.addEventListener('click', event => {
+            event.stopPropagation();
+            openColumnMenu(button);
+        });
+    });
+
+    document.querySelectorAll('.column-title-text').forEach(span => {
+        span.addEventListener('dblclick', () => {
+            promptRenameColumn(span.dataset.status);
+        });
+        span.setAttribute('title', 'Clique duas vezes para renomear a coluna');
+    });
+
+    document.addEventListener('click', event => {
+        if (ColumnMenuState.element && !ColumnMenuState.element.contains(event.target) && event.target !== ColumnMenuState.anchor) {
+            closeColumnMenu();
+        }
+    });
+
+    document.addEventListener('scroll', () => closeColumnMenu(), true);
+}
+
+function promptRenameColumn(status) {
+    if (!status) return;
+    const titleElement = document.querySelector(`.column-title-text[data-status="${status}"]`);
+    if (!titleElement) return;
+
+    const fallback = titleElement.dataset.defaultTitle || titleElement.textContent.trim();
+    const current = BoardPreferences.getTitle(status, fallback);
+    const newTitle = window.prompt('Informe o novo título da coluna:', current);
+
+    if (newTitle === null) {
+        return;
+    }
+
+    if (newTitle.trim().length === 0) {
+        BoardPreferences.setTitle(status, null);
+        showToast('Título da coluna restaurado.', 'info');
+    } else {
+        BoardPreferences.setTitle(status, newTitle);
+        showToast('Título da coluna atualizado!', 'success');
+    }
+
+    applyCustomTitles();
+}
+
+function initializeColumnSorting() {
+    const container = document.querySelector('.board-container');
+    if (!container) {
+        return;
+    }
+
+    if (BoardState.columnSortable && typeof BoardState.columnSortable.destroy === 'function') {
+        BoardState.columnSortable.destroy();
+    }
+
+    BoardState.columnSortable = new Sortable(container, {
+        animation: 300,
+        handle: '.column-header',
+        draggable: '.board-column',
+        ghostClass: 'sortable-ghost-column',
+        onStart: () => closeColumnMenu(),
+        onEnd: () => {
+            const order = getCurrentColumnOrder();
+            BoardPreferences.setOrder(order);
+            updateColumnIndicators();
+            showToast('Ordem das colunas atualizada!', 'info');
+        }
+    });
+}
+
+function openColumnMenu(button) {
+    if (!button) return;
+    const status = button.dataset.status;
+    if (!status) return;
+
+    closeColumnMenu();
+
+    const menu = document.createElement('div');
+    menu.className = 'column-menu';
+
+    const collapsed = BoardPreferences.isCollapsed(status);
+
+    menu.innerHTML = `
+        <button type="button" data-action="rename"><i class="bi bi-pencil-square"></i><span>Renomear coluna</span></button>
+        <button type="button" data-action="reset"><i class="bi bi-arrow-counterclockwise"></i><span>Restaurar nome</span></button>
+        <button type="button" data-action="toggle"><i class="bi ${collapsed ? 'bi-arrows-angle-expand' : 'bi-arrows-angle-contract'}"></i><span>${collapsed ? 'Expandir coluna' : 'Recolher coluna'}</span></button>
+    `;
+
+    document.body.appendChild(menu);
+
+    const rect = button.getBoundingClientRect();
+    menu.style.top = `${rect.bottom + window.scrollY + 8}px`;
+
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    const desiredLeft = rect.right + window.scrollX - menu.offsetWidth;
+    const minLeft = window.scrollX + 16;
+    const maxLeft = window.scrollX + viewportWidth - menu.offsetWidth - 16;
+    const clampedLeft = Math.min(Math.max(desiredLeft, minLeft), Math.max(maxLeft, minLeft));
+    menu.style.left = `${clampedLeft}px`;
+
+    ColumnMenuState.element = menu;
+    ColumnMenuState.anchor = button;
+
+    menu.querySelectorAll('button').forEach(item => {
+        item.addEventListener('click', () => {
+            const action = item.dataset.action;
+            if (action === 'rename') {
+                promptRenameColumn(status);
+            }
+            if (action === 'reset') {
+                BoardPreferences.setTitle(status, null);
+                applyCustomTitles();
+                showToast('Título restaurado.', 'info');
+            }
+            if (action === 'toggle') {
+                toggleColumnCollapse(status);
+            }
+            closeColumnMenu();
+        });
+    });
+}
+
+function closeColumnMenu() {
+    if (ColumnMenuState.element && ColumnMenuState.element.parentNode) {
+        ColumnMenuState.element.parentNode.removeChild(ColumnMenuState.element);
+    }
+    ColumnMenuState.element = null;
+    ColumnMenuState.anchor = null;
 }
 
 /**
@@ -166,6 +522,7 @@ function initializeEventListeners() {
         // Esc para fechar busca
         if (e.key === 'Escape') {
             clearSearch();
+            closeColumnMenu();
         }
     });
 }

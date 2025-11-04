@@ -1,5 +1,7 @@
 package com.necsus.necsusspring.service;
 
+import com.necsus.necsusspring.dto.EventBoardCardDto;
+import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.Event;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
@@ -10,6 +12,10 @@ import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +40,11 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
+    public List<Event> listAllWithRelations() {
+        return eventRepository.findAllByOrderByStatusAscDataVencimentoAscIdAsc();
+    }
+
+    @Transactional(readOnly = true)
     public List<Event> listByStatus(Status status) {
         return eventRepository.findByStatus(status);
     }
@@ -46,6 +57,42 @@ public class EventService {
     @Transactional(readOnly = true)
     public Optional<Event> findById(Long id) {
         return eventRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public EventBoardSnapshot getBoardSnapshot() {
+        List<Event> events = listAllWithRelations();
+        List<EventBoardCardDto> cards = events.stream()
+                .map(EventBoardCardDto::from)
+                .toList();
+
+        LinkedHashMap<String, List<EventBoardCardDto>> grouped = new LinkedHashMap<>();
+        for (Status status : Status.values()) {
+            grouped.put(status.name(), new ArrayList<>());
+        }
+
+        cards.forEach(card -> grouped
+                .computeIfAbsent(card.status(), key -> new ArrayList<>())
+                .add(card));
+
+        Comparator<EventBoardCardDto> comparator = Comparator
+                .comparing(EventBoardCardDto::dataVencimento, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(EventBoardCardDto::titulo, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+                .thenComparing(EventBoardCardDto::id, Comparator.nullsLast(Long::compareTo));
+
+        grouped.values().forEach(list -> list.sort(comparator));
+
+        LinkedHashMap<String, List<EventBoardCardDto>> immutableGrouped = new LinkedHashMap<>();
+        grouped.forEach((status, list) -> immutableGrouped.put(status, List.copyOf(list)));
+
+        LinkedHashMap<String, Long> counters = new LinkedHashMap<>();
+        immutableGrouped.forEach((status, list) -> counters.put(status, (long) list.size()));
+
+        return new EventBoardSnapshot(
+                List.copyOf(cards),
+                Collections.unmodifiableMap(immutableGrouped),
+                Collections.unmodifiableMap(counters)
+        );
     }
 
     @Transactional

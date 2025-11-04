@@ -50,7 +50,7 @@
                 <i class="bi bi-circle"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-value" th:text="${events.?[status.name() == 'A_FAZER'].size()}">0</span>
+                <span class="stat-value" th:text="${boardCounters['A_FAZER'] != null ? boardCounters['A_FAZER'] : 0}">0</span>
                 <span class="stat-label">A Fazer</span>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 <i class="bi bi-arrow-repeat"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-value" th:text="${events.?[status.name() == 'EM_ANDAMENTO'].size()}">0</span>
+                <span class="stat-value" th:text="${boardCounters['EM_ANDAMENTO'] != null ? boardCounters['EM_ANDAMENTO'] : 0}">0</span>
                 <span class="stat-label">Em Andamento</span>
             </div>
         </div>
@@ -70,7 +70,7 @@
                 <i class="bi bi-hourglass-split"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-value" th:text="${events.?[status.name() == 'AGUARDANDO'].size()}">0</span>
+                <span class="stat-value" th:text="${boardCounters['AGUARDANDO'] != null ? boardCounters['AGUARDANDO'] : 0}">0</span>
                 <span class="stat-label">Aguardando</span>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 <i class="bi bi-check-circle"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-value" th:text="${events.?[status.name() == 'CONCLUIDO'].size()}">0</span>
+                <span class="stat-value" th:text="${boardCounters['CONCLUIDO'] != null ? boardCounters['CONCLUIDO'] : 0}">0</span>
                 <span class="stat-label">Concluído</span>
             </div>
         </div>
@@ -90,7 +90,7 @@
                 <i class="bi bi-card-list"></i>
             </div>
             <div class="stat-info">
-                <span class="stat-value" th:text="${events.size()}">0</span>
+                <span class="stat-value" th:text="${totalEvents}">0</span>
                 <span class="stat-label">Total de Eventos</span>
             </div>
         </div>
@@ -105,75 +105,95 @@
     <!-- Board Kanban -->
     <div class="board-container">
         <!-- Coluna A FAZER -->
-        <div class="board-column">
-            <div class="column-header column-header-todo">
+        <div class="board-column" data-status="A_FAZER">
+            <div class="column-header column-header-todo" data-status="A_FAZER">
                 <div class="column-header-content">
-                    <div class="column-title">
+                    <div class="column-title" data-status="A_FAZER">
                         <i class="bi bi-circle"></i>
-                        <span>A Fazer</span>
+                        <span class="column-title-text"
+                              data-default-title="A Fazer"
+                              data-status="A_FAZER">A Fazer</span>
                     </div>
-                    <span class="column-badge" th:text="${events.?[status.name() == 'A_FAZER'].size()}">0</span>
+                    <div class="column-header-tools">
+                        <span class="column-badge"
+                              th:text="${boardCounters['A_FAZER'] != null ? boardCounters['A_FAZER'] : 0}">0</span>
+                        <button type="button"
+                                class="column-btn column-btn--collapse"
+                                title="Recolher/expandir coluna"
+                                data-status="A_FAZER">
+                            <i class="bi bi-chevron-up"></i>
+                        </button>
+                        <button type="button"
+                                class="column-btn column-btn--options"
+                                title="Personalizar coluna"
+                                data-status="A_FAZER">
+                            <i class="bi bi-sliders"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="column-progress">
                     <div class="progress-bar"></div>
                 </div>
             </div>
             <div class="column-content" id="column-A_FAZER" data-status="A_FAZER">
-                <div class="empty-column" th:if="${events.?[status.name() == 'A_FAZER'].isEmpty()}">
+                <div class="empty-column" th:if="${#lists.isEmpty(eventsByStatus['A_FAZER'])}">
                     <i class="bi bi-inbox"></i>
                     <p>Nenhum evento nesta coluna</p>
                 </div>
-                <div th:each="event : ${events}" th:if="${event.status.name() == 'A_FAZER'}">
+                <div th:each="event : ${eventsByStatus['A_FAZER']}">
                     <div class="event-card"
-                         th:attr="data-event-id=${event.id},
-                                  data-title=${event.titulo},
-                                  data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plaque}">
-                        <!-- Priority Indicator -->
-                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
+                         th:attr="data-event-id=${event.id()},
+                                  data-title=${event.titulo()},
+                                  data-partner=${event.partnerName()},
+                                  data-plate=${event.vehiclePlate()},
+                                  data-status=${event.status()},
+                                  data-partner-id=${event.partnerId()},
+                                  data-vehicle-id=${event.vehicleId()}">
+                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor()}"></div>
 
                         <div class="card-header-custom">
-                            <h6 class="card-title" th:text="${event.titulo}">Título</h6>
+                            <h6 class="card-title" th:text="${event.titulo()}">Título</h6>
                             <span class="badge priority-badge"
-                                  th:classappend="${'badge-' + event.prioridadeColor}"
-                                  th:text="${event.prioridadeFormatted}"
-                                  th:if="${event.prioridade != null}">
+                                  th:if="${event.prioridade() != null}"
+                                  th:classappend="${'badge-' + event.prioridadeColor()}"
+                                  th:text="${event.prioridadeLabel()}">
                             </span>
                         </div>
 
                         <div class="card-body-custom">
-                            <p class="card-description" th:text="${event.descricao ?: 'Sem descrição'}">Descrição</p>
+                            <p class="card-description"
+                               th:text="${event.descricao() != null ? event.descricao() : 'Sem descrição'}">Descrição</p>
 
-                            <!-- Event Type & Involvement -->
-                            <div class="card-tags" th:if="${event.motivo != null or event.envolvimento != null}">
-                                <span class="tag tag-motivo" th:if="${event.motivo != null}">
+                            <div class="card-tags"
+                                 th:if="${event.motivoLabel() != null or event.envolvimentoLabel() != null}">
+                                <span class="tag tag-motivo" th:if="${event.motivoLabel() != null}">
                                     <i class="bi bi-exclamation-triangle"></i>
-                                    <span th:text="${event.motivo.toString()}">Motivo</span>
+                                    <span th:text="${event.motivoLabel()}">Motivo</span>
                                 </span>
-                                <span class="tag tag-envolvimento" th:if="${event.envolvimento != null}">
+                                <span class="tag tag-envolvimento" th:if="${event.envolvimentoLabel() != null}">
                                     <i class="bi bi-person-badge"></i>
-                                    <span th:text="${event.envolvimento.toString()}">Envolvimento</span>
+                                    <span th:text="${event.envolvimentoLabel()}">Envolvimento</span>
                                 </span>
                             </div>
 
                             <div class="card-info">
                                 <div class="info-item">
                                     <i class="bi bi-person-circle"></i>
-                                    <span th:text="${event.partner.name}">Associado</span>
+                                    <span th:text="${event.partnerName() != null ? event.partnerName() : 'Sem associado'}">Associado</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plaque}">Placa</span>
+                                    <span th:text="${event.vehiclePlate() != null ? event.vehiclePlate() : 'Sem placa'}">Placa</span>
                                 </div>
                             </div>
 
                             <div class="card-footer-custom">
                                 <div class="card-date">
                                     <i class="bi bi-calendar-event"></i>
-                                    <span th:text="${event.dataVencimento != null ? #temporals.format(event.dataVencimento, 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
+                                    <span th:text="${event.dataVencimento() != null ? #temporals.format(event.dataVencimento(), 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
                                 </div>
                                 <div class="card-actions">
-                                    <a th:href="@{/events/edit/{id}(id=${event.id})}"
+                                    <a th:href="@{/events/edit/{id}(id=${event.id()})}"
                                        class="btn-icon"
                                        title="Editar">
                                         <i class="bi bi-pencil-square"></i>
@@ -187,73 +207,95 @@
         </div>
 
         <!-- Coluna EM ANDAMENTO -->
-        <div class="board-column">
-            <div class="column-header column-header-progress">
+        <div class="board-column" data-status="EM_ANDAMENTO">
+            <div class="column-header column-header-progress" data-status="EM_ANDAMENTO">
                 <div class="column-header-content">
-                    <div class="column-title">
+                    <div class="column-title" data-status="EM_ANDAMENTO">
                         <i class="bi bi-arrow-repeat"></i>
-                        <span>Em Andamento</span>
+                        <span class="column-title-text"
+                              data-default-title="Em Andamento"
+                              data-status="EM_ANDAMENTO">Em Andamento</span>
                     </div>
-                    <span class="column-badge" th:text="${events.?[status.name() == 'EM_ANDAMENTO'].size()}">0</span>
+                    <div class="column-header-tools">
+                        <span class="column-badge"
+                              th:text="${boardCounters['EM_ANDAMENTO'] != null ? boardCounters['EM_ANDAMENTO'] : 0}">0</span>
+                        <button type="button"
+                                class="column-btn column-btn--collapse"
+                                title="Recolher/expandir coluna"
+                                data-status="EM_ANDAMENTO">
+                            <i class="bi bi-chevron-up"></i>
+                        </button>
+                        <button type="button"
+                                class="column-btn column-btn--options"
+                                title="Personalizar coluna"
+                                data-status="EM_ANDAMENTO">
+                            <i class="bi bi-sliders"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="column-progress">
                     <div class="progress-bar"></div>
                 </div>
             </div>
             <div class="column-content" id="column-EM_ANDAMENTO" data-status="EM_ANDAMENTO">
-                <div class="empty-column" th:if="${events.?[status.name() == 'EM_ANDAMENTO'].isEmpty()}">
+                <div class="empty-column" th:if="${#lists.isEmpty(eventsByStatus['EM_ANDAMENTO'])}">
                     <i class="bi bi-inbox"></i>
                     <p>Nenhum evento nesta coluna</p>
                 </div>
-                <div th:each="event : ${events}" th:if="${event.status.name() == 'EM_ANDAMENTO'}">
+                <div th:each="event : ${eventsByStatus['EM_ANDAMENTO']}">
                     <div class="event-card"
-                         th:attr="data-event-id=${event.id},
-                                  data-title=${event.titulo},
-                                  data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plaque}">
-                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
+                         th:attr="data-event-id=${event.id()},
+                                  data-title=${event.titulo()},
+                                  data-partner=${event.partnerName()},
+                                  data-plate=${event.vehiclePlate()},
+                                  data-status=${event.status()},
+                                  data-partner-id=${event.partnerId()},
+                                  data-vehicle-id=${event.vehicleId()}">
+                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor()}"></div>
 
                         <div class="card-header-custom">
-                            <h6 class="card-title" th:text="${event.titulo}">Título</h6>
+                            <h6 class="card-title" th:text="${event.titulo()}">Título</h6>
                             <span class="badge priority-badge"
-                                  th:classappend="${'badge-' + event.prioridadeColor}"
-                                  th:text="${event.prioridadeFormatted}"
-                                  th:if="${event.prioridade != null}">
+                                  th:if="${event.prioridade() != null}"
+                                  th:classappend="${'badge-' + event.prioridadeColor()}"
+                                  th:text="${event.prioridadeLabel()}">
                             </span>
                         </div>
 
                         <div class="card-body-custom">
-                            <p class="card-description" th:text="${event.descricao ?: 'Sem descrição'}">Descrição</p>
+                            <p class="card-description"
+                               th:text="${event.descricao() != null ? event.descricao() : 'Sem descrição'}">Descrição</p>
 
-                            <div class="card-tags" th:if="${event.motivo != null or event.envolvimento != null}">
-                                <span class="tag tag-motivo" th:if="${event.motivo != null}">
+                            <div class="card-tags"
+                                 th:if="${event.motivoLabel() != null or event.envolvimentoLabel() != null}">
+                                <span class="tag tag-motivo" th:if="${event.motivoLabel() != null}">
                                     <i class="bi bi-exclamation-triangle"></i>
-                                    <span th:text="${event.motivo.toString()}">Motivo</span>
+                                    <span th:text="${event.motivoLabel()}">Motivo</span>
                                 </span>
-                                <span class="tag tag-envolvimento" th:if="${event.envolvimento != null}">
+                                <span class="tag tag-envolvimento" th:if="${event.envolvimentoLabel() != null}">
                                     <i class="bi bi-person-badge"></i>
-                                    <span th:text="${event.envolvimento.toString()}">Envolvimento</span>
+                                    <span th:text="${event.envolvimentoLabel()}">Envolvimento</span>
                                 </span>
                             </div>
 
                             <div class="card-info">
                                 <div class="info-item">
                                     <i class="bi bi-person-circle"></i>
-                                    <span th:text="${event.partner.name}">Associado</span>
+                                    <span th:text="${event.partnerName() != null ? event.partnerName() : 'Sem associado'}">Associado</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plaque}">Placa</span>
+                                    <span th:text="${event.vehiclePlate() != null ? event.vehiclePlate() : 'Sem placa'}">Placa</span>
                                 </div>
                             </div>
 
                             <div class="card-footer-custom">
                                 <div class="card-date">
                                     <i class="bi bi-calendar-event"></i>
-                                    <span th:text="${event.dataVencimento != null ? #temporals.format(event.dataVencimento, 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
+                                    <span th:text="${event.dataVencimento() != null ? #temporals.format(event.dataVencimento(), 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
                                 </div>
                                 <div class="card-actions">
-                                    <a th:href="@{/events/edit/{id}(id=${event.id})}"
+                                    <a th:href="@{/events/edit/{id}(id=${event.id()})}"
                                        class="btn-icon"
                                        title="Editar">
                                         <i class="bi bi-pencil-square"></i>
@@ -267,73 +309,95 @@
         </div>
 
         <!-- Coluna AGUARDANDO -->
-        <div class="board-column">
-            <div class="column-header column-header-waiting">
+        <div class="board-column" data-status="AGUARDANDO">
+            <div class="column-header column-header-waiting" data-status="AGUARDANDO">
                 <div class="column-header-content">
-                    <div class="column-title">
+                    <div class="column-title" data-status="AGUARDANDO">
                         <i class="bi bi-hourglass-split"></i>
-                        <span>Aguardando</span>
+                        <span class="column-title-text"
+                              data-default-title="Aguardando"
+                              data-status="AGUARDANDO">Aguardando</span>
                     </div>
-                    <span class="column-badge" th:text="${events.?[status.name() == 'AGUARDANDO'].size()}">0</span>
+                    <div class="column-header-tools">
+                        <span class="column-badge"
+                              th:text="${boardCounters['AGUARDANDO'] != null ? boardCounters['AGUARDANDO'] : 0}">0</span>
+                        <button type="button"
+                                class="column-btn column-btn--collapse"
+                                title="Recolher/expandir coluna"
+                                data-status="AGUARDANDO">
+                            <i class="bi bi-chevron-up"></i>
+                        </button>
+                        <button type="button"
+                                class="column-btn column-btn--options"
+                                title="Personalizar coluna"
+                                data-status="AGUARDANDO">
+                            <i class="bi bi-sliders"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="column-progress">
                     <div class="progress-bar"></div>
                 </div>
             </div>
             <div class="column-content" id="column-AGUARDANDO" data-status="AGUARDANDO">
-                <div class="empty-column" th:if="${events.?[status.name() == 'AGUARDANDO'].isEmpty()}">
+                <div class="empty-column" th:if="${#lists.isEmpty(eventsByStatus['AGUARDANDO'])}">
                     <i class="bi bi-inbox"></i>
                     <p>Nenhum evento nesta coluna</p>
                 </div>
-                <div th:each="event : ${events}" th:if="${event.status.name() == 'AGUARDANDO'}">
+                <div th:each="event : ${eventsByStatus['AGUARDANDO']}">
                     <div class="event-card"
-                         th:attr="data-event-id=${event.id},
-                                  data-title=${event.titulo},
-                                  data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plaque}">
-                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
+                         th:attr="data-event-id=${event.id()},
+                                  data-title=${event.titulo()},
+                                  data-partner=${event.partnerName()},
+                                  data-plate=${event.vehiclePlate()},
+                                  data-status=${event.status()},
+                                  data-partner-id=${event.partnerId()},
+                                  data-vehicle-id=${event.vehicleId()}">
+                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor()}"></div>
 
                         <div class="card-header-custom">
-                            <h6 class="card-title" th:text="${event.titulo}">Título</h6>
+                            <h6 class="card-title" th:text="${event.titulo()}">Título</h6>
                             <span class="badge priority-badge"
-                                  th:classappend="${'badge-' + event.prioridadeColor}"
-                                  th:text="${event.prioridadeFormatted}"
-                                  th:if="${event.prioridade != null}">
+                                  th:if="${event.prioridade() != null}"
+                                  th:classappend="${'badge-' + event.prioridadeColor()}"
+                                  th:text="${event.prioridadeLabel()}">
                             </span>
                         </div>
 
                         <div class="card-body-custom">
-                            <p class="card-description" th:text="${event.descricao ?: 'Sem descrição'}">Descrição</p>
+                            <p class="card-description"
+                               th:text="${event.descricao() != null ? event.descricao() : 'Sem descrição'}">Descrição</p>
 
-                            <div class="card-tags" th:if="${event.motivo != null or event.envolvimento != null}">
-                                <span class="tag tag-motivo" th:if="${event.motivo != null}">
+                            <div class="card-tags"
+                                 th:if="${event.motivoLabel() != null or event.envolvimentoLabel() != null}">
+                                <span class="tag tag-motivo" th:if="${event.motivoLabel() != null}">
                                     <i class="bi bi-exclamation-triangle"></i>
-                                    <span th:text="${event.motivo.toString()}">Motivo</span>
+                                    <span th:text="${event.motivoLabel()}">Motivo</span>
                                 </span>
-                                <span class="tag tag-envolvimento" th:if="${event.envolvimento != null}">
+                                <span class="tag tag-envolvimento" th:if="${event.envolvimentoLabel() != null}">
                                     <i class="bi bi-person-badge"></i>
-                                    <span th:text="${event.envolvimento.toString()}">Envolvimento</span>
+                                    <span th:text="${event.envolvimentoLabel()}">Envolvimento</span>
                                 </span>
                             </div>
 
                             <div class="card-info">
                                 <div class="info-item">
                                     <i class="bi bi-person-circle"></i>
-                                    <span th:text="${event.partner.name}">Associado</span>
+                                    <span th:text="${event.partnerName() != null ? event.partnerName() : 'Sem associado'}">Associado</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plaque}">Placa</span>
+                                    <span th:text="${event.vehiclePlate() != null ? event.vehiclePlate() : 'Sem placa'}">Placa</span>
                                 </div>
                             </div>
 
                             <div class="card-footer-custom">
                                 <div class="card-date">
                                     <i class="bi bi-calendar-event"></i>
-                                    <span th:text="${event.dataVencimento != null ? #temporals.format(event.dataVencimento, 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
+                                    <span th:text="${event.dataVencimento() != null ? #temporals.format(event.dataVencimento(), 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
                                 </div>
                                 <div class="card-actions">
-                                    <a th:href="@{/events/edit/{id}(id=${event.id})}"
+                                    <a th:href="@{/events/edit/{id}(id=${event.id()})}"
                                        class="btn-icon"
                                        title="Editar">
                                         <i class="bi bi-pencil-square"></i>
@@ -347,73 +411,95 @@
         </div>
 
         <!-- Coluna CONCLUÍDO -->
-        <div class="board-column">
-            <div class="column-header column-header-done">
+        <div class="board-column" data-status="CONCLUIDO">
+            <div class="column-header column-header-done" data-status="CONCLUIDO">
                 <div class="column-header-content">
-                    <div class="column-title">
-                        <i class="bi bi-check-circle-fill"></i>
-                        <span>Concluído</span>
+                    <div class="column-title" data-status="CONCLUIDO">
+                        <i class="bi bi-check-circle"></i>
+                        <span class="column-title-text"
+                              data-default-title="Concluído"
+                              data-status="CONCLUIDO">Concluído</span>
                     </div>
-                    <span class="column-badge" th:text="${events.?[status.name() == 'CONCLUIDO'].size()}">0</span>
+                    <div class="column-header-tools">
+                        <span class="column-badge"
+                              th:text="${boardCounters['CONCLUIDO'] != null ? boardCounters['CONCLUIDO'] : 0}">0</span>
+                        <button type="button"
+                                class="column-btn column-btn--collapse"
+                                title="Recolher/expandir coluna"
+                                data-status="CONCLUIDO">
+                            <i class="bi bi-chevron-up"></i>
+                        </button>
+                        <button type="button"
+                                class="column-btn column-btn--options"
+                                title="Personalizar coluna"
+                                data-status="CONCLUIDO">
+                            <i class="bi bi-sliders"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="column-progress">
                     <div class="progress-bar"></div>
                 </div>
             </div>
             <div class="column-content" id="column-CONCLUIDO" data-status="CONCLUIDO">
-                <div class="empty-column" th:if="${events.?[status.name() == 'CONCLUIDO'].isEmpty()}">
+                <div class="empty-column" th:if="${#lists.isEmpty(eventsByStatus['CONCLUIDO'])}">
                     <i class="bi bi-inbox"></i>
                     <p>Nenhum evento nesta coluna</p>
                 </div>
-                <div th:each="event : ${events}" th:if="${event.status.name() == 'CONCLUIDO'}">
+                <div th:each="event : ${eventsByStatus['CONCLUIDO']}">
                     <div class="event-card event-card-completed"
-                         th:attr="data-event-id=${event.id},
-                                  data-title=${event.titulo},
-                                  data-partner=${event.partner.name},
-                                  data-plate=${event.vehicle.plate}">
-                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor}"></div>
+                         th:attr="data-event-id=${event.id()},
+                                  data-title=${event.titulo()},
+                                  data-partner=${event.partnerName()},
+                                  data-plate=${event.vehiclePlate()},
+                                  data-status=${event.status()},
+                                  data-partner-id=${event.partnerId()},
+                                  data-vehicle-id=${event.vehicleId()}">
+                        <div class="priority-indicator" th:classappend="${'priority-' + event.prioridadeColor()}"></div>
 
                         <div class="card-header-custom">
-                            <h6 class="card-title" th:text="${event.titulo}">Título</h6>
+                            <h6 class="card-title" th:text="${event.titulo()}">Título</h6>
                             <span class="badge priority-badge"
-                                  th:classappend="${'badge-' + event.prioridadeColor}"
-                                  th:text="${event.prioridadeFormatted}"
-                                  th:if="${event.prioridade != null}">
+                                  th:if="${event.prioridade() != null}"
+                                  th:classappend="${'badge-' + event.prioridadeColor()}"
+                                  th:text="${event.prioridadeLabel()}">
                             </span>
                         </div>
 
                         <div class="card-body-custom">
-                            <p class="card-description" th:text="${event.descricao ?: 'Sem descrição'}">Descrição</p>
+                            <p class="card-description"
+                               th:text="${event.descricao() != null ? event.descricao() : 'Sem descrição'}">Descrição</p>
 
-                            <div class="card-tags" th:if="${event.motivo != null or event.envolvimento != null}">
-                                <span class="tag tag-motivo" th:if="${event.motivo != null}">
+                            <div class="card-tags"
+                                 th:if="${event.motivoLabel() != null or event.envolvimentoLabel() != null}">
+                                <span class="tag tag-motivo" th:if="${event.motivoLabel() != null}">
                                     <i class="bi bi-exclamation-triangle"></i>
-                                    <span th:text="${event.motivo.toString()}">Motivo</span>
+                                    <span th:text="${event.motivoLabel()}">Motivo</span>
                                 </span>
-                                <span class="tag tag-envolvimento" th:if="${event.envolvimento != null}">
+                                <span class="tag tag-envolvimento" th:if="${event.envolvimentoLabel() != null}">
                                     <i class="bi bi-person-badge"></i>
-                                    <span th:text="${event.envolvimento.toString()}">Envolvimento</span>
+                                    <span th:text="${event.envolvimentoLabel()}">Envolvimento</span>
                                 </span>
                             </div>
 
                             <div class="card-info">
                                 <div class="info-item">
                                     <i class="bi bi-person-circle"></i>
-                                    <span th:text="${event.partner.name}">Associado</span>
+                                    <span th:text="${event.partnerName() != null ? event.partnerName() : 'Sem associado'}">Associado</span>
                                 </div>
                                 <div class="info-item">
                                     <i class="bi bi-car-front-fill"></i>
-                                    <span th:text="${event.vehicle.plate}">Placa</span>
+                                    <span th:text="${event.vehiclePlate() != null ? event.vehiclePlate() : 'Sem placa'}">Placa</span>
                                 </div>
                             </div>
 
                             <div class="card-footer-custom">
                                 <div class="card-date">
                                     <i class="bi bi-calendar-check"></i>
-                                    <span th:text="${event.dataVencimento != null ? #temporals.format(event.dataVencimento, 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
+                                    <span th:text="${event.dataVencimento() != null ? #temporals.format(event.dataVencimento(), 'dd/MM/yyyy') : 'Sem prazo'}">00/00/0000</span>
                                 </div>
                                 <div class="card-actions">
-                                    <a th:href="@{/events/edit/{id}(id=${event.id})}"
+                                    <a th:href="@{/events/edit/{id}(id=${event.id()})}"
                                        class="btn-icon"
                                        title="Editar">
                                         <i class="bi bi-pencil-square"></i>
@@ -429,6 +515,15 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script th:inline="javascript">
+    window.BOARD_BOOTSTRAP = Object.assign({}, window.BOARD_BOOTSTRAP, {
+        cards: /*[[${boardCards}]]*/ [],
+        counters: /*[[${boardCounters}]]*/ {},
+        grouped: /*[[${eventsByStatus}]]*/ {},
+        statuses: /*[[${statusMetadata}]]*/ [],
+        total: [[${totalEvents}]]
+    });
+</script>
 <script th:src="@{/js/board-eventos.js}"></script>
 </body>
 </html>
