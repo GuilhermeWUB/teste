@@ -1,0 +1,39 @@
+<section th:fragment="content">
+    <section class="kanban-section mt-4">
+      <h2 class="mb-4">Eventos – Planejamento e Execução</h2>
+      <div class="kanban-board">
+        <div class="kanban-column" data-status="A_FAZER">
+          <div class="column-header">
+            <h3>A fazer</h3>
+            <button class="btn btn-sm btn-add">+ Novo(a) item</button>
+          </div>
+          <div class="tasks-container" id="column-A_FAZER"></div>
+        </div>
+        <div class="kanban-column" data-status="EM_ANDAMENTO">
+          <div class="column-header">
+            <h3>Em andamento</h3>
+            <button class="btn btn-sm btn-add">+ Novo(a) item</button>
+          </div>
+          <div class="tasks-container" id="column-EM_ANDAMENTO"></div>
+        </div>
+        <div class="kanban-column" data-status="AGUARDANDO">
+          <div class="column-header">
+            <h3>Aguardando</h3>
+            <button class="btn btn-sm btn-add">+ Novo(a) item</button>
+          </div>
+          <div class="tasks-container" id="column-AGUARDANDO"></div>
+        </div>
+        <div class="kanban-column" data-status="CONCLUIDO">
+          <div class="column-header">
+            <h3>Concluídos</h3>
+            <button class="btn btn-sm btn-add">+ Novo(a) item</button>
+          </div>
+          <div class="tasks-container" id="column-CONCLUIDO"></div>
+        </div>
+      </div>
+    </section>
+  
+    <link rel="stylesheet" th:href="@{/css/kanban-eventos.css}">
+    <script th:src="@{/js/kanban_eventos_spa.js}" defer></script>
+  </section>
+  
