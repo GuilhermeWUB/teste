@@ -120,8 +120,10 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
                         </div>
                         <div class="col-md-2">
-                            <label for="horaAconteceu" class="form-label">Hora</label>
-                            <input type="time" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}">
+                            <label for="horaAconteceu" class="form-label">Hora (HHMM)</label>
+                            <input type="number" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}"
+                                   min="0" max="2359" step="1" placeholder="Ex: 0900">
+                            <small class="text-muted">Formato: 0900, 1430</small>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
                         </div>
                         <div class="col-md-4">
@@ -130,8 +132,10 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
                         </div>
                         <div class="col-md-2">
-                            <label for="horaComunicacao" class="form-label">Hora</label>
-                            <input type="time" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}">
+                            <label for="horaComunicacao" class="form-label">Hora (HHMM)</label>
+                            <input type="number" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}"
+                                   min="0" max="2359" step="1" placeholder="Ex: 1430">
+                            <small class="text-muted">Formato: 0900, 1430</small>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
                         </div>
                     </div>
