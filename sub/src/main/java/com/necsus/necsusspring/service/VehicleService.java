@@ -7,6 +7,10 @@ import com.necsus.necsusspring.repository.EventRepository;
 import com.necsus.necsusspring.repository.PaymentRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +44,38 @@ public class VehicleService {
                 : vehicleRepository.findAll();
         vehicles.forEach(this::ensurePaymentLoaded);
         return vehicles;
+    }
+
+    /**
+     * Retorna veículos com paginação.
+     * @param partnerId ID do associado (opcional)
+     * @param page Número da página (começa em 0)
+     * @param size Quantidade de itens por página (máximo 30)
+     * @return Page contendo os veículos
+     */
+    @Transactional(readOnly = true)
+    public Page<Vehicle> listAllPaginated(Long partnerId, int page, int size) {
+        // Limita o tamanho máximo a 30 itens por página
+        size = Math.min(size, 30);
+        size = Math.max(size, 1); // Mínimo 1 item
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("plaque").ascending());
+
+        Page<Vehicle> vehiclePage;
+        if (partnerId != null) {
+            // Precisa criar método no repository ou usar Specification
+            vehiclePage = vehicleRepository.findAll(
+                    (root, query, cb) -> cb.equal(root.get("partnerId"), partnerId),
+                    pageable
+            );
+        } else {
+            vehiclePage = vehicleRepository.findAll(pageable);
+        }
+
+        // Carrega payment para cada veículo
+        vehiclePage.forEach(this::ensurePaymentLoaded);
+
+        return vehiclePage;
     }
 
     @Transactional(readOnly = true)

@@ -7,6 +7,10 @@ import com.necsus.necsusspring.repository.AddressRepository;
 import com.necsus.necsusspring.repository.AdhesionRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +31,21 @@ public class PartnerService {
 
     public List<Partner> getAllPartners() {
         return partnerRepository.findAll();
+    }
+
+    /**
+     * Retorna associados com paginação.
+     * @param page Número da página (começa em 0)
+     * @param size Quantidade de itens por página (máximo 30)
+     * @return Page contendo os associados
+     */
+    public Page<Partner> getAllPartnersPaginated(int page, int size) {
+        // Limita o tamanho máximo a 30 itens por página
+        size = Math.min(size, 30);
+        size = Math.max(size, 1); // Mínimo 1 item
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return partnerRepository.findAll(pageable);
     }
 
     public Optional<Partner> getPartnerById(Long id) {

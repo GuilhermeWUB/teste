@@ -70,15 +70,31 @@ public class VehicleController {
     }
 
     @GetMapping
-    public String listVehicles(@RequestParam(value = "partnerId", required = false) Long partnerId,
-                               Model model) {
-        List<Vehicle> vehicles = vehicleService.listAll(partnerId);
-        model.addAttribute("vehicles", vehicles);
+    public String listVehicles(
+            @RequestParam(value = "partnerId", required = false) Long partnerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        // Limita o tamanho entre 1 e 30
+        size = Math.min(Math.max(size, 1), 30);
+
+        org.springframework.data.domain.Page<Vehicle> vehiclePage = vehicleService.listAllPaginated(partnerId, page, size);
+
+        model.addAttribute("vehicles", vehiclePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", vehiclePage.getTotalPages());
+        model.addAttribute("totalItems", vehiclePage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("hasNext", vehiclePage.hasNext());
+        model.addAttribute("hasPrevious", vehiclePage.hasPrevious());
         model.addAttribute("partnerId", partnerId);
+
         if (partnerId != null) {
             partnerService.getPartnerById(partnerId)
                     .ifPresent(partner -> model.addAttribute("selectedPartner", partner));
         }
+
         return "lista_veiculos";
     }
 
