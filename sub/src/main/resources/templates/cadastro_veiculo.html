@@ -79,7 +79,14 @@
                     }
 
                     const data = await response.json();
-                    console.log('✅ Dados recebidos:', data);
+                    console.log('✅ Dados recebidos da API:', data);
+                    console.log('📋 Detalhamento dos campos:');
+                    console.log('  - maker (Montadora):', data.maker);
+                    console.log('  - model (Modelo):', data.model);
+                    console.log('  - fipe_value (Valor FIPE):', data.fipe_value);
+                    console.log('  - year_mod (Ano):', data.year_mod);
+                    console.log('  - tipo_combustivel (Combustível):', data.tipo_combustivel);
+                    console.log('  - color (Cor):', data.color);
 
                     // Preencher campos
                     preencherCampo("maker", data.maker);
@@ -243,9 +250,16 @@
              */
             function preencherCampo(fieldId, valor) {
                 const campo = document.getElementById(fieldId);
-                if (campo && valor) {
+                if (!campo) {
+                    console.warn(`⚠️ Campo "${fieldId}" não encontrado no DOM`);
+                    return;
+                }
+
+                if (valor !== null && valor !== undefined && valor !== '') {
                     campo.value = valor;
-                    console.log(`📝 Campo "${fieldId}" preenchido:`, valor);
+                    console.log(`✅ Campo "${fieldId}" preenchido com:`, valor);
+                } else {
+                    console.log(`⚠️ Campo "${fieldId}" - valor vazio/null recebido da API:`, valor);
                 }
             }
 
