@@ -7,6 +7,8 @@ import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.model.Status;
 import com.necsus.necsusspring.model.Prioridade;
+import com.necsus.necsusspring.model.Motivo;
+import com.necsus.necsusspring.model.Envolvimento;
 import com.necsus.necsusspring.repository.EventRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
