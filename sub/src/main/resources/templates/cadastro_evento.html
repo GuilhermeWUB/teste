@@ -101,17 +101,14 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('partner')}" th:errors="*{partner}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label for="vehiclePlate" class="form-label">Veículo (Placa) *</label>
-                            <input type="text" id="vehiclePlate" class="form-control" list="vehicleOptions" placeholder="Digite ou selecione a placa..." autocomplete="off" required />
-                            <datalist id="vehicleOptions">
+                            <label for="vehicle" class="form-label">Veículo (Placa) *</label>
+                            <select class="form-select" id="vehicle" th:field="*{vehicle.id}" required>
+                                <option value="">Selecione um veículo...</option>
                                 <option th:each="vehicle : ${vehicles}"
-                                        th:value="${vehicle.plaque}"
-                                        th:data-id="${vehicle.id}"
+                                        th:value="${vehicle.id}"
                                         th:text="${vehicle.plaque + ' - ' + vehicle.maker + ' ' + vehicle.model}"></option>
-                            </datalist>
-                            <input type="hidden" id="vehicleId" th:field="*{vehicle.id}" />
-                            <input type="hidden" id="vehiclePlateHidden" th:field="*{vehicle.plaque}" />
-                            <div class="invalid-feedback d-block" id="vehicleError" style="display:none">Selecione uma placa válida da lista.</div>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('vehicle')}" th:errors="*{vehicle}"></div>
                         </div>
                     </div>
 
@@ -206,69 +203,51 @@
         'use strict';
 
         const partnerSelect = document.getElementById('partner');
-        const vehiclePlateInput = document.getElementById('vehiclePlate');
-        const vehicleIdHidden = document.getElementById('vehicleId');
-        const vehiclePlateHidden = document.getElementById('vehiclePlateHidden');
-        const vehicleOptions = document.getElementById('vehicleOptions');
-        const vehicleError = document.getElementById('vehicleError');
-        const eventForm = document.getElementById('eventForm');
+        const vehicleSelect = document.getElementById('vehicle');
 
-        if (!partnerSelect || !vehiclePlateInput || !vehicleOptions) {
+        if (!partnerSelect || !vehicleSelect) {
             console.error('Campos de associado/veículo não encontrados.');
             return;
         }
 
         function updateVehicleOptions(vehicles) {
-            vehicleOptions.innerHTML = '';
+            // Guarda o valor selecionado, se houver
+            const selectedValue = vehicleSelect.value;
+
+            // Limpa as opções atuais
+            vehicleSelect.innerHTML = '';
+
+            // Adiciona a opção padrão
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Selecione um veículo...';
+            vehicleSelect.appendChild(defaultOption);
+
+            // Adiciona os veículos da lista
             if (Array.isArray(vehicles)) {
                 vehicles.forEach(v => {
                     const opt = document.createElement('option');
-                    opt.value = (v.plaque || '').toUpperCase();
+                    opt.value = v.id;
                     opt.textContent = `${v.plaque} - ${v.maker ?? ''} ${v.model ?? ''}`.trim();
-                    opt.dataset.id = v.id;
-                    vehicleOptions.appendChild(opt);
+                    vehicleSelect.appendChild(opt);
                 });
             }
-        }
 
-        function syncVehicleIdFromPlate() {
-            const plate = (vehiclePlateInput.value || '').toUpperCase().trim();
-            let matchedId = '';
-            // Procurar o ID correspondente na datalist
-            Array.from(vehicleOptions.options).forEach(opt => {
-                if ((opt.value || '').toUpperCase() === plate) {
-                    matchedId = opt.dataset.id || '';
-                }
-            });
-            vehicleIdHidden.value = matchedId;
-            vehiclePlateHidden.value = plate;
-
-            // Feedback visual para o usuário
-            if (plate && !matchedId) {
-                vehicleError.style.display = 'block'; // Mostra erro se placa digitada não existe na lista
-                vehiclePlateInput.classList.add('is-invalid');
-            } else {
-                vehicleError.style.display = 'none';
-                vehiclePlateInput.classList.remove('is-invalid');
-            }
+            // Restaura o valor selecionado, se ainda existir na nova lista
+            vehicleSelect.value = selectedValue;
         }
 
         partnerSelect.addEventListener('change', function () {
             const partnerId = this.value;
 
-            // Limpa o campo de placa ao trocar de associado
-            vehiclePlateInput.value = '';
-            vehicleIdHidden.value = '';
-            vehiclePlateHidden.value = '';
+            // Limpa as opções de veículo ao trocar de associado
+            updateVehicleOptions([]);
 
             if (!partnerId) {
-                updateVehicleOptions([]);
-                syncVehicleIdFromPlate(); // Limpa a validação
                 return;
             }
 
             const url = `/events/api/vehicles/${partnerId}`;
-            // Correção na obtenção do token CSRF
             const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
             const csrfHeader = "X-CSRF-TOKEN";
 
@@ -288,54 +267,16 @@
                 })
                 .then(data => {
                     updateVehicleOptions(data);
-                    syncVehicleIdFromPlate(); // Sincroniza caso o campo já tenha valor
                 })
                 .catch(error => {
                     console.error('Erro ao buscar veículos:', error);
                     updateVehicleOptions([]);
-                    syncVehicleIdFromPlate();
                 });
         });
-
-        // Eventos para sincronizar a placa com o ID
-        vehiclePlateInput.addEventListener('input', syncVehicleIdFromPlate);
-        vehiclePlateInput.addEventListener('change', syncVehicleIdFromPlate);
-        vehiclePlateInput.addEventListener('blur', syncVehicleIdFromPlate);
-
-        // Validação final no momento do submit
-        if (eventForm) {
-            eventForm.addEventListener('submit', function(e) {
-                // Garante que a sincronia foi feita antes de submeter
-                syncVehicleIdFromPlate();
-
-                const hasPartnerId = (partnerSelect.value || '').trim().length > 0;
-                if (!hasPartnerId) {
-                    e.preventDefault();
-                    partnerSelect.focus(); // Foca no campo do associado se não for selecionado
-                    return;
-                }
-
-                // A placa deve ter algum valor E um ID correspondente
-                const hasVehicleId = (vehicleIdHidden.value || '').trim().length > 0;
-                const hasPlateValue = (vehiclePlateInput.value || '').trim().length > 0;
-
-                if (!hasPlateValue || !hasVehicleId) {
-                    e.preventDefault(); // Bloqueia o envio do formulário
-                    vehicleError.style.display = 'block';
-                    vehiclePlateInput.classList.add('is-invalid');
-                    vehiclePlateInput.focus(); // Foca no campo da placa para correção
-                } else {
-                    vehicleError.style.display = 'none';
-                    vehiclePlateInput.classList.remove('is-invalid');
-                }
-            });
-        }
 
         // Inicialização: se já houver associado selecionado (ex.: retorno de validação), carregue as placas
         if (partnerSelect.value) {
             partnerSelect.dispatchEvent(new Event('change'));
-        } else {
-            updateVehicleOptions([]);
         }
     })();
 </script>
