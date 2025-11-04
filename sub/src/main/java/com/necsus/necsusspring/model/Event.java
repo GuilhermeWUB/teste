@@ -67,7 +67,7 @@ public class Event {
     private Partner partner;
 
     @ManyToOne
-    @JoinColumn(name = "vehicle_id")
+    @JoinColumn(name = "vehicle_id", nullable = true)
     private Vehicle vehicle;
 
     @Size(max = 10, message = "A placa deve ter no máximo 10 caracteres")
