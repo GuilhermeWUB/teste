@@ -139,21 +139,29 @@ public class EventController {
 
     @GetMapping("/api/vehicles/{partnerId}")
     @ResponseBody
-    public ResponseEntity<List<Vehicle>> getVehiclesByPartner(@PathVariable Long partnerId) {
+    public ResponseEntity<List<com.necsus.necsusspring.dto.VehicleDTO>> getVehiclesByPartner(@PathVariable Long partnerId) {
         logger.info("[EVENT API] 🚗 Buscando veículos do parceiro ID: {}", partnerId);
+
         List<Vehicle> vehicles = vehicleService.listByPartnerId(partnerId);
         logger.info("[EVENT API] ✅ Encontrados {} veículos", vehicles.size());
 
-        if (!vehicles.isEmpty()) {
-            Vehicle firstVehicle = vehicles.get(0);
-            logger.info("[EVENT API] 📋 Primeiro veículo: ID={}, Placa={}, Marca={}, Modelo={}",
+        // Converte as entidades Vehicle para DTOs
+        List<com.necsus.necsusspring.dto.VehicleDTO> vehicleDTOs = vehicles.stream()
+                .map(com.necsus.necsusspring.dto.VehicleDTO::fromEntity)
+                .toList();
+
+        if (!vehicleDTOs.isEmpty()) {
+            com.necsus.necsusspring.dto.VehicleDTO firstVehicle = vehicleDTOs.get(0);
+            logger.info("[EVENT API] 📋 Primeiro veículo DTO: ID={}, Placa={}, Marca={}, Modelo={}",
                 firstVehicle.getId(),
                 firstVehicle.getPlaque(),
                 firstVehicle.getMaker(),
                 firstVehicle.getModel());
+            logger.info("[EVENT API] 📦 JSON que será enviado (primeiro veículo): {}", firstVehicle);
         }
 
-        return ResponseEntity.ok(vehicles);
+        logger.info("[EVENT API] 📤 Retornando {} DTOs para o frontend", vehicleDTOs.size());
+        return ResponseEntity.ok(vehicleDTOs);
     }
 
     @GetMapping("/new")
