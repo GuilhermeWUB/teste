@@ -12,6 +12,7 @@ class KanbanBoard {
         this.searchQuery = '';
         this.csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         this.csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        this.darkMode = localStorage.getItem('kanban-dark-mode') === 'true';
 
         this.statuses = ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'];
         this.statusLabels = {
@@ -40,6 +41,7 @@ class KanbanBoard {
 
     async init() {
         console.log('[KANBAN] Inicializando Kanban Board v2...');
+        this.applyDarkMode(); // Aplica modo escuro antes de carregar
         this.showLoading();
         this.setupEventListeners();
         await this.fetchAllEvents();
@@ -74,6 +76,14 @@ class KanbanBoard {
         if (viewBtn) {
             viewBtn.addEventListener('click', () => {
                 this.toggleView();
+            });
+        }
+
+        // Dark mode toggle
+        const darkModeBtn = document.getElementById('kanban-dark-mode-toggle');
+        if (darkModeBtn) {
+            darkModeBtn.addEventListener('click', () => {
+                this.toggleDarkMode();
             });
         }
 
@@ -547,6 +557,43 @@ class KanbanBoard {
     toggleView() {
         // Future feature: toggle between board and list view
         this.showToast('Visualização alternativa em breve!', 'info');
+    }
+
+    toggleDarkMode() {
+        this.darkMode = !this.darkMode;
+        localStorage.setItem('kanban-dark-mode', this.darkMode);
+        this.applyDarkMode();
+
+        const message = this.darkMode ? '🌙 Modo escuro ativado' : '☀️ Modo claro ativado';
+        this.showToast(message, 'info');
+
+        console.log('[KANBAN] Modo escuro:', this.darkMode ? 'ATIVADO' : 'DESATIVADO');
+    }
+
+    applyDarkMode() {
+        const wrapper = document.querySelector('.kanban-wrapper');
+        const body = document.body;
+
+        if (this.darkMode) {
+            wrapper?.classList.add('dark-mode');
+            body.classList.add('dark-mode');
+        } else {
+            wrapper?.classList.remove('dark-mode');
+            body.classList.remove('dark-mode');
+        }
+
+        // Atualiza o ícone do botão
+        const darkModeBtn = document.getElementById('kanban-dark-mode-toggle');
+        if (darkModeBtn) {
+            const icon = darkModeBtn.querySelector('i');
+            if (icon) {
+                if (this.darkMode) {
+                    icon.className = 'bi bi-sun-fill';
+                } else {
+                    icon.className = 'bi bi-moon-fill';
+                }
+            }
+        }
     }
 
     showLoading() {
