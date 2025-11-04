@@ -6,12 +6,14 @@ import com.necsus.necsusspring.model.Event;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.model.Status;
+import com.necsus.necsusspring.model.Prioridade;
 import com.necsus.necsusspring.repository.EventRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -142,6 +144,7 @@ public class EventService {
         existing.setObservacoes(eventPayload.getObservacoes());
         existing.setIdExterno(eventPayload.getIdExterno());
         existing.setAnalistaResponsavel(eventPayload.getAnalistaResponsavel());
+        existing.setPlacaManual(eventPayload.getPlacaManual());
         existing.setPartner(eventPayload.getPartner());
         existing.setVehicle(eventPayload.getVehicle());
 
@@ -185,6 +188,9 @@ public class EventService {
                     break;
                 case "observacoes":
                     existing.setObservacoes(value != null ? value.toString() : null);
+                    break;
+                case "placaManual":
+                    existing.setPlacaManual(value != null ? value.toString() : null);
                     break;
             }
         });
