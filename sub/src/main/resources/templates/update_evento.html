@@ -59,6 +59,12 @@
             <label for="analistaResponsavel" class="form-label">Analista Responsável</label>
             <input type="text" id="analistaResponsavel" class="form-control" th:field="*{analistaResponsavel}" />
         </div>
+        <div class="col-md-6">
+            <label for="placaManual" class="form-label">Placa do Veículo</label>
+            <input type="text" id="placaManual" class="form-control" th:field="*{placaManual}"
+                   placeholder="Ex: ABC-1234" maxlength="10" />
+            <small class="text-muted">Campo opcional</small>
+        </div>
         <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Salvar alterações</button>
             <a th:href="@{/events}" class="btn btn-secondary">Cancelar</a>

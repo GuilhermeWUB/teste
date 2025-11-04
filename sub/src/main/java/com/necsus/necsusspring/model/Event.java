@@ -73,10 +73,12 @@ public class Event {
     @JoinColumn(name = "partner_id")
     private Partner partner;
 
-    @NotNull(message = "Informe o veículo")
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
+
+    @Size(max = 10, message = "A placa deve ter no máximo 10 caracteres")
+    private String placaManual;
 
     // Método auxiliar para exibir prioridade formatada
     public String getPrioridadeFormatted() {
