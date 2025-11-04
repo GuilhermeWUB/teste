@@ -140,7 +140,19 @@ public class EventController {
     @GetMapping("/api/vehicles/{partnerId}")
     @ResponseBody
     public ResponseEntity<List<Vehicle>> getVehiclesByPartner(@PathVariable Long partnerId) {
+        logger.info("[EVENT API] 🚗 Buscando veículos do parceiro ID: {}", partnerId);
         List<Vehicle> vehicles = vehicleService.listByPartnerId(partnerId);
+        logger.info("[EVENT API] ✅ Encontrados {} veículos", vehicles.size());
+
+        if (!vehicles.isEmpty()) {
+            Vehicle firstVehicle = vehicles.get(0);
+            logger.info("[EVENT API] 📋 Primeiro veículo: ID={}, Placa={}, Marca={}, Modelo={}",
+                firstVehicle.getId(),
+                firstVehicle.getPlaque(),
+                firstVehicle.getMaker(),
+                firstVehicle.getModel());
+        }
+
         return ResponseEntity.ok(vehicles);
     }
 

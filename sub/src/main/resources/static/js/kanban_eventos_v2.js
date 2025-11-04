@@ -12,7 +12,6 @@ class KanbanBoard {
         this.searchQuery = '';
         this.csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         this.csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-        this.darkMode = localStorage.getItem('kanban-dark-mode') === 'true';
 
         this.statuses = ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'];
         this.statusLabels = {
@@ -41,7 +40,8 @@ class KanbanBoard {
 
     async init() {
         console.log('[KANBAN] Inicializando Kanban Board v2...');
-        this.applyDarkMode(); // Aplica modo escuro antes de carregar
+        this.syncWithSystemTheme(); // Sincroniza com tema global
+        this.observeThemeChanges(); // Observa mudanças no tema
         this.showLoading();
         this.setupEventListeners();
         await this.fetchAllEvents();
@@ -76,14 +76,6 @@ class KanbanBoard {
         if (viewBtn) {
             viewBtn.addEventListener('click', () => {
                 this.toggleView();
-            });
-        }
-
-        // Dark mode toggle
-        const darkModeBtn = document.getElementById('kanban-dark-mode-toggle');
-        if (darkModeBtn) {
-            darkModeBtn.addEventListener('click', () => {
-                this.toggleDarkMode();
             });
         }
 
@@ -559,41 +551,51 @@ class KanbanBoard {
         this.showToast('Visualização alternativa em breve!', 'info');
     }
 
-    toggleDarkMode() {
-        this.darkMode = !this.darkMode;
-        localStorage.setItem('kanban-dark-mode', this.darkMode);
-        this.applyDarkMode();
+    /**
+     * Sincroniza o Kanban com o tema global do sistema
+     * Lê o atributo data-theme do elemento <html>
+     */
+    syncWithSystemTheme() {
+        const htmlElement = document.documentElement;
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        const isDark = currentTheme === 'dark';
 
-        const message = this.darkMode ? '🌙 Modo escuro ativado' : '☀️ Modo claro ativado';
-        this.showToast(message, 'info');
+        console.log('[KANBAN] 🎨 Sincronizando com tema global:', currentTheme);
 
-        console.log('[KANBAN] Modo escuro:', this.darkMode ? 'ATIVADO' : 'DESATIVADO');
-    }
-
-    applyDarkMode() {
         const wrapper = document.querySelector('.kanban-wrapper');
-        const body = document.body;
 
-        if (this.darkMode) {
+        if (isDark) {
             wrapper?.classList.add('dark-mode');
-            body.classList.add('dark-mode');
         } else {
             wrapper?.classList.remove('dark-mode');
-            body.classList.remove('dark-mode');
         }
+    }
 
-        // Atualiza o ícone do botão
-        const darkModeBtn = document.getElementById('kanban-dark-mode-toggle');
-        if (darkModeBtn) {
-            const icon = darkModeBtn.querySelector('i');
-            if (icon) {
-                if (this.darkMode) {
-                    icon.className = 'bi bi-sun-fill';
-                } else {
-                    icon.className = 'bi bi-moon-fill';
+    /**
+     * Observa mudanças no tema global e sincroniza automaticamente
+     * Usa MutationObserver para detectar mudanças no atributo data-theme
+     */
+    observeThemeChanges() {
+        const htmlElement = document.documentElement;
+
+        // Cria observer para detectar mudanças no atributo data-theme
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    const newTheme = htmlElement.getAttribute('data-theme');
+                    console.log('[KANBAN] 🔄 Tema global mudou para:', newTheme);
+                    this.syncWithSystemTheme();
                 }
-            }
-        }
+            });
+        });
+
+        // Configura o observer
+        observer.observe(htmlElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+
+        console.log('[KANBAN] 👁️ Observer de tema ativado');
     }
 
     showLoading() {
