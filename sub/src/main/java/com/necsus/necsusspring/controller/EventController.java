@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
 import com.necsus.necsusspring.service.PartnerService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,9 @@ public class EventController {
     private final PartnerService partnerService;
     private final VehicleService vehicleService;
 
-    public EventController(EventService eventService, PartnerService partnerService, VehicleService vehicleService) {
+    public EventController(EventService eventService,
+                           PartnerService partnerService,
+                           VehicleService vehicleService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
@@ -69,8 +73,21 @@ public class EventController {
      */
     @GetMapping("/board")
     public String showBoard(Model model) {
-        List<Event> events = eventService.listAll();
-        model.addAttribute("events", events);
+        EventBoardSnapshot snapshot = eventService.getBoardSnapshot();
+
+        model.addAttribute("eventsByStatus", snapshot.eventsByStatus());
+        model.addAttribute("boardCounters", snapshot.counters());
+        model.addAttribute("boardCards", snapshot.cards());
+        model.addAttribute("totalEvents", snapshot.totalEvents());
+
+        List<Map<String, String>> statusMetadata = Arrays.stream(Status.values())
+                .map(status -> Map.of(
+                        "code", status.name(),
+                        "label", status.getDisplayName()
+                ))
+                .toList();
+        model.addAttribute("statusMetadata", statusMetadata);
+
         return "board_eventos";
     }
 
@@ -82,6 +99,12 @@ public class EventController {
     public ResponseEntity<List<Event>> getEventsByStatus(@PathVariable Status status) {
         List<Event> events = eventService.listByStatus(status);
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/api/board")
+    @ResponseBody
+    public ResponseEntity<EventBoardSnapshot> getBoardSnapshotApi() {
+        return ResponseEntity.ok(eventService.getBoardSnapshot());
     }
 
     /**
@@ -198,4 +221,5 @@ public class EventController {
         redirectAttributes.addFlashAttribute("successMessage", "Evento removido com sucesso!");
         return "redirect:/events";
     }
+
 }

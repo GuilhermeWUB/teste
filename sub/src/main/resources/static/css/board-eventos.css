@@ -283,6 +283,12 @@ body {
     z-index: 1;
 }
 
+.column-header-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
 .column-title {
     display: flex;
     align-items: center;
@@ -307,6 +313,29 @@ body {
     backdrop-filter: blur(10px);
 }
 
+.column-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.column-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+}
+
+.column-btn i {
+    pointer-events: none;
+}
+
 .column-progress {
     height: 4px;
     background: rgba(255, 255, 255, 0.2);
@@ -322,6 +351,19 @@ body {
     border-radius: 4px;
     width: 0%;
     transition: width 0.5s ease;
+}
+
+.board-column-collapsed .column-content {
+    display: none !important;
+}
+
+.board-column-collapsed .column-header {
+    opacity: 0.85;
+}
+
+.sortable-ghost-column {
+    opacity: 0.4;
+    transform: scale(0.97);
 }
 
 /* Cores específicas para cada coluna */
@@ -729,6 +771,48 @@ body {
 
 .toast-notification.warning {
     border-left: 5px solid #ffc107;
+}
+
+/* ===== MENU DE COLUNA ===== */
+.column-menu {
+    position: absolute;
+    z-index: 1050;
+    background: #ffffff;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 0.25rem 0;
+    min-width: 200px;
+    animation: fadeIn 0.15s ease;
+}
+
+.column-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: none;
+    color: #495057;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.column-menu button:hover {
+    background: rgba(102, 126, 234, 0.12);
+    color: #343a40;
+}
+
+.column-menu button i {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.column-menu button span {
+    flex: 1;
+    text-align: left;
 }
 
 /* ===== ANIMAÇÕES DE ENTRADA ===== */
