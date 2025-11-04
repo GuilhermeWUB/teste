@@ -177,6 +177,7 @@ body.dark-mode .task-deadline,
     display: flex;
     gap: var(--spacing-sm);
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .kanban-search {
@@ -224,6 +225,7 @@ body.dark-mode .task-deadline,
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .kanban-filter-btn:hover,
