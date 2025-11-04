@@ -168,11 +168,10 @@ public class EventController {
     public String showCreateForm(Model model) {
         Event event = new Event();
         event.setStatus(Status.A_FAZER); // Status padrão
-        // Instanciar objetos aninhados para permitir binding de partner.id e vehicle.id no formulário
+        // Instanciar partner para permitir binding de partner.id no formulário
         event.setPartner(new Partner());
-        event.setVehicle(new Vehicle());
+        // Vehicle agora é opcional, não precisa instanciar
         model.addAttribute("event", event);
-        model.addAttribute("vehicles", List.of()); // Inicia com lista vazia
         return "cadastro_evento";
     }
 
@@ -187,12 +186,6 @@ public class EventController {
         }
         // Vehicle é agora opcional - placa pode ser informada manualmente no campo placaManual
         if (result.hasErrors()) {
-            // Recarrega opções de veículos quando o formulário volta com erro
-            if (event.getPartner() != null && event.getPartner().getId() != null) {
-                model.addAttribute("vehicles", vehicleService.listByPartnerId(event.getPartner().getId()));
-            } else {
-                model.addAttribute("vehicles", List.of());
-            }
             return "cadastro_evento";
         }
         try {
@@ -200,12 +193,8 @@ public class EventController {
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
             return "redirect:/events/board";
         } catch (Exception ex) {
+            logger.error("Erro ao criar evento: ", ex);
             model.addAttribute("formError", ex.getMessage() != null ? ex.getMessage() : "Não foi possível salvar o evento. Verifique os campos e tente novamente.");
-            if (event.getPartner() != null && event.getPartner().getId() != null) {
-                model.addAttribute("vehicles", vehicleService.listByPartnerId(event.getPartner().getId()));
-            } else {
-                model.addAttribute("vehicles", List.of());
-            }
             return "cadastro_evento";
         }
     }
