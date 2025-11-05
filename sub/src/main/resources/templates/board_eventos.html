@@ -115,6 +115,25 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
+
     <!-- Script único e limpo -->
     <script th:src="@{/js/kanban.js}"></script>
 </section>
