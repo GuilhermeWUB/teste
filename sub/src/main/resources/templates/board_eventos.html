@@ -10,24 +10,22 @@
         <!-- Header com controles -->
         <div class="kanban-header">
             <div class="kanban-controls">
-                <div class="kanban-actions">
-                    <!-- Busca -->
-                    <div class="kanban-search">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="kanban-search" placeholder="Buscar eventos..." autocomplete="off"/>
-                    </div>
-
-                    <!-- Filtros rápidos -->
-                    <button class="kanban-filter-btn active" data-filter="all">
-                        <i class="bi bi-funnel"></i> Todos
-                    </button>
-                    <button class="kanban-filter-btn" data-filter="URGENTE">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Urgente
-                    </button>
-                    <button class="kanban-filter-btn" data-filter="ALTA">
-                        <i class="bi bi-arrow-up"></i> Alta
-                    </button>
+                <!-- Busca -->
+                <div class="kanban-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="kanban-search" placeholder="Buscar eventos..." autocomplete="off"/>
                 </div>
+
+                <!-- Filtros rápidos -->
+                <button class="kanban-filter-btn active" data-filter="all">
+                    <i class="bi bi-funnel"></i> Todos
+                </button>
+                <button class="kanban-filter-btn" data-filter="URGENTE">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Urgente
+                </button>
+                <button class="kanban-filter-btn" data-filter="ALTA">
+                    <i class="bi bi-arrow-up"></i> Alta
+                </button>
 
                 <!-- Botão Novo Evento -->
                 <button class="btn-novo-evento" onclick="window.location.href='/events/new'">
