@@ -383,43 +383,26 @@ class KanbanBoard {
 
     renderBoardView() {
         console.log('[KANBAN V3] 🎨 Renderizando Board View...');
-        console.log('[KANBAN V3] 📊 Eventos a renderizar:', this.filteredEvents);
 
         // Hide list, show board
         const listView = document.getElementById('kanban-list-view');
         const boardView = document.querySelector('.kanban-board');
-
-        console.log('[KANBAN V3] 📋 Board element:', boardView);
 
         if (listView) listView.style.display = 'none';
         if (boardView) boardView.style.display = 'flex';
 
         this.statuses.forEach(status => {
             const container = document.getElementById(`column-${status}`);
-            console.log(`[KANBAN V3] 📦 Container ${status}:`, container);
-
-            if (!container) {
-                console.error(`[KANBAN V3] ❌ Container não encontrado: column-${status}`);
-                return;
-            }
+            if (!container) return;
 
             container.innerHTML = '';
 
             const statusEvents = this.filteredEvents.filter(e => e.status === status);
-            console.log(`[KANBAN V3] 🎯 Status ${status}: ${statusEvents.length} eventos`, statusEvents);
-
             this.updateColumnCount(status, statusEvents.length);
 
-            statusEvents.forEach((event, index) => {
-                console.log(`[KANBAN V3] 🎴 Criando card ${index + 1}/${statusEvents.length} para evento:`, event);
-                try {
-                    const card = this.createTaskCard(event);
-                    console.log(`[KANBAN V3] ✅ Card criado:`, card);
-                    container.appendChild(card);
-                    console.log(`[KANBAN V3] ✅ Card adicionado ao container`);
-                } catch (error) {
-                    console.error(`[KANBAN V3] ❌ Erro ao criar card:`, error);
-                }
+            statusEvents.forEach(event => {
+                const card = this.createTaskCard(event);
+                container.appendChild(card);
             });
 
             if (statusEvents.length === 0) {
@@ -428,8 +411,6 @@ class KanbanBoard {
                 container.classList.remove('empty');
             }
         });
-
-        console.log('[KANBAN V3] 🏁 Renderização concluída');
     }
 
     renderListView() {
