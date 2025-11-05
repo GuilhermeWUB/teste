@@ -568,12 +568,17 @@ html[data-theme="dark"] .filters-modal-content {
     cursor: pointer;
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
+    transition: background 0.2s ease;
+    background: color-mix(in srgb, var(--kanban-panel-bg) 50%, transparent);
+    border: 1px solid var(--kanban-divider);
     transition: background 0.2s ease, border-color 0.2s ease;
     background: var(--color-surface);
     border: 1px solid color-mix(in srgb, var(--kanban-divider) 70%, rgba(139, 92, 246, 0.18));
 }
 
 .filter-checkbox:hover {
+    background: color-mix(in srgb, var(--kanban-accent) 8%, var(--kanban-panel-bg));
+    border-color: color-mix(in srgb, var(--kanban-accent) 35%, var(--kanban-divider));
     background: color-mix(in srgb, var(--color-surface) 80%, var(--kanban-accent) 20%);
     border-color: color-mix(in srgb, var(--kanban-accent) 40%, var(--kanban-divider));
 }
@@ -593,6 +598,14 @@ html[data-theme="dark"] .filters-modal-content {
 
 .filter-date-range {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
