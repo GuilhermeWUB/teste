@@ -5,6 +5,18 @@
         quickFilter: "all"
     };
 
+    const dragState = {
+        cardId: null,
+        originStatus: null
+    };
+
+    const statusLabels = {
+        A_FAZER: 'A Fazer',
+        EM_ANDAMENTO: 'Em Andamento',
+        AGUARDANDO: 'Aguardando',
+        CONCLUIDO: 'Concluído'
+    };
+
     const selectors = {
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
         searchInput: () => document.getElementById('kanban-search'),
@@ -103,6 +115,8 @@
                 return;
             }
 
+            bindColumnDropZone(column);
+
             container.innerHTML = '';
 
             const items = grouped[status] || [];
@@ -113,6 +127,8 @@
 
             items.forEach(card => container.appendChild(createCard(card)));
         });
+
+        enableDragAndDrop();
     }
 
     function renderError() {
@@ -261,6 +277,137 @@
         article.addEventListener('click', () => openModal(card));
 
         return article;
+    }
+
+    function bindColumnDropZone(column) {
+        const container = column.querySelector('.tasks-container');
+        if (!container || container.dataset.dndBound) {
+            return;
+        }
+
+        container.addEventListener('dragover', handleDragOver);
+        container.addEventListener('drop', handleDrop);
+        container.dataset.dndBound = 'true';
+    }
+
+    function enableDragAndDrop() {
+        document.querySelectorAll('.task-card').forEach(card => {
+            card.setAttribute('draggable', 'true');
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+        });
+    }
+
+    function handleDragStart(event) {
+        const card = event.currentTarget;
+        dragState.cardId = card.dataset.id || null;
+        dragState.originStatus = card.closest('.kanban-column')?.dataset.status || null;
+
+        if (event.dataTransfer) {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', dragState.cardId || '');
+        }
+
+        card.classList.add('is-dragging');
+    }
+
+    function handleDragEnd(event) {
+        event.currentTarget.classList.remove('is-dragging');
+        dragState.cardId = null;
+        dragState.originStatus = null;
+    }
+
+    function handleDragOver(event) {
+        event.preventDefault();
+        if (event.dataTransfer) {
+            event.dataTransfer.dropEffect = 'move';
+        }
+    }
+
+    async function handleDrop(event) {
+        event.preventDefault();
+
+        const container = event.currentTarget;
+        const column = container.closest('.kanban-column');
+        const targetStatus = column?.dataset.status;
+        const cardId = dragState.cardId || event.dataTransfer?.getData('text/plain');
+        const normalizedCardId = cardId ? String(cardId).trim() : '';
+
+        if (!normalizedCardId || !targetStatus) {
+            return;
+        }
+
+        const card = state.cards.find(item => String(item.id) === normalizedCardId);
+        if (!card) {
+            return;
+        }
+
+        const previousStatus = card.status || dragState.originStatus;
+        if (previousStatus === targetStatus) {
+            return;
+        }
+
+        const previousLabel = card.statusLabel;
+        card.status = targetStatus;
+        card.statusLabel = statusLabels[targetStatus] || card.statusLabel;
+
+        render();
+
+        try {
+            const response = await persistCardStatusChange(normalizedCardId, targetStatus);
+            if (response && response.event) {
+                syncCardFromResponse(normalizedCardId, response.event);
+                render();
+            }
+        } catch (error) {
+            console.error('[KANBAN] Falha ao atualizar status:', error);
+            card.status = previousStatus;
+            card.statusLabel = previousLabel || statusLabels[previousStatus] || card.statusLabel;
+            render();
+            alert('Não foi possível atualizar o status do evento. Tente novamente.');
+        } finally {
+            dragState.cardId = null;
+            dragState.originStatus = null;
+        }
+    }
+
+    async function persistCardStatusChange(cardId, newStatus) {
+        const response = await fetch(`/events/api/${cardId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!response.ok) {
+            const message = await response.text();
+            throw new Error(message || 'Erro ao atualizar status');
+        }
+
+        try {
+            return await response.json();
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function syncCardFromResponse(cardId, payloadEvent) {
+        const card = state.cards.find(item => String(item.id) === String(cardId));
+        if (!card || !payloadEvent) {
+            return;
+        }
+
+        if (payloadEvent.status) {
+            card.status = payloadEvent.status;
+        }
+
+        if (payloadEvent.statusLabel) {
+            card.statusLabel = payloadEvent.statusLabel;
+        } else if (payloadEvent.status) {
+            card.statusLabel = statusLabels[payloadEvent.status] || card.statusLabel;
+        }
     }
 
     function createEmptyState() {
