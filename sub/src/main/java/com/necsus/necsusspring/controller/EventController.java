@@ -88,7 +88,8 @@ public class EventController {
                 .toList();
         model.addAttribute("statusMetadata", statusMetadata);
 
-        return "board_eventos";
+        // Usando template direto sem layout decorator para evitar problemas de renderização
+        return "board_eventos_direct";
     }
 
     /**
