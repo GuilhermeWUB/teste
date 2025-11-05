@@ -256,7 +256,9 @@ class KanbanBoard {
 
         try {
             // Os dados agora são injetados diretamente no HTML pela variável `KANBAN_DATA`
-            this.events = Array.isArray(window.KANBAN_DATA) ? window.KANBAN_DATA : [];
+            const injectedData = Array.isArray(window.KANBAN_DATA) ? window.KANBAN_DATA : [];
+
+            this.events = injectedData.map(event => this.normalizeEventData(event));
             this.filteredEvents = [...this.events];
 
             console.log(`[KANBAN V3] ✅ Total: ${this.events.length} eventos carregados a partir dos dados da página.`);
@@ -274,6 +276,62 @@ class KanbanBoard {
 
         // Retorna uma promessa resolvida para manter a assinatura do método async
         return Promise.resolve();
+    }
+
+    normalizeEventData(rawEvent) {
+        if (!rawEvent || typeof rawEvent !== 'object') {
+            return {
+                id: null,
+                titulo: '',
+                descricao: '',
+                status: 'A_FAZER',
+                prioridade: null,
+                motivo: null,
+                envolvimento: null,
+                partner: null,
+                vehicle: null,
+                placaManual: null,
+                dataVencimento: null,
+                analistaResponsavel: null,
+                prioridadeLabel: null,
+                prioridadeColor: 'secondary'
+            };
+        }
+
+        const normalized = { ...rawEvent };
+
+        // Garante que sempre teremos um status válido
+        normalized.status = rawEvent.status || 'A_FAZER';
+
+        // Normaliza prioridade (badge e cor)
+        normalized.prioridade = rawEvent.prioridade || null;
+        normalized.prioridadeLabel = rawEvent.prioridadeLabel
+            || (normalized.prioridade ? this.priorityLabels[normalized.prioridade] : null);
+        normalized.prioridadeColor = rawEvent.prioridadeColor || 'secondary';
+
+        // Normaliza estruturas de associado e veículo para o formato esperado pelo front
+        if (!rawEvent.partner && (rawEvent.partnerName || rawEvent.partnerId)) {
+            normalized.partner = {
+                id: rawEvent.partnerId ?? null,
+                name: rawEvent.partnerName ?? null
+            };
+        }
+
+        if (!rawEvent.vehicle && (rawEvent.vehiclePlate || rawEvent.vehicleId || rawEvent.placaManual)) {
+            normalized.vehicle = {
+                id: rawEvent.vehicleId ?? null,
+                plaque: rawEvent.vehiclePlate ?? rawEvent.placaManual ?? null,
+                maker: rawEvent.vehicleMaker ?? null,
+                model: rawEvent.vehicleModel ?? null
+            };
+        }
+
+        // Mantém compatibilidade com dados parciais do back-end
+        normalized.placaManual = rawEvent.placaManual ?? null;
+        normalized.dataVencimento = rawEvent.dataVencimento ?? null;
+        normalized.analistaResponsavel = rawEvent.analistaResponsavel ?? null;
+
+        return normalized;
     }
 
     filterAndRender() {
