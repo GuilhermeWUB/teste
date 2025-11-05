@@ -6,6 +6,7 @@
     /* Color palette - Notion-inspired */
     --notion-bg: #f7f7f5;
     --notion-bg-dark: #191919;
+    --notion-surface: #ffffff;
     --notion-text: #37352f;
     --notion-text-light: #787774;
     --notion-border: #e0e0e0;
@@ -26,7 +27,7 @@
     --priority-urgente: #b91c1c;
 
     /* Accent colors */
-    --accent-blue: #2383e2;
+    --accent-blue: var(--color-primary, #2383e2);
     --accent-purple: #9333ea;
     --accent-green: #16a34a;
     --accent-red: #dc2626;
@@ -43,18 +44,25 @@
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
+
+    /* Animation */
+    --transition-base: 0.25s ease;
 }
 
 /* Dark mode support */
+html[data-theme="dark"],
+html[data-theme="dark"] body,
 body.dark-mode,
-.kanban-wrapper.dark-mode {
-    --notion-bg: #1a1a1a;
+.kanban-wrapper.dark-mode,
+.kanban-wrapper[data-color-mode="dark"] {
+    --notion-bg: #121212;
     --notion-bg-dark: #0d0d0d;
+    --notion-surface: #1f1f1f;
     --notion-text: #e8e8e8;
     --notion-text-light: #a0a0a0;
-    --notion-border: #333333;
-    --notion-hover: #2a2a2a;
-    --notion-shadow: rgba(0, 0, 0, 0.3);
+    --notion-border: #2f2f2f;
+    --notion-hover: #232323;
+    --notion-shadow: rgba(0, 0, 0, 0.35);
     --notion-shadow-lg: rgba(0, 0, 0, 0.5);
 
     /* Adjust colors for dark mode */
@@ -63,79 +71,134 @@ body.dark-mode,
     --status-waiting: #4a4020;
     --status-done: #1a4d2e;
 
-    --accent-blue: #3b9eff;
+    --accent-blue: var(--color-primary, #3b9eff);
     --accent-purple: #a855f7;
     --accent-green: #22c55e;
     --accent-red: #ef4444;
 }
 
 /* Apply dark mode styles */
+html[data-theme="dark"] .kanban-search input,
 body.dark-mode .kanban-search input,
-.kanban-wrapper.dark-mode .kanban-search input {
+.kanban-wrapper.dark-mode .kanban-search input,
+.kanban-wrapper[data-color-mode="dark"] .kanban-search input {
     background: var(--notion-hover);
     color: var(--notion-text);
     border-color: var(--notion-border);
 }
 
+/* Smooth theme transitions */
+.kanban-wrapper,
+.kanban-column,
+.task-card,
+.kanban-filter-btn,
+.kanban-view-btn,
+.kanban-settings-btn,
+.kanban-search input,
+.kanban-modal-content,
+.kanban-filter-modal,
+.kanban-export-modal,
+.kanban-theme-modal,
+.kanban-history-modal,
+.kanban-list-view,
+.kanban-toast,
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea,
+.theme-text-input {
+    transition: background var(--transition-base),
+                color var(--transition-base),
+                border-color var(--transition-base),
+                box-shadow var(--transition-base);
+}
+
+html[data-theme="dark"] .kanban-search input::placeholder,
 body.dark-mode .kanban-search input::placeholder,
-.kanban-wrapper.dark-mode .kanban-search input::placeholder {
+.kanban-wrapper.dark-mode .kanban-search input::placeholder,
+.kanban-wrapper[data-color-mode="dark"] .kanban-search input::placeholder {
     color: var(--notion-text-light);
 }
 
+html[data-theme="dark"] .kanban-column,
 body.dark-mode .kanban-column,
-.kanban-wrapper.dark-mode .kanban-column {
+.kanban-wrapper.dark-mode .kanban-column,
+.kanban-wrapper[data-color-mode="dark"] .kanban-column {
     background: var(--notion-bg-dark);
 }
 
+html[data-theme="dark"] .column-header,
 body.dark-mode .column-header,
-.kanban-wrapper.dark-mode .column-header {
+.kanban-wrapper.dark-mode .column-header,
+.kanban-wrapper[data-color-mode="dark"] .column-header {
     background: var(--notion-hover);
 }
 
+html[data-theme="dark"] .task-card,
 body.dark-mode .task-card,
-.kanban-wrapper.dark-mode .task-card {
+.kanban-wrapper.dark-mode .task-card,
+.kanban-wrapper[data-color-mode="dark"] .task-card {
     background: var(--notion-hover);
     border-color: var(--notion-border);
 }
 
+html[data-theme="dark"] .task-card:hover,
 body.dark-mode .task-card:hover,
-.kanban-wrapper.dark-mode .task-card:hover {
-    background: #333333;
+.kanban-wrapper.dark-mode .task-card:hover,
+.kanban-wrapper[data-color-mode="dark"] .task-card:hover {
+    background: #2c2c2c;
 }
 
+html[data-theme="dark"] .kanban-modal-content,
 body.dark-mode .kanban-modal-content,
-.kanban-wrapper.dark-mode .kanban-modal-content {
+.kanban-wrapper.dark-mode .kanban-modal-content,
+.kanban-wrapper[data-color-mode="dark"] .kanban-modal-content {
     background: var(--notion-hover);
 }
 
+html[data-theme="dark"] .kanban-filter-btn,
+html[data-theme="dark"] .kanban-view-btn,
+html[data-theme="dark"] .kanban-settings-btn,
 body.dark-mode .kanban-filter-btn,
 body.dark-mode .kanban-view-btn,
 body.dark-mode .kanban-settings-btn,
 .kanban-wrapper.dark-mode .kanban-filter-btn,
 .kanban-wrapper.dark-mode .kanban-view-btn,
-.kanban-wrapper.dark-mode .kanban-settings-btn {
+.kanban-wrapper.dark-mode .kanban-settings-btn,
+.kanban-wrapper[data-color-mode="dark"] .kanban-filter-btn,
+.kanban-wrapper[data-color-mode="dark"] .kanban-view-btn,
+.kanban-wrapper[data-color-mode="dark"] .kanban-settings-btn {
     background: var(--notion-hover);
     border-color: var(--notion-border);
     color: var(--notion-text);
 }
 
+html[data-theme="dark"] .kanban-filter-btn:hover,
+html[data-theme="dark"] .kanban-view-btn:hover,
+html[data-theme="dark"] .kanban-settings-btn:hover,
 body.dark-mode .kanban-filter-btn:hover,
 body.dark-mode .kanban-view-btn:hover,
 body.dark-mode .kanban-settings-btn:hover,
 .kanban-wrapper.dark-mode .kanban-filter-btn:hover,
 .kanban-wrapper.dark-mode .kanban-view-btn:hover,
-.kanban-wrapper.dark-mode .kanban-settings-btn:hover {
-    background: #333333;
+.kanban-wrapper.dark-mode .kanban-settings-btn:hover,
+.kanban-wrapper[data-color-mode="dark"] .kanban-filter-btn:hover,
+.kanban-wrapper[data-color-mode="dark"] .kanban-view-btn:hover,
+.kanban-wrapper[data-color-mode="dark"] .kanban-settings-btn:hover {
+    background: #2f2f2f;
 }
 
+html[data-theme="dark"] .column-count,
 body.dark-mode .column-count,
-.kanban-wrapper.dark-mode .column-count {
+.kanban-wrapper.dark-mode .column-count,
+.kanban-wrapper[data-color-mode="dark"] .column-count {
     background: var(--notion-bg-dark);
     color: var(--notion-text-light);
 }
 
+html[data-theme="dark"] .task-deadline,
 body.dark-mode .task-deadline,
-.kanban-wrapper.dark-mode .task-deadline {
+.kanban-wrapper.dark-mode .task-deadline,
+.kanban-wrapper[data-color-mode="dark"] .task-deadline {
     background: var(--notion-bg-dark);
 }
 
@@ -215,7 +278,7 @@ body.dark-mode .task-deadline,
     padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 40px;
     border: 1px solid var(--notion-border);
     border-radius: var(--radius-lg);
-    background: white;
+    background: var(--notion-surface);
     color: var(--notion-text);
     font-size: 14px;
     width: 280px;
@@ -242,7 +305,7 @@ body.dark-mode .task-deadline,
     padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--notion-border);
     border-radius: var(--radius-md);
-    background: white;
+    background: var(--notion-surface);
     color: var(--notion-text);
     cursor: pointer;
     display: flex;
@@ -337,7 +400,7 @@ body.dark-mode .task-deadline,
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
+    background: var(--notion-surface);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
 }
@@ -438,7 +501,7 @@ body.dark-mode .task-deadline,
    ========================================== */
 
 .task-card {
-    background: white;
+    background: var(--notion-surface);
     border: 1px solid var(--notion-border);
     border-radius: var(--radius-lg);
     padding: var(--spacing-md);
@@ -720,7 +783,7 @@ body.dark-mode .task-deadline,
 }
 
 .kanban-modal-content {
-    background: white;
+    background: var(--notion-surface);
     border-radius: var(--radius-xl);
     max-width: 800px;
     width: 100%;
@@ -861,14 +924,16 @@ body.dark-mode .task-deadline,
    ========================================== */
 
 .kanban-list-view {
-    background: white;
+    background: var(--notion-surface);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: 0 1px 3px var(--notion-shadow);
 }
 
+html[data-theme="dark"] .kanban-list-view,
 body.dark-mode .kanban-list-view,
-.kanban-wrapper.dark-mode .kanban-list-view {
+.kanban-wrapper.dark-mode .kanban-list-view,
+.kanban-wrapper[data-color-mode="dark"] .kanban-list-view {
     background: var(--notion-bg-dark);
 }
 
@@ -882,8 +947,10 @@ body.dark-mode .kanban-list-view,
     border-bottom: 2px solid var(--notion-border);
 }
 
+html[data-theme="dark"] .kanban-list-table thead,
 body.dark-mode .kanban-list-table thead,
-.kanban-wrapper.dark-mode .kanban-list-table thead {
+.kanban-wrapper.dark-mode .kanban-list-table thead,
+.kanban-wrapper[data-color-mode="dark"] .kanban-list-table thead {
     background: var(--notion-bg-dark);
 }
 
@@ -917,8 +984,10 @@ body.dark-mode .kanban-list-table thead,
     background: var(--notion-hover);
 }
 
+html[data-theme="dark"] .kanban-list-table tbody tr:hover,
 body.dark-mode .kanban-list-table tbody tr:hover,
-.kanban-wrapper.dark-mode .kanban-list-table tbody tr:hover {
+.kanban-wrapper.dark-mode .kanban-list-table tbody tr:hover,
+.kanban-wrapper[data-color-mode="dark"] .kanban-list-table tbody tr:hover {
     background: var(--notion-bg-dark);
 }
 
@@ -973,7 +1042,7 @@ body.dark-mode .kanban-list-table tbody tr:hover,
 .kanban-toast {
     min-width: 300px;
     padding: var(--spacing-md);
-    background: white;
+    background: var(--notion-surface);
     border-radius: var(--radius-lg);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     display: flex;
@@ -1056,7 +1125,7 @@ body.dark-mode .kanban-list-table tbody tr:hover,
 .kanban-export-modal,
 .kanban-theme-modal,
 .kanban-history-modal {
-    background: white;
+    background: var(--notion-surface);
     border-radius: var(--radius-xl);
     max-width: 600px;
     width: 100%;
@@ -1065,6 +1134,10 @@ body.dark-mode .kanban-list-table tbody tr:hover,
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
+html[data-theme="dark"] .kanban-filter-modal,
+html[data-theme="dark"] .kanban-export-modal,
+html[data-theme="dark"] .kanban-theme-modal,
+html[data-theme="dark"] .kanban-history-modal,
 body.dark-mode .kanban-filter-modal,
 body.dark-mode .kanban-export-modal,
 body.dark-mode .kanban-theme-modal,
@@ -1072,7 +1145,11 @@ body.dark-mode .kanban-history-modal,
 .kanban-wrapper.dark-mode .kanban-filter-modal,
 .kanban-wrapper.dark-mode .kanban-export-modal,
 .kanban-wrapper.dark-mode .kanban-theme-modal,
-.kanban-wrapper.dark-mode .kanban-history-modal {
+.kanban-wrapper.dark-mode .kanban-history-modal,
+.kanban-wrapper[data-color-mode="dark"] .kanban-filter-modal,
+.kanban-wrapper[data-color-mode="dark"] .kanban-export-modal,
+.kanban-wrapper[data-color-mode="dark"] .kanban-theme-modal,
+.kanban-wrapper[data-color-mode="dark"] .kanban-history-modal {
     background: var(--notion-hover);
 }
 
@@ -1097,16 +1174,22 @@ body.dark-mode .kanban-history-modal,
     border-radius: var(--radius-md);
     font-size: 14px;
     color: var(--notion-text);
-    background: white;
+    background: var(--notion-surface);
     transition: all 0.2s ease;
 }
 
+html[data-theme="dark"] .modal-form-group input,
+html[data-theme="dark"] .modal-form-group select,
+html[data-theme="dark"] .modal-form-group textarea,
 body.dark-mode .modal-form-group input,
 body.dark-mode .modal-form-group select,
 body.dark-mode .modal-form-group textarea,
 .kanban-wrapper.dark-mode .modal-form-group input,
 .kanban-wrapper.dark-mode .modal-form-group select,
-.kanban-wrapper.dark-mode .modal-form-group textarea {
+.kanban-wrapper.dark-mode .modal-form-group textarea,
+.kanban-wrapper[data-color-mode="dark"] .modal-form-group input,
+.kanban-wrapper[data-color-mode="dark"] .modal-form-group select,
+.kanban-wrapper[data-color-mode="dark"] .modal-form-group textarea {
     background: var(--notion-bg-dark);
     color: var(--notion-text);
     border-color: var(--notion-border);
@@ -1156,12 +1239,14 @@ body.dark-mode .modal-form-group textarea,
 }
 
 .modal-btn-secondary {
-    background: white;
+    background: var(--notion-surface);
     color: var(--notion-text);
 }
 
+html[data-theme="dark"] .modal-btn-secondary,
 body.dark-mode .modal-btn-secondary,
-.kanban-wrapper.dark-mode .modal-btn-secondary {
+.kanban-wrapper.dark-mode .modal-btn-secondary,
+.kanban-wrapper[data-color-mode="dark"] .modal-btn-secondary {
     background: var(--notion-hover);
 }
 
@@ -1252,8 +1337,10 @@ body.dark-mode .modal-btn-secondary,
     font-size: 24px;
 }
 
+html[data-theme="dark"] .export-icon,
 body.dark-mode .export-icon,
-.kanban-wrapper.dark-mode .export-icon {
+.kanban-wrapper.dark-mode .export-icon,
+.kanban-wrapper[data-color-mode="dark"] .export-icon {
     background: var(--notion-bg-dark);
 }
 
@@ -1300,11 +1387,13 @@ body.dark-mode .export-icon,
     height: 12px;
     border-radius: 50%;
     background: var(--accent-blue);
-    border: 2px solid white;
+    border: 2px solid var(--notion-surface);
 }
 
+html[data-theme="dark"] .history-item::before,
 body.dark-mode .history-item::before,
-.kanban-wrapper.dark-mode .history-item::before {
+.kanban-wrapper.dark-mode .history-item::before,
+.kanban-wrapper[data-color-mode="dark"] .history-item::before {
     border-color: var(--notion-hover);
 }
 
@@ -1328,32 +1417,42 @@ body.dark-mode .history-item::before,
 
 /* Custom Themes - Funcionam em modo claro e escuro */
 .kanban-wrapper[data-custom-theme="purple"],
+html[data-theme="dark"] .kanban-wrapper[data-custom-theme="purple"],
 body.dark-mode .kanban-wrapper[data-custom-theme="purple"],
-.kanban-wrapper.dark-mode[data-custom-theme="purple"] {
+.kanban-wrapper.dark-mode[data-custom-theme="purple"],
+.kanban-wrapper[data-color-mode="dark"][data-custom-theme="purple"] {
     --accent-blue: #9333ea;
 }
 
 .kanban-wrapper[data-custom-theme="green"],
+html[data-theme="dark"] .kanban-wrapper[data-custom-theme="green"],
 body.dark-mode .kanban-wrapper[data-custom-theme="green"],
-.kanban-wrapper.dark-mode[data-custom-theme="green"] {
+.kanban-wrapper.dark-mode[data-custom-theme="green"],
+.kanban-wrapper[data-color-mode="dark"][data-custom-theme="green"] {
     --accent-blue: #16a34a;
 }
 
 .kanban-wrapper[data-custom-theme="orange"],
+html[data-theme="dark"] .kanban-wrapper[data-custom-theme="orange"],
 body.dark-mode .kanban-wrapper[data-custom-theme="orange"],
-.kanban-wrapper.dark-mode[data-custom-theme="orange"] {
+.kanban-wrapper.dark-mode[data-custom-theme="orange"],
+.kanban-wrapper[data-color-mode="dark"][data-custom-theme="orange"] {
     --accent-blue: #ea580c;
 }
 
 .kanban-wrapper[data-custom-theme="pink"],
+html[data-theme="dark"] .kanban-wrapper[data-custom-theme="pink"],
 body.dark-mode .kanban-wrapper[data-custom-theme="pink"],
-.kanban-wrapper.dark-mode[data-custom-theme="pink"] {
+.kanban-wrapper.dark-mode[data-custom-theme="pink"],
+.kanban-wrapper[data-color-mode="dark"][data-custom-theme="pink"] {
     --accent-blue: #ec4899;
 }
 
 .kanban-wrapper[data-custom-theme="indigo"],
+html[data-theme="dark"] .kanban-wrapper[data-custom-theme="indigo"],
 body.dark-mode .kanban-wrapper[data-custom-theme="indigo"],
-.kanban-wrapper.dark-mode[data-custom-theme="indigo"] {
+.kanban-wrapper.dark-mode[data-custom-theme="indigo"],
+.kanban-wrapper[data-color-mode="dark"][data-custom-theme="indigo"] {
     --accent-blue: #4f46e5;
 }
 
@@ -1548,11 +1647,13 @@ body.dark-mode .kanban-wrapper[data-custom-theme="indigo"],
     border-radius: var(--radius-md);
     font-size: 14px;
     color: var(--notion-text);
-    background: white;
+    background: var(--notion-surface);
 }
 
+html[data-theme="dark"] .theme-text-input,
 body.dark-mode .theme-text-input,
-.kanban-wrapper.dark-mode .theme-text-input {
+.kanban-wrapper.dark-mode .theme-text-input,
+.kanban-wrapper[data-color-mode="dark"] .theme-text-input {
     background: var(--notion-bg-dark);
     color: var(--notion-text);
     border-color: var(--notion-border);

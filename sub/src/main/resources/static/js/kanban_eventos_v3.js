@@ -668,6 +668,10 @@ class KanbanBoard {
         } else {
             wrapper?.classList.remove('dark-mode');
         }
+
+        if (wrapper) {
+            wrapper.setAttribute('data-color-mode', isDark ? 'dark' : 'light');
+        }
     }
 
     observeThemeChanges() {
