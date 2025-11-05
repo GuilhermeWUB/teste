@@ -17,15 +17,15 @@
                         <input type="text" id="kanban-search" placeholder="Buscar eventos..." autocomplete="off"/>
                     </div>
 
-                    <!-- Filtros rápidos -->
-                    <button class="kanban-filter-btn active" data-filter="all">
-                        <i class="bi bi-funnel"></i> Todos
+                    <!-- Botão de Filtros Avançados -->
+                    <button class="kanban-filter-btn" id="btn-advanced-filters">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                        <span class="filter-count" style="display: none;">0</span>
                     </button>
-                    <button class="kanban-filter-btn" data-filter="URGENTE">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Urgente
-                    </button>
-                    <button class="kanban-filter-btn" data-filter="ALTA">
-                        <i class="bi bi-arrow-up"></i> Alta
+
+                    <!-- Botão para Limpar Filtros -->
+                    <button class="kanban-clear-filters" id="btn-clear-filters" style="display: none;">
+                        <i class="bi bi-x-circle"></i> Limpar Filtros
                     </button>
                 </div>
 
@@ -97,6 +97,176 @@
                     </button>
                 </div>
                 <div class="tasks-container">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Filtros Avançados -->
+    <div id="filters-modal" class="kanban-modal">
+        <div class="kanban-modal-content filters-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-funnel-fill"></i> Filtros Avançados</h2>
+                <button class="kanban-modal-close" onclick="kanbanBoard.closeFiltersModal()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body filters-modal-body">
+                <!-- Prioridade -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-exclamation-triangle"></i> Prioridade
+                    </h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="prioridade" value="URGENTE" checked>
+                            <span class="checkbox-label">Urgente</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="prioridade" value="ALTA" checked>
+                            <span class="checkbox-label">Alta</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="prioridade" value="MEDIA" checked>
+                            <span class="checkbox-label">Média</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="prioridade" value="BAIXA" checked>
+                            <span class="checkbox-label">Baixa</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="prioridade" value="NULL" checked>
+                            <span class="checkbox-label">Sem prioridade</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-list-check"></i> Status
+                    </h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="status" value="A_FAZER" checked>
+                            <span class="checkbox-label">A Fazer</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="status" value="EM_ANDAMENTO" checked>
+                            <span class="checkbox-label">Em Andamento</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="status" value="AGUARDANDO" checked>
+                            <span class="checkbox-label">Aguardando</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="status" value="CONCLUIDO" checked>
+                            <span class="checkbox-label">Concluído</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Envolvimento -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-people"></i> Envolvimento
+                    </h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="envolvimento" value="CAUSADOR" checked>
+                            <span class="checkbox-label">Causador</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="envolvimento" value="VITIMA" checked>
+                            <span class="checkbox-label">Vítima</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="envolvimento" value="NAO_INFORMADO" checked>
+                            <span class="checkbox-label">Não Informado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Motivo -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-file-text"></i> Motivo
+                    </h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="COLISAO" checked>
+                            <span class="checkbox-label">Colisão</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="ROUBO" checked>
+                            <span class="checkbox-label">Roubo</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="FURTO" checked>
+                            <span class="checkbox-label">Furto</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="INCENDIO" checked>
+                            <span class="checkbox-label">Incêndio</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="VANDALISMO" checked>
+                            <span class="checkbox-label">Vandalismo</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="FENOMENO_NATURAL" checked>
+                            <span class="checkbox-label">Fenômeno Natural</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="QUEBRA_PECA" checked>
+                            <span class="checkbox-label">Quebra de Peça</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="OUTROS" checked>
+                            <span class="checkbox-label">Outros</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="motivo" value="NAO_INFORMADO_MOTIVO" checked>
+                            <span class="checkbox-label">Não Informado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Data de Vencimento -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-calendar-event"></i> Data de Vencimento
+                    </h4>
+                    <div class="filter-date-range">
+                        <div class="filter-date-input">
+                            <label>De:</label>
+                            <input type="date" id="filter-date-from" class="form-control">
+                        </div>
+                        <div class="filter-date-input">
+                            <label>Até:</label>
+                            <input type="date" id="filter-date-to" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analista Responsável -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">
+                        <i class="bi bi-person-badge"></i> Analista Responsável
+                    </h4>
+                    <div class="filter-text-input">
+                        <input type="text" id="filter-analista" class="form-control" placeholder="Digite o nome do analista...">
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="filter-actions">
+                    <button class="btn-filter-apply" onclick="kanbanBoard.applyFilters()">
+                        <i class="bi bi-check-circle"></i> Aplicar Filtros
+                    </button>
+                    <button class="btn-filter-reset" onclick="kanbanBoard.resetFilters()">
+                        <i class="bi bi-arrow-clockwise"></i> Resetar
+                    </button>
                 </div>
             </div>
         </div>
