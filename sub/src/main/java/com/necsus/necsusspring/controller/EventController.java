@@ -98,11 +98,21 @@ public class EventController {
     @GetMapping("/api/by-status/{status}")
     @ResponseBody
     public ResponseEntity<List<com.necsus.necsusspring.dto.EventBoardCardDto>> getEventsByStatus(@PathVariable Status status) {
-        List<Event> events = eventService.listByStatus(status);
-        List<com.necsus.necsusspring.dto.EventBoardCardDto> dtos = events.stream()
-                .map(com.necsus.necsusspring.dto.EventBoardCardDto::from)
-                .toList();
-        return ResponseEntity.ok(dtos);
+        try {
+            logger.info("[KANBAN API] Buscando eventos com status: {}", status);
+            List<Event> events = eventService.listByStatus(status);
+            logger.info("[KANBAN API] Encontrados {} eventos para status {}", events.size(), status);
+
+            List<com.necsus.necsusspring.dto.EventBoardCardDto> dtos = events.stream()
+                    .map(com.necsus.necsusspring.dto.EventBoardCardDto::from)
+                    .toList();
+
+            logger.info("[KANBAN API] Retornando {} DTOs para o frontend", dtos.size());
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            logger.error("[KANBAN API] Erro ao buscar eventos por status {}: {}", status, e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/api/board")
