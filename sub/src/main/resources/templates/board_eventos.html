@@ -9,109 +9,59 @@
         <div class="kanban-wrapper">
             <!-- Header -->
             <div class="kanban-header">
-                <div class="kanban-page-header">
-                    <div class="page-info">
-                        <span class="page-icon">&lt;/&gt;</span>
-                        <div class="page-details">
-                            <h1 class="page-title">Sistema de Gestão - Controle de Desenvolvimento</h1>
-                            <div class="page-subtitle">
-                                <span class="page-breadcrumb">Eventos</span>
-                                <span class="divider">•</span>
-                                <span>Kanban por Status</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="page-actions">
-                        <button class="kanban-action-btn ghost" type="button">
-                            <i class="bi bi-share"></i>
-                            Compartilhar
-                        </button>
-                        <button
-                            class="kanban-action-btn primary"
-                            type="button"
-                            onclick="window.location.href='/events/new'"
-                        >
-                            <i class="bi bi-plus-lg"></i>
-                            Novo Evento
-                        </button>
-                    </div>
-                </div>
-
-                <div class="kanban-toolbar">
-                    <div class="kanban-tabs">
-                        <button class="kanban-tab active" type="button">
-                            <i class="bi bi-kanban"></i>
-                            Kanban por Status
-                        </button>
-                        <button class="kanban-tab" type="button">
-                            <i class="bi bi-table"></i>
-                            Tabela Geral
-                        </button>
-                        <button class="kanban-tab" type="button">
-                            <i class="bi bi-calendar3"></i>
-                            Calendário de Entregas
-                        </button>
-                    </div>
-                    <div class="kanban-toolbar-actions">
-                        <button class="kanban-ghost-btn" type="button">
-                            <i class="bi bi-view-list"></i>
-                            Status
-                        </button>
-                        <button class="kanban-ghost-btn" type="button" id="kanban-theme-selector" title="Temas">
-                            <i class="bi bi-palette"></i>
-                            Tema
-                        </button>
-                    </div>
-                </div>
-
                 <div class="kanban-controls">
-                    <div class="kanban-controls-left">
-                        <!-- Search -->
-                        <div class="kanban-search">
-                            <i class="bi bi-search"></i>
-                            <input
-                                type="text"
-                                id="kanban-search"
-                                placeholder="Buscar eventos..."
-                                autocomplete="off"
-                            />
-                        </div>
-
-                        <!-- Filter buttons -->
-                        <div class="kanban-filter-group">
-                            <button class="kanban-filter-btn active" data-filter="all">
-                                <i class="bi bi-funnel"></i>
-                                Todos
-                            </button>
-
-                            <button class="kanban-filter-btn" data-filter="URGENTE">
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                Urgente
-                            </button>
-
-                            <button class="kanban-filter-btn" data-filter="ALTA">
-                                <i class="bi bi-arrow-up"></i>
-                                Alta
-                            </button>
-                        </div>
+                    <!-- Search -->
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input
+                            type="text"
+                            id="kanban-search"
+                            placeholder="Buscar eventos..."
+                            autocomplete="off"
+                        />
                     </div>
 
-                    <div class="kanban-controls-right">
-                        <!-- View toggle -->
-                        <button class="kanban-view-btn" id="kanban-view-toggle" title="Alternar visualização (Board/Lista)">
-                            <i class="bi bi-layout-three-columns"></i>
-                        </button>
+                    <!-- Filter buttons -->
+                    <button class="kanban-filter-btn active" data-filter="all">
+                        <i class="bi bi-funnel"></i>
+                        Todos
+                    </button>
 
-                        <!-- Advanced Filters -->
-                        <button class="kanban-view-btn" id="kanban-advanced-filters" title="Filtros Avançados">
-                            <i class="bi bi-sliders"></i>
-                        </button>
+                    <button class="kanban-filter-btn" data-filter="URGENTE">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Urgente
+                    </button>
 
-                        <!-- Export -->
-                        <button class="kanban-view-btn" id="kanban-export" title="Exportar">
-                            <i class="bi bi-download"></i>
-                        </button>
-                    </div>
+                    <button class="kanban-filter-btn" data-filter="ALTA">
+                        <i class="bi bi-arrow-up"></i>
+                        Alta
+                    </button>
+
+                    <!-- View toggle -->
+                    <button class="kanban-view-btn" id="kanban-view-toggle" title="Alternar visualização (Board/Lista)">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+
+                    <!-- Advanced Filters -->
+                    <button class="kanban-view-btn" id="kanban-advanced-filters" title="Filtros Avançados">
+                        <i class="bi bi-funnel-fill"></i>
+                    </button>
+
+                    <!-- Export -->
+                    <button class="kanban-view-btn" id="kanban-export" title="Exportar">
+                        <i class="bi bi-download"></i>
+                    </button>
+
+                    <!-- Theme Selector -->
+                    <button class="kanban-view-btn" id="kanban-theme-selector" title="Temas">
+                        <i class="bi bi-palette-fill"></i>
+                    </button>
+
+                    <!-- Settings/New Event -->
+                    <button class="kanban-settings-btn" title="Novo Evento" onclick="window.location.href='/events/new'">
+                        <i class="bi bi-plus-circle"></i>
+                        Novo Evento
+                    </button>
                 </div>
             </div>
 
