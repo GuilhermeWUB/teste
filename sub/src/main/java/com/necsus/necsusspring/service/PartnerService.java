@@ -71,13 +71,19 @@ public class PartnerService {
                     existingPartner.setRg(partner.getRg());
                     existingPartner.setFax(partner.getFax());
                     if (partner.getAddress() != null) {
-                        existingPartner.getAddress().setZipcode(partner.getAddress().getZipcode());
-                        existingPartner.getAddress().setAddress(partner.getAddress().getAddress());
-                        existingPartner.getAddress().setNeighborhood(partner.getAddress().getNeighborhood());
-                        existingPartner.getAddress().setNumber(partner.getAddress().getNumber());
-                        existingPartner.getAddress().setComplement(partner.getAddress().getComplement());
-                        existingPartner.getAddress().setCity(partner.getAddress().getCity());
-                        existingPartner.getAddress().setStates(partner.getAddress().getStates());
+                        if (existingPartner.getAddress() != null) {
+                            // Update existing address
+                            existingPartner.getAddress().setZipcode(partner.getAddress().getZipcode());
+                            existingPartner.getAddress().setAddress(partner.getAddress().getAddress());
+                            existingPartner.getAddress().setNeighborhood(partner.getAddress().getNeighborhood());
+                            existingPartner.getAddress().setNumber(partner.getAddress().getNumber());
+                            existingPartner.getAddress().setComplement(partner.getAddress().getComplement());
+                            existingPartner.getAddress().setCity(partner.getAddress().getCity());
+                            existingPartner.getAddress().setStates(partner.getAddress().getStates());
+                        } else {
+                            // Create new address if existing partner doesn't have one
+                            existingPartner.setAddress(partner.getAddress());
+                        }
                     }
                     return partnerRepository.save(existingPartner);
                 })
