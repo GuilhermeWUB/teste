@@ -242,25 +242,6 @@ public class EventController {
         return "redirect:/events";
     }
 
-    @DeleteMapping("/api/{id}")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> deleteEventApi(@PathVariable Long id) {
-        try {
-            eventService.delete(id);
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Evento removido com sucesso!"
-            ));
-        } catch (Exception e) {
-            logger.error("Erro ao remover evento {}: {}", id, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "success", false,
-                            "error", "Erro ao remover evento"
-                    ));
-        }
-    }
-
     /**
      * API REST para atualização inline de evento
      */

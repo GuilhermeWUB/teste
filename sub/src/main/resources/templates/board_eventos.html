@@ -7,7 +7,6 @@
 <body>
 <section layout:fragment="content">
     <div class="kanban-wrapper">
-        <div id="kanban-feedback" class="kanban-feedback" role="status" aria-live="polite"></div>
         <!-- Header com controles -->
         <div class="kanban-header">
             <div class="kanban-controls">
@@ -44,71 +43,13 @@
                 <div class="column-header">
                     <div class="column-title">
                         <h3>A Fazer</h3>
-                        <span class="column-count" th:text="${boardCounters['A_FAZER']} ?: 0">0</span>
+                        <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" onclick="window.location.href='/events/new'">
                         <i class="bi bi-plus"></i> Add
                     </button>
                 </div>
-                <div class="tasks-container" data-status="A_FAZER"
-                     th:with="status='A_FAZER', cards=${eventsByStatus[status]}">
-                    <div class="empty-state" th:if="${#lists.isEmpty(cards)}">Nenhum evento neste status.</div>
-                    <div class="task-card"
-                         th:each="card : ${cards}"
-                         th:data-event-id="${card.id}">
-                        <div class="task-card-header">
-                            <div class="task-card-title">
-                                <h4 th:text="${card.titulo} ?: 'Sem título'"></h4>
-                                <p class="task-card-description" th:if="${card.descricao}" th:text="${card.descricao}">Descrição</p>
-                            </div>
-                            <div class="task-card-menu-wrapper">
-                                <button type="button" class="task-card-menu" data-menu-trigger aria-haspopup="true" aria-expanded="false" title="Mais opções">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <div class="task-card-menu-dropdown" role="menu">
-                                    <a th:href="@{/events/edit/{id}(id=${card.id})}" class="task-card-menu-item" role="menuitem">
-                                        <i class="bi bi-pencil-square"></i>
-                                        Editar
-                                    </a>
-                                    <button type="button" class="task-card-menu-item task-card-menu-item-danger" data-action="delete" th:data-event-id="${card.id}" role="menuitem">
-                                        <i class="bi bi-trash3"></i>
-                                        Excluir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-meta">
-                            <div class="task-card-badges">
-                                <span class="badge" th:if="${card.prioridade}" th:text="${card.prioridadeLabel}" th:classappend="' priority-' + ${card.prioridade}">Prioridade</span>
-                                <span class="badge badge-muted" th:if="${card.statusLabel}" th:text="${card.statusLabel}">Status</span>
-                                <span class="badge badge-muted" th:if="${card.motivoLabel}" th:text="${card.motivoLabel}">Motivo</span>
-                            </div>
-                            <div class="task-card-info">
-                                <div class="task-info-item" th:if="${card.partnerName}">
-                                    <i class="bi bi-person-circle"></i>
-                                    <strong th:text="${card.partnerName}">Associado</strong>
-                                </div>
-                                <div class="task-info-item" th:if="${card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.vehiclePlate}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.placaManual and !card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.placaManual}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.analistaResponsavel}">
-                                    <i class="bi bi-headset"></i>
-                                    <span th:text="${card.analistaResponsavel}">Responsável</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-footer">
-                            <span class="date" th:if="${card.dataVencimento}" th:text="${#temporals.format(card.dataVencimento, 'dd/MM/yyyy')}">
-                                18/09/2029
-                            </span>
-                            <span class="date" th:if="${card.dataVencimento == null}">Sem prazo definido</span>
-                        </div>
-                    </div>
+                <div class="tasks-container">
                 </div>
             </div>
 
@@ -117,71 +58,13 @@
                 <div class="column-header">
                     <div class="column-title">
                         <h3>Em Andamento</h3>
-                        <span class="column-count" th:text="${boardCounters['EM_ANDAMENTO']} ?: 0">0</span>
+                        <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" onclick="window.location.href='/events/new'">
                         <i class="bi bi-plus"></i> Add
                     </button>
                 </div>
-                <div class="tasks-container" data-status="EM_ANDAMENTO"
-                     th:with="status='EM_ANDAMENTO', cards=${eventsByStatus[status]}">
-                    <div class="empty-state" th:if="${#lists.isEmpty(cards)}">Nenhum evento neste status.</div>
-                    <div class="task-card"
-                         th:each="card : ${cards}"
-                         th:data-event-id="${card.id}">
-                        <div class="task-card-header">
-                            <div class="task-card-title">
-                                <h4 th:text="${card.titulo} ?: 'Sem título'"></h4>
-                                <p class="task-card-description" th:if="${card.descricao}" th:text="${card.descricao}">Descrição</p>
-                            </div>
-                            <div class="task-card-menu-wrapper">
-                                <button type="button" class="task-card-menu" data-menu-trigger aria-haspopup="true" aria-expanded="false" title="Mais opções">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <div class="task-card-menu-dropdown" role="menu">
-                                    <a th:href="@{/events/edit/{id}(id=${card.id})}" class="task-card-menu-item" role="menuitem">
-                                        <i class="bi bi-pencil-square"></i>
-                                        Editar
-                                    </a>
-                                    <button type="button" class="task-card-menu-item task-card-menu-item-danger" data-action="delete" th:data-event-id="${card.id}" role="menuitem">
-                                        <i class="bi bi-trash3"></i>
-                                        Excluir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-meta">
-                            <div class="task-card-badges">
-                                <span class="badge" th:if="${card.prioridade}" th:text="${card.prioridadeLabel}" th:classappend="' priority-' + ${card.prioridade}">Prioridade</span>
-                                <span class="badge badge-muted" th:if="${card.statusLabel}" th:text="${card.statusLabel}">Status</span>
-                                <span class="badge badge-muted" th:if="${card.motivoLabel}" th:text="${card.motivoLabel}">Motivo</span>
-                            </div>
-                            <div class="task-card-info">
-                                <div class="task-info-item" th:if="${card.partnerName}">
-                                    <i class="bi bi-person-circle"></i>
-                                    <strong th:text="${card.partnerName}">Associado</strong>
-                                </div>
-                                <div class="task-info-item" th:if="${card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.vehiclePlate}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.placaManual and !card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.placaManual}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.analistaResponsavel}">
-                                    <i class="bi bi-headset"></i>
-                                    <span th:text="${card.analistaResponsavel}">Responsável</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-footer">
-                            <span class="date" th:if="${card.dataVencimento}" th:text="${#temporals.format(card.dataVencimento, 'dd/MM/yyyy')}">
-                                18/09/2029
-                            </span>
-                            <span class="date" th:if="${card.dataVencimento == null}">Sem prazo definido</span>
-                        </div>
-                    </div>
+                <div class="tasks-container">
                 </div>
             </div>
 
@@ -190,71 +73,13 @@
                 <div class="column-header">
                     <div class="column-title">
                         <h3>Aguardando</h3>
-                        <span class="column-count" th:text="${boardCounters['AGUARDANDO']} ?: 0">0</span>
+                        <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" onclick="window.location.href='/events/new'">
                         <i class="bi bi-plus"></i> Add
                     </button>
                 </div>
-                <div class="tasks-container" data-status="AGUARDANDO"
-                     th:with="status='AGUARDANDO', cards=${eventsByStatus[status]}">
-                    <div class="empty-state" th:if="${#lists.isEmpty(cards)}">Nenhum evento neste status.</div>
-                    <div class="task-card"
-                         th:each="card : ${cards}"
-                         th:data-event-id="${card.id}">
-                        <div class="task-card-header">
-                            <div class="task-card-title">
-                                <h4 th:text="${card.titulo} ?: 'Sem título'"></h4>
-                                <p class="task-card-description" th:if="${card.descricao}" th:text="${card.descricao}">Descrição</p>
-                            </div>
-                            <div class="task-card-menu-wrapper">
-                                <button type="button" class="task-card-menu" data-menu-trigger aria-haspopup="true" aria-expanded="false" title="Mais opções">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <div class="task-card-menu-dropdown" role="menu">
-                                    <a th:href="@{/events/edit/{id}(id=${card.id})}" class="task-card-menu-item" role="menuitem">
-                                        <i class="bi bi-pencil-square"></i>
-                                        Editar
-                                    </a>
-                                    <button type="button" class="task-card-menu-item task-card-menu-item-danger" data-action="delete" th:data-event-id="${card.id}" role="menuitem">
-                                        <i class="bi bi-trash3"></i>
-                                        Excluir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-meta">
-                            <div class="task-card-badges">
-                                <span class="badge" th:if="${card.prioridade}" th:text="${card.prioridadeLabel}" th:classappend="' priority-' + ${card.prioridade}">Prioridade</span>
-                                <span class="badge badge-muted" th:if="${card.statusLabel}" th:text="${card.statusLabel}">Status</span>
-                                <span class="badge badge-muted" th:if="${card.motivoLabel}" th:text="${card.motivoLabel}">Motivo</span>
-                            </div>
-                            <div class="task-card-info">
-                                <div class="task-info-item" th:if="${card.partnerName}">
-                                    <i class="bi bi-person-circle"></i>
-                                    <strong th:text="${card.partnerName}">Associado</strong>
-                                </div>
-                                <div class="task-info-item" th:if="${card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.vehiclePlate}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.placaManual and !card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.placaManual}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.analistaResponsavel}">
-                                    <i class="bi bi-headset"></i>
-                                    <span th:text="${card.analistaResponsavel}">Responsável</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-footer">
-                            <span class="date" th:if="${card.dataVencimento}" th:text="${#temporals.format(card.dataVencimento, 'dd/MM/yyyy')}">
-                                18/09/2029
-                            </span>
-                            <span class="date" th:if="${card.dataVencimento == null}">Sem prazo definido</span>
-                        </div>
-                    </div>
+                <div class="tasks-container">
                 </div>
             </div>
 
@@ -263,71 +88,13 @@
                 <div class="column-header">
                     <div class="column-title">
                         <h3>Concluído</h3>
-                        <span class="column-count" th:text="${boardCounters['CONCLUIDO']} ?: 0">0</span>
+                        <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" onclick="window.location.href='/events/new'">
                         <i class="bi bi-plus"></i> Add
                     </button>
                 </div>
-                <div class="tasks-container" data-status="CONCLUIDO"
-                     th:with="status='CONCLUIDO', cards=${eventsByStatus[status]}">
-                    <div class="empty-state" th:if="${#lists.isEmpty(cards)}">Nenhum evento neste status.</div>
-                    <div class="task-card"
-                         th:each="card : ${cards}"
-                         th:data-event-id="${card.id}">
-                        <div class="task-card-header">
-                            <div class="task-card-title">
-                                <h4 th:text="${card.titulo} ?: 'Sem título'"></h4>
-                                <p class="task-card-description" th:if="${card.descricao}" th:text="${card.descricao}">Descrição</p>
-                            </div>
-                            <div class="task-card-menu-wrapper">
-                                <button type="button" class="task-card-menu" data-menu-trigger aria-haspopup="true" aria-expanded="false" title="Mais opções">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <div class="task-card-menu-dropdown" role="menu">
-                                    <a th:href="@{/events/edit/{id}(id=${card.id})}" class="task-card-menu-item" role="menuitem">
-                                        <i class="bi bi-pencil-square"></i>
-                                        Editar
-                                    </a>
-                                    <button type="button" class="task-card-menu-item task-card-menu-item-danger" data-action="delete" th:data-event-id="${card.id}" role="menuitem">
-                                        <i class="bi bi-trash3"></i>
-                                        Excluir
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-meta">
-                            <div class="task-card-badges">
-                                <span class="badge" th:if="${card.prioridade}" th:text="${card.prioridadeLabel}" th:classappend="' priority-' + ${card.prioridade}">Prioridade</span>
-                                <span class="badge badge-muted" th:if="${card.statusLabel}" th:text="${card.statusLabel}">Status</span>
-                                <span class="badge badge-muted" th:if="${card.motivoLabel}" th:text="${card.motivoLabel}">Motivo</span>
-                            </div>
-                            <div class="task-card-info">
-                                <div class="task-info-item" th:if="${card.partnerName}">
-                                    <i class="bi bi-person-circle"></i>
-                                    <strong th:text="${card.partnerName}">Associado</strong>
-                                </div>
-                                <div class="task-info-item" th:if="${card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.vehiclePlate}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.placaManual and !card.vehiclePlate}">
-                                    <i class="bi bi-truck"></i>
-                                    <span th:text="${card.placaManual}">Placa</span>
-                                </div>
-                                <div class="task-info-item" th:if="${card.analistaResponsavel}">
-                                    <i class="bi bi-headset"></i>
-                                    <span th:text="${card.analistaResponsavel}">Responsável</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="task-card-footer">
-                            <span class="date" th:if="${card.dataVencimento}" th:text="${#temporals.format(card.dataVencimento, 'dd/MM/yyyy')}">
-                                18/09/2029
-                            </span>
-                            <span class="date" th:if="${card.dataVencimento == null}">Sem prazo definido</span>
-                        </div>
-                    </div>
+                <div class="tasks-container">
                 </div>
             </div>
         </div>
@@ -338,7 +105,7 @@
         <div class="kanban-modal-content">
             <div class="kanban-modal-header">
                 <h2>Detalhes do Evento</h2>
-                <button class="kanban-modal-close" onclick="kanbanBoard?.closeModal?.()">
+                <button class="kanban-modal-close" onclick="kanbanBoard.closeModal()">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
