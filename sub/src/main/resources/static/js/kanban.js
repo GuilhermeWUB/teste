@@ -2,7 +2,15 @@
     const state = {
         cards: [],
         search: "",
-        quickFilter: "all"
+        advancedFilters: {
+            prioridade: ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'],
+            status: ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'],
+            envolvimento: ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'],
+            motivo: ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'],
+            dateFrom: null,
+            dateTo: null,
+            analista: ''
+        }
     };
 
     const dragState = {
@@ -36,7 +44,9 @@
     const selectors = {
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
         searchInput: () => document.getElementById('kanban-search'),
-        filterButtons: () => Array.from(document.querySelectorAll('.kanban-filter-btn')),
+        btnAdvancedFilters: () => document.getElementById('btn-advanced-filters'),
+        btnClearFilters: () => document.getElementById('btn-clear-filters'),
+        filtersModal: () => document.getElementById('filters-modal'),
         modal: () => document.getElementById('kanban-modal'),
         modalBody: () => document.querySelector('#kanban-modal .kanban-modal-body')
     };
@@ -58,14 +68,24 @@
             });
         }
 
-        selectors.filterButtons().forEach(button => {
-            button.addEventListener('click', () => {
-                selectors.filterButtons().forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                state.quickFilter = button.dataset.filter || 'all';
-                render();
+        const btnAdvancedFilters = selectors.btnAdvancedFilters();
+        if (btnAdvancedFilters) {
+            btnAdvancedFilters.addEventListener('click', openFiltersModal);
+        }
+
+        const btnClearFilters = selectors.btnClearFilters();
+        if (btnClearFilters) {
+            btnClearFilters.addEventListener('click', clearAllFilters);
+        }
+
+        const filtersModal = selectors.filtersModal();
+        if (filtersModal) {
+            filtersModal.addEventListener('click', event => {
+                if (event.target === filtersModal) {
+                    closeFiltersModal();
+                }
             });
-        });
+        }
 
         const modal = selectors.modal();
         if (modal) {
@@ -76,8 +96,12 @@
             });
 
             document.addEventListener('keydown', event => {
-                if (event.key === 'Escape' && modal.classList.contains('active')) {
-                    closeModal();
+                if (event.key === 'Escape') {
+                    if (filtersModal && filtersModal.classList.contains('active')) {
+                        closeFiltersModal();
+                    } else if (modal.classList.contains('active')) {
+                        closeModal();
+                    }
                 }
             });
         }
@@ -166,14 +190,57 @@
 
     function applyFilters(cards) {
         const term = state.search.trim();
-        const quick = state.quickFilter;
+        const filters = state.advancedFilters;
 
         return cards.filter(card => {
-            const matchesFilter = quick === 'all' || (card.prioridade && card.prioridade === quick);
-            if (!matchesFilter) {
+            // Filtro de prioridade
+            const cardPrioridade = card.prioridade || 'NULL';
+            if (!filters.prioridade.includes(cardPrioridade)) {
                 return false;
             }
 
+            // Filtro de status
+            if (!filters.status.includes(card.status)) {
+                return false;
+            }
+
+            // Filtro de envolvimento
+            if (!filters.envolvimento.includes(card.envolvimento)) {
+                return false;
+            }
+
+            // Filtro de motivo
+            if (!filters.motivo.includes(card.motivo)) {
+                return false;
+            }
+
+            // Filtro de data de vencimento
+            if (filters.dateFrom && card.dataVencimento) {
+                const cardDate = new Date(card.dataVencimento);
+                const fromDate = new Date(filters.dateFrom);
+                if (cardDate < fromDate) {
+                    return false;
+                }
+            }
+
+            if (filters.dateTo && card.dataVencimento) {
+                const cardDate = new Date(card.dataVencimento);
+                const toDate = new Date(filters.dateTo);
+                if (cardDate > toDate) {
+                    return false;
+                }
+            }
+
+            // Filtro de analista
+            if (filters.analista && card.analistaResponsavel) {
+                const analistaLower = filters.analista.toLowerCase();
+                const cardAnalistaLower = card.analistaResponsavel.toLowerCase();
+                if (!cardAnalistaLower.includes(analistaLower)) {
+                    return false;
+                }
+            }
+
+            // Filtro de busca textual
             if (!term) {
                 return true;
             }
@@ -502,9 +569,189 @@
             .replace(/'/g, '&#039;');
     }
 
+    function openFiltersModal() {
+        const modal = selectors.filtersModal();
+        if (!modal) {
+            return;
+        }
+
+        // Sincronizar o estado dos checkboxes com o state atual
+        ['prioridade', 'status', 'envolvimento', 'motivo'].forEach(filterType => {
+            const checkboxes = modal.querySelectorAll(`input[name="${filterType}"]`);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = state.advancedFilters[filterType].includes(checkbox.value);
+            });
+        });
+
+        // Sincronizar datas
+        const dateFrom = modal.querySelector('#filter-date-from');
+        const dateTo = modal.querySelector('#filter-date-to');
+        if (dateFrom) {
+            dateFrom.value = state.advancedFilters.dateFrom || '';
+        }
+        if (dateTo) {
+            dateTo.value = state.advancedFilters.dateTo || '';
+        }
+
+        // Sincronizar analista
+        const analista = modal.querySelector('#filter-analista');
+        if (analista) {
+            analista.value = state.advancedFilters.analista || '';
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFiltersModal() {
+        const modal = selectors.filtersModal();
+        if (!modal) {
+            return;
+        }
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function applyFiltersFromModal() {
+        const modal = selectors.filtersModal();
+        if (!modal) {
+            return;
+        }
+
+        // Coletar valores dos checkboxes
+        ['prioridade', 'status', 'envolvimento', 'motivo'].forEach(filterType => {
+            const checkboxes = modal.querySelectorAll(`input[name="${filterType}"]:checked`);
+            state.advancedFilters[filterType] = Array.from(checkboxes).map(cb => cb.value);
+        });
+
+        // Coletar datas
+        const dateFrom = modal.querySelector('#filter-date-from');
+        const dateTo = modal.querySelector('#filter-date-to');
+        state.advancedFilters.dateFrom = dateFrom ? dateFrom.value : null;
+        state.advancedFilters.dateTo = dateTo ? dateTo.value : null;
+
+        // Coletar analista
+        const analista = modal.querySelector('#filter-analista');
+        state.advancedFilters.analista = analista ? analista.value.trim() : '';
+
+        // Atualizar UI
+        updateFilterBadge();
+        render();
+        closeFiltersModal();
+    }
+
+    function resetFiltersInModal() {
+        const modal = selectors.filtersModal();
+        if (!modal) {
+            return;
+        }
+
+        // Resetar checkboxes - marcar todos
+        ['prioridade', 'status', 'envolvimento', 'motivo'].forEach(filterType => {
+            const checkboxes = modal.querySelectorAll(`input[name="${filterType}"]`);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+
+        // Resetar datas
+        const dateFrom = modal.querySelector('#filter-date-from');
+        const dateTo = modal.querySelector('#filter-date-to');
+        if (dateFrom) {
+            dateFrom.value = '';
+        }
+        if (dateTo) {
+            dateTo.value = '';
+        }
+
+        // Resetar analista
+        const analista = modal.querySelector('#filter-analista');
+        if (analista) {
+            analista.value = '';
+        }
+
+        // Resetar state
+        state.advancedFilters = {
+            prioridade: ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'],
+            status: ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'],
+            envolvimento: ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'],
+            motivo: ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'],
+            dateFrom: null,
+            dateTo: null,
+            analista: ''
+        };
+
+        updateFilterBadge();
+        render();
+    }
+
+    function clearAllFilters() {
+        resetFiltersInModal();
+    }
+
+    function updateFilterBadge() {
+        const btnAdvancedFilters = selectors.btnAdvancedFilters();
+        const btnClearFilters = selectors.btnClearFilters();
+        const filterCount = btnAdvancedFilters ? btnAdvancedFilters.querySelector('.filter-count') : null;
+
+        let activeFiltersCount = 0;
+
+        // Contar filtros ativos
+        const allPrioridades = ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'];
+        const allStatus = ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'];
+        const allEnvolvimentos = ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'];
+        const allMotivos = ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'];
+
+        if (state.advancedFilters.prioridade.length < allPrioridades.length) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.status.length < allStatus.length) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.envolvimento.length < allEnvolvimentos.length) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.motivo.length < allMotivos.length) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.dateFrom) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.dateTo) {
+            activeFiltersCount++;
+        }
+        if (state.advancedFilters.analista) {
+            activeFiltersCount++;
+        }
+
+        // Atualizar badge
+        if (filterCount) {
+            if (activeFiltersCount > 0) {
+                filterCount.textContent = activeFiltersCount;
+                filterCount.style.display = 'inline-flex';
+                if (btnAdvancedFilters) {
+                    btnAdvancedFilters.classList.add('active');
+                }
+            } else {
+                filterCount.style.display = 'none';
+                if (btnAdvancedFilters) {
+                    btnAdvancedFilters.classList.remove('active');
+                }
+            }
+        }
+
+        // Mostrar/ocultar botão de limpar filtros
+        if (btnClearFilters) {
+            btnClearFilters.style.display = activeFiltersCount > 0 ? 'inline-flex' : 'none';
+        }
+    }
+
     window.kanbanBoard = {
         init,
-        closeModal
+        closeModal,
+        closeFiltersModal,
+        applyFilters: applyFiltersFromModal,
+        resetFilters: resetFiltersInModal
     };
 
     document.addEventListener('DOMContentLoaded', init);

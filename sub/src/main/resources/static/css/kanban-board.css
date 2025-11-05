@@ -476,6 +476,200 @@ html[data-theme="dark"] .kanban-wrapper {
     border-radius: 999px;
 }
 
+/* Estilos para Filtros Avançados */
+.filter-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: var(--kanban-accent);
+    min-width: 20px;
+    height: 20px;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    margin-left: 0.4rem;
+}
+
+.kanban-clear-filters {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.15rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    background: color-mix(in srgb, #ef4444 15%, var(--kanban-panel-bg));
+    color: #ef4444;
+    border-color: color-mix(in srgb, #ef4444 35%, transparent);
+}
+
+.kanban-clear-filters:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, #ef4444 25%, var(--kanban-panel-bg));
+    border-color: #ef4444;
+}
+
+.filters-modal-content {
+    width: min(700px, 95vw);
+    max-height: 85vh;
+}
+
+.filters-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-section-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--kanban-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--kanban-divider);
+}
+
+.filter-section-title i {
+    color: var(--kanban-accent);
+}
+
+.filter-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.65rem;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    background: color-mix(in srgb, var(--kanban-panel-bg) 50%, transparent);
+    border: 1px solid var(--kanban-divider);
+}
+
+.filter-checkbox:hover {
+    background: color-mix(in srgb, var(--kanban-accent) 8%, var(--kanban-panel-bg));
+    border-color: color-mix(in srgb, var(--kanban-accent) 35%, var(--kanban-divider));
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--kanban-accent);
+}
+
+.checkbox-label {
+    font-size: 0.85rem;
+    color: var(--kanban-text);
+    user-select: none;
+}
+
+.filter-date-range {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-date-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-date-input label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--kanban-muted);
+}
+
+.filter-date-input .form-control,
+.filter-text-input .form-control {
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--kanban-input-border);
+    border-radius: 8px;
+    background: var(--kanban-input-bg);
+    color: var(--kanban-text);
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-date-input .form-control:focus,
+.filter-text-input .form-control:focus {
+    outline: none;
+    border-color: var(--kanban-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--kanban-accent) 15%, transparent);
+}
+
+.filter-text-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--kanban-divider);
+}
+
+.btn-filter-apply,
+.btn-filter-reset {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-filter-apply {
+    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(139, 92, 246, 0.35);
+}
+
+.btn-filter-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(139, 92, 246, 0.45);
+}
+
+.btn-filter-reset {
+    background: var(--kanban-panel-bg);
+    color: var(--kanban-text);
+    border: 1px solid var(--kanban-panel-border);
+}
+
+.btn-filter-reset:hover {
+    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--kanban-panel-bg) 85%, var(--kanban-muted) 15%);
+}
+
 /* Responsividade */
 @media (max-width: 992px) {
     .kanban-wrapper {
@@ -503,6 +697,28 @@ html[data-theme="dark"] .kanban-wrapper {
 
     .kanban-column {
         flex-basis: min(260px, 85vw);
+    }
+
+    .filter-options {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .filters-modal-content {
+        width: 95vw;
+        max-height: 90vh;
+    }
+
+    .filter-date-range {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+
+    .btn-filter-apply,
+    .btn-filter-reset {
+        width: 100%;
     }
 }
 
