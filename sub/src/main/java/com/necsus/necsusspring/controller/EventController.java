@@ -134,10 +134,14 @@ public class EventController {
 
             logger.info("Status do evento {} atualizado para {}", id, newStatus);
 
+            // Converte para DTO para evitar problemas de serialização JSON
+            com.necsus.necsusspring.dto.EventBoardCardDto eventDto =
+                com.necsus.necsusspring.dto.EventBoardCardDto.from(updated);
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Status atualizado com sucesso");
-            response.put("event", updated);
+            response.put("event", eventDto);
 
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
