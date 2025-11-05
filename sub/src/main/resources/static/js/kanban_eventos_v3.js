@@ -660,7 +660,33 @@ class KanbanBoard {
 
 // Initialize
 let kanbanBoard;
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('[KANBAN V3] 🎬 DOM carregado, inicializando sistema...');
+
+// Função de inicialização que funciona independente do timing
+function initKanbanBoard() {
+    console.log('[KANBAN V3] 🎬 Inicializando sistema kanban...');
+
+    // Verificar se já foi inicializado
+    if (kanbanBoard) {
+        console.log('[KANBAN V3] ⚠️ Sistema já inicializado, pulando...');
+        return;
+    }
+
+    // Verificar se containers existem
+    const containers = document.querySelectorAll('.tasks-container');
+    if (containers.length === 0) {
+        console.warn('[KANBAN V3] ⚠️ Containers não encontrados ainda, aguardando...');
+        setTimeout(initKanbanBoard, 100);
+        return;
+    }
+
+    console.log('[KANBAN V3] ✅ Containers encontrados:', containers.length);
     kanbanBoard = new KanbanBoard();
-});
+}
+
+// Tentar inicializar de várias formas para garantir compatibilidade
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initKanbanBoard);
+} else {
+    // DOM já está pronto, inicializar imediatamente
+    initKanbanBoard();
+}
