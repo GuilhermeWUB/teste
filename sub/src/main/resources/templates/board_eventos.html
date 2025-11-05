@@ -120,26 +120,26 @@
             </div>
         </div>
 
+        <!-- Scripts -->
+        <script th:src="@{/js/kanban_eventos_v3.js}"></script>
+        <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
+        <script>
+            // SOLUÇÃO SIMPLES: Esperar scripts carregarem e inicializar
+            (function waitForKanban() {
+                if (typeof KanbanBoard === 'undefined') {
+                    setTimeout(waitForKanban, 50);
+                    return;
+                }
+
+                if (document.querySelectorAll('.tasks-container').length === 0) {
+                    setTimeout(waitForKanban, 50);
+                    return;
+                }
+
+                console.log('[INIT] Inicializando KanbanBoard...');
+                window.kanbanBoard = new KanbanBoard();
+            })();
+        </script>
     </section>
-
-    <!-- Scripts FORA do section para carregar DEPOIS do layout processar -->
-    <script th:src="@{/js/kanban_eventos_v3.js}"></script>
-    <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
-    <script>
-        // Aguardar containers estarem no DOM
-        (function initWhenReady() {
-            const containers = document.querySelectorAll('.tasks-container');
-
-            if (containers.length === 0) {
-                console.log('[INIT] Aguardando containers... (tentando em 100ms)');
-                setTimeout(initWhenReady, 100);
-                return;
-            }
-
-            console.log('[INIT] ✅ Containers encontrados:', containers.length);
-            console.log('[INIT] Inicializando KanbanBoard...');
-            window.kanbanBoard = new KanbanBoard();
-        })();
-    </script>
 </body>
 </html>
