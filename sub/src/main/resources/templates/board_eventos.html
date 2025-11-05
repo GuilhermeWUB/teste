@@ -123,6 +123,24 @@
         <!-- Scripts -->
         <script th:src="@{/js/kanban_eventos_v3.js}"></script>
         <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const main = document.querySelector('main.page');
+                if (main) {
+                    main.classList.add('kanban-page');
+                }
+
+                const container = document.querySelector('main.page > .container');
+                if (container) {
+                    container.classList.add('kanban-full-width');
+                }
+
+                const pageContent = document.querySelector('main.page > .container > .page-content');
+                if (pageContent) {
+                    pageContent.classList.add('kanban-content-stretch');
+                }
+            });
+        </script>
     </section>
 </body>
 </html>
