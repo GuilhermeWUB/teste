@@ -27,13 +27,34 @@
     --kanban-column-highlight: color-mix(in srgb, var(--color-primary) 18%, transparent);
 
     background: var(--kanban-page-bg);
-    border-radius: clamp(12px, 2vw, 18px);
+    border-radius: 0;
     padding: clamp(1.25rem, 3vw, 2.5rem);
-    min-height: calc(100vh - 3rem);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     gap: clamp(1.5rem, 3vw, 2.5rem);
-    box-shadow: var(--kanban-panel-shadow);
+    box-shadow: none;
+}
+
+.kanban-page {
+    padding: 0;
+    background: var(--kanban-page-bg);
+}
+
+.kanban-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.kanban-content-stretch {
+    flex: 1;
+    gap: 0;
+}
+
+.kanban-content-stretch > section {
+    flex: 1;
 }
 
 html[data-theme="dark"] .kanban-wrapper {
