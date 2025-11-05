@@ -2,10 +2,127 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}">
 <head>
     <title>Eventos - Kanban</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-eventos-v2.css}">
 </head>
 <body>
     <section layout:fragment="content">
-        <th:block th:replace="fragments/eventos_kanban_v2 :: content"></th:block>
+        <!-- Kanban Board Inline (sem fragment externo) -->
+        <div class="kanban-wrapper">
+            <!-- Header -->
+            <div class="kanban-header">
+                <div class="kanban-controls">
+                    <!-- Search -->
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="kanban-search" placeholder="Buscar eventos..." autocomplete="off"/>
+                    </div>
+
+                    <!-- Filter buttons -->
+                    <button class="kanban-filter-btn active" data-filter="all">
+                        <i class="bi bi-funnel"></i> Todos
+                    </button>
+                    <button class="kanban-filter-btn" data-filter="URGENTE">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Urgente
+                    </button>
+                    <button class="kanban-filter-btn" data-filter="ALTA">
+                        <i class="bi bi-arrow-up"></i> Alta
+                    </button>
+
+                    <!-- Buttons -->
+                    <button class="kanban-view-btn" id="kanban-view-toggle" title="Alternar visualização">
+                        <i class="bi bi-list-ul"></i>
+                    </button>
+                    <button class="kanban-view-btn" id="kanban-advanced-filters" title="Filtros Avançados">
+                        <i class="bi bi-funnel-fill"></i>
+                    </button>
+                    <button class="kanban-view-btn" id="kanban-export" title="Exportar">
+                        <i class="bi bi-download"></i>
+                    </button>
+                    <button class="kanban-view-btn" id="kanban-theme-selector" title="Temas">
+                        <i class="bi bi-palette-fill"></i>
+                    </button>
+                    <button class="kanban-settings-btn" title="Novo Evento" onclick="window.location.href='/events/new'">
+                        <i class="bi bi-plus-circle"></i> Novo Evento
+                    </button>
+                </div>
+            </div>
+
+            <!-- Board com colunas -->
+            <div class="kanban-board">
+                <!-- Coluna A Fazer -->
+                <div class="kanban-column" data-status="A_FAZER">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <h3>A Fazer</h3>
+                            <span class="column-count">0</span>
+                        </div>
+                        <button class="column-add-btn">
+                            <i class="bi bi-plus"></i> Novo
+                        </button>
+                    </div>
+                    <div class="tasks-container" id="column-A_FAZER"></div>
+                </div>
+
+                <!-- Coluna Em Andamento -->
+                <div class="kanban-column" data-status="EM_ANDAMENTO">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <h3>Em Andamento</h3>
+                            <span class="column-count">0</span>
+                        </div>
+                        <button class="column-add-btn">
+                            <i class="bi bi-plus"></i> Novo
+                        </button>
+                    </div>
+                    <div class="tasks-container" id="column-EM_ANDAMENTO"></div>
+                </div>
+
+                <!-- Coluna Aguardando -->
+                <div class="kanban-column" data-status="AGUARDANDO">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <h3>Aguardando</h3>
+                            <span class="column-count">0</span>
+                        </div>
+                        <button class="column-add-btn">
+                            <i class="bi bi-plus"></i> Novo
+                        </button>
+                    </div>
+                    <div class="tasks-container" id="column-AGUARDANDO"></div>
+                </div>
+
+                <!-- Coluna Concluído -->
+                <div class="kanban-column" data-status="CONCLUIDO">
+                    <div class="column-header">
+                        <div class="column-title">
+                            <h3>Concluído</h3>
+                            <span class="column-count">0</span>
+                        </div>
+                        <button class="column-add-btn">
+                            <i class="bi bi-plus"></i> Novo
+                        </button>
+                    </div>
+                    <div class="tasks-container" id="column-CONCLUIDO"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="kanban-modal" class="kanban-modal">
+            <div class="kanban-modal-content">
+                <div class="kanban-modal-header">
+                    <h2>Detalhes do Evento</h2>
+                    <button class="kanban-modal-close" onclick="kanbanBoard.closeModal()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div class="kanban-modal-body"></div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script th:src="@{/js/kanban_eventos_v3.js}"></script>
+        <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
     </section>
 </body>
 </html>
