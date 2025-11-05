@@ -658,4 +658,9 @@ class KanbanBoard {
     // Continua no próximo arquivo...
 }
 
-// KanbanBoard será inicializado pelo template após carregar
+// Initialize
+let kanbanBoard;
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[KANBAN V3] 🎬 DOM carregado, inicializando sistema...');
+    kanbanBoard = new KanbanBoard();
+});
