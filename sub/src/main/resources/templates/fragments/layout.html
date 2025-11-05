@@ -46,9 +46,7 @@
                 <a th:href="@{/events}">Eventos</a>
             </li>
             <li th:if="${isLoggedIn}">
-                <a th:href="@{/demands}">
-                    <i class="bi bi-clipboard2-check"></i> Demandas
-                </a>
+                <a th:href="@{/demands}">Demandas</a>
             </li>
 
             <li th:if="${isAdmin}" class="nav-item nav-item-dropdown">
