@@ -88,6 +88,7 @@ public class EventController {
                 .toList();
         model.addAttribute("statusMetadata", statusMetadata);
 
+        // Usando template com HTML inline dentro do layout:fragment
         return "board_eventos";
     }
 
