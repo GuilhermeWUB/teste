@@ -840,8 +840,114 @@ Object.assign(KanbanBoard.prototype, {
         }
         if (!event) return;
 
-        // Implementação já existente no arquivo principal
         console.log('[KANBAN V3] 👁️ Mostrando detalhes:', event.id);
+
+        const modal = document.getElementById('kanban-modal');
+        if (!modal) return;
+
+        const modalBody = modal.querySelector('.kanban-modal-body');
+        const modalTitle = modal.querySelector('.kanban-modal-header h2');
+
+        if (modalTitle) modalTitle.textContent = 'Detalhes do Evento';
+
+        modalBody.innerHTML = `
+            <div class="event-details">
+                <div class="event-detail-section">
+                    <h5><i class="bi bi-info-circle"></i> Informações Gerais</h5>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="fw-bold">Título:</label>
+                            <p>${this.escapeHtml(event.titulo)}</p>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="fw-bold">Descrição:</label>
+                            <p>${this.escapeHtml(event.descricao || 'Sem descrição')}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Status:</label>
+                            <p>${this.getStatusBadge(event.status)}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Prioridade:</label>
+                            <p>${this.renderPriorityBadge(event.prioridade)}</p>
+                        </div>
+                        ${event.motivo ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Motivo:</label>
+                            <p>${this.renderMotivoBadge(event.motivo)}</p>
+                        </div>
+                        ` : ''}
+                        ${event.envolvimento ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Envolvimento:</label>
+                            <p>${this.renderEnvolvimentoBadge(event.envolvimento)}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${event.partnerName || event.vehiclePlate || event.placaManual ? `
+                <div class="event-detail-section mt-4">
+                    <h5><i class="bi bi-person-badge"></i> Associado e Veículo</h5>
+                    <div class="row g-3">
+                        ${event.partnerName ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Associado:</label>
+                            <p><i class="bi bi-person-fill"></i> ${this.escapeHtml(event.partnerName)}</p>
+                        </div>
+                        ` : ''}
+                        ${event.vehiclePlate || event.placaManual ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Veículo:</label>
+                            <p><i class="bi bi-car-front-fill"></i> ${this.escapeHtml(event.vehiclePlate || event.placaManual)}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${event.dataVencimento || event.analistaResponsavel ? `
+                <div class="event-detail-section mt-4">
+                    <h5><i class="bi bi-calendar-check"></i> Prazos e Responsável</h5>
+                    <div class="row g-3">
+                        ${event.dataVencimento ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Vencimento:</label>
+                            <p>${this.renderDeadline(event.dataVencimento)}</p>
+                        </div>
+                        ` : ''}
+                        ${event.analistaResponsavel ? `
+                        <div class="col-md-6">
+                            <label class="fw-bold">Responsável:</label>
+                            <p>${this.renderAssignee(event.analistaResponsavel)}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${event.observacoes ? `
+                <div class="event-detail-section mt-4">
+                    <h5><i class="bi bi-chat-left-text"></i> Observações</h5>
+                    <p>${this.escapeHtml(event.observacoes)}</p>
+                </div>
+                ` : ''}
+
+                <div class="mt-4 d-flex gap-2 justify-content-end">
+                    <button class="btn btn-outline-secondary" onclick="kanbanBoard.closeModal()">
+                        <i class="bi bi-x-circle"></i> Fechar
+                    </button>
+                    <button class="btn btn-outline-info" onclick="kanbanBoard.showHistory(${event.id})">
+                        <i class="bi bi-clock-history"></i> Ver Histórico
+                    </button>
+                    <button class="btn btn-primary" onclick="kanbanBoard.editEventInline(${event.id})">
+                        <i class="bi bi-pencil"></i> Editar
+                    </button>
+                </div>
+            </div>
+        `;
+
+        modal.classList.add('active');
     },
 
     updateColumnCount(status, count) {
