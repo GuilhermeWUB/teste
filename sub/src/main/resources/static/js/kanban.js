@@ -17,6 +17,22 @@
         CONCLUIDO: 'Concluído'
     };
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    function buildHeaders(extra = {}) {
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            ...extra
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        return headers;
+    }
+
     const selectors = {
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
         searchInput: () => document.getElementById('kanban-search'),
@@ -70,7 +86,7 @@
     async function loadBoard() {
         try {
             const response = await fetch('/events/api/board', {
-                headers: { 'Accept': 'application/json' }
+                headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
@@ -374,10 +390,10 @@
     async function persistCardStatusChange(cardId, newStatus) {
         const response = await fetch(`/events/api/${cardId}/status`, {
             method: 'PUT',
-            headers: {
+            headers: buildHeaders({
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            },
+            }),
             body: JSON.stringify({ status: newStatus })
         });
 
