@@ -656,17 +656,33 @@ html[data-theme="dark"] .filters-modal-content {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Padrão (modo escuro) */
 .btn-filter-apply {
-    background: linear-gradient(135deg, #5b21b6 0%, #6d28d9 55%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
     color: #fff;
-    border: 1px solid color-mix(in srgb, #4c1d95 80%, rgba(139, 92, 246, 0.4));
-    box-shadow: 0 14px 32px rgba(76, 29, 149, 0.45);
-    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(74, 36, 155, 0.45);
+    box-shadow: 0 12px 26px rgba(139, 92, 246, 0.4);
+    text-shadow: 0 1px 2px rgba(32, 18, 75, 0.35);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
+/* Modo claro */
+html:not([data-theme="dark"]) .btn-filter-apply {
+    background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(60, 40, 120, 0.35);
+}
+
+/* Hover (em ambos os temas) */
 .btn-filter-apply:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 38px rgba(76, 29, 149, 0.55);
+    box-shadow: 0 16px 34px rgba(107, 70, 193, 0.5);
 }
 
 .btn-filter-reset {

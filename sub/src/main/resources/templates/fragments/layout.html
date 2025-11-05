@@ -82,7 +82,7 @@
                 <button type="button" class="theme-toggle" data-theme-toggle>
                     <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">🌙</span>
                     <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀️</span>
-                    <span class="theme-toggle__label">Tema</span>
+                    <span class="theme-toggle__label"></span>
                 </button>
             </li>
             <li class="nav-item-mobile-action" th:if="${isLoggedIn}">
@@ -105,7 +105,7 @@
         <button type="button" class="theme-toggle" data-theme-toggle>
             <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">🌙</span>
             <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">☀️</span>
-            <span class="theme-toggle__label">Tema</span>
+            <span class="theme-toggle__label"></span>
         </button>
         <a class="btn btn-outline" th:if="${isLoggedIn}" th:href="@{/logout}">
             <i class="bi bi-box-arrow-right me-1"></i>
