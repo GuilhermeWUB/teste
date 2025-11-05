@@ -517,6 +517,14 @@ html[data-theme="dark"] .kanban-wrapper {
 .filters-modal-content {
     width: min(700px, 95vw);
     max-height: 85vh;
+    background: var(--color-surface-elevated);
+    border: 1px solid color-mix(in srgb, var(--kanban-card-border) 70%, rgba(139, 92, 246, 0.12));
+    box-shadow: 0 32px 70px rgba(15, 23, 42, 0.25);
+}
+
+html[data-theme="dark"] .filters-modal-content {
+    background: color-mix(in srgb, var(--color-surface-elevated) 94%, rgba(12, 7, 24, 1));
+    border-color: color-mix(in srgb, var(--kanban-card-border) 60%, rgba(124, 58, 237, 0.45));
 }
 
 .filters-modal-body {
@@ -560,14 +568,14 @@ html[data-theme="dark"] .kanban-wrapper {
     cursor: pointer;
     padding: 0.5rem 0.75rem;
     border-radius: 8px;
-    transition: background 0.2s ease;
-    background: color-mix(in srgb, var(--kanban-panel-bg) 50%, transparent);
-    border: 1px solid var(--kanban-divider);
+    transition: background 0.2s ease, border-color 0.2s ease;
+    background: var(--color-surface);
+    border: 1px solid color-mix(in srgb, var(--kanban-divider) 70%, rgba(139, 92, 246, 0.18));
 }
 
 .filter-checkbox:hover {
-    background: color-mix(in srgb, var(--kanban-accent) 8%, var(--kanban-panel-bg));
-    border-color: color-mix(in srgb, var(--kanban-accent) 35%, var(--kanban-divider));
+    background: color-mix(in srgb, var(--color-surface) 80%, var(--kanban-accent) 20%);
+    border-color: color-mix(in srgb, var(--kanban-accent) 40%, var(--kanban-divider));
 }
 
 .filter-checkbox input[type="checkbox"] {
@@ -649,14 +657,26 @@ html[data-theme="dark"] .kanban-wrapper {
 }
 
 .btn-filter-apply {
-    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    background: linear-gradient(135deg, #5b21b6 0%, #6d28d9 55%, #8b5cf6 100%);
     color: #fff;
-    box-shadow: 0 10px 24px rgba(139, 92, 246, 0.35);
+    border: 1px solid color-mix(in srgb, #4c1d95 80%, rgba(139, 92, 246, 0.4));
+    box-shadow: 0 14px 32px rgba(76, 29, 149, 0.45);
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.45);
 }
 
 .btn-filter-apply:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 32px rgba(139, 92, 246, 0.45);
+    box-shadow: 0 18px 38px rgba(76, 29, 149, 0.55);
+}
+
+html[data-theme="light"] .btn-filter-apply {
+    color: #fff;
+    border-color: #fff;
+    text-shadow: 0 1px 1px rgba(76, 29, 149, 0.35);
+}
+
+html[data-theme="light"] .btn-filter-apply:hover {
+    border-color: #fff;
 }
 
 .btn-filter-reset {
