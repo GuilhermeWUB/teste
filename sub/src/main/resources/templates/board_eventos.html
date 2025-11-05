@@ -120,9 +120,59 @@
             </div>
         </div>
 
-        <!-- Scripts -->
-        <script th:src="@{/js/kanban_eventos_v3.js}"></script>
-        <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
+
+        <!-- Scripts carregados dinamicamente após DOM estar pronto -->
+        <script>
+            // Garante que scripts só carreguem após TODO o DOM estar pronto
+            (function() {
+                console.log('[KANBAN LOADER] Aguardando DOM completo...');
+
+                function loadKanbanScripts() {
+                    console.log('[KANBAN LOADER] DOM pronto! Verificando elementos...');
+                    console.log('[KANBAN LOADER] Containers encontrados:', document.querySelectorAll('.tasks-container').length);
+                    console.log('[KANBAN LOADER] Colunas encontradas:', document.querySelectorAll('.kanban-column').length);
+
+                    if (document.querySelectorAll('.tasks-container').length === 0) {
+                        console.error('[KANBAN LOADER] ❌ CONTAINERS NÃO ENCONTRADOS! Tentando novamente em 100ms...');
+                        setTimeout(loadKanbanScripts, 100);
+                        return;
+                    }
+
+                    console.log('[KANBAN LOADER] ✅ Elementos encontrados! Carregando scripts...');
+
+                    // Carregar script principal
+                    const script1 = document.createElement('script');
+                    script1.src = '/js/kanban_eventos_v3.js';
+                    script1.onload = function() {
+                        console.log('[KANBAN LOADER] ✅ kanban_eventos_v3.js carregado');
+
+                        // Carregar script de métodos após o principal
+                        const script2 = document.createElement('script');
+                        script2.src = '/js/kanban_eventos_v3_methods.js';
+                        script2.onload = function() {
+                            console.log('[KANBAN LOADER] ✅ kanban_eventos_v3_methods.js carregado');
+                            console.log('[KANBAN LOADER] 🚀 Sistema kanban pronto!');
+                        };
+                        script2.onerror = function() {
+                            console.error('[KANBAN LOADER] ❌ Erro ao carregar kanban_eventos_v3_methods.js');
+                        };
+                        document.body.appendChild(script2);
+                    };
+                    script1.onerror = function() {
+                        console.error('[KANBAN LOADER] ❌ Erro ao carregar kanban_eventos_v3.js');
+                    };
+                    document.body.appendChild(script1);
+                }
+
+                // Esperar DOM estar completamente pronto
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', loadKanbanScripts);
+                } else {
+                    // DOM já está pronto
+                    setTimeout(loadKanbanScripts, 100); // Pequeno delay para garantir
+                }
+            })();
+        </script>
     </section>
 </body>
 </html>
