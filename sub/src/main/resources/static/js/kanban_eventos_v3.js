@@ -252,30 +252,28 @@ class KanbanBoard {
     }
 
     async fetchAllEvents() {
-        console.log('[KANBAN V3] 📡 Buscando todos os eventos...');
+        console.log('[KANBAN V3] 🚚 Carregando eventos injetados pelo servidor...');
 
         try {
-            const promises = this.statuses.map(status =>
-                fetch(`/events/api/by-status/${status}`)
-                    .then(res => {
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        return res.json();
-                    })
-                    .then(events => {
-                        console.log(`[KANBAN V3] Status ${status}: ${events.length} eventos`);
-                        return events;
-                    })
-            );
-
-            const results = await Promise.all(promises);
-            this.events = results.flat();
+            // Os dados agora são injetados diretamente no HTML pela variável `KANBAN_DATA`
+            this.events = Array.isArray(window.KANBAN_DATA) ? window.KANBAN_DATA : [];
             this.filteredEvents = [...this.events];
 
-            console.log(`[KANBAN V3] ✅ Total: ${this.events.length} eventos carregados`);
+            console.log(`[KANBAN V3] ✅ Total: ${this.events.length} eventos carregados a partir dos dados da página.`);
+
+            if (this.events.length === 0) {
+                console.warn('[KANBAN V3] ⚠️ Nenhum evento encontrado nos dados da página. O quadro ficará vazio.');
+            }
+
         } catch (error) {
-            console.error('[KANBAN V3] ❌ Erro ao buscar eventos:', error);
+            console.error('[KANBAN V3] ❌ Erro ao processar os dados de eventos da página:', error);
             this.showToast('Erro ao carregar eventos', 'error');
+            this.events = [];
+            this.filteredEvents = [];
         }
+
+        // Retorna uma promessa resolvida para manter a assinatura do método async
+        return Promise.resolve();
     }
 
     filterAndRender() {

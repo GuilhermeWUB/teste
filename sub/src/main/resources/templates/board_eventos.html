@@ -121,6 +121,11 @@
         </div>
 
         <!-- Scripts -->
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.KANBAN_DATA = /*[[${boardCards}]]*/ [];
+            /*]]>*/
+        </script>
         <script th:src="@{/js/kanban_eventos_v3.js}"></script>
         <script th:src="@{/js/kanban_eventos_v3_methods.js}"></script>
         <script>
