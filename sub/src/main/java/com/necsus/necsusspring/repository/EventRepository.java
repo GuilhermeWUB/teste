@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    @EntityGraph(attributePaths = {"partner", "vehicle"})
     List<Event> findByStatus(Status status);
 
     List<Event> findByPartnerId(Long partnerId);
