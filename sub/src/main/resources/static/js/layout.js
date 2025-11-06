@@ -126,6 +126,44 @@
      * Adiciona botão "Voltar ao topo"
      */
     function initBackToTop() {
+        let backToTopBtn = document.querySelector('.back-to-top') || document.getElementById('back-to-top');
+
+        if (!backToTopBtn) {
+            backToTopBtn = document.createElement('button');
+            backToTopBtn.id = 'back-to-top';
+            backToTopBtn.className = 'back-to-top';
+            backToTopBtn.type = 'button';
+            backToTopBtn.setAttribute('aria-hidden', 'true');
+            backToTopBtn.setAttribute('tabindex', '-1');
+            backToTopBtn.innerHTML = `
+                <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                <span class="back-to-top__text">Voltar ao topo</span>
+            `;
+            backToTopBtn.classList.remove('is-visible');
+            document.body.appendChild(backToTopBtn);
+        } else {
+            backToTopBtn.id = 'back-to-top';
+            backToTopBtn.classList.add('back-to-top');
+            backToTopBtn.removeAttribute('style');
+            backToTopBtn.type = 'button';
+            backToTopBtn.setAttribute('aria-hidden', 'true');
+            backToTopBtn.setAttribute('tabindex', '-1');
+            backToTopBtn.classList.remove('is-visible');
+
+            ['btn', 'btn-primary', 'position-fixed', 'bottom-0', 'end-0', 'm-4'].forEach(cls => {
+                backToTopBtn.classList.remove(cls);
+            });
+
+            if (!backToTopBtn.querySelector('.back-to-top__icon')) {
+                backToTopBtn.innerHTML = `
+                    <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                    <span class="back-to-top__text">Voltar ao topo</span>
+                `;
+            }
+
+            if (!document.body.contains(backToTopBtn)) {
+                document.body.appendChild(backToTopBtn);
+            }
         const backToTopBtn = document.querySelector('.back-to-top');
 
         if (!backToTopBtn) {
