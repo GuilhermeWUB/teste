@@ -21,6 +21,25 @@
         <form method="get" th:action="@{/reports/partners}" class="report-filters">
             <input type="hidden" name="generate" value="true" />
 
+            <div class="report-actions mb-4">
+                <button type="button" class="btn btn-primary" data-report-submit>
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Gerar Relatório</span>
+                </button>
+                <a th:href="@{/reports/partners/excel}" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Download Excel Completo</span>
+                </a>
+                <a th:href="@{/reports/partners/excel/summary}" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Download Excel Resumido</span>
+                </a>
+                <a th:href="@{/reports/partners}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                    <span>Limpar</span>
+                </a>
+            </div>
+
             <section class="report-selection-card">
                 <div class="report-selection-header">
                     <div>
@@ -496,24 +515,6 @@
                 </div>
             </div>
 
-            <div class="report-actions mt-4">
-                <button type="button" class="btn btn-primary" data-report-submit>
-                    <i class="bi bi-file-earmark-bar-graph"></i>
-                    <span>Gerar Relatório</span>
-                </button>
-                <a th:href="@{/reports/partners/excel}" class="btn btn-success">
-                    <i class="bi bi-file-earmark-excel"></i>
-                    <span>Download Excel Completo</span>
-                </a>
-                <a th:href="@{/reports/partners/excel/summary}" class="btn btn-success">
-                    <i class="bi bi-file-earmark-excel"></i>
-                    <span>Download Excel Resumido</span>
-                </a>
-                <a th:href="@{/reports/partners}" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle"></i>
-                    <span>Limpar</span>
-                </a>
-            </div>
             <div class="report-inline-feedback d-none" data-report-error role="alert" aria-live="assertive"></div>
         </form>
     </div>
@@ -521,17 +522,6 @@
     <div th:if="${errorMessage}" class="alert alert-warning" role="alert">
         <i class="bi bi-exclamation-triangle-fill"></i>
         <span th:text="${errorMessage}"></span>
-    </div>
-
-    <div class="d-flex flex-wrap gap-2 mb-4">
-        <button type="button" class="btn btn-primary btn-sm" data-report-view-details>
-            <i class="bi bi-eye"></i>
-            <span>Ver detalhes</span>
-        </button>
-        <button type="button" class="btn btn-outline-secondary btn-sm" data-report-clear>
-            <i class="bi bi-trash"></i>
-            <span>Limpar visualização</span>
-        </button>
     </div>
 
     <div class="report-feedback" data-report-feedback role="status" aria-live="polite" hidden></div>
