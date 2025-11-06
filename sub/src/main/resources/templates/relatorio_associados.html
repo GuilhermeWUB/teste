@@ -523,47 +523,18 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <div class="report-card report-results-placeholder" data-report-empty>
-        <div class="report-empty-state">
-            <div class="report-empty-icon">
-                <i class="bi bi-search"></i>
-            </div>
-            <h2 class="h5 mb-2">Visualização dinâmica do relatório</h2>
-            <p class="text-muted mb-3">Selecione as seções desejadas e clique em &ldquo;Gerar Relatório&rdquo; para visualizar os resultados sem sair da página.</p>
-            <button type="button" class="btn btn-outline-primary" data-scroll-to-form>
-                <i class="bi bi-sliders me-2"></i>
-                <span>Escolher seções</span>
-            </button>
-        </div>
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <button type="button" class="btn btn-primary btn-sm" data-report-view-details>
+            <i class="bi bi-eye"></i>
+            <span>Ver detalhes</span>
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-report-clear>
+            <i class="bi bi-trash"></i>
+            <span>Limpar visualização</span>
+        </button>
     </div>
 
-    <div class="report-card report-results d-none" data-report-results-wrapper>
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
-            <div>
-                <h2 class="h4 mb-1" data-report-results-title>Relatório de Associados</h2>
-                <p class="text-muted mb-0" data-report-results-subtitle>Consulta dinâmica do relatório.</p>
-            </div>
-            <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-primary btn-sm" data-report-view-details>
-                    <i class="bi bi-eye"></i>
-                    <span>Ver detalhes</span>
-                </button>
-                <a th:href="@{/reports/partners/excel}" class="btn btn-success btn-sm">
-                    <i class="bi bi-file-earmark-excel"></i>
-                    <span>Excel Completo</span>
-                </a>
-                <a th:href="@{/reports/partners/excel/summary}" class="btn btn-success btn-sm">
-                    <i class="bi bi-file-earmark-excel"></i>
-                    <span>Excel Resumido</span>
-                </a>
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-report-clear>
-                    <i class="bi bi-trash"></i>
-                    <span>Limpar visualização</span>
-                </button>
-            </div>
-        </div>
-        <div data-report-results></div>
-    </div>
+    <div class="report-feedback" data-report-feedback role="status" aria-live="polite" hidden></div>
 
     <div class="report-overlay" data-report-overlay hidden>
         <div class="report-overlay__backdrop" data-overlay-close></div>
@@ -584,8 +555,6 @@
             </div>
         </div>
     </div>
-
-    <div class="report-feedback" data-report-feedback role="status" aria-live="polite" hidden></div>
 
 </section>
 
