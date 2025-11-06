@@ -184,6 +184,51 @@ h1.mb-4::after {
     .table-actions .action-buttons {
         justify-content: flex-start;
     }
+.billing-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.billing-form .form-select {
+    min-width: 140px;
+    transition: all 0.2s ease;
+}
+
+.billing-form .form-select:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.billing-form .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.billing-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .table-actions {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-actions .action-buttons {
+        justify-content: flex-start;
+    }
+
+    .billing-form {
+        justify-content: flex-end;
+    }
 }
 
 /* Striped table enhancement */

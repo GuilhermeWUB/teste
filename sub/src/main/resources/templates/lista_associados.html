@@ -63,6 +63,19 @@
                         <a th:href="@{/vehicles(partnerId=${partner.id})}" class="btn btn-secondary btn-action btn-sm">Gerenciar veículos</a>
                     </div>
 
+                    <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
+                          th:action="@{/pagamentos/gerar-mensalidades}" method="get"
+                          class="inline-form billing-form">
+                        <label th:for="${'vehicleSelect-' + partner.id}" class="billing-label">Gerar fatura para:</label>
+                        <select name="vehicle_id" class="form-select form-select-sm"
+                                th:id="${'vehicleSelect-' + partner.id}">
+                            <option th:each="vehicle : ${partner.vehicles}"
+                                    th:value="${vehicle.id}"
+                                    th:text="${vehicle.plaque}">
+                            </option>
+                        </select>
+                        <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
+                    </form>
                 </div>
             </td>
         </tr>

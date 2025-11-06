@@ -2029,6 +2029,26 @@ tr + tr {
     margin: 0;
 }
 
+.billing-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.billing-form .form-select {
+    min-width: 140px;
+}
+
+.billing-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    margin-bottom: 0;
+}
+
 @media (min-width: 768px) {
     .table-actions {
         flex-direction: row;
@@ -2038,6 +2058,10 @@ tr + tr {
 
     .table-actions .action-buttons {
         justify-content: flex-start;
+    }
+
+    .billing-form {
+        justify-content: flex-end;
     }
 }
 
