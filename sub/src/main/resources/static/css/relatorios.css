@@ -132,6 +132,100 @@
     gap: 1.75rem;
 }
 
+.report-selection-card {
+    border: 1px solid var(--color-border, rgba(15, 23, 42, 0.08));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    background: var(--color-surface, #ffffff);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.report-selection-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+}
+
+.report-selection-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.report-selection-option {
+    position: relative;
+    flex: 1 1 220px;
+    min-width: 220px;
+}
+
+.report-selection-input {
+    position: absolute;
+    top: 1.25rem;
+    left: 1.25rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.report-selection-label {
+    display: block;
+    height: 100%;
+    padding: 1rem 1.25rem 1rem 3.5rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: var(--color-surface-alt, #f8fafc);
+    box-shadow: 0 6px 12px rgba(15, 23, 42, 0.05);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.report-selection-label strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--color-text, #1f2937);
+}
+
+.report-selection-label span {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #475569);
+}
+
+.report-selection-label:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 16px 32px rgba(79, 70, 229, 0.15);
+    transform: translateY(-2px);
+}
+
+.report-selection-input:checked + .report-selection-label {
+    border-color: var(--color-primary);
+    box-shadow: 0 18px 36px rgba(79, 70, 229, 0.18);
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(236, 72, 153, 0.08));
+}
+
+.report-selection-input:checked + .report-selection-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 4px;
+    border-radius: 0.9rem 0.9rem 0 0;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+}
+
+.report-selection-input:focus-visible + .report-selection-label {
+    outline: 3px solid rgba(79, 70, 229, 0.2);
+    outline-offset: 2px;
+}
+
 .filter-section {
     border: 1px solid var(--color-border, rgba(15, 23, 42, 0.08));
     border-radius: 1rem;
@@ -184,60 +278,6 @@
 .filter-grid .form-select:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
-}
-
-.filter-sidebar {
-    position: sticky;
-    top: 5.5rem;
-    border: 1px solid var(--color-border, rgba(15, 23, 42, 0.08));
-    border-radius: 1rem;
-    padding: 1.5rem;
-    background: var(--color-surface, #ffffff);
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.filter-sidebar-header p {
-    font-size: 0.875rem;
-}
-
-.filter-sidebar-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.filter-sidebar .form-check {
-    padding: 1rem;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    background: var(--color-surface-alt, #f8fafc);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.filter-sidebar .form-check:hover {
-    border-color: var(--color-primary);
-    box-shadow: 0 12px 20px rgba(79, 70, 229, 0.1);
-}
-
-.filter-sidebar .form-check-input {
-    cursor: pointer;
-    margin-top: 0.35rem;
-}
-
-.filter-sidebar .form-check-label {
-    cursor: pointer;
-}
-
-.filter-sidebar .form-check-label strong {
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.filter-sidebar .form-check-label span {
-    font-size: 0.85rem;
 }
 
 /* Resultados do relatório */
@@ -452,12 +492,6 @@
 }
 
 /* Responsividade */
-@media (max-width: 1200px) {
-    .filter-sidebar {
-        position: static;
-    }
-}
-
 @media (max-width: 768px) {
     .report-header h1::after {
         width: 60px;
@@ -469,6 +503,23 @@
 
     .report-section h5 i {
         font-size: 1.25rem;
+    }
+
+    .report-selection-card {
+        padding: 1.25rem;
+    }
+
+    .report-selection-option {
+        min-width: 100%;
+    }
+
+    .report-selection-input {
+        top: 1rem;
+        left: 1rem;
+    }
+
+    .report-selection-label {
+        padding: 0.9rem 1rem 0.9rem 3.25rem;
     }
 
     .filter-section {
@@ -488,6 +539,27 @@ html[data-theme="dark"] .report-card::before {
         rgba(168, 85, 247, 0.1),
         transparent
     );
+}
+
+html[data-theme="dark"] .report-selection-card {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(148, 163, 184, 0.15);
+}
+
+html[data-theme="dark"] .report-selection-label {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow: 0 6px 16px rgba(2, 6, 23, 0.55);
+    color: rgba(226, 232, 240, 0.9);
+}
+
+html[data-theme="dark"] .report-selection-label span {
+    color: rgba(148, 163, 184, 0.95);
+}
+
+html[data-theme="dark"] .report-selection-input:checked + .report-selection-label {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(236, 72, 153, 0.2));
+    box-shadow: 0 18px 36px rgba(2, 6, 23, 0.65);
 }
 
 html[data-theme="dark"] .stat-card:hover {
