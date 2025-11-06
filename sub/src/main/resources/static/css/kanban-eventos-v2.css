@@ -164,6 +164,11 @@ body.dark-mode .task-deadline,
     flex: 1;
 }
 
+html[data-theme="dark"] body:not(.no-dark-blur) .kanban-page,
+html[data-theme="dark"] body:not(.no-dark-blur) .kanban-wrapper {
+    background: transparent;
+}
+
 .kanban-wrapper {
     min-height: 100vh;
     background: var(--notion-bg);
