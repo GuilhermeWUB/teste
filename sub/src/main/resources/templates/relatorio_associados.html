@@ -63,6 +63,163 @@
                     </div>
                 </div>
             </section>
+            <div class="row g-4">
+                <div class="col-12 col-xxl-3">
+                    <aside class="filter-sidebar">
+                        <div class="filter-sidebar-header">
+                            <h5 class="mb-1">Seções do Relatório</h5>
+                            <p class="text-muted mb-0">Escolha os blocos de informações que deseja visualizar na consulta.</p>
+                        </div>
+                        <div class="filter-sidebar-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sections" value="summary" id="summary"
+                                       th:checked="${selectedSections != null and selectedSections.contains('summary')}">
+                                <label class="form-check-label" for="summary">
+                                    <strong>Resumo Geral</strong>
+                                    <span class="d-block text-muted">Indicadores principais sobre quantidade de associados e média de veículos.</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sections" value="topCities" id="topCities"
+                                       th:checked="${selectedSections != null and selectedSections.contains('topCities')}">
+                                <label class="form-check-label" for="topCities">
+                                    <strong>Principais Cidades</strong>
+                                    <span class="d-block text-muted">Ranking das cidades com maior concentração de associados.</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sections" value="generalIndicators" id="generalIndicators"
+                                       th:checked="${selectedSections != null and selectedSections.contains('generalIndicators')}">
+                                <label class="form-check-label" for="generalIndicators">
+                                    <strong>Indicadores Gerais</strong>
+                                    <span class="d-block text-muted">Totais de veículos vinculados e percentual de associados ativos.</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sections" value="partnerList" id="partnerList"
+                                       th:checked="${selectedSections != null and selectedSections.contains('partnerList')}">
+                                <label class="form-check-label" for="partnerList">
+                                    <strong>Listagem Completa</strong>
+                                    <span class="d-block text-muted">Todos os associados com status, cidade e quantidade de veículos.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+                <div class="col-12 col-xxl-9">
+                    <div class="filter-stack">
+                        <section class="filter-section">
+                            <div class="filter-section-header">
+                                <div>
+                                    <h5 class="mb-1">Dados do Associado</h5>
+                                    <p class="text-muted mb-0">Informe parâmetros de identificação pessoal do associado.</p>
+                                </div>
+                                <i class="bi bi-person-vcard-fill text-primary"></i>
+                            </div>
+                            <div class="filter-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="nome">Nome</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Maria Silva"
+                                           th:value="${param.nome}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="matricula">Matrícula</label>
+                                    <input type="text" class="form-control" id="matricula" name="matricula" placeholder="Ex: 102030"
+                                           th:value="${param.matricula}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cpf">CPF</label>
+                                    <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00"
+                                           th:value="${param.cpf}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="status">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="" th:selected="${param.status == null}">Todos</option>
+                                        <option value="ATIVO" th:selected="${param.status == 'ATIVO'}">Ativo</option>
+                                        <option value="INATIVO" th:selected="${param.status == 'INATIVO'}">Inativo</option>
+                                        <option value="PENDENTE" th:selected="${param.status == 'PENDENTE'}">Pendente</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="associado">Associado</label>
+                                    <select class="form-select" id="associado" name="associado">
+                                        <option value="" th:selected="${param.associado == null}">Todos</option>
+                                        <option value="true" th:selected="${param.associado == 'true'}">Sim</option>
+                                        <option value="false" th:selected="${param.associado == 'false'}">Não</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="categoriaAssociado">Tipo Categoria</label>
+                                    <input type="text" class="form-control" id="categoriaAssociado" name="categoriaAssociado"
+                                           placeholder="Ex: Premium" th:value="${param.categoriaAssociado}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="estadoCivil">Tipo Estado Civil</label>
+                                    <input type="text" class="form-control" id="estadoCivil" name="estadoCivil" placeholder="Ex: Casado"
+                                           th:value="${param.estadoCivil}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="profissao">Tipo Profissão</label>
+                                    <input type="text" class="form-control" id="profissao" name="profissao" placeholder="Ex: Motorista"
+                                           th:value="${param.profissao}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="sexo">Sexo</label>
+                                    <select class="form-select" id="sexo" name="sexo">
+                                        <option value="" th:selected="${param.sexo == null}">Todos</option>
+                                        <option value="F" th:selected="${param.sexo == 'F'}">Feminino</option>
+                                        <option value="M" th:selected="${param.sexo == 'M'}">Masculino</option>
+                                        <option value="O" th:selected="${param.sexo == 'O'}">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="dataNascimento">Data Nascimento</label>
+                                    <input type="date" class="form-control" id="dataNascimento" name="dataNascimento"
+                                           th:value="${param.dataNascimento}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="nomeConjuge">Nome Cônjuge</label>
+                                    <input type="text" class="form-control" id="nomeConjuge" name="nomeConjuge" placeholder="Nome completo"
+                                           th:value="${param.nomeConjuge}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="dataNascimentoConjuge">Data Nascimento Cônjuge</label>
+                                    <input type="date" class="form-control" id="dataNascimentoConjuge" name="dataNascimentoConjuge"
+                                           th:value="${param.dataNascimentoConjuge}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="nomeMae">Nome da Mãe</label>
+                                    <input type="text" class="form-control" id="nomeMae" name="nomeMae" placeholder="Nome completo"
+                                           th:value="${param.nomeMae}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="escolaridade">Escolaridade</label>
+                                    <input type="text" class="form-control" id="escolaridade" name="escolaridade" placeholder="Ex: Superior completo"
+                                           th:value="${param.escolaridade}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="beneficio">Tipo Benefício</label>
+                                    <input type="text" class="form-control" id="beneficio" name="beneficio" placeholder="Ex: Plano Ouro"
+                                           th:value="${param.beneficio}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="renda">Tipo Renda</label>
+                                    <input type="text" class="form-control" id="renda" name="renda" placeholder="Ex: Assalariado"
+                                           th:value="${param.renda}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="qtdDependentes">Qtd. Dependentes</label>
+                                    <input type="number" min="0" class="form-control" id="qtdDependentes" name="qtdDependentes"
+                                           th:value="${param.qtdDependentes}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="qtdFilhos">Qtd. Filhos</label>
+                                    <input type="number" min="0" class="form-control" id="qtdFilhos" name="qtdFilhos"
+                                           th:value="${param.qtdFilhos}">
+                                </div>
+                            </div>
+                        </section>
 
             <div class="filter-stack">
                 <section class="filter-section">
@@ -378,6 +535,7 @@
                         </div>
                     </div>
                 </section>
+                </div>
             </div>
 
             <div class="report-actions mt-4">
