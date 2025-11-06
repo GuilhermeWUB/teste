@@ -45,11 +45,11 @@ public class PartnerService {
         size = Math.max(size, 1); // Mínimo 1 item
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        return partnerRepository.findAll(pageable);
+        return partnerRepository.findAllWithVehicles(pageable);
     }
 
     public Optional<Partner> getPartnerById(Long id) {
-        return partnerRepository.findById(id);
+        return partnerRepository.findByIdWithAllRelationships(id);
     }
 
     public Optional<Partner> getPartnerByEmail(String email) {
