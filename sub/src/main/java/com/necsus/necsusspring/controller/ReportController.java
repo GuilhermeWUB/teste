@@ -6,6 +6,8 @@ import com.necsus.necsusspring.model.VehicleStatus;
 import com.necsus.necsusspring.service.ReportDataService;
 import com.necsus.necsusspring.service.ReportDataService.PartnerReportData;
 import com.necsus.necsusspring.service.ReportDataService.VehicleReportData;
+import com.necsus.necsusspring.service.ExcelExportService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.IOException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,9 +44,11 @@ public class ReportController {
     private static final Set<String> PARTNER_SECTIONS = Set.of("summary", "topCities", "generalIndicators", "partnerList");
 
     private final ReportDataService reportDataService;
+    private final ExcelExportService excelExportService;
 
-    public ReportController(ReportDataService reportDataService) {
+    public ReportController(ReportDataService reportDataService, ExcelExportService excelExportService) {
         this.reportDataService = reportDataService;
+        this.excelExportService = excelExportService;
     }
 
     @GetMapping
@@ -202,6 +208,68 @@ public class ReportController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Endpoint para download do relatório de associados em Excel (completo)
+     */
+    @GetMapping("/partners/excel")
+    public ResponseEntity<byte[]> downloadPartnersExcel() {
+        try {
+            PartnerReportData reportData = reportDataService.loadPartnerReportData();
+
+            if (!reportData.hasPartners()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            byte[] excelFile = excelExportService.generatePartnerReportExcel(reportData.partners());
+
+            String filename = "relatorio_associados_" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelFile);
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Endpoint para download do relatório resumido de associados em Excel
+     */
+    @GetMapping("/partners/excel/summary")
+    public ResponseEntity<byte[]> downloadPartnersSummaryExcel() {
+        try {
+            PartnerReportData reportData = reportDataService.loadPartnerReportData();
+
+            if (!reportData.hasPartners()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            byte[] excelFile = excelExportService.generatePartnerSummaryExcel(reportData);
+
+            String filename = "relatorio_associados_resumo_" +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDispositionFormData("attachment", filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelFile);
+
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     private Set<String> normalizeSections(List<String> sections, Set<String> allowed) {

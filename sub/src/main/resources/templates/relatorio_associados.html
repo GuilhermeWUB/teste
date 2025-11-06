@@ -388,6 +388,14 @@
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Gerar Relatório</span>
                 </button>
+                <a th:href="@{/reports/partners/excel}" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Download Excel Completo</span>
+                </a>
+                <a th:href="@{/reports/partners/excel/summary}" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Download Excel Resumido</span>
+                </a>
                 <a th:href="@{/reports/partners}" class="btn btn-outline-secondary">
                     <i class="bi bi-x-circle"></i>
                     <span>Limpar</span>
@@ -407,10 +415,20 @@
                 <h2 class="h4 mb-1">Resultados do Relatório</h2>
                 <p class="text-muted mb-0">Resumo das informações conforme as seções marcadas acima.</p>
             </div>
-            <button type="button" onclick="window.print()" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-printer"></i>
-                <span>Imprimir</span>
-            </button>
+            <div class="d-flex gap-2">
+                <a th:href="@{/reports/partners/excel}" class="btn btn-success btn-sm">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Excel Completo</span>
+                </a>
+                <a th:href="@{/reports/partners/excel/summary}" class="btn btn-success btn-sm">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span>Excel Resumido</span>
+                </a>
+                <button type="button" onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-printer"></i>
+                    <span>Imprimir</span>
+                </button>
+            </div>
         </div>
 
         <div th:if="${summary}" class="report-section">
