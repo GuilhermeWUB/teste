@@ -61,21 +61,14 @@
                         <a th:href="@{/partners/{id}(id=${partner.id})}" class="btn btn-info btn-action btn-sm">Detalhes</a>
                         <a th:href="@{/partners/edit/{id}(id=${partner.id})}" class="btn btn-warning btn-action btn-sm">Alterar</a>
                         <a th:href="@{/vehicles(partnerId=${partner.id})}" class="btn btn-secondary btn-action btn-sm">Gerenciar veículos</a>
+                        <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
+                              th:action="@{/pagamentos/gerar-mensalidades}" method="get"
+                              class="inline-form billing-form">
+                            <input type="hidden" name="vehicle_id"
+                                   th:value="${partner.vehicles[0].id}" />
+                            <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
+                        </form>
                     </div>
-
-                    <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
-                          th:action="@{/pagamentos/gerar-mensalidades}" method="get"
-                          class="inline-form billing-form">
-                        <label th:for="${'vehicleSelect-' + partner.id}" class="billing-label">Gerar fatura para:</label>
-                        <select name="vehicle_id" class="form-select form-select-sm"
-                                th:id="${'vehicleSelect-' + partner.id}">
-                            <option th:each="vehicle : ${partner.vehicles}"
-                                    th:value="${vehicle.id}"
-                                    th:text="${vehicle.plaque}">
-                            </option>
-                        </select>
-                        <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
-                    </form>
                 </div>
             </td>
         </tr>
