@@ -351,6 +351,12 @@ html[data-theme="dark"] .kanban-wrapper {
     flex-wrap: wrap;
 }
 
+.task-card-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
 .badge {
     display: inline-flex;
     align-items: center;
