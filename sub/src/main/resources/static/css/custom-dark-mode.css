@@ -2846,20 +2846,6 @@ html[data-theme="dark"] body:not(.no-dark-blur) > * {
 
 html[data-theme="dark"] body.no-dark-blur {
     background: var(--color-body-bg);
-html[data-theme="dark"] body:not(.no-dark-blur)::before {
-    content: '';
-    position: fixed;
-    inset: -15% -20% -25%;
-    background:
-        radial-gradient(circle at 15% 20%, rgba(168, 85, 247, 0.28), transparent 55%),
-        radial-gradient(circle at 85% 10%, rgba(59, 7, 100, 0.35), transparent 60%),
-        radial-gradient(circle at 50% 85%, rgba(124, 58, 237, 0.32), transparent 65%),
-        linear-gradient(180deg, rgba(17, 12, 34, 0.9) 0%, rgba(12, 8, 24, 0.95) 100%);
-    filter: blur(70px);
-    opacity: 0.9;
-    z-index: -1;
-    pointer-events: none;
-    transform: translate3d(0, 0, 0);
 }
 
 html[data-theme="dark"] .page a:not(.btn),
