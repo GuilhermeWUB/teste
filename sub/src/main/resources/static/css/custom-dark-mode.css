@@ -2066,33 +2066,9 @@ tr + tr {
 }
 
 html[data-theme="dark"] .btn-action {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-}
-
-html[data-theme="dark"] .btn-action.btn-info {
-    background: rgba(14, 165, 233, 0.22);
-    border-color: rgba(14, 165, 233, 0.55);
-    color: #e0f2fe;
-}
-
-html[data-theme="dark"] .btn-action.btn-warning {
-    background: rgba(250, 204, 21, 0.22);
-    border-color: rgba(250, 204, 21, 0.55);
-    color: #fef3c7;
-}
-
-html[data-theme="dark"] .btn-action.btn-secondary {
-    background: rgba(148, 163, 184, 0.24);
-    border-color: rgba(148, 163, 184, 0.55);
-    color: #e2e8f0;
-}
-
-html[data-theme="dark"] .btn-action.btn-success {
-    background: rgba(34, 197, 94, 0.24);
-    border-color: rgba(34, 197, 94, 0.55);
-    color: #dcfce7;
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+    color: var(--bs-btn-color);
 }
 
 html[data-theme="dark"] .btn-action:hover {
