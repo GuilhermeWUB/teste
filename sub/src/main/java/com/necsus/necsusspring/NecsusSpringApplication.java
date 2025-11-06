@@ -11,5 +11,4 @@ public class NecsusSpringApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(NecsusSpringApplication.class, args);
 	}
-
 }

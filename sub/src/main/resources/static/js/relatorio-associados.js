@@ -546,7 +546,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleSubmit(event) {
         console.log('handleSubmit chamado', event);
-        event.preventDefault();
 
         const selectedSections = form.querySelectorAll('input[name="sections"]:checked');
         console.log('Seções selecionadas:', selectedSections.length);
@@ -658,7 +657,10 @@ document.addEventListener('DOMContentLoaded', function() {
         form.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
-    form.addEventListener('submit', handleSubmit);
+    // CORREÇÃO AQUI: Escutar o clique do botão, não do formulário
+    if (submitButton) {
+        submitButton.addEventListener('click', handleSubmit);
+    }
 
     if (previewButton) {
         previewButton.addEventListener('click', function (event) {
