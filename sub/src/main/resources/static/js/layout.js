@@ -22,7 +22,7 @@
         initAlerts();
         initScrollBehavior();
         initNavigationHighlight();
-        // initBackToTop(); // Desativado para remover o botão "Voltar ao Topo" duplicado
+        initBackToTop();
         initFormAnimations();
     }
 
@@ -126,42 +126,71 @@
      * Adiciona botão "Voltar ao topo"
      */
     function initBackToTop() {
-        // Criar botão se não existir
-        let backToTopBtn = document.getElementById('back-to-top');
+        let backToTopBtn = document.querySelector('.back-to-top') || document.getElementById('back-to-top');
 
         if (!backToTopBtn) {
             backToTopBtn = document.createElement('button');
             backToTopBtn.id = 'back-to-top';
-            backToTopBtn.className = 'btn btn-primary position-fixed bottom-0 end-0 m-4';
-            backToTopBtn.style.cssText = `
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-                z-index: 1000;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backToTopBtn.className = 'back-to-top';
+            backToTopBtn.type = 'button';
+            backToTopBtn.setAttribute('aria-hidden', 'true');
+            backToTopBtn.setAttribute('tabindex', '-1');
+            backToTopBtn.innerHTML = `
+                <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                <span class="back-to-top__text">Voltar ao topo</span>
             `;
-            backToTopBtn.innerHTML = '↑';
-            backToTopBtn.setAttribute('aria-label', 'Voltar ao topo');
+            backToTopBtn.classList.remove('is-visible');
             document.body.appendChild(backToTopBtn);
+        } else {
+            backToTopBtn.id = 'back-to-top';
+            backToTopBtn.classList.add('back-to-top');
+            backToTopBtn.removeAttribute('style');
+            backToTopBtn.type = 'button';
+            backToTopBtn.setAttribute('aria-hidden', 'true');
+            backToTopBtn.setAttribute('tabindex', '-1');
+            backToTopBtn.classList.remove('is-visible');
+
+            ['btn', 'btn-primary', 'position-fixed', 'bottom-0', 'end-0', 'm-4'].forEach(cls => {
+                backToTopBtn.classList.remove(cls);
+            });
+
+            if (!backToTopBtn.querySelector('.back-to-top__icon')) {
+                backToTopBtn.innerHTML = `
+                    <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                    <span class="back-to-top__text">Voltar ao topo</span>
+                `;
+            }
+
+            if (!document.body.contains(backToTopBtn)) {
+                document.body.appendChild(backToTopBtn);
+            }
         }
 
-        // Mostrar/ocultar baseado no scroll
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopBtn.style.opacity = '1';
-                backToTopBtn.style.visibility = 'visible';
-            } else {
-                backToTopBtn.style.opacity = '0';
-                backToTopBtn.style.visibility = 'hidden';
-            }
-        });
+        const hideButton = () => {
+            backToTopBtn.classList.remove('is-visible');
+            backToTopBtn.setAttribute('aria-hidden', 'true');
+            backToTopBtn.setAttribute('tabindex', '-1');
+        };
 
-        // Ação de click
-        backToTopBtn.addEventListener('click', () => {
+        const showButton = () => {
+            backToTopBtn.classList.add('is-visible');
+            backToTopBtn.removeAttribute('aria-hidden');
+            backToTopBtn.removeAttribute('tabindex');
+        };
+
+        const updateVisibility = () => {
+            if (window.scrollY > 300) {
+                showButton();
+            } else {
+                hideButton();
+            }
+        };
+
+        window.addEventListener('scroll', updateVisibility, {passive: true});
+        updateVisibility();
+
+        backToTopBtn.addEventListener('click', event => {
+            event.preventDefault();
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
