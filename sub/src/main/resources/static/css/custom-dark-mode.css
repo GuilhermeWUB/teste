@@ -2844,6 +2844,17 @@ html[data-theme="dark"] body:not(.no-dark-blur) > * {
     z-index: 1;
 }
 
+/* Garante que a navbar fique acima do blur de fundo e do conteúdo */
+html[data-theme="dark"] body:not(.no-dark-blur) > .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 120;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) > .topbar .nav-dropdown-menu {
+    z-index: 130;
+}
+
 html[data-theme="dark"] body.no-dark-blur {
     background: var(--color-body-bg);
 }
