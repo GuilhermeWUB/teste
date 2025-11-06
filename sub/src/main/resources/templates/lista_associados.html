@@ -69,6 +69,14 @@
                             <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
                         </form>
                     </div>
+
+                    <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
+                          th:action="@{/pagamentos/gerar-mensalidades}" method="get"
+                          class="inline-form billing-form">
+                        <input type="hidden" name="vehicle_id"
+                               th:value="${partner.vehicles[0].id}" />
+                        <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
+                    </form>
                 </div>
             </td>
         </tr>
