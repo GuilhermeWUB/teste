@@ -500,6 +500,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return previewSections.join('');
     }
 
+    function scrollResultsIntoView() {
+        const target = (resultsWrapper && !resultsWrapper.classList.contains('d-none'))
+            ? resultsWrapper
+            : page;
+
+        if (!target) {
+            return;
+        }
+
+        try {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (error) {
+            const rect = target.getBoundingClientRect();
+            const absoluteTop = rect.top + window.pageYOffset;
+            window.scrollTo(0, Math.max(absoluteTop - 16, 0));
+        }
+    }
+
     function renderResults(data, generatedAt) {
         if (!resultsContainer || !resultsWrapper) {
             return;
@@ -542,6 +560,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (emptyState) {
             emptyState.classList.add('d-none');
         }
+
+        scrollResultsIntoView();
     }
 
     function handleSubmit(event) {
