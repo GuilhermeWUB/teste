@@ -464,6 +464,196 @@
     }
 }
 
+/* Estados vazios e feedback inline */
+.report-card.report-results-placeholder {
+    text-align: center;
+    padding: 3rem 2rem;
+    border: 1px dashed rgba(15, 23, 42, 0.15);
+    background: var(--color-surface, #ffffff);
+    box-shadow: 0 20px 30px rgba(15, 23, 42, 0.05);
+}
+
+.report-empty-state {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.report-empty-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(236, 72, 153, 0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--color-primary, #4f46e5);
+}
+
+.report-empty-state .btn {
+    padding-inline: 1.5rem;
+}
+
+.report-inline-feedback {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    background: rgba(254, 226, 226, 0.6);
+    color: #b91c1c;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.report-inline-feedback::before {
+    content: '\26A0';
+    font-size: 1.1rem;
+}
+
+.report-inline-feedback.d-none {
+    display: none !important;
+}
+
+/* Overlay de resultados dinâmicos */
+.report-overlay[hidden] {
+    display: none !important;
+}
+
+.report-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 1080;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 1.5rem;
+}
+
+.report-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.report-overlay__dialog {
+    width: min(960px, 100%);
+    max-height: 90vh;
+    background: var(--color-surface, #ffffff);
+    border-radius: 1.25rem;
+    box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25);
+    overflow: hidden;
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.report-overlay.is-visible .report-overlay__dialog {
+    transform: translateY(0) scale(1);
+}
+
+.report-overlay__header {
+    padding: 1.5rem 1.75rem 1.25rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.report-overlay__header .btn-close {
+    margin-left: auto;
+}
+
+.report-overlay__body {
+    padding: 1.75rem;
+    overflow-y: auto;
+    background: var(--color-surface-alt, #f8fafc);
+}
+
+.report-overlay__body .report-section {
+    margin-bottom: 2rem;
+}
+
+.report-overlay__body .report-section:last-child {
+    margin-bottom: 0;
+}
+
+.report-loading-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.report-loading-state .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.report-overlay__body table {
+    background: var(--color-surface, #ffffff);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.report-overlay__body .table thead {
+    background: rgba(79, 70, 229, 0.08);
+}
+
+.report-overlay__body .table tbody tr:hover {
+    background: rgba(79, 70, 229, 0.08);
+}
+
+.report-feedback {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--color-surface, #ffffff);
+    border-radius: 1rem;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-left: 4px solid var(--color-primary, #4f46e5);
+    max-width: 320px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.report-feedback::before {
+    content: '\f26a';
+    font-family: 'Bootstrap Icons';
+    font-size: 1.5rem;
+    color: var(--color-primary, #4f46e5);
+}
+
+.report-feedback.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.report-feedback.is-error {
+    border-left-color: #ef4444;
+}
+
+.report-feedback.is-error::before {
+    content: '\f622';
+    color: #ef4444;
+}
+
 /* Cards de métricas do dashboard de relatórios */
 .report-section .card {
     transition: all 0.3s ease;
@@ -571,6 +761,45 @@ html[data-theme="dark"] .report-card::before {
         rgba(168, 85, 247, 0.1),
         transparent
     );
+}
+
+html[data-theme="dark"] .report-card.report-results-placeholder {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+html[data-theme="dark"] .report-empty-icon {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.2), rgba(244, 114, 182, 0.2));
+    color: rgba(196, 181, 253, 0.95);
+}
+
+html[data-theme="dark"] .report-inline-feedback {
+    border-color: rgba(252, 165, 165, 0.25);
+    background: rgba(127, 29, 29, 0.4);
+    color: rgba(254, 226, 226, 0.92);
+}
+
+html[data-theme="dark"] .report-overlay__dialog {
+    background: rgba(15, 23, 42, 0.92);
+    box-shadow: 0 40px 80px rgba(2, 6, 23, 0.65);
+}
+
+html[data-theme="dark"] .report-overlay__body {
+    background: rgba(15, 23, 42, 0.85);
+}
+
+html[data-theme="dark"] .report-overlay__body .table thead {
+    background: rgba(129, 140, 248, 0.12);
+}
+
+html[data-theme="dark"] .report-overlay__body .table tbody tr:hover {
+    background: rgba(129, 140, 248, 0.12);
+}
+
+html[data-theme="dark"] .report-feedback {
+    background: rgba(15, 23, 42, 0.95);
+    border-left-color: rgba(129, 140, 248, 0.85);
+    color: rgba(226, 232, 240, 0.92);
 }
 
 html[data-theme="dark"] .report-selection-card {
