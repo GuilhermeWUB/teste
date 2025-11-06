@@ -29,14 +29,19 @@
                     </div>
                     <div class="col-md-6">
                         <h5>Endereço</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><b>CEP:</b> <span th:text="${partner.address.zipcode}"></span></li>
-                            <li class="list-group-item"><b>Endereço:</b> <span th:text="${partner.address.address} + ', ' + ${partner.address.number}"></span></li>
-                            <li class="list-group-item"><b>Bairro:</b> <span th:text="${partner.address.neighborhood}"></span></li>
-                            <li class="list-group-item"><b>Cidade:</b> <span th:text="${partner.address.city}"></span></li>
-                            <li class="list-group-item"><b>UF:</b> <span th:text="${partner.address.states}"></span></li>
-                            <li class="list-group-item"><b>Complemento:</b> <span th:text="${partner.address.complement}"></span></li>
-                        </ul>
+                        <div th:if="${partner.address != null}">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><b>CEP:</b> <span th:text="${partner.address.zipcode}"></span></li>
+                                <li class="list-group-item"><b>Endereço:</b> <span th:text="${partner.address.address + ', ' + partner.address.number}"></span></li>
+                                <li class="list-group-item"><b>Bairro:</b> <span th:text="${partner.address.neighborhood}"></span></li>
+                                <li class="list-group-item"><b>Cidade:</b> <span th:text="${partner.address.city}"></span></li>
+                                <li class="list-group-item"><b>UF:</b> <span th:text="${partner.address.states}"></span></li>
+                                <li class="list-group-item"><b>Complemento:</b> <span th:text="${partner.address.complement}"></span></li>
+                            </ul>
+                        </div>
+                        <div th:unless="${partner.address != null}" class="alert alert-info">
+                            Endereço não informado.
+                        </div>
                     </div>
                 </div>
                 <div class="row mt-4">

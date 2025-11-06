@@ -2654,6 +2654,22 @@ html[data-theme="dark"] .report-card *:not(.btn):not(.btn *):not(.badge):not(.ba
     color: var(--color-text-primary);
 }
 
+html[data-theme="dark"] .list-group,
+html[data-theme="dark"] .list-group-item {
+    background-color: rgba(30, 22, 58, 0.75);
+    border-color: rgba(124, 58, 237, 0.35);
+    color: var(--color-text-primary);
+}
+
+html[data-theme="dark"] .list-group-item + .list-group-item {
+    border-top-color: rgba(124, 58, 237, 0.25);
+}
+
+html[data-theme="dark"] .list-group-item b,
+html[data-theme="dark"] .list-group-item strong {
+    color: var(--color-secondary);
+}
+
 /* Labels e textos de formulário */
 html[data-theme="dark"] label,
 html[data-theme="dark"] .form-label,
