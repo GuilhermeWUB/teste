@@ -2811,6 +2811,43 @@ html[data-theme="dark"] .topbar-action {
 }
 
 /* Links gerais (resto da página) */
+html[data-theme="dark"] body {
+    position: relative;
+    z-index: 0;
+    overflow-x: hidden;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) {
+    background: transparent;
+    isolation: isolate;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur)::before {
+    content: '';
+    position: fixed;
+    inset: -18% -25% -30%;
+    background:
+        radial-gradient(120% 75% at 50% -10%, rgba(168, 85, 247, 0.55), rgba(20, 0, 44, 0.05) 60%, transparent 75%),
+        radial-gradient(90% 65% at 15% 25%, rgba(139, 92, 246, 0.45), transparent 65%),
+        radial-gradient(110% 70% at 85% 20%, rgba(59, 7, 100, 0.5), transparent 70%),
+        linear-gradient(180deg, #160332 0%, #060012 100%);
+    filter: blur(70px);
+    opacity: 0.95;
+    z-index: 0;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) > * {
+    position: relative;
+    z-index: 1;
+}
+
+html[data-theme="dark"] body.no-dark-blur {
+    background: var(--color-body-bg);
+}
+
 html[data-theme="dark"] .page a:not(.btn),
 html[data-theme="dark"] .container a:not(.btn),
 html[data-theme="dark"] .card a:not(.btn),

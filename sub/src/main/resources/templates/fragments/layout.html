@@ -780,6 +780,15 @@
         const navDropdownToggles = document.querySelectorAll('[data-nav-dropdown]');
         const backToTopButton = document.getElementById('backToTop');
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const disableDarkBlurRegion = document.querySelector('[data-no-dark-blur]');
+
+        if (document.body) {
+            if (disableDarkBlurRegion) {
+                document.body.classList.add('no-dark-blur');
+            } else {
+                document.body.classList.remove('no-dark-blur');
+            }
+        }
 
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme === 'dark' || (!storedTheme && prefersDarkScheme.matches)) {
