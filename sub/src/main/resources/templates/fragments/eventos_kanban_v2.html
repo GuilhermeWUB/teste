@@ -143,6 +143,11 @@
     <script th:src="@{/js/kanban_eventos_v3_methods.js}" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            if (body) {
+                body.classList.add('no-dark-blur');
+            }
+
             const main = document.querySelector('main.page');
             if (main) {
                 main.classList.add('kanban-page');
