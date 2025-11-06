@@ -66,14 +66,8 @@
                     <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
                           th:action="@{/pagamentos/gerar-mensalidades}" method="get"
                           class="inline-form billing-form">
-                        <label th:for="${'vehicleSelect-' + partner.id}" class="billing-label">Gerar fatura para:</label>
-                        <select name="vehicle_id" class="form-select form-select-sm"
-                                th:id="${'vehicleSelect-' + partner.id}">
-                            <option th:each="vehicle : ${partner.vehicles}"
-                                    th:value="${vehicle.id}"
-                                    th:text="${vehicle.plaque}">
-                            </option>
-                        </select>
+                        <input type="hidden" name="vehicle_id"
+                               th:value="${partner.vehicles[0].id}" />
                         <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
                     </form>
                 </div>
