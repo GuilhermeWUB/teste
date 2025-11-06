@@ -1,13 +1,19 @@
-(function () {
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script relatorio-associados.js carregado');
+
     const page = document.querySelector('.report-page');
     if (!page) {
+        console.error('Elemento .report-page não encontrado');
         return;
     }
+    console.log('Elemento .report-page encontrado:', page);
 
     const form = page.querySelector('.report-filters');
     if (!form) {
+        console.error('Elemento .report-filters não encontrado');
         return;
     }
+    console.log('Elemento .report-filters encontrado:', form);
 
     const overlay = page.querySelector('[data-report-overlay]');
     const overlayDialog = overlay ? overlay.querySelector('.report-overlay__dialog') : null;
@@ -539,10 +545,14 @@
     }
 
     function handleSubmit(event) {
+        console.log('handleSubmit chamado', event);
         event.preventDefault();
 
         const selectedSections = form.querySelectorAll('input[name="sections"]:checked');
+        console.log('Seções selecionadas:', selectedSections.length);
+
         if (!selectedSections.length) {
+            console.warn('Nenhuma seção selecionada');
             showInlineError('Selecione pelo menos uma seção para gerar o relatório.');
             return;
         }
@@ -557,17 +567,22 @@
             params.set('generate', 'true');
         }
 
-        fetch('/reports/partners/data?' + params.toString(), {
+        const url = '/reports/partners/data?' + params.toString();
+        console.log('Fazendo requisição para:', url);
+
+        fetch(url, {
             method: 'GET',
             headers: FETCH_HEADERS
         })
             .then(function (response) {
+                console.log('Resposta recebida:', response);
                 if (!response.ok) {
                     throw new Error('Erro ao buscar dados do relatório. Status ' + response.status);
                 }
                 return response.json();
             })
             .then(function (data) {
+                console.log('Dados recebidos:', data);
                 lastReportData = data;
                 lastGeneratedAt = new Date();
 
@@ -659,4 +674,6 @@
     if (scrollButton) {
         scrollButton.addEventListener('click', handleScrollButton);
     }
-})();
+
+    console.log('Event listeners registrados com sucesso');
+});
