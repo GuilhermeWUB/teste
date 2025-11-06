@@ -57,6 +57,11 @@
     flex: 1;
 }
 
+html[data-theme="dark"] body:not(.no-dark-blur) .kanban-page,
+html[data-theme="dark"] body:not(.no-dark-blur) .kanban-wrapper {
+    background: transparent;
+}
+
 html[data-theme="dark"] .kanban-wrapper {
     --kanban-panel-bg: color-mix(in srgb, var(--color-surface-elevated) 90%, rgba(15, 6, 20, 0.4));
     --kanban-card-bg: color-mix(in srgb, var(--color-surface-elevated) 96%, rgba(0, 0, 0, 0.15));
@@ -349,6 +354,12 @@ html[data-theme="dark"] .kanban-wrapper {
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
+}
+
+.task-card-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
 .badge {

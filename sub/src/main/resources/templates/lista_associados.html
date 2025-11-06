@@ -56,28 +56,20 @@
             <td th:text="${partner.name}"></td>
             <td th:text="${partner.cpf}"></td>
             <td class="align-middle">
-                <div class="table-actions flex-wrap">
-                    <a th:href="@{/partners/{id}(id=${partner.id})}" class="btn btn-info btn-sm">Detalhes</a>
-                    <a th:href="@{/partners/edit/{id}(id=${partner.id})}" class="btn btn-warning btn-sm">Alterar</a>
-                    <a th:href="@{/vehicles(partnerId=${partner.id})}" class="btn btn-secondary btn-sm">Gerenciar veículos</a>
+                <div class="table-actions">
+                    <div class="action-buttons">
+                        <a th:href="@{/partners/{id}(id=${partner.id})}" class="btn btn-info btn-action btn-sm">Detalhes</a>
+                        <a th:href="@{/partners/edit/{id}(id=${partner.id})}" class="btn btn-warning btn-action btn-sm">Alterar</a>
+                        <a th:href="@{/vehicles(partnerId=${partner.id})}" class="btn btn-secondary btn-action btn-sm">Gerenciar veículos</a>
 
-                    <form th:action="@{/partners/delete/{id}(id=${partner.id})}" method="post" class="inline-form">
-                        <button type="submit" class="btn btn-danger btn-sm"
-                                onclick="return confirm('Tem certeza que deseja excluir este associado?');">
-                            Excluir
-                        </button>
-                    </form>
-
-                    <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
-                          th:action="@{/pagamentos/gerar-mensalidades}" method="get" class="inline-form d-flex gap-2 align-items-center">
-                        <select name="vehicle_id" class="form-select form-select-sm w-auto">
-                            <option th:each="vehicle : ${partner.vehicles}"
-                                    th:value="${vehicle.id}"
-                                    th:text="${vehicle.plaque}">
-                            </option>
-                        </select>
-                        <button type="submit" class="btn btn-success btn-sm">Gerar Faturas</button>
-                    </form>
+                        <form th:if="${partner.vehicles != null and not #lists.isEmpty(partner.vehicles)}"
+                              th:action="@{/pagamentos/gerar-mensalidades}" method="get"
+                              class="inline-form billing-form">
+                            <input type="hidden" name="vehicle_id"
+                                   th:value="${partner.vehicles[0].id}" />
+                            <button type="submit" class="btn btn-success btn-action btn-sm">Gerar Faturas</button>
+                        </form>
+                    </div>
                 </div>
             </td>
         </tr>

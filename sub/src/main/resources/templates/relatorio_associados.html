@@ -18,61 +18,486 @@
     </div>
 
     <div class="report-card report-form">
-        <form method="get" th:action="@{/reports/partners}">
+        <form method="get" th:action="@{/reports/partners}" class="report-filters">
             <input type="hidden" name="generate" value="true" />
 
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-                <div>
-                    <h5 class="mb-1">Seções do Relatório</h5>
-                    <p class="text-muted mb-0">Escolha os blocos de informações que deseja visualizar na consulta.</p>
+            <section class="report-selection-card">
+                <div class="report-selection-header">
+                    <div>
+                        <h5 class="mb-1">Seções do Relatório</h5>
+                        <p class="text-muted mb-0">Escolha os blocos de informações que deseja visualizar na consulta.</p>
+                    </div>
                 </div>
-            </div>
-
-            <div class="row g-3 mt-1">
-                <div class="col-md-6">
-                    <div class="form-check h-100">
-                        <input class="form-check-input" type="checkbox" name="sections" value="summary" id="summary"
+                <div class="report-selection-options">
+                    <div class="report-selection-option">
+                        <input class="report-selection-input" type="checkbox" name="sections" value="summary" id="summary"
                                th:checked="${selectedSections != null and selectedSections.contains('summary')}">
-                        <label class="form-check-label" for="summary">
+                        <label class="report-selection-label" for="summary">
                             <strong>Resumo Geral</strong>
-                            <span class="d-block text-muted">Indicadores principais sobre quantidade de associados e média de veículos.</span>
+                            <span>Indicadores principais sobre quantidade de associados e média de veículos.</span>
                         </label>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-check h-100">
-                        <input class="form-check-input" type="checkbox" name="sections" value="topCities" id="topCities"
+                    <div class="report-selection-option">
+                        <input class="report-selection-input" type="checkbox" name="sections" value="topCities" id="topCities"
                                th:checked="${selectedSections != null and selectedSections.contains('topCities')}">
-                        <label class="form-check-label" for="topCities">
+                        <label class="report-selection-label" for="topCities">
                             <strong>Principais Cidades</strong>
-                            <span class="d-block text-muted">Ranking das cidades com maior concentração de associados.</span>
+                            <span>Ranking das cidades com maior concentração de associados.</span>
                         </label>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-check h-100">
-                        <input class="form-check-input" type="checkbox" name="sections" value="generalIndicators" id="generalIndicators"
+                    <div class="report-selection-option">
+                        <input class="report-selection-input" type="checkbox" name="sections" value="generalIndicators" id="generalIndicators"
                                th:checked="${selectedSections != null and selectedSections.contains('generalIndicators')}">
-                        <label class="form-check-label" for="generalIndicators">
+                        <label class="report-selection-label" for="generalIndicators">
                             <strong>Indicadores Gerais</strong>
-                            <span class="d-block text-muted">Totais de veículos vinculados e percentual de associados ativos.</span>
+                            <span>Totais de veículos vinculados e percentual de associados ativos.</span>
+                        </label>
+                    </div>
+                    <div class="report-selection-option">
+                        <input class="report-selection-input" type="checkbox" name="sections" value="partnerList" id="partnerList"
+                               th:checked="${selectedSections != null and selectedSections.contains('partnerList')}">
+                        <label class="report-selection-label" for="partnerList">
+                            <strong>Listagem Completa</strong>
+                            <span>Todos os associados com status, cidade e quantidade de veículos.</span>
                         </label>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check h-100">
-                        <input class="form-check-input" type="checkbox" name="sections" value="partnerList" id="partnerList"
-                               th:checked="${selectedSections != null and selectedSections.contains('partnerList')}">
-                        <label class="form-check-label" for="partnerList">
-                            <strong>Listagem Completa</strong>
-                            <span class="d-block text-muted">Todos os associados com status, cidade e quantidade de veículos.</span>
-                        </label>
+            </section>
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="filter-stack">
+                        <section class="filter-section">
+                            <div class="filter-section-header">
+                                <div>
+                                    <h5 class="mb-1">Dados do Associado</h5>
+                                    <p class="text-muted mb-0">Informe parâmetros de identificação pessoal do associado.</p>
+                                </div>
+                                <i class="bi bi-person-vcard-fill text-primary"></i>
+                            </div>
+                            <div class="filter-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="nome">Nome</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Maria Silva"
+                                           th:value="${param.nome}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="matricula">Matrícula</label>
+                                    <input type="text" class="form-control" id="matricula" name="matricula" placeholder="Ex: 102030"
+                                           th:value="${param.matricula}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cpf">CPF</label>
+                                    <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00"
+                                           th:value="${param.cpf}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="status">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="" th:selected="${param.status == null}">Todos</option>
+                                        <option value="ATIVO" th:selected="${param.status == 'ATIVO'}">Ativo</option>
+                                        <option value="INATIVO" th:selected="${param.status == 'INATIVO'}">Inativo</option>
+                                        <option value="PENDENTE" th:selected="${param.status == 'PENDENTE'}">Pendente</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="associado">Associado</label>
+                                    <select class="form-select" id="associado" name="associado">
+                                        <option value="" th:selected="${param.associado == null}">Todos</option>
+                                        <option value="true" th:selected="${param.associado == 'true'}">Sim</option>
+                                        <option value="false" th:selected="${param.associado == 'false'}">Não</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="categoriaAssociado">Tipo Categoria</label>
+                                    <input type="text" class="form-control" id="categoriaAssociado" name="categoriaAssociado"
+                                           placeholder="Ex: Premium" th:value="${param.categoriaAssociado}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="estadoCivil">Tipo Estado Civil</label>
+                                    <input type="text" class="form-control" id="estadoCivil" name="estadoCivil" placeholder="Ex: Casado"
+                                           th:value="${param.estadoCivil}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="profissao">Tipo Profissão</label>
+                                    <input type="text" class="form-control" id="profissao" name="profissao" placeholder="Ex: Motorista"
+                                           th:value="${param.profissao}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="sexo">Sexo</label>
+                                    <select class="form-select" id="sexo" name="sexo">
+                                        <option value="" th:selected="${param.sexo == null}">Todos</option>
+                                        <option value="F" th:selected="${param.sexo == 'F'}">Feminino</option>
+                                        <option value="M" th:selected="${param.sexo == 'M'}">Masculino</option>
+                                        <option value="O" th:selected="${param.sexo == 'O'}">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="dataNascimento">Data Nascimento</label>
+                                    <input type="date" class="form-control" id="dataNascimento" name="dataNascimento"
+                                           th:value="${param.dataNascimento}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="nomeConjuge">Nome Cônjuge</label>
+                                    <input type="text" class="form-control" id="nomeConjuge" name="nomeConjuge" placeholder="Nome completo"
+                                           th:value="${param.nomeConjuge}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="dataNascimentoConjuge">Data Nascimento Cônjuge</label>
+                                    <input type="date" class="form-control" id="dataNascimentoConjuge" name="dataNascimentoConjuge"
+                                           th:value="${param.dataNascimentoConjuge}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="nomeMae">Nome da Mãe</label>
+                                    <input type="text" class="form-control" id="nomeMae" name="nomeMae" placeholder="Nome completo"
+                                           th:value="${param.nomeMae}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="escolaridade">Escolaridade</label>
+                                    <input type="text" class="form-control" id="escolaridade" name="escolaridade" placeholder="Ex: Superior completo"
+                                           th:value="${param.escolaridade}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="beneficio">Tipo Benefício</label>
+                                    <input type="text" class="form-control" id="beneficio" name="beneficio" placeholder="Ex: Plano Ouro"
+                                           th:value="${param.beneficio}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="renda">Tipo Renda</label>
+                                    <input type="text" class="form-control" id="renda" name="renda" placeholder="Ex: Assalariado"
+                                           th:value="${param.renda}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="qtdDependentes">Qtd. Dependentes</label>
+                                    <input type="number" min="0" class="form-control" id="qtdDependentes" name="qtdDependentes"
+                                           th:value="${param.qtdDependentes}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="qtdFilhos">Qtd. Filhos</label>
+                                    <input type="number" min="0" class="form-control" id="qtdFilhos" name="qtdFilhos"
+                                           th:value="${param.qtdFilhos}">
+                                </div>
+                            </div>
+                        </section>
+
+            <div class="filter-stack">
+                <section class="filter-section">
+                    <div class="filter-section-header">
+                        <div>
+                            <h5 class="mb-1">Dados do Associado</h5>
+                            <p class="text-muted mb-0">Informe parâmetros de identificação pessoal do associado.</p>
+                        </div>
+                        <i class="bi bi-person-vcard-fill text-primary"></i>
                     </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="nome">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Maria Silva"
+                                   th:value="${param.nome}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="matricula">Matrícula</label>
+                            <input type="text" class="form-control" id="matricula" name="matricula" placeholder="Ex: 102030"
+                                   th:value="${param.matricula}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cpf">CPF</label>
+                            <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00"
+                                   th:value="${param.cpf}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="status">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="" th:selected="${param.status == null}">Todos</option>
+                                <option value="ATIVO" th:selected="${param.status == 'ATIVO'}">Ativo</option>
+                                <option value="INATIVO" th:selected="${param.status == 'INATIVO'}">Inativo</option>
+                                <option value="PENDENTE" th:selected="${param.status == 'PENDENTE'}">Pendente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="associado">Associado</label>
+                            <select class="form-select" id="associado" name="associado">
+                                <option value="" th:selected="${param.associado == null}">Todos</option>
+                                <option value="true" th:selected="${param.associado == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.associado == 'false'}">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="categoriaAssociado">Tipo Categoria</label>
+                            <input type="text" class="form-control" id="categoriaAssociado" name="categoriaAssociado"
+                                   placeholder="Ex: Premium" th:value="${param.categoriaAssociado}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="estadoCivil">Tipo Estado Civil</label>
+                            <input type="text" class="form-control" id="estadoCivil" name="estadoCivil" placeholder="Ex: Casado"
+                                   th:value="${param.estadoCivil}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="profissao">Tipo Profissão</label>
+                            <input type="text" class="form-control" id="profissao" name="profissao" placeholder="Ex: Motorista"
+                                   th:value="${param.profissao}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="sexo">Sexo</label>
+                            <select class="form-select" id="sexo" name="sexo">
+                                <option value="" th:selected="${param.sexo == null}">Todos</option>
+                                <option value="F" th:selected="${param.sexo == 'F'}">Feminino</option>
+                                <option value="M" th:selected="${param.sexo == 'M'}">Masculino</option>
+                                <option value="O" th:selected="${param.sexo == 'O'}">Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataNascimento">Data Nascimento</label>
+                            <input type="date" class="form-control" id="dataNascimento" name="dataNascimento"
+                                   th:value="${param.dataNascimento}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nomeConjuge">Nome Cônjuge</label>
+                            <input type="text" class="form-control" id="nomeConjuge" name="nomeConjuge" placeholder="Nome completo"
+                                   th:value="${param.nomeConjuge}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataNascimentoConjuge">Data Nascimento Cônjuge</label>
+                            <input type="date" class="form-control" id="dataNascimentoConjuge" name="dataNascimentoConjuge"
+                                   th:value="${param.dataNascimentoConjuge}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nomeMae">Nome da Mãe</label>
+                            <input type="text" class="form-control" id="nomeMae" name="nomeMae" placeholder="Nome completo"
+                                   th:value="${param.nomeMae}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="escolaridade">Escolaridade</label>
+                            <input type="text" class="form-control" id="escolaridade" name="escolaridade" placeholder="Ex: Superior completo"
+                                   th:value="${param.escolaridade}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="beneficio">Tipo Benefício</label>
+                            <input type="text" class="form-control" id="beneficio" name="beneficio" placeholder="Ex: Plano Ouro"
+                                   th:value="${param.beneficio}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="renda">Tipo Renda</label>
+                            <input type="text" class="form-control" id="renda" name="renda" placeholder="Ex: Assalariado"
+                                   th:value="${param.renda}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="qtdDependentes">Qtd. Dependentes</label>
+                            <input type="number" min="0" class="form-control" id="qtdDependentes" name="qtdDependentes"
+                                   th:value="${param.qtdDependentes}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="qtdFilhos">Qtd. Filhos</label>
+                            <input type="number" min="0" class="form-control" id="qtdFilhos" name="qtdFilhos"
+                                   th:value="${param.qtdFilhos}">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <div class="filter-section-header">
+                        <div>
+                            <h5 class="mb-1">Documentação &amp; Habilitação</h5>
+                            <p class="text-muted mb-0">Datas de validade e informações sobre habilitação e vínculos.</p>
+                        </div>
+                        <i class="bi bi-calendar-event text-primary"></i>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="categoriaCnh">Categoria CNH</label>
+                            <input type="text" class="form-control" id="categoriaCnh" name="categoriaCnh" placeholder="Ex: B"
+                                   th:value="${param.categoriaCnh}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="vencimentoHabilitacao">Data Vencimento Habilitação</label>
+                            <input type="date" class="form-control" id="vencimentoHabilitacao" name="vencimentoHabilitacao"
+                                   th:value="${param.vencimentoHabilitacao}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="validadeLiberacao">Data Validade Liberação</label>
+                            <input type="date" class="form-control" id="validadeLiberacao" name="validadeLiberacao"
+                                   th:value="${param.validadeLiberacao}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataFinalCarencia">Data Final Carência</label>
+                            <input type="date" class="form-control" id="dataFinalCarencia" name="dataFinalCarencia"
+                                   th:value="${param.dataFinalCarencia}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataCasamento">Data Casamento</label>
+                            <input type="date" class="form-control" id="dataCasamento" name="dataCasamento"
+                                   th:value="${param.dataCasamento}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataDesligamento">Data Desligamento</label>
+                            <input type="date" class="form-control" id="dataDesligamento" name="dataDesligamento"
+                                   th:value="${param.dataDesligamento}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="possuiVeiculo">Possui Veículo?</label>
+                            <select class="form-select" id="possuiVeiculo" name="possuiVeiculo">
+                                <option value="" th:selected="${param.possuiVeiculo == null}">Todos</option>
+                                <option value="true" th:selected="${param.possuiVeiculo == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.possuiVeiculo == 'false'}">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="categoriaSos">Categoria S.O.S</label>
+                            <input type="text" class="form-control" id="categoriaSos" name="categoriaSos" placeholder="Informe a categoria"
+                                   th:value="${param.categoriaSos}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="classeSos">Classe S.O.S</label>
+                            <input type="text" class="form-control" id="classeSos" name="classeSos" placeholder="Informe a classe"
+                                   th:value="${param.classeSos}">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <div class="filter-section-header">
+                        <div>
+                            <h5 class="mb-1">Endereço &amp; Contato</h5>
+                            <p class="text-muted mb-0">Dados de localização e canais de comunicação com o associado.</p>
+                        </div>
+                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="cep">CEP</label>
+                            <input type="text" class="form-control" id="cep" name="cep" placeholder="Ex: 01001-000"
+                                   th:value="${param.cep}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="estado">Estado</label>
+                            <input type="text" class="form-control" id="estado" name="estado" placeholder="Ex: SP"
+                                   th:value="${param.estado}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="cidade">Cidade</label>
+                            <input type="text" class="form-control" id="cidade" name="cidade" placeholder="Ex: São Paulo"
+                                   th:value="${param.cidade}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="bairro">Bairro</label>
+                            <input type="text" class="form-control" id="bairro" name="bairro" placeholder="Ex: Centro"
+                                   th:value="${param.bairro}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="numeroResidencia">Núm. Residência</label>
+                            <input type="text" class="form-control" id="numeroResidencia" name="numeroResidencia"
+                                   th:value="${param.numeroResidencia}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="telefone">Telefone</label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(00) 0000-0000"
+                                   th:value="${param.telefone}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="celular">Celular</label>
+                            <input type="text" class="form-control" id="celular" name="celular" placeholder="(00) 00000-0000"
+                                   th:value="${param.celular}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="email@exemplo.com"
+                                   th:value="${param.email}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="operadora">Operadora</label>
+                            <input type="text" class="form-control" id="operadora" name="operadora" placeholder="Ex: Vivo"
+                                   th:value="${param.operadora}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="linhaMoveis">Linha Móveis?</label>
+                            <select class="form-select" id="linhaMoveis" name="linhaMoveis">
+                                <option value="" th:selected="${param.linhaMoveis == null}">Todos</option>
+                                <option value="true" th:selected="${param.linhaMoveis == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.linhaMoveis == 'false'}">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="linhaMovel">Linha Móvel?</label>
+                            <select class="form-select" id="linhaMovel" name="linhaMovel">
+                                <option value="" th:selected="${param.linhaMovel == null}">Todos</option>
+                                <option value="true" th:selected="${param.linhaMovel == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.linhaMovel == 'false'}">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="receberSms">Receber SMS?</label>
+                            <select class="form-select" id="receberSms" name="receberSms">
+                                <option value="" th:selected="${param.receberSms == null}">Todos</option>
+                                <option value="true" th:selected="${param.receberSms == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.receberSms == 'false'}">Não</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="receberNewsletter">Receber Newsletter?</label>
+                            <select class="form-select" id="receberNewsletter" name="receberNewsletter">
+                                <option value="" th:selected="${param.receberNewsletter == null}">Todos</option>
+                                <option value="true" th:selected="${param.receberNewsletter == 'true'}">Sim</option>
+                                <option value="false" th:selected="${param.receberNewsletter == 'false'}">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <div class="filter-section-header">
+                        <div>
+                            <h5 class="mb-1">Informações de Cadastro &amp; Financeiro</h5>
+                            <p class="text-muted mb-0">Controle as datas e responsáveis pelas mensalidades e registros.</p>
+                        </div>
+                        <i class="bi bi-cash-stack text-primary"></i>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="inicioCadastro">Início Cadastro</label>
+                            <input type="date" class="form-control" id="inicioCadastro" name="inicioCadastro"
+                                   th:value="${param.inicioCadastro}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="fimCadastro">Fim Cadastro</label>
+                            <input type="date" class="form-control" id="fimCadastro" name="fimCadastro"
+                                   th:value="${param.fimCadastro}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="usuarioCadastro">Usuário Cadastro</label>
+                            <input type="text" class="form-control" id="usuarioCadastro" name="usuarioCadastro"
+                                   placeholder="Responsável pelo cadastro" th:value="${param.usuarioCadastro}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="operador">Operador</label>
+                            <input type="text" class="form-control" id="operador" name="operador" placeholder="Responsável pela mensalidade"
+                                   th:value="${param.operador}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataVencimentoMensalidade">Data Venc. Mensalidade</label>
+                            <input type="date" class="form-control" id="dataVencimentoMensalidade" name="dataVencimentoMensalidade"
+                                   th:value="${param.dataVencimentoMensalidade}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataPagamentoMensalidade">Data Pagamento Mensalidade</label>
+                            <input type="date" class="form-control" id="dataPagamentoMensalidade" name="dataPagamentoMensalidade"
+                                   th:value="${param.dataPagamentoMensalidade}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="valorMensalidade">Valor Mensalidade</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="valorMensalidade" name="valorMensalidade"
+                                   placeholder="Ex: 199.90" th:value="${param.valorMensalidade}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="dataUltimaMensalidade">Data Última Mensalidade</label>
+                            <input type="date" class="form-control" id="dataUltimaMensalidade" name="dataUltimaMensalidade"
+                                   th:value="${param.dataUltimaMensalidade}">
+                        </div>
+                    </div>
+                </section>
                 </div>
             </div>
 
-            <div class="report-actions mt-3">
-                <button type="submit" class="btn btn-primary">
+            <div class="report-actions mt-4">
+                <button type="submit" class="btn btn-primary" data-report-submit>
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Gerar Relatório</span>
                 </button>
@@ -89,6 +514,7 @@
                     <span>Limpar</span>
                 </a>
             </div>
+            <div class="report-inline-feedback d-none" data-report-error role="alert" aria-live="assertive"></div>
         </form>
     </div>
 
@@ -97,13 +523,31 @@
         <span th:text="${errorMessage}"></span>
     </div>
 
-    <div th:if="${generated}" class="report-card report-results">
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
-            <div>
-                <h2 class="h4 mb-1">Resultados do Relatório</h2>
-                <p class="text-muted mb-0">Resumo das informações conforme as seções marcadas acima.</p>
+    <div class="report-card report-results-placeholder" data-report-empty>
+        <div class="report-empty-state">
+            <div class="report-empty-icon">
+                <i class="bi bi-search"></i>
             </div>
-            <div class="d-flex gap-2">
+            <h2 class="h5 mb-2">Visualização dinâmica do relatório</h2>
+            <p class="text-muted mb-3">Selecione as seções desejadas e clique em &ldquo;Gerar Relatório&rdquo; para visualizar os resultados sem sair da página.</p>
+            <button type="button" class="btn btn-outline-primary" data-scroll-to-form>
+                <i class="bi bi-sliders me-2"></i>
+                <span>Escolher seções</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="report-card report-results d-none" data-report-results-wrapper>
+        <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+            <div>
+                <h2 class="h4 mb-1" data-report-results-title>Relatório de Associados</h2>
+                <p class="text-muted mb-0" data-report-results-subtitle>Consulta dinâmica do relatório.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary btn-sm" data-report-view-details>
+                    <i class="bi bi-eye"></i>
+                    <span>Ver detalhes</span>
+                </button>
                 <a th:href="@{/reports/partners/excel}" class="btn btn-success btn-sm">
                     <i class="bi bi-file-earmark-excel"></i>
                     <span>Excel Completo</span>
@@ -112,125 +556,37 @@
                     <i class="bi bi-file-earmark-excel"></i>
                     <span>Excel Resumido</span>
                 </a>
-                <button type="button" onclick="window.print()" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-printer"></i>
-                    <span>Imprimir</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-report-clear>
+                    <i class="bi bi-trash"></i>
+                    <span>Limpar visualização</span>
                 </button>
             </div>
         </div>
+        <div data-report-results></div>
+    </div>
 
-        <div th:if="${summary}" class="report-section">
-            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-clipboard-data"></i>
-                <span>Resumo Geral</span>
-            </h3>
-            <div class="row g-3">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Total de Associados</div>
-                        <div class="stat-value" th:text="${summary.totalPartners}">0</div>
-                    </div>
+    <div class="report-overlay" data-report-overlay hidden>
+        <div class="report-overlay__backdrop" data-overlay-close></div>
+        <div class="report-overlay__dialog" role="dialog" aria-modal="true" aria-labelledby="partnerReportOverlayTitle">
+            <header class="report-overlay__header">
+                <div>
+                    <h2 class="h5 mb-1" id="partnerReportOverlayTitle">Gerando relatório de associados</h2>
+                    <p class="text-muted mb-0" data-overlay-subtitle>Estamos preparando os dados em tempo real.</p>
                 </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Com Veículos</div>
-                        <div class="stat-value" th:text="${summary.partnersWithVehicles}">0</div>
-                    </div>
+                <button type="button" class="btn-close" aria-label="Fechar" data-overlay-close></button>
+            </header>
+            <div class="report-overlay__body" data-report-overlay-content>
+                <div class="report-loading-state">
+                    <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                    <strong class="d-block mb-1">Carregando filtros</strong>
+                    <p class="text-muted mb-0">Estamos preparando as informações do relatório.</p>
                 </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Sem Veículos</div>
-                        <div class="stat-value" th:text="${summary.partnersWithoutVehicles}">0</div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Média por Associado</div>
-                        <div class="stat-value" th:text="${summary.averageVehiclesPerPartner}">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div th:if="${topCities}" class="report-section">
-            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-geo-alt"></i>
-                <span>Principais Cidades</span>
-            </h3>
-            <div th:each="item : ${topCities}" class="distribution-item">
-                <span th:text="${item.label}">Cidade</span>
-                <strong th:text="${item.value}">0</strong>
-            </div>
-            <div th:if="${#lists.isEmpty(topCities)}" class="text-muted text-center pt-3">
-                Nenhum dado disponível para os filtros selecionados.
-            </div>
-        </div>
-
-        <div th:if="${generalIndicators}" class="report-section">
-            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-graph-up"></i>
-                <span>Indicadores Gerais</span>
-            </h3>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Total de Veículos</div>
-                        <div class="stat-value" th:text="${generalIndicators.totalVehicles}">0</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="stat-card h-100">
-                        <div class="stat-label">Taxa de Ativação</div>
-                        <div class="stat-value" th:text="${generalIndicators.activePercentage}">0%</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div th:if="${partners}" class="report-section">
-            <h3 class="h5 mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-list-ul"></i>
-                <span>Listagem Completa de Associados</span>
-            </h3>
-            <div class="report-table-wrapper">
-                <table class="table table-striped table-hover mb-0">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>CPF</th>
-                        <th>Cidade</th>
-                        <th>Status</th>
-                        <th>Veículos</th>
-                        <th>Cadastro</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="partner : ${partners}">
-                        <td th:text="${partner.id}">1</td>
-                        <td th:text="${partner.name} ?: '-'">-</td>
-                        <td th:text="${partner.email} ?: '-'">-</td>
-                        <td th:text="${partner.cpf} ?: '-'">-</td>
-                        <td th:text="${partner.city} ?: '-'">-</td>
-                        <td th:text="${partner.status} ?: '-'">-</td>
-                        <td th:text="${partner.vehicleCount}">0</td>
-                        <td th:text="${partner.registrationDate} ?: '-'">-</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div th:if="${#lists.isEmpty(partners)}" class="text-muted text-center pt-3">
-                Nenhum associado encontrado para os filtros aplicados.
             </div>
         </div>
     </div>
 
-    <div th:if="${!generated and errorMessage == null}" class="report-empty">
-        <i class="bi bi-info-circle-fill text-primary"></i>
-        <p class="mb-1 fw-semibold">Configure o relatório</p>
-        <p class="mb-0 text-muted">Selecione pelo menos uma seção acima e clique em <strong>Gerar Relatório</strong> para visualizar os dados.</p>
-    </div>
+    <div class="report-feedback" data-report-feedback role="status" aria-live="polite" hidden></div>
+
 </section>
 
 <th:block layout:fragment="scripts">

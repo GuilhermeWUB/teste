@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
@@ -71,7 +73,7 @@ public class Partner {
     private Adhesion adhesion;
 
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BankSlip> bankSlips;
+    private Set<BankSlip> bankSlips = new LinkedHashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "company_id")

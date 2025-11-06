@@ -131,7 +131,7 @@
     </div>
 </footer>
 
-<button type="button" class="back-to-top" id="backToTop">
+<button type="button" class="back-to-top" id="back-to-top" aria-hidden="true" tabindex="-1">
     <span class="back-to-top__icon" aria-hidden="true">⬆</span>
     <span class="back-to-top__text">Voltar ao topo</span>
 </button>
@@ -780,6 +780,15 @@
         const navDropdownToggles = document.querySelectorAll('[data-nav-dropdown]');
         const backToTopButton = document.getElementById('backToTop');
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const disableDarkBlurRegion = document.querySelector('[data-no-dark-blur]');
+
+        if (document.body) {
+            if (disableDarkBlurRegion) {
+                document.body.classList.add('no-dark-blur');
+            } else {
+                document.body.classList.remove('no-dark-blur');
+            }
+        }
 
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme === 'dark' || (!storedTheme && prefersDarkScheme.matches)) {

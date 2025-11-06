@@ -2000,18 +2000,80 @@ tr + tr {
 
 .table-actions {
     display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
 }
 
-.table-actions .form-select {
-    min-width: 120px;
+.table-actions .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.table-actions .btn {
+    transition: all 0.2s ease;
+}
+
+.btn-action {
+    border-radius: 999px;
+    font-weight: 500;
+    padding: 0.45rem 1rem;
+    letter-spacing: 0.01em;
+    box-shadow: var(--shadow-border);
 }
 
 .inline-form {
     display: inline-block;
     margin: 0;
+}
+
+.billing-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.billing-form .form-select {
+    min-width: 140px;
+}
+
+.billing-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .table-actions {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .table-actions .action-buttons {
+        justify-content: flex-start;
+    }
+
+    .billing-form {
+        justify-content: flex-end;
+    }
+}
+
+html[data-theme="dark"] .btn-action {
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+    color: var(--bs-btn-color);
+}
+
+html[data-theme="dark"] .btn-action:hover {
+    box-shadow: var(--shadow-button);
+    transform: translateY(-2px);
 }
 
 .badge {
@@ -2654,6 +2716,22 @@ html[data-theme="dark"] .report-card *:not(.btn):not(.btn *):not(.badge):not(.ba
     color: var(--color-text-primary);
 }
 
+html[data-theme="dark"] .list-group,
+html[data-theme="dark"] .list-group-item {
+    background-color: rgba(30, 22, 58, 0.75);
+    border-color: rgba(124, 58, 237, 0.35);
+    color: var(--color-text-primary);
+}
+
+html[data-theme="dark"] .list-group-item + .list-group-item {
+    border-top-color: rgba(124, 58, 237, 0.25);
+}
+
+html[data-theme="dark"] .list-group-item b,
+html[data-theme="dark"] .list-group-item strong {
+    color: var(--color-secondary);
+}
+
 /* Labels e textos de formulário */
 html[data-theme="dark"] label,
 html[data-theme="dark"] .form-label,
@@ -2733,6 +2811,54 @@ html[data-theme="dark"] .topbar-action {
 }
 
 /* Links gerais (resto da página) */
+html[data-theme="dark"] body {
+    position: relative;
+    z-index: 0;
+    overflow-x: hidden;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) {
+    background: transparent;
+    isolation: isolate;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur)::before {
+    content: '';
+    position: fixed;
+    inset: -18% -25% -30%;
+    background:
+        radial-gradient(120% 75% at 50% -10%, rgba(168, 85, 247, 0.55), rgba(20, 0, 44, 0.05) 60%, transparent 75%),
+        radial-gradient(90% 65% at 15% 25%, rgba(139, 92, 246, 0.45), transparent 65%),
+        radial-gradient(110% 70% at 85% 20%, rgba(59, 7, 100, 0.5), transparent 70%),
+        linear-gradient(180deg, #160332 0%, #060012 100%);
+    filter: blur(70px);
+    opacity: 0.95;
+    z-index: 0;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Garante que a navbar fique acima do blur de fundo e do conteúdo */
+html[data-theme="dark"] body:not(.no-dark-blur) > .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 120;
+}
+
+html[data-theme="dark"] body:not(.no-dark-blur) > .topbar .nav-dropdown-menu {
+    z-index: 130;
+}
+
+html[data-theme="dark"] body.no-dark-blur {
+    background: var(--color-body-bg);
+}
+
 html[data-theme="dark"] .page a:not(.btn),
 html[data-theme="dark"] .container a:not(.btn),
 html[data-theme="dark"] .card a:not(.btn),
