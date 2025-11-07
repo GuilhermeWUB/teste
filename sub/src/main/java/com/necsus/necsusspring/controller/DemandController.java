@@ -48,6 +48,12 @@ public class DemandController {
     public String index(Authentication authentication) {
         String userRole = getUserRole(authentication);
 
+        // Bloqueia acesso de Associados (USER)
+        if ("USER".equals(userRole)) {
+            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+            return "redirect:/";
+        }
+
         // Admin e Diretoria vão para painel de gestão
         if (isDirectorOrAdmin(userRole)) {
             return "redirect:/demands/director";
@@ -204,8 +210,15 @@ public class DemandController {
             @RequestParam(value = "status", required = false) DemandStatus statusFilter,
             Model model) {
 
-        UserAccount currentUser = getCurrentUser(authentication);
         String userRole = getUserRole(authentication);
+
+        // Bloqueia acesso de Associados (USER)
+        if ("USER".equals(userRole)) {
+            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+            return "redirect:/";
+        }
+
+        UserAccount currentUser = getCurrentUser(authentication);
 
         List<Demand> myDemands = demandService.findAccessibleByUser(currentUser, userRole);
 
@@ -244,8 +257,16 @@ public class DemandController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        UserAccount currentUser = getCurrentUser(authentication);
         String userRole = getUserRole(authentication);
+
+        // Bloqueia acesso de Associados (USER)
+        if ("USER".equals(userRole)) {
+            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+            redirectAttributes.addFlashAttribute("error", "Você não tem permissão para acessar demandas.");
+            return "redirect:/";
+        }
+
+        UserAccount currentUser = getCurrentUser(authentication);
 
         Demand demand = demandService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Demanda não encontrada"));
@@ -274,8 +295,16 @@ public class DemandController {
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
-        UserAccount currentUser = getCurrentUser(authentication);
         String userRole = getUserRole(authentication);
+
+        // Bloqueia acesso de Associados (USER)
+        if ("USER".equals(userRole)) {
+            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+            redirectAttributes.addFlashAttribute("error", "Você não tem permissão para acessar demandas.");
+            return "redirect:/";
+        }
+
+        UserAccount currentUser = getCurrentUser(authentication);
 
         try {
             Demand demand = demandService.findById(id)
@@ -310,8 +339,16 @@ public class DemandController {
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
-        UserAccount currentUser = getCurrentUser(authentication);
         String userRole = getUserRole(authentication);
+
+        // Bloqueia acesso de Associados (USER)
+        if ("USER".equals(userRole)) {
+            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+            redirectAttributes.addFlashAttribute("error", "Você não tem permissão para acessar demandas.");
+            return "redirect:/";
+        }
+
+        UserAccount currentUser = getCurrentUser(authentication);
 
         try {
             Demand demand = demandService.findById(id)
