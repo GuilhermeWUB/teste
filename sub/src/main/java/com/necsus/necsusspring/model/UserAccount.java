@@ -13,9 +13,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "app_users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class UserAccount {
 
     @Id
@@ -38,7 +41,27 @@ public class UserAccount {
     private String role = RoleType.USER.getCode();
 
     @Column(name = "created_at", nullable = false)
+    @Getter(AccessLevel.NONE)  // Desabilita o getter gerado pelo Lombok
+    @Setter(AccessLevel.NONE)  // Desabilita o setter gerado pelo Lombok
     private LocalDateTime createdAt;
+
+    /**
+     * Getter personalizado para createdAt que NUNCA retorna null
+     * Isso previne erros de TimeStamp mesmo se o campo estiver null no banco
+     */
+    public LocalDateTime getCreatedAt() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        return createdAt;
+    }
+
+    /**
+     * Setter para createdAt que previne valores null
+     */
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
+    }
 
     @PrePersist
     public void prePersist() {
