@@ -1138,6 +1138,13 @@ html[data-theme="dark"] .landing-feature:focus-within {
     padding: 1.75rem;
 }
 
+.report-page--fluid .report-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
 .report-form {
     display: flex;
     flex-direction: column;
@@ -1274,6 +1281,12 @@ html[data-theme="dark"] .report-card {
     background: var(--color-surface-alt);
     border-color: var(--color-border);
     box-shadow: 0 24px 48px rgba(10, 6, 20, 0.5);
+}
+
+html[data-theme="dark"] .report-page--fluid .report-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 html[data-theme="dark"] .report-form .form-check {
