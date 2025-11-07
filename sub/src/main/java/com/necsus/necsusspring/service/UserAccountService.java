@@ -46,6 +46,32 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.save(userAccount);
     }
 
+    /**
+     * Cria um novo usuário com um role específico (usado pelo admin)
+     */
+    public UserAccount createUser(String fullName, String username, String email, String password, String role) {
+        // Validações
+        if (existsByUsername(username)) {
+            throw new IllegalArgumentException("Já existe um usuário com este nome de usuário.");
+        }
+        if (existsByEmail(email)) {
+            throw new IllegalArgumentException("Já existe um usuário com este email.");
+        }
+
+        String normalizedRole = normalizeRole(role);
+        if (!ALLOWED_ROLES.contains(normalizedRole)) {
+            throw new IllegalArgumentException("Tipo de permissão inválido: " + role);
+        }
+
+        UserAccount userAccount = new UserAccount();
+        userAccount.setFullName(fullName);
+        userAccount.setUsername(username);
+        userAccount.setEmail(email);
+        userAccount.setPassword(passwordEncoder.encode(password));
+        userAccount.setRole(normalizedRole);
+        return userAccountRepository.save(userAccount);
+    }
+
     public boolean existsByUsername(String username) {
         return username != null && userAccountRepository.existsByUsername(username);
     }

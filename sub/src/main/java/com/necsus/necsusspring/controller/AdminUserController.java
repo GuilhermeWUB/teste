@@ -29,6 +29,24 @@ public class AdminUserController {
         return "admin_users";
     }
 
+    @PostMapping("/create")
+    public String createUser(@RequestParam("fullName") String fullName,
+                            @RequestParam("username") String username,
+                            @RequestParam("email") String email,
+                            @RequestParam("password") String password,
+                            @RequestParam("role") String role,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            userAccountService.createUser(fullName, username, email, password, role);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuário criado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao criar usuário: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
     @PostMapping("/{id}/role")
     public String updateRole(@PathVariable Long id,
                               @RequestParam("role") String role,
