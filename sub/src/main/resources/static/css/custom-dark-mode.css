@@ -2336,6 +2336,11 @@ html[data-theme="dark"] .back-to-top:focus-visible {
     font-size: 0.9rem;
 }
 
+html[data-theme="dark"] .site-footer {
+    background: var(--color-footer-bg);
+    color: var(--color-footer-text);
+}
+
 html[data-theme="dark"] body {
     color: var(--color-text-primary);
 }
