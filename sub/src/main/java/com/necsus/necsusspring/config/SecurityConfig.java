@@ -17,6 +17,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private static final String[] ADMIN_ROLES = RoleType.adminRoleCodes();
+    private static final String[] USER_MANAGEMENT_ROLES = RoleType.userManagementRoleCodes();
     private static final String[] AUTHENTICATED_ROLES = RoleType.allRoleCodes();
 
     private final UserAccountService userAccountService;
@@ -49,6 +50,9 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/error"),
                                 new AntPathRequestMatcher("/favicon.ico")
                         ).permitAll()
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/admin/users/**")
+                        ).hasAnyRole(USER_MANAGEMENT_ROLES)
                         .requestMatchers(
                                 new AntPathRequestMatcher("/dashboard/**"),
                                 new AntPathRequestMatcher("/partners/**"),
