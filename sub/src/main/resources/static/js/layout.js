@@ -164,7 +164,7 @@
             if (!document.body.contains(backToTopBtn)) {
                 document.body.appendChild(backToTopBtn);
             }
-        const backToTopBtn = document.querySelector('.back-to-top');
+        }
 
         if (!backToTopBtn) {
             return;
