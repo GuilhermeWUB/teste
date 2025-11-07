@@ -58,7 +58,7 @@
                             <td class="admin-users__email" th:text="${user.email != null and !#strings.isEmpty(#strings.trim(user.email)) ? user.email : 'E-mail não informado'}"></td>
                             <td>
                                 <span class="admin-users__role-badge"
-                                      th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role)} ? ' admin-users__role-badge--admin' : ' admin-users__role-badge--standard'"
+                                      th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role)} ? 'admin-users__role-badge--admin' : 'admin-users__role-badge--standard'"
                                       th:text="${T(com.necsus.necsusspring.model.RoleType).displayNameFor(user.role)}"></span>
                             </td>
                             <td>
