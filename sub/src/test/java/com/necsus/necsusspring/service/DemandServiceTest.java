@@ -43,9 +43,9 @@ public class DemandServiceTest {
 
         testDemand = new Demand();
         testDemand.setId(1L);
-        testDemand.setTitle("Test Demand");
-        testDemand.setDescription("Test Description");
-        testDemand.setStatus(DemandStatus.ABERTA);
+        testDemand.setTitulo("Test Demand");
+        testDemand.setDescricao("Test Description");
+        testDemand.setStatus(DemandStatus.PENDENTE);
         testDemand.setCreatedBy(testUser);
         testDemand.setCreatedAt(LocalDateTime.now());
     }
@@ -57,20 +57,20 @@ public class DemandServiceTest {
         Demand result = demandService.createDemand(testDemand);
 
         assertNotNull(result);
-        assertEquals("Test Demand", result.getTitle());
-        assertEquals(DemandStatus.ABERTA, result.getStatus());
+        assertEquals("Test Demand", result.getTitulo());
+        assertEquals(DemandStatus.PENDENTE, result.getStatus());
         verify(demandRepository, times(1)).save(testDemand);
     }
 
     @Test
     public void testUpdateDemand_ShouldReturnUpdatedDemand() {
-        testDemand.setTitle("Updated Demand");
+        testDemand.setTitulo("Updated Demand");
         when(demandRepository.save(any(Demand.class))).thenReturn(testDemand);
 
         Demand result = demandService.updateDemand(testDemand);
 
         assertNotNull(result);
-        assertEquals("Updated Demand", result.getTitle());
+        assertEquals("Updated Demand", result.getTitulo());
         verify(demandRepository, times(1)).save(testDemand);
     }
 
@@ -137,14 +137,14 @@ public class DemandServiceTest {
     @Test
     public void testFindByStatus_ShouldReturnDemandsWithGivenStatus() {
         List<Demand> demands = Arrays.asList(testDemand);
-        when(demandRepository.findByStatusOrderByCreatedAtDesc(DemandStatus.ABERTA)).thenReturn(demands);
+        when(demandRepository.findByStatusOrderByCreatedAtDesc(DemandStatus.PENDENTE)).thenReturn(demands);
 
-        List<Demand> result = demandService.findByStatus(DemandStatus.ABERTA);
+        List<Demand> result = demandService.findByStatus(DemandStatus.PENDENTE);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(DemandStatus.ABERTA, result.get(0).getStatus());
-        verify(demandRepository, times(1)).findByStatusOrderByCreatedAtDesc(DemandStatus.ABERTA);
+        assertEquals(DemandStatus.PENDENTE, result.get(0).getStatus());
+        verify(demandRepository, times(1)).findByStatusOrderByCreatedAtDesc(DemandStatus.PENDENTE);
     }
 
     @Test
