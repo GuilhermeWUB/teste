@@ -5,171 +5,403 @@
     <title>SUB - Usuários</title>
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <style>
-        .user-management-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .user-admin-page {
+            position: relative;
         }
 
-        .user-management-header h1 {
-            font-size: 2rem;
+        .security-wrapper {
+            position: relative;
+            border-radius: 28px;
+            padding: 2.75rem;
+            background: linear-gradient(140deg, #12061f 0%, #180a32 40%, #0d031a 100%);
+            color: #f5f3ff;
+            box-shadow: 0 32px 60px rgba(8, 4, 24, 0.68);
+            overflow: hidden;
+        }
+
+        .security-wrapper::before,
+        .security-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: -50% -20% auto -20%;
+            height: 120%;
+            background: radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.45), transparent 60%),
+                        radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.4), transparent 65%);
+            filter: blur(0px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .security-wrapper::after {
+            inset: auto -40% -60% 30%;
+            background: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.15), transparent 65%),
+                        radial-gradient(circle at 0% 100%, rgba(236, 72, 153, 0.18), transparent 60%);
+        }
+
+        .security-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .security-hero {
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            background: linear-gradient(125deg, rgba(76, 29, 149, 0.62), rgba(88, 28, 135, 0.4));
+            backdrop-filter: blur(16px);
+            box-shadow: 0 26px 54px rgba(15, 6, 36, 0.65);
+        }
+
+        .security-hero-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .security-hero-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+        }
+
+        .security-hero-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .security-hero-title .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            padding: 0.35rem 1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+
+        .security-hero-title h1 {
+            font-size: clamp(1.75rem, 2.8vw, 2.6rem);
+            margin: 0;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            color: #ffffff;
         }
 
-        .user-management-header p {
-            opacity: 0.9;
-            margin-bottom: 0;
+        .security-hero-title p {
+            margin: 0;
+            max-width: 32rem;
+            color: rgba(237, 233, 254, 0.86);
+            font-weight: 400;
         }
 
         .btn-create-user {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(120deg, #a855f7, #6366f1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            padding: 0.85rem 1.8rem;
             font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+            border-radius: 999px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 20px 38px rgba(99, 102, 241, 0.42);
         }
 
         .btn-create-user:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
-            color: white;
+            transform: translateY(-3px) scale(1.01);
+            color: #ffffff;
+            box-shadow: 0 28px 54px rgba(99, 102, 241, 0.55);
         }
 
-        .btn-create-user i {
-            margin-right: 8px;
+        .stats-grid {
+            margin-top: 2rem;
+            display: grid;
+            gap: 1.5rem;
         }
 
-        .table-custom {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
         }
 
-        .table-custom thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .stat-card {
+            background: rgba(15, 6, 36, 0.55);
+            border-radius: 18px;
+            padding: 1.5rem;
+            border: 1px solid rgba(209, 213, 219, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.18);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .table-custom thead th {
-            border: none;
-            padding: 1rem;
-            font-weight: 600;
-            text-transform: uppercase;
+        .stat-card h3 {
             font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(236, 233, 254, 0.75);
+            margin: 0;
         }
 
-        .table-custom tbody tr {
-            transition: all 0.2s ease;
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
         }
 
-        .table-custom tbody tr:hover {
-            background-color: #f8f9ff;
-            transform: scale(1.01);
+        .stat-detail {
+            font-size: 0.85rem;
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        .feedback-alert {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            background: rgba(22, 101, 52, 0.18);
+            color: #bbf7d0;
+        }
+
+        .feedback-alert.error {
+            background: rgba(185, 28, 28, 0.2);
+            color: #fecaca;
+        }
+
+        .management-card {
+            background: rgba(17, 9, 32, 0.78);
+            border-radius: 22px;
+            padding: 2rem;
+            border: 1px solid rgba(168, 85, 247, 0.24);
+            box-shadow: 0 24px 48px rgba(10, 4, 28, 0.55);
+            backdrop-filter: blur(12px);
+        }
+
+        .management-card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        @media (min-width: 992px) {
+            .management-card-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+        }
+
+        .management-card-title h2 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .management-card-title p {
+            margin: 0.25rem 0 0;
+            color: rgba(237, 233, 254, 0.7);
+        }
+
+        .management-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .search-field,
+        .filter-field {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.65rem 1rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: rgba(226, 232, 240, 0.7);
+        }
+
+        .search-field input,
+        .filter-field select {
+            background: transparent;
+            border: none;
+            color: inherit;
+            outline: none;
+            font-size: 0.9rem;
+            min-width: 12rem;
+        }
+
+        .search-field input::placeholder,
+        .filter-field select:disabled {
+            color: rgba(226, 232, 240, 0.55);
+        }
+
+        .filter-field select {
+            appearance: none;
+            padding-right: 1.5rem;
+        }
+
+        .table-responsive {
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.12);
+        }
+
+        table.table-custom {
+            margin: 0;
+            color: rgba(240, 244, 255, 0.92);
+            background: rgba(17, 9, 32, 0.78);
+        }
+
+        table.table-custom thead {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+        }
+
+        table.table-custom thead th {
+            border: none;
+            padding: 1.1rem 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.75rem;
+            color: rgba(226, 232, 255, 0.75);
+        }
+
+        table.table-custom tbody tr {
+            background: rgba(255, 255, 255, 0.02);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        table.table-custom tbody tr + tr {
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        table.table-custom tbody tr:hover {
+            background: rgba(129, 140, 248, 0.12);
+            transform: translateX(4px);
+        }
+
+        table.table-custom td {
+            padding: 1.1rem 1.25rem;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .user-identity {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.95), rgba(236, 72, 153, 0.8));
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .user-info strong {
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .user-info span {
+            font-size: 0.85rem;
+            color: rgba(226, 232, 240, 0.65);
         }
 
         .badge-role {
-            padding: 6px 12px;
-            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1.1rem;
+            border-radius: 999px;
             font-weight: 600;
             font-size: 0.85rem;
+            background: linear-gradient(120deg, rgba(59, 130, 246, 0.35), rgba(129, 140, 248, 0.55));
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: #e0f2fe;
         }
 
-        .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px 12px 0 0;
+        .badge-role--admin {
+            background: linear-gradient(120deg, rgba(14, 165, 233, 0.4), rgba(59, 130, 246, 0.65));
+            border-color: rgba(14, 165, 233, 0.45);
+            color: #cffafe;
         }
 
-        .modal-content {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control, .form-select {
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn-submit-modal {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 12px 32px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-submit-modal:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .alert {
-            border-radius: 8px;
-            border: none;
-            padding: 1rem 1.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
+        .badge-role--default {
+            background: linear-gradient(120deg, rgba(236, 72, 153, 0.35), rgba(244, 114, 182, 0.55));
+            border-color: rgba(244, 114, 182, 0.35);
+            color: #ffe4f3;
         }
 
         .action-form {
             display: flex;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.6rem;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
         }
 
         .action-form .form-select {
             min-width: 180px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            color: rgba(226, 232, 240, 0.85);
+            border-radius: 12px;
+            padding: 0.55rem 1rem;
+        }
+
+        .action-form .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35);
+            border-color: rgba(139, 92, 246, 0.65);
         }
 
         .btn-update {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(120deg, #a855f7, #6366f1);
             border: none;
-            color: white;
-            padding: 8px 16px;
+            color: #ffffff;
+            padding: 0.55rem 1.35rem;
             font-weight: 600;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 18px 36px rgba(99, 102, 241, 0.4);
         }
 
         .btn-update:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 26px 48px rgba(99, 102, 241, 0.52);
+            color: #ffffff;
         }
 
         .password-input-wrapper {
@@ -183,88 +415,227 @@
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: #667eea;
+            color: #a855f7;
             cursor: pointer;
             font-size: 1.2rem;
         }
 
         .password-toggle:hover {
-            color: #764ba2;
+            color: #c084fc;
+        }
+
+        .modal-content {
+            border-radius: 18px;
+            border: none;
+            box-shadow: 0 32px 64px rgba(12, 6, 28, 0.65);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(120deg, #2e1065, #5b21b6);
+            color: #ffffff;
+            border-bottom: none;
+        }
+
+        .modal-body {
+            background: radial-gradient(circle at top, rgba(236, 233, 254, 0.25), rgba(15, 6, 36, 0.85));
+            color: #1f1147;
+        }
+
+        .modal-footer {
+            background: rgba(243, 232, 255, 0.75);
+            border-top: none;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4c1d95;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid rgba(139, 92, 246, 0.25);
+            border-radius: 12px;
+            padding: 0.75rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(139, 92, 246, 0.65);
+            box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.25);
+        }
+
+        .btn-submit-modal {
+            background: linear-gradient(120deg, #a855f7, #6366f1);
+            border: none;
+            color: #ffffff;
+            padding: 0.85rem 2.5rem;
+            font-weight: 600;
+            border-radius: 999px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 24px 42px rgba(129, 140, 248, 0.45);
+        }
+
+        .btn-submit-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 32px 58px rgba(99, 102, 241, 0.55);
+        }
+
+        @media (max-width: 575.98px) {
+            .security-wrapper {
+                padding: 1.75rem;
+            }
+
+            .security-hero {
+                padding: 1.75rem;
+            }
+
+            .management-card {
+                padding: 1.5rem;
+            }
+
+            .action-form {
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="user-management-header">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div>
-                <h1>Gerenciamento de Usuários</h1>
-                <p>Defina o nível de acesso e gerencie os usuários do sistema</p>
+<section layout:fragment="content" class="user-admin-page">
+    <div class="security-wrapper">
+        <div class="security-content">
+            <div class="security-hero">
+                <div class="security-hero-header">
+                    <div class="security-hero-title">
+                        <span class="section-badge">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            Central de Segurança
+                        </span>
+                        <h1>Gerenciamento de Usuários</h1>
+                        <p>Controle cada acesso com precisão e ofereça a experiência certa para a pessoa certa.</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-create-user" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                            <i class="bi bi-person-plus-fill"></i>
+                            Adicionar usuário
+                        </button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total de usuários</h3>
+                        <span class="stat-value" th:text="${users != null ? users.size() : 0}">0</span>
+                        <span class="stat-detail">Contas ativas no SUB em tempo real.</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Perfis disponíveis</h3>
+                        <span class="stat-value" th:text="${availableRoles != null ? availableRoles.size() : 0}">0</span>
+                        <span class="stat-detail">Perfis prontos para atribuição imediata.</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Atualizado em</h3>
+                        <span class="stat-value"
+                              th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'dd/MM/yyyy HH:mm')}">07/11/2025 14:23</span>
+                        <span class="stat-detail">Sincronização contínua do diretório interno.</span>
+                    </div>
+                </div>
             </div>
-            <div>
-                <button type="button" class="btn btn-create-user" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                    <i class="bi bi-person-plus-fill"></i> Criar Novo Usuário
-                </button>
+
+            <div th:if="${successMessage}" class="feedback-alert" role="alert">
+                <i class="bi bi-check-circle-fill fs-4"></i>
+                <span th:text="${successMessage}"></span>
+            </div>
+
+            <div th:if="${errorMessage}" class="feedback-alert error" role="alert">
+                <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="management-card">
+                <div class="management-card-header">
+                    <div class="management-card-title">
+                        <h2>Gestão de usuários</h2>
+                        <p>Pesquise, ajuste permissões e mantenha a governança com poucos cliques.</p>
+                    </div>
+                    <div class="management-card-actions">
+                        <label class="search-field">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="Buscar nome, usuário ou e-mail" disabled>
+                        </label>
+                        <label class="filter-field">
+                            <i class="bi bi-sliders"></i>
+                            <select disabled>
+                                <option>Todos os perfis</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>E-mail</th>
+                            <th>Criado em</th>
+                            <th>Time</th>
+                            <th>Perfil</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="6" class="text-center py-5 text-muted">Nenhum usuário encontrado.</td>
+                        </tr>
+                        <tr th:each="user : ${users}">
+                            <td>
+                                <div class="user-identity">
+                                    <div class="user-avatar">
+                                        <span th:text="${user.fullName != null and !#strings.isEmpty(user.fullName) ? #strings.substring(user.fullName, 0, 1) : #strings.substring(user.username, 0, 1)}"></span>
+                                    </div>
+                                    <div class="user-info">
+                                        <strong th:text="${!#strings.isEmpty(user.fullName) ? user.fullName : user.username}"></strong>
+                                        <span th:text="${user.username}"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:text="${user.email}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm') : '—'}"></span>
+                            </td>
+                            <td>
+                                <span class="text-muted">—</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-role"
+                                      th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role)} ? ' badge-role--admin' : ' badge-role--default'"
+                                      th:text="${T(com.necsus.necsusspring.model.RoleType).displayNameFor(user.role)}"></span>
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" class="action-form">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <select class="form-select form-select-sm" name="role">
+                                        <option th:each="role : ${availableRoles}"
+                                                th:value="${role.code}"
+                                                th:selected="${role.code == user.role}"
+                                                th:text="${role.displayName}"></option>
+                                    </select>
+                                    <button type="submit" class="btn btn-update btn-sm">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                        Atualizar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${successMessage}"></span>
-    </div>
-
-    <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${errorMessage}"></span>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-striped align-middle table-custom">
-            <thead>
-            <tr>
-                <th>Nome Completo</th>
-                <th>Nome de Usuário</th>
-                <th>E-mail</th>
-                <th>Permissão</th>
-                <th class="text-center">Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="user : ${users}">
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-circle me-2" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-                            <span th:text="${#strings.substring(user.fullName, 0, 1)}"></span>
-                        </div>
-                        <strong th:text="${user.fullName}"></strong>
-                    </div>
-                </td>
-                <td th:text="${user.username}"></td>
-                <td th:text="${user.email}"></td>
-                <td>
-                    <span class="badge badge-role"
-                          th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role)} ? ' bg-primary' : ' bg-secondary'"
-                          th:text="${T(com.necsus.necsusspring.model.RoleType).displayNameFor(user.role)}"></span>
-                </td>
-                <td>
-                    <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post"
-                          class="action-form">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <select class="form-select form-select-sm" name="role">
-                            <option th:each="role : ${availableRoles}"
-                                    th:value="${role.code}"
-                                    th:selected="${role.code == user.role}"
-                                    th:text="${role.displayName}"></option>
-                        </select>
-                        <button type="submit" class="btn btn-update btn-sm">
-                            <i class="bi bi-arrow-repeat"></i> Atualizar
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
     </div>
 
     <!-- Modal Criar Usuário -->
@@ -361,7 +732,7 @@
 
         // Auto-hide alerts after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert');
+            const alerts = document.querySelectorAll('.feedback-alert');
             alerts.forEach(function(alert) {
                 setTimeout(function() {
                     alert.style.transition = 'opacity 0.5s ease';
