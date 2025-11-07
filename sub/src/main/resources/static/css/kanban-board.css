@@ -84,11 +84,24 @@ html[data-theme="dark"] .kanban-wrapper {
     border-bottom: 1px solid var(--kanban-divider);
 }
 
+.kanban-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1 1 240px;
+}
+
 .kanban-header h1 {
     font-size: clamp(1.5rem, 2.2vw, 2rem);
     font-weight: 600;
     color: var(--kanban-text);
     margin: 0;
+}
+
+.kanban-header-info p {
+    margin: 0;
+    color: var(--kanban-muted);
+    font-size: 0.95rem;
 }
 
 .kanban-controls {
@@ -112,6 +125,89 @@ html[data-theme="dark"] .kanban-wrapper {
     align-items: center;
     gap: 0.75rem;
     margin-left: auto;
+}
+
+.kanban-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.kanban-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-radius: 14px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.95rem;
+    box-shadow: var(--kanban-card-shadow);
+    backdrop-filter: blur(6px);
+}
+
+.kanban-alert.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: color-mix(in srgb, #16a34a 85%, var(--kanban-text) 15%);
+}
+
+.kanban-alert.danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: color-mix(in srgb, #dc2626 85%, var(--kanban-text) 15%);
+}
+
+.kanban-alert-close {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    width: 32px;
+    height: 32px;
+    transition: background 0.2s ease;
+}
+
+.kanban-alert-close:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.kanban-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.kanban-stat-card {
+    background: var(--kanban-panel-bg);
+    border: 1px solid var(--kanban-panel-border);
+    border-radius: 18px;
+    padding: 1rem 1.25rem;
+    box-shadow: var(--kanban-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.kanban-stat-card.highlight {
+    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    color: #fff;
+    border: none;
+}
+
+.kanban-stat-card .stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: inherit;
+    opacity: 0.75;
+}
+
+.kanban-stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: inherit;
 }
 
 .kanban-search {
@@ -395,6 +491,159 @@ html[data-theme="dark"] .kanban-wrapper {
     color: #064e3b;
 }
 
+.badge-role {
+    background: rgba(99, 102, 241, 0.16);
+    color: color-mix(in srgb, #6366f1 85%, var(--kanban-text) 15%);
+}
+
+.kanban-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.kanban-modal-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem;
+    border: 1px solid var(--kanban-panel-border);
+    border-radius: 12px;
+    background: var(--kanban-card-bg);
+}
+
+.kanban-modal-row span {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--kanban-muted);
+}
+
+.kanban-modal-row strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--kanban-text);
+    word-break: break-word;
+}
+
+.kanban-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.kanban-modal-actions .btn-primary,
+.kanban-modal-actions .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.15rem;
+    border-radius: 999px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.kanban-modal-actions .btn-primary {
+    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    color: #fff;
+}
+
+.kanban-modal-actions .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--kanban-text);
+    border: 1px solid var(--kanban-panel-border);
+}
+
+.kanban-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.kanban-create-form .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.kanban-create-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.kanban-create-form label {
+    font-weight: 600;
+    color: var(--kanban-text);
+}
+
+.kanban-create-form input,
+.kanban-create-form select,
+.kanban-create-form textarea {
+    border-radius: 12px;
+    border: 1px solid var(--kanban-input-border);
+    padding: 0.65rem 0.85rem;
+    background: var(--kanban-input-bg);
+    color: var(--kanban-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.kanban-create-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.role-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.role-checkbox-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.14);
+    color: color-mix(in srgb, #6366f1 85%, var(--kanban-text) 15%);
+}
+
+.role-checkbox-item input {
+    accent-color: #6366f1;
+}
+
+.kanban-create-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.kanban-create-form .btn-primary,
+.kanban-create-form .btn-secondary {
+    border-radius: 999px;
+    padding: 0.6rem 1.4rem;
+    border: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.kanban-create-form .btn-primary {
+    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    color: #fff;
+}
+
+.kanban-create-form .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--kanban-text);
+    border: 1px solid var(--kanban-panel-border);
+}
 .date {
     display: inline-flex;
     align-items: center;

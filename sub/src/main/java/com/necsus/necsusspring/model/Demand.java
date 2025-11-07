@@ -110,4 +110,16 @@ public class Demand {
             this.targetRoles = String.join(",", roles);
         }
     }
+
+    public String getPrioridadeColor() {
+        if (prioridade == null) {
+            return "#64748b"; // slate
+        }
+        return switch (prioridade) {
+            case URGENTE -> "#dc2626";
+            case ALTA -> "#f97316";
+            case MEDIA -> "#0ea5e9";
+            case BAIXA -> "#10b981";
+        };
+    }
 }
