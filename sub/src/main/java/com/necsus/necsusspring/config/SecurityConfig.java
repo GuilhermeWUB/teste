@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/favicon.ico")
                         ).permitAll()
                         .requestMatchers(
+                                new AntPathRequestMatcher("/admin/users"),
                                 new AntPathRequestMatcher("/admin/users/**")
                         ).hasAnyRole(USER_MANAGEMENT_ROLES)
                         .requestMatchers(
