@@ -529,7 +529,7 @@
     position: fixed;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: rgba(15, 23, 42, 0.55);
     backdrop-filter: blur(6px);
@@ -537,7 +537,8 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    padding: 1.5rem;
+    padding: 2.5rem 1.5rem 1.5rem;
+    overflow-y: auto;
 }
 
 .report-overlay.is-visible {
