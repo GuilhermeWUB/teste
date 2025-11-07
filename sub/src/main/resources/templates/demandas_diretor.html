@@ -5,34 +5,6 @@
     <title>SUB - Gerenciar Demandas</title>
     <link rel="stylesheet" th:href="@{/css/listagem.css}">
     <style>
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-item {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
         .badge-priority-BAIXA { background: #10b981; }
         .badge-priority-MEDIA { background: #f59e0b; }
         .badge-priority-ALTA { background: #ef4444; }
@@ -68,29 +40,6 @@
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <!-- Estatísticas -->
-        <div class="stats-card">
-            <h4 class="mb-3"><i class="bi bi-graph-up"></i> Estatísticas</h4>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number" th:text="${pendentes}">0</div>
-                    <div class="stat-label">Pendentes</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" th:text="${emAndamento}">0</div>
-                    <div class="stat-label">Em Andamento</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" th:text="${concluidas}">0</div>
-                    <div class="stat-label">Concluídas</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" th:text="${#lists.size(demands)}">0</div>
-                    <div class="stat-label">Total</div>
-                </div>
-            </div>
         </div>
 
         <!-- Formulário de Nova Demanda -->
