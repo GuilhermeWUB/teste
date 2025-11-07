@@ -1,277 +1,298 @@
 /**
  * layout.js
- * JavaScript global para o layout da aplicação
+ * Script responsável por habilitar comportamentos globais do layout.
+ *
+ * O arquivo foi reescrito para priorizar legibilidade, modularidade e
+ * isolamento de escopo. Cada funcionalidade é exposta através de funções
+ * internas e inicializada apenas quando o DOM estiver pronto.
  */
 
-(function() {
+(function layoutModule() {
     'use strict';
 
-    // Aguardar o carregamento do DOM
-    document.addEventListener('DOMContentLoaded', function() {
-        initLayout();
+    document.addEventListener('DOMContentLoaded', () => {
+        initialiseLayout();
     });
 
     /**
-     * Inicializa o módulo de layout
+     * Inicializa todos os componentes do layout.
      */
-    function initLayout() {
-        console.log('Módulo de layout inicializado');
-
-        // Inicializar funcionalidades globais
-        initTooltips();
-        initAlerts();
-        initScrollBehavior();
-        initNavigationHighlight();
-        initBackToTop();
-        initFormAnimations();
+    function initialiseLayout() {
+        initialiseTooltips();
+        initialiseAlerts();
+        initialiseScrollBehaviour();
+        initialiseNavigationHighlight();
+        initialiseBackToTopButton();
+        initialiseFormAnimations();
+        exposeUtilities();
     }
 
     /**
-     * Inicializa tooltips do Bootstrap (se houver)
+     * Cria tooltips do Bootstrap quando a dependência estiver disponível.
      */
-    function initTooltips() {
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        if (tooltipTriggerList.length > 0 && typeof bootstrap !== 'undefined') {
-            [...tooltipTriggerList].map(tooltipTriggerEl =>
-                new bootstrap.Tooltip(tooltipTriggerEl)
-            );
+    function initialiseTooltips() {
+        const tooltipSelector = '[data-bs-toggle="tooltip"]';
+        const tooltipElements = document.querySelectorAll(tooltipSelector);
+
+        if (!tooltipElements.length || typeof bootstrap === 'undefined' || !bootstrap.Tooltip) {
+            return;
         }
+
+        tooltipElements.forEach(element => new bootstrap.Tooltip(element));
     }
 
     /**
-     * Auto-fechar alertas após alguns segundos
+     * Configura alertas: fecha automaticamente os de sucesso e garante
+     * a existência do botão de fechar.
      */
-    function initAlerts() {
+    function initialiseAlerts() {
         const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
 
         alerts.forEach(alert => {
-            // Alertas de sucesso desaparecem automaticamente
-            if (alert.classList.contains('alert-success')) {
-                setTimeout(() => {
-                    fadeOutAlert(alert);
-                }, 5000);
-            }
+            ensureCloseButton(alert);
 
-            // Adicionar botão de fechar se não existir
-            if (!alert.querySelector('.btn-close')) {
-                const closeBtn = document.createElement('button');
-                closeBtn.type = 'button';
-                closeBtn.className = 'btn-close';
-                closeBtn.setAttribute('data-bs-dismiss', 'alert');
-                closeBtn.setAttribute('aria-label', 'Fechar');
-                alert.appendChild(closeBtn);
+            if (alert.classList.contains('alert-success')) {
+                window.setTimeout(() => fadeOutAlert(alert), 5000);
             }
         });
     }
 
-    /**
-     * Faz fade out de um alerta
-     */
+    function ensureCloseButton(alert) {
+        if (alert.querySelector('.btn-close')) {
+            return;
+        }
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn-close';
+        button.setAttribute('data-bs-dismiss', 'alert');
+        button.setAttribute('aria-label', 'Fechar');
+        alert.appendChild(button);
+    }
+
     function fadeOutAlert(alert) {
         alert.style.transition = 'opacity 0.3s ease';
         alert.style.opacity = '0';
 
-        setTimeout(() => {
+        window.setTimeout(() => {
             alert.remove();
         }, 300);
     }
 
     /**
-     * Melhora o comportamento de scroll
+     * Implementa scroll suave para links âncora do documento.
      */
-    function initScrollBehavior() {
-        // Smooth scroll para links âncora
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#') return;
+    function initialiseScrollBehaviour() {
+        const anchors = document.querySelectorAll('a[href^="#"]');
+
+        anchors.forEach(anchor => {
+            anchor.addEventListener('click', event => {
+                const href = anchor.getAttribute('href');
+
+                if (!href || href === '#') {
+                    return;
+                }
 
                 const target = document.querySelector(href);
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+
+                if (!target) {
+                    return;
                 }
+
+                event.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
     }
 
     /**
-     * Destaca o item de navegação ativo
+     * Sinaliza o item de navegação que corresponde à página atual.
      */
-    function initNavigationHighlight() {
-        const currentPath = window.location.pathname;
+    function initialiseNavigationHighlight() {
+        const currentPath = normalisePath(window.location.pathname);
         const navLinks = document.querySelectorAll('.nav-link, .navbar-nav .nav-link');
 
         navLinks.forEach(link => {
             const href = link.getAttribute('href');
-            if (href && currentPath.includes(href) && href !== '/') {
-                link.classList.add('active');
+            if (!href) {
+                return;
+            }
 
-                // Se estiver dentro de um dropdown
-                const dropdown = link.closest('.dropdown');
-                if (dropdown) {
-                    const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
-                    if (dropdownToggle) {
-                        dropdownToggle.classList.add('active');
-                    }
-                }
+            const normalisedHref = normalisePath(href);
+            if (!normalisedHref || normalisedHref === '/') {
+                return;
+            }
+
+            if (currentPath.startsWith(normalisedHref)) {
+                markAsActive(link);
             }
         });
     }
 
-    /**
-     * Adiciona botão "Voltar ao topo"
-     */
-    function initBackToTop() {
-        let backToTopBtn = document.querySelector('.back-to-top') || document.getElementById('back-to-top');
-
-        if (!backToTopBtn) {
-            backToTopBtn = document.createElement('button');
-            backToTopBtn.id = 'back-to-top';
-            backToTopBtn.className = 'back-to-top';
-            backToTopBtn.type = 'button';
-            backToTopBtn.setAttribute('aria-hidden', 'true');
-            backToTopBtn.setAttribute('tabindex', '-1');
-            backToTopBtn.innerHTML = `
-                <span class="back-to-top__icon" aria-hidden="true">⬆</span>
-                <span class="back-to-top__text">Voltar ao topo</span>
-            `;
-            backToTopBtn.classList.remove('is-visible');
-            document.body.appendChild(backToTopBtn);
-        } else {
-            backToTopBtn.id = 'back-to-top';
-            backToTopBtn.classList.add('back-to-top');
-            backToTopBtn.removeAttribute('style');
-            backToTopBtn.type = 'button';
-            backToTopBtn.setAttribute('aria-hidden', 'true');
-            backToTopBtn.setAttribute('tabindex', '-1');
-            backToTopBtn.classList.remove('is-visible');
-
-            ['btn', 'btn-primary', 'position-fixed', 'bottom-0', 'end-0', 'm-4'].forEach(cls => {
-                backToTopBtn.classList.remove(cls);
-            });
-
-            if (!backToTopBtn.querySelector('.back-to-top__icon')) {
-                backToTopBtn.innerHTML = `
-                    <span class="back-to-top__icon" aria-hidden="true">⬆</span>
-                    <span class="back-to-top__text">Voltar ao topo</span>
-                `;
-            }
-
-            if (!document.body.contains(backToTopBtn)) {
-                document.body.appendChild(backToTopBtn);
-            }
+    function normalisePath(pathname) {
+        if (!pathname) {
+            return '';
         }
 
-        if (!backToTopBtn) {
+        try {
+            const url = new URL(pathname, window.location.origin);
+            return url.pathname.replace(/\/+$/, '') || '/';
+        } catch (error) {
+            return pathname;
+        }
+    }
+
+    function markAsActive(link) {
+        link.classList.add('active');
+        const dropdown = link.closest('.dropdown');
+
+        if (!dropdown) {
             return;
         }
 
-        const hideButton = () => {
-            backToTopBtn.classList.remove('is-visible');
-            backToTopBtn.setAttribute('aria-hidden', 'true');
-            backToTopBtn.setAttribute('tabindex', '-1');
-        };
-
-        const showButton = () => {
-            backToTopBtn.classList.add('is-visible');
-            backToTopBtn.removeAttribute('aria-hidden');
-            backToTopBtn.removeAttribute('tabindex');
-        };
-
-        const updateVisibility = () => {
-            if (window.scrollY > 300) {
-                showButton();
-            } else {
-                hideButton();
-            }
-        };
-
-        window.addEventListener('scroll', updateVisibility, {passive: true});
-        updateVisibility();
-
-        backToTopBtn.addEventListener('click', event => {
-            event.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
+        const toggle = dropdown.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.classList.add('active');
+        }
     }
 
     /**
-     * Adiciona animações aos formulários
+     * Cria e gerencia o botão "Voltar ao topo".
      */
-    function initFormAnimations() {
-        // Animação de label flutuante
-        const formControls = document.querySelectorAll('.form-control, .form-select');
+    function initialiseBackToTopButton() {
+        const button = getOrCreateBackToTopButton();
 
-        formControls.forEach(control => {
-            // Adicionar efeito de ripple nos inputs
-            control.addEventListener('focus', function() {
-                this.parentElement?.classList.add('focused');
+        if (!button) {
+            return;
+        }
+
+        const updateVisibility = () => {
+            if (window.scrollY > 300) {
+                showBackToTop(button);
+            } else {
+                hideBackToTop(button);
+            }
+        };
+
+        window.addEventListener('scroll', updateVisibility, { passive: true });
+        updateVisibility();
+
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    function getOrCreateBackToTopButton() {
+        let button = document.querySelector('.back-to-top, #back-to-top');
+
+        if (!button) {
+            button = document.createElement('button');
+            button.id = 'back-to-top';
+            button.type = 'button';
+            button.className = 'back-to-top';
+            button.innerHTML = `
+                <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                <span class="back-to-top__text">Voltar ao topo</span>
+            `;
+            document.body.appendChild(button);
+        } else {
+            button.id = 'back-to-top';
+            button.type = 'button';
+            button.classList.add('back-to-top');
+            button.removeAttribute('style');
+            button.innerHTML = button.innerHTML.trim() || `
+                <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+                <span class="back-to-top__text">Voltar ao topo</span>
+            `;
+        }
+
+        button.classList.remove('is-visible');
+        button.setAttribute('aria-hidden', 'true');
+        button.setAttribute('tabindex', '-1');
+
+        return button;
+    }
+
+    function showBackToTop(button) {
+        button.classList.add('is-visible');
+        button.removeAttribute('aria-hidden');
+        button.removeAttribute('tabindex');
+    }
+
+    function hideBackToTop(button) {
+        button.classList.remove('is-visible');
+        button.setAttribute('aria-hidden', 'true');
+        button.setAttribute('tabindex', '-1');
+    }
+
+    /**
+     * Aplica animações simples aos elementos de formulário.
+     */
+    function initialiseFormAnimations() {
+        const selectors = '.form-control, .form-select';
+        const controls = document.querySelectorAll(selectors);
+
+        controls.forEach(control => {
+            control.addEventListener('focus', () => {
+                control.parentElement?.classList.add('focused');
             });
 
-            control.addEventListener('blur', function() {
-                if (!this.value) {
-                    this.parentElement?.classList.remove('focused');
+            control.addEventListener('blur', () => {
+                if (!control.value) {
+                    control.parentElement?.classList.remove('focused');
                 }
             });
         });
     }
 
     /**
-     * Utilitários globais
+     * Torna utilidades globais acessíveis através de window.LayoutUtils.
      */
-    window.LayoutUtils = {
-        showNotification: showNotification,
-        confirmAction: confirmAction,
-        loadingButton: loadingButton
-    };
-
-    /**
-     * Exibe notificação toast
-     */
-    function showNotification(message, type = 'info') {
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-        alertDiv.style.cssText = 'z-index: 9999; min-width: 300px;';
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-        document.body.appendChild(alertDiv);
-
-        setTimeout(() => {
-            fadeOutAlert(alertDiv);
-        }, 5000);
+    function exposeUtilities() {
+        window.LayoutUtils = {
+            showNotification,
+            confirmAction,
+            loadingButton
+        };
     }
 
-    /**
-     * Diálogo de confirmação customizado
-     */
+    function showNotification(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+        toast.style.cssText = 'z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        `;
+
+        document.body.appendChild(toast);
+        window.setTimeout(() => fadeOutAlert(toast), 5000);
+    }
+
     function confirmAction(message, callback) {
-        if (confirm(message)) {
+        if (window.confirm(message) && typeof callback === 'function') {
             callback();
         }
     }
 
-    /**
-     * Transforma botão em estado de loading
-     */
     function loadingButton(button, loading = true) {
+        if (!button) {
+            return;
+        }
+
         if (loading) {
             button.disabled = true;
-            button.dataset.originalText = button.innerHTML;
+            if (!button.dataset.originalText) {
+                button.dataset.originalText = button.innerHTML;
+            }
             button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Carregando...';
         } else {
             button.disabled = false;
-            button.innerHTML = button.dataset.originalText || button.innerHTML;
+            if (button.dataset.originalText) {
+                button.innerHTML = button.dataset.originalText;
+                delete button.dataset.originalText;
+            }
         }
     }
-
 })();
