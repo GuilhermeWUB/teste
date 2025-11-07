@@ -71,6 +71,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return escapeHtml(value);
     }
 
+    function getStatusBadgeClass(status) {
+        if (!status) {
+            return 'status-badge status-badge--default';
+        }
+
+        const normalized = String(status).trim().toLowerCase();
+
+        if (normalized.includes('ativo')) {
+            return 'status-badge status-badge--active';
+        }
+
+        if (normalized.includes('inativo') || normalized.includes('inátiv')) {
+            return 'status-badge status-badge--inactive';
+        }
+
+        if (normalized.includes('pend')) {
+            return 'status-badge status-badge--pending';
+        }
+
+        if (normalized.includes('inad') || normalized.includes('bloq')) {
+            return 'status-badge status-badge--inactive';
+        }
+
+        return 'status-badge status-badge--default';
+    }
+
     function showInlineError(message) {
         if (!errorBox) {
             return;
@@ -364,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tableClass = settings.context === 'overlay' ? 'table table-hover align-middle mb-0' : 'table align-middle mb-0';
 
         const rows = sliced.map(function (item) {
+            const badgeClass = getStatusBadgeClass(item.status);
             return `
                 <tr>
                     <td>
@@ -374,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${toDisplay(item.email, '—')}</td>
                     <td>${toDisplay(item.city, '—')}</td>
                     <td>${toDisplay(item.vehicleCount ?? 0, '0')}</td>
-                    <td><span class="badge bg-light text-dark">${toDisplay(item.status, 'Não informado')}</span></td>
+                    <td><span class="badge ${badgeClass}">${toDisplay(item.status, 'Não informado')}</span></td>
                     <td>${toDisplay(item.registrationDate, '—')}</td>
                 </tr>
             `;
