@@ -15,15 +15,6 @@
     });
 
     /**
-     * Expor utilidades imediatamente para evitar acessos antes do DOM ready.
-     */
-    window.LayoutUtils = {
-        showNotification,
-        confirmAction,
-        loadingButton
-    };
-
-    /**
      * Inicializa todos os componentes do layout.
      */
     function initialiseLayout() {
@@ -33,6 +24,7 @@
         initialiseNavigationHighlight();
         initialiseBackToTopButton();
         initialiseFormAnimations();
+        exposeUtilities();
     }
 
     /**
@@ -252,6 +244,17 @@
                 }
             });
         });
+    }
+
+    /**
+     * Torna utilidades globais acessíveis através de window.LayoutUtils.
+     */
+    function exposeUtilities() {
+        window.LayoutUtils = {
+            showNotification,
+            confirmAction,
+            loadingButton
+        };
     }
 
     function showNotification(message, type = 'info') {
