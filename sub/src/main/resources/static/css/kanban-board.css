@@ -10,6 +10,7 @@
     --kanban-panel-border: var(--color-border);
     --kanban-panel-shadow: var(--shadow-soft, 0 24px 48px rgba(15, 23, 42, 0.12));
     --kanban-card-bg: color-mix(in srgb, var(--color-surface-elevated) 98%, transparent);
+    --kanban-modal-bg: var(--color-surface-elevated);
     --kanban-card-border: var(--color-border-strong);
     --kanban-card-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
     --kanban-card-hover-shadow: 0 28px 48px rgba(15, 23, 42, 0.18);
@@ -73,6 +74,7 @@ html[data-theme="dark"] .kanban-wrapper {
     --kanban-input-border: rgba(168, 85, 247, 0.35);
     --kanban-input-shadow: 0 14px 32px rgba(11, 7, 24, 0.5);
     --kanban-column-highlight: rgba(168, 85, 247, 0.28);
+    --kanban-modal-bg: var(--color-surface-elevated);
 }
 
 .kanban-header {
@@ -684,7 +686,7 @@ html[data-theme="dark"] .kanban-wrapper {
     max-height: 80vh;
     overflow: hidden;
     border-radius: clamp(16px, 2vw, 20px);
-    background: var(--kanban-card-bg);
+    background: var(--kanban-modal-bg, var(--kanban-card-bg));
     border: 1px solid var(--kanban-card-border);
     box-shadow: 0 40px 80px rgba(15, 23, 42, 0.25);
     display: flex;
