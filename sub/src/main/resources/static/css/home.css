@@ -217,3 +217,40 @@ html[data-theme="dark"] .landing-feature::after {
         transparent
     );
 }
+
+/* Ajuste de tamanho e posição do Ubinho no foguete */
+.landing__illustration {
+    width: 700px; /* aumenta bastante o tamanho */
+    max-width: none !important; /* remove o limite da classe .img-fluid */
+    height: auto;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 25px 50px rgba(139, 92, 246, 0.4));
+    position: relative;
+    left: 2cm; /* desloca 2cm para a direita */
+    transition: transform 0.3s ease;
+}
+
+/* Efeito sutil ao passar o mouse */
+.landing__illustration:hover {
+    transform: scale(1.05);
+}
+
+/* Responsividade: reduz o tamanho em telas menores */
+@media (max-width: 992px) {
+    .landing__illustration {
+        width: 450px;
+        left: 1cm;
+    }
+}
+
+@media (max-width: 768px) {
+    .landing__illustration {
+        width: 300px;
+        left: 0;
+        animation: none;
+    }
+}
+
+
+
+Ubinho
