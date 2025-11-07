@@ -52,29 +52,6 @@
             </div>
         </div>
 
-        <div class="kanban-stats-grid" role="list">
-            <article class="kanban-stat-card" role="listitem">
-                <span class="stat-label">Pendentes</span>
-                <strong class="stat-value" th:text="${pendentes}">0</strong>
-            </article>
-            <article class="kanban-stat-card" role="listitem">
-                <span class="stat-label">Em andamento</span>
-                <strong class="stat-value" th:text="${emAndamento}">0</strong>
-            </article>
-            <article class="kanban-stat-card" role="listitem">
-                <span class="stat-label">Concluídas</span>
-                <strong class="stat-value" th:text="${concluidas}">0</strong>
-            </article>
-            <article class="kanban-stat-card" role="listitem">
-                <span class="stat-label">Canceladas</span>
-                <strong class="stat-value" th:text="${canceladas}">0</strong>
-            </article>
-            <article class="kanban-stat-card highlight" role="listitem">
-                <span class="stat-label">Total</span>
-                <strong class="stat-value" th:text="${totalDemands}">0</strong>
-            </article>
-        </div>
-
         <div class="kanban-board">
             <div class="kanban-column" data-status="PENDENTE">
                 <div class="column-header">
