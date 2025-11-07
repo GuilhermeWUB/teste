@@ -72,8 +72,10 @@ public class DemandController {
 
         UserAccount currentUser = getCurrentUser(authentication);
 
-        // Lista apenas as demandas direcionadas ao role do usuário atual
-        List<Demand> roleDemands = demandService.findByTargetRole(userRole);
+        // ADMIN e DIRETORIA veem todas as demandas, outros roles veem apenas as direcionadas a eles
+        List<Demand> roleDemands = isDirectorOrAdmin(userRole)
+            ? demandService.findAll()
+            : demandService.findByTargetRole(userRole);
 
         // Separa por status para estatísticas
         long pendentes = roleDemands.stream().filter(d -> d.getStatus() == DemandStatus.PENDENTE).count();
@@ -106,8 +108,10 @@ public class DemandController {
                     .body(Map.of("error", "Acesso negado"));
         }
 
-        // Filtra demandas por role do usuário
-        DemandBoardSnapshot snapshot = demandService.getBoardSnapshotByRole(userRole);
+        // ADMIN e DIRETORIA veem todas as demandas, outros roles veem apenas as direcionadas a eles
+        DemandBoardSnapshot snapshot = isDirectorOrAdmin(userRole)
+            ? demandService.getBoardSnapshot()
+            : demandService.getBoardSnapshotByRole(userRole);
         return ResponseEntity.ok(snapshot);
     }
 
