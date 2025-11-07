@@ -47,15 +47,15 @@
                             <td>
                                 <div class="admin-users__person">
                                     <div class="admin-users__avatar" aria-hidden="true">
-                                        <span th:text="${#strings.isEmpty(#strings.trim(user.fullName)) ? 'U' : #strings.substring(#strings.trim(user.fullName), 0, 1)}"></span>
+                                        <span th:text="${user.fullName != null and !#strings.isEmpty(#strings.trim(user.fullName)) ? #strings.substring(#strings.trim(user.fullName), 0, 1) : 'U'}"></span>
                                     </div>
                                     <div class="admin-users__person-info">
-                                        <strong th:text="${#strings.isEmpty(#strings.trim(user.fullName)) ? 'Usuário sem nome' : user.fullName}"></strong>
+                                        <strong th:text="${user.fullName != null and !#strings.isEmpty(#strings.trim(user.fullName)) ? user.fullName : 'Usuário sem nome'}"></strong>
                                         <span class="admin-users__person-username" th:text="'@' + ${user.username}"></span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="admin-users__email" th:text="${#strings.isEmpty(#strings.trim(user.email)) ? 'E-mail não informado' : user.email}"></td>
+                            <td class="admin-users__email" th:text="${user.email != null and !#strings.isEmpty(#strings.trim(user.email)) ? user.email : 'E-mail não informado'}"></td>
                             <td>
                                 <span class="admin-users__role-badge"
                                       th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role)} ? ' admin-users__role-badge--admin' : ' admin-users__role-badge--standard'"
