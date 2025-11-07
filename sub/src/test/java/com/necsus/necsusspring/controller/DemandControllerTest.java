@@ -56,9 +56,9 @@ public class DemandControllerTest {
 
         testDemand = new Demand();
         testDemand.setId(1L);
-        testDemand.setTitle("Test Demand");
-        testDemand.setDescription("Test Description");
-        testDemand.setStatus(DemandStatus.ABERTA);
+        testDemand.setTitulo("Test Demand");
+        testDemand.setDescricao("Test Description");
+        testDemand.setStatus(DemandStatus.PENDENTE);
         testDemand.setCreatedBy(testUser);
     }
 
