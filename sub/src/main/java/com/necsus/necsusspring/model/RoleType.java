@@ -19,6 +19,8 @@ public enum RoleType {
     EVENTOS("EVENTOS", "Eventos", true),
     RETENCAO("RETENCAO", "Retenção", true),
     DIRETORIA("DIRETORIA", "Diretoria", true),
+    GERENTE("GERENTE", "Gerente", true),
+    GESTOR("GESTOR", "Gestor", true),
     TI("TI", "TI", true),
     CLOSERS("CLOSERS", "Closers", true),
     EXTERNOS("EXTERNOS", "Externos", true);
@@ -112,5 +114,27 @@ public enum RoleType {
                 ? authority.substring(ROLE_PREFIX.length())
                 : authority;
         return hasAdminPrivileges(normalized);
+    }
+
+    /**
+     * Retorna os códigos dos roles que podem gerenciar usuários (criar, editar, deletar)
+     * Apenas ADMIN, DIRETORIA, GERENTE e GESTOR têm essa permissão
+     */
+    public static String[] userManagementRoleCodes() {
+        return new String[]{"ADMIN", "DIRETORIA", "GERENTE", "GESTOR"};
+    }
+
+    /**
+     * Verifica se um role pode gerenciar usuários
+     */
+    public static boolean canManageUsers(String code) {
+        if (code == null) {
+            return false;
+        }
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
+        return "ADMIN".equals(normalized)
+            || "DIRETORIA".equals(normalized)
+            || "GERENTE".equals(normalized)
+            || "GESTOR".equals(normalized);
     }
 }
