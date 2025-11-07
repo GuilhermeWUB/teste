@@ -72,26 +72,21 @@ public class DemandController {
 
         UserAccount currentUser = getCurrentUser(authentication);
 
-        // ADMIN e DIRETORIA veem todas as demandas, outros roles apenas as direcionadas a eles
-        List<Demand> demands;
-        if ("ADMIN".equals(userRole) || "DIRETORIA".equals(userRole)) {
-            demands = demandService.findAll();
-        } else {
-            demands = demandService.findByTargetRole(userRole);
-        }
+        // Lista apenas as demandas direcionadas ao role do usuário atual
+        List<Demand> roleDemands = demandService.findByTargetRole(userRole);
 
         // Separa por status para estatísticas
-        long pendentes = demands.stream().filter(d -> d.getStatus() == DemandStatus.PENDENTE).count();
-        long emAndamento = demands.stream().filter(d -> d.getStatus() == DemandStatus.EM_ANDAMENTO).count();
-        long concluidas = demands.stream().filter(d -> d.getStatus() == DemandStatus.CONCLUIDA).count();
-        long canceladas = demands.stream().filter(d -> d.getStatus() == DemandStatus.CANCELADA).count();
+        long pendentes = roleDemands.stream().filter(d -> d.getStatus() == DemandStatus.PENDENTE).count();
+        long emAndamento = roleDemands.stream().filter(d -> d.getStatus() == DemandStatus.EM_ANDAMENTO).count();
+        long concluidas = roleDemands.stream().filter(d -> d.getStatus() == DemandStatus.CONCLUIDA).count();
+        long canceladas = roleDemands.stream().filter(d -> d.getStatus() == DemandStatus.CANCELADA).count();
 
-        model.addAttribute("demands", demands);
+        model.addAttribute("demands", roleDemands);
         model.addAttribute("pendentes", pendentes);
         model.addAttribute("emAndamento", emAndamento);
         model.addAttribute("concluidas", concluidas);
         model.addAttribute("canceladas", canceladas);
-        model.addAttribute("totalDemands", demands.size());
+        model.addAttribute("totalDemands", roleDemands.size());
         model.addAttribute("newDemand", new Demand());
         model.addAttribute("availableRoles", getAvailableRoles());
         model.addAttribute("statusOptions", DemandStatus.values());
@@ -111,13 +106,8 @@ public class DemandController {
                     .body(Map.of("error", "Acesso negado"));
         }
 
-        // ADMIN e DIRETORIA veem todas as demandas, outros roles apenas as direcionadas a eles
-        DemandBoardSnapshot snapshot;
-        if ("ADMIN".equals(userRole) || "DIRETORIA".equals(userRole)) {
-            snapshot = demandService.getBoardSnapshot();
-        } else {
-            snapshot = demandService.getBoardSnapshotByRole(userRole);
-        }
+        // Filtra demandas por role do usuário
+        DemandBoardSnapshot snapshot = demandService.getBoardSnapshotByRole(userRole);
         return ResponseEntity.ok(snapshot);
     }
 
