@@ -31,6 +31,13 @@ docker exec -i <container_id> psql -U admin -d ubsystem < fix_vehicle_nullable.s
 
 **Quando executar:** Execute este script uma vez antes de reiniciar a aplicação após o deploy das alterações que tornam o veículo opcional.
 
+### fix_user_created_at.sql
+**Problema:** Erro de TimeStamp ao acessar a aba de usuários
+
+**Solução:** Atualiza todos os registros da tabela `app_users` que têm a coluna `created_at` como NULL, definindo a data atual como valor padrão.
+
+**Quando executar:** Execute este script imediatamente se você está enfrentando erros ao acessar a página de usuários do sistema.
+
 ## Verificação
 
 Após executar o script, você pode verificar se funcionou:
