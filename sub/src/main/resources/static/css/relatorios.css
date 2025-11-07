@@ -37,6 +37,22 @@
     animation: slideInFromBottom 0.6s ease-out;
 }
 
+.report-page--fluid {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: clamp(1rem, 4vw, 3rem);
+    padding-right: clamp(1rem, 4vw, 3rem);
+    box-sizing: border-box;
+}
+
+.report-page--fluid .report-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
 /* Cabeçalho do relatório */
 .report-header {
     animation: slideInFromBottom 0.5s ease-out 0.1s both;
