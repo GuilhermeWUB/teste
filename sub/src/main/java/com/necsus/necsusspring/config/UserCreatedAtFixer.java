@@ -5,6 +5,7 @@ import com.necsus.necsusspring.repository.UserAccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,8 +15,12 @@ import java.util.List;
  * Corrige valores NULL na coluna created_at da tabela app_users.
  * Este componente é executado na inicialização da aplicação e garante que
  * todos os usuários tenham uma data de criação válida.
+ *
+ * Executa DEPOIS do UserCreatedAtJdbcFixer (Order=0) que corrige via SQL puro.
+ * Este componente serve como uma segunda camada de proteção usando JPA.
  */
 @Component
+@Order(2)  // Executa depois do JDBC fixer
 public class UserCreatedAtFixer implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserCreatedAtFixer.class);
