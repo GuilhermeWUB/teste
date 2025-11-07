@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -16,7 +17,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class UserAccount {
@@ -43,7 +43,7 @@ public class UserAccount {
     @Column(name = "created_at", nullable = false)
     @Getter(AccessLevel.NONE)  // Desabilita o getter gerado pelo Lombok
     @Setter(AccessLevel.NONE)  // Desabilita o setter gerado pelo Lombok
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();  // Inicialização direta
 
     /**
      * Getter personalizado para createdAt que NUNCA retorna null
@@ -57,10 +57,26 @@ public class UserAccount {
     }
 
     /**
-     * Setter para createdAt que previne valores null
+     * Setter personalizado para createdAt que previne valores null
      */
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
+    }
+
+    /**
+     * Construtor completo que garante que createdAt nunca será null
+     * Substitui o @AllArgsConstructor do Lombok para ter controle total
+     */
+    public UserAccount(Long id, String fullName, String username, String email,
+                       String password, String role, LocalDateTime createdAt) {
+        this.id = id;
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        // Usa o setter personalizado para garantir que não seja null
+        this.setCreatedAt(createdAt);
     }
 
     @PrePersist
@@ -70,6 +86,17 @@ public class UserAccount {
         }
         if (role == null) {
             role = RoleType.USER.getCode();
+        }
+    }
+
+    /**
+     * Corrige valores null IMEDIATAMENTE após carregar do banco
+     * Isso é a última linha de defesa contra erros de TimeStamp
+     */
+    @PostLoad
+    public void postLoad() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
         }
     }
 }
