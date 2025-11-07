@@ -1,9 +1,13 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.dto.DemandBoardCardDto;
+import com.necsus.necsusspring.dto.DemandBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.DemandService;
 import com.necsus.necsusspring.service.UserAccountService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -15,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -74,11 +79,14 @@ public class DemandController {
         long pendentes = allDemands.stream().filter(d -> d.getStatus() == DemandStatus.PENDENTE).count();
         long emAndamento = allDemands.stream().filter(d -> d.getStatus() == DemandStatus.EM_ANDAMENTO).count();
         long concluidas = allDemands.stream().filter(d -> d.getStatus() == DemandStatus.CONCLUIDA).count();
+        long canceladas = allDemands.stream().filter(d -> d.getStatus() == DemandStatus.CANCELADA).count();
 
         model.addAttribute("demands", allDemands);
         model.addAttribute("pendentes", pendentes);
         model.addAttribute("emAndamento", emAndamento);
         model.addAttribute("concluidas", concluidas);
+        model.addAttribute("canceladas", canceladas);
+        model.addAttribute("totalDemands", allDemands.size());
         model.addAttribute("newDemand", new Demand());
         model.addAttribute("availableRoles", getAvailableRoles());
         model.addAttribute("statusOptions", DemandStatus.values());
@@ -86,6 +94,60 @@ public class DemandController {
         model.addAttribute("currentUser", currentUser);
 
         return "demandas_diretor";
+    }
+
+    @GetMapping("/api/board")
+    @ResponseBody
+    public ResponseEntity<?> getBoardSnapshot(Authentication authentication) {
+        String userRole = getUserRole(authentication);
+
+        if (!isDirectorOrAdmin(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Acesso negado"));
+        }
+
+        DemandBoardSnapshot snapshot = demandService.getBoardSnapshot();
+        return ResponseEntity.ok(snapshot);
+    }
+
+    @PutMapping("/api/{id}/status")
+    @ResponseBody
+    public ResponseEntity<?> updateDemandStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload,
+            Authentication authentication) {
+
+        String userRole = getUserRole(authentication);
+        if (!isDirectorOrAdmin(userRole)) {
+            logger.warn("Tentativa de atualizar status da demanda {} sem permissão. Role: {}", id, userRole);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Você não tem permissão para atualizar demandas."));
+        }
+
+        try {
+            String statusValue = payload.get("status");
+            if (statusValue == null || statusValue.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Status é obrigatório"));
+            }
+
+            DemandStatus newStatus = DemandStatus.valueOf(statusValue);
+            Demand updated = demandService.updateStatus(id, newStatus);
+
+            logger.info("Status da demanda {} atualizado para {}", id, newStatus);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Status atualizado com sucesso",
+                    "demand", DemandBoardCardDto.from(updated)
+            ));
+        } catch (IllegalArgumentException e) {
+            logger.error("Status inválido informado para demanda {}: {}", id, payload.get("status"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Status inválido"));
+        } catch (Exception e) {
+            logger.error("Erro ao atualizar status da demanda {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao atualizar status da demanda"));
+        }
     }
 
     /**

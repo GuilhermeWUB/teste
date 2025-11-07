@@ -2,181 +2,307 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>SUB - Gerenciar Demandas</title>
-    <link rel="stylesheet" th:href="@{/css/listagem.css}">
-    <style>
-        .badge-priority-BAIXA { background: #10b981; }
-        .badge-priority-MEDIA { background: #f59e0b; }
-        .badge-priority-ALTA { background: #ef4444; }
-        .badge-priority-URGENTE { background: #dc2626; animation: pulse 2s infinite; }
-
-        .badge-status-PENDENTE { background: #6b7280; }
-        .badge-status-EM_ANDAMENTO { background: #3b82f6; }
-        .badge-status-CONCLUIDA { background: #10b981; }
-        .badge-status-CANCELADA { background: #dc2626; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .role-checkbox {
-            display: inline-block;
-            margin: 5px 10px 5px 0;
-        }
-    </style>
+    <title>SUB - Demandas Estratégicas</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
 </head>
 <body>
-
 <section layout:fragment="content">
-    <div class="container-fluid">
-        <h1 class="mb-4"><i class="bi bi-clipboard-check"></i> Painel de Demandas</h1>
-
-        <!-- Alertas -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <!-- Formulário de Nova Demanda -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Criar Nova Demanda</h5>
+    <div class="kanban-wrapper">
+        <div class="kanban-header">
+            <div class="kanban-header-info">
+                <h1><i class="bi bi-kanban"></i> Demandas Estratégicas</h1>
+                <p>Coordene iniciativas prioritárias e acompanhe o progresso em tempo real.</p>
             </div>
-            <div class="card-body">
-                <form th:action="@{/demands/create}" th:object="${newDemand}" method="post">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="titulo" class="form-label">Título *</label>
-                            <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
-                                   placeholder="Ex: Revisar processo de pagamentos" required>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="prioridade" class="form-label">Prioridade *</label>
-                            <select class="form-select" id="prioridade" th:field="*{prioridade}" required>
-                                <option th:each="priority : ${priorityOptions}"
-                                        th:value="${priority}"
-                                        th:text="${priority.displayName}"></option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="dueDate" class="form-label">Prazo</label>
-                            <input type="datetime-local" class="form-control" id="dueDate" th:field="*{dueDate}">
-                        </div>
+            <div class="kanban-controls">
+                <div class="kanban-controls-left">
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="kanban-search" placeholder="Buscar por título, responsável ou cargo..." autocomplete="off"/>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição *</label>
-                        <textarea class="form-control" id="descricao" th:field="*{descricao}"
-                                  rows="3" placeholder="Descreva a demanda em detalhes..." required></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Cargos Destinatários *</label>
-                        <div class="border rounded p-3">
-                            <div th:each="role : ${availableRoles}" class="role-checkbox">
-                                <input type="checkbox" name="targetRolesList" th:value="${role.code}"
-                                       th:id="'role-' + ${role.code}" class="form-check-input">
-                                <label th:for="'role-' + ${role.code}" class="form-check-label"
-                                       th:text="${role.displayName}"></label>
-                            </div>
-                        </div>
-                        <small class="text-muted">Selecione os cargos que devem receber esta demanda</small>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-send-fill"></i> Criar Demanda
+                    <button class="kanban-filter-btn" id="btn-advanced-filters">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                        <span class="filter-count" style="display: none;">0</span>
                     </button>
-                </form>
+                    <button class="kanban-clear-filters" id="btn-clear-filters" style="display: none;">
+                        <i class="bi bi-x-circle"></i> Limpar Filtros
+                    </button>
+                </div>
+                <div class="kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.demandBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Nova Demanda
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Lista de Demandas -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-list-task"></i> Todas as Demandas</h5>
+        <div class="kanban-alerts">
+            <div th:if="${success}" class="kanban-alert success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Título</th>
-                                <th>Status</th>
-                                <th>Prioridade</th>
-                                <th>Cargos</th>
-                                <th>Criado em</th>
-                                <th>Atribuído a</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="demand : ${demands}">
-                                <td th:text="${demand.id}">1</td>
-                                <td>
-                                    <strong th:text="${demand.titulo}">Título</strong>
-                                    <br>
-                                    <small class="text-muted" th:text="${#strings.abbreviate(demand.descricao, 50)}">Descrição</small>
-                                </td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="'badge-status-' + ${demand.status.name()}"
-                                          th:text="${demand.status.displayName}">Status</span>
-                                </td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="'badge-priority-' + ${demand.prioridade.name()}"
-                                          th:text="${demand.prioridade.displayName}">Prioridade</span>
-                                </td>
-                                <td>
-                                    <small th:text="${demand.targetRoles}">RH,TI</small>
-                                </td>
-                                <td>
-                                    <small th:text="${#temporals.format(demand.createdAt, 'dd/MM/yyyy HH:mm')}">Data</small>
-                                </td>
-                                <td>
-                                    <span th:if="${demand.assignedTo != null}"
-                                          th:text="${demand.assignedTo.fullName}">Nome</span>
-                                    <span th:unless="${demand.assignedTo != null}" class="text-muted">-</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a th:href="@{/demands/{id}(id=${demand.id})}"
-                                           class="btn btn-sm btn-info" title="Ver Detalhes">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a th:href="@{/demands/{id}/edit(id=${demand.id})}"
-                                           class="btn btn-sm btn-warning" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form th:action="@{/demands/{id}/delete(id=${demand.id})}"
-                                              method="post" style="display: inline;">
-                                            <button type="submit" class="btn btn-sm btn-danger"
-                                                    title="Deletar"
-                                                    onclick="return confirm('Tem certeza que deseja deletar esta demanda?');">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div th:if="${error}" class="kanban-alert danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
 
-                    <div th:if="${#lists.isEmpty(demands)}" class="text-center text-muted py-5">
-                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                        <p class="mt-3">Nenhuma demanda criada ainda.</p>
+        <div class="kanban-stats-grid" role="list">
+            <article class="kanban-stat-card" role="listitem">
+                <span class="stat-label">Pendentes</span>
+                <strong class="stat-value" th:text="${pendentes}">0</strong>
+            </article>
+            <article class="kanban-stat-card" role="listitem">
+                <span class="stat-label">Em andamento</span>
+                <strong class="stat-value" th:text="${emAndamento}">0</strong>
+            </article>
+            <article class="kanban-stat-card" role="listitem">
+                <span class="stat-label">Concluídas</span>
+                <strong class="stat-value" th:text="${concluidas}">0</strong>
+            </article>
+            <article class="kanban-stat-card" role="listitem">
+                <span class="stat-label">Canceladas</span>
+                <strong class="stat-value" th:text="${canceladas}">0</strong>
+            </article>
+            <article class="kanban-stat-card highlight" role="listitem">
+                <span class="stat-label">Total</span>
+                <strong class="stat-value" th:text="${totalDemands}">0</strong>
+            </article>
+        </div>
+
+        <div class="kanban-board">
+            <div class="kanban-column" data-status="PENDENTE">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Pendente</h3>
+                        <span class="column-count">0</span>
                     </div>
+                    <button class="column-add-btn" type="button" onclick="window.demandBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="EM_ANDAMENTO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Em andamento</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.demandBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="CONCLUIDA">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Concluída</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.demandBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="CANCELADA">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Cancelada</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.demandBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="filters-modal" class="kanban-modal">
+        <div class="kanban-modal-content filters-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-funnel-fill"></i> Filtros avançados</h2>
+                <button class="kanban-modal-close" onclick="window.demandBoard?.closeFiltersModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body filters-modal-body">
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-exclamation-triangle"></i> Prioridade</h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox" th:each="priority : ${priorityOptions}">
+                            <input type="checkbox" name="prioridade" th:value="${priority.name()}" checked>
+                            <span class="checkbox-label" th:text="${priority.displayName}">Prioridade</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-list-check"></i> Status</h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox" th:each="status : ${statusOptions}">
+                            <input type="checkbox" name="status" th:value="${status.name()}" checked>
+                            <span class="checkbox-label" th:text="${status.displayName}">Status</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-people"></i> Cargos destinatários</h4>
+                    <div class="filter-options">
+                        <label class="filter-checkbox" th:each="role : ${availableRoles}" th:data-role-code="${role.code}">
+                            <input type="checkbox" name="targetRoles" th:value="${role.code}" checked>
+                            <span class="checkbox-label" th:text="${role.displayName}">Cargo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-person-badge"></i> Responsável</h4>
+                    <div class="filter-text-input">
+                        <input type="text" id="filter-assigned" class="form-control"
+                               placeholder="Nome do responsável (atribuição)">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-person-lines-fill"></i> Criador</h4>
+                    <div class="filter-text-input">
+                        <input type="text" id="filter-creator" class="form-control"
+                               placeholder="Nome de quem criou a demanda">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-calendar-event"></i> Prazo</h4>
+                    <div class="filter-date-range">
+                        <div class="filter-date-input">
+                            <label for="filter-date-from">De:</label>
+                            <input type="date" id="filter-date-from" class="form-control">
+                        </div>
+                        <div class="filter-date-input">
+                            <label for="filter-date-to">Até:</label>
+                            <input type="date" id="filter-date-to" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-filter-apply" type="button" onclick="window.demandBoard?.applyFilters?.()">
+                        <i class="bi bi-check-circle"></i> Aplicar filtros
+                    </button>
+                    <button class="btn-filter-reset" type="button" onclick="window.demandBoard?.resetFilters?.()">
+                        <i class="bi bi-arrow-clockwise"></i> Resetar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</section>
 
+    <div id="kanban-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2>Detalhes da demanda</h2>
+                <button class="kanban-modal-close" onclick="window.demandBoard?.closeModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body"></div>
+        </div>
+    </div>
+
+    <div id="create-demand-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-plus-circle"></i> Nova Demanda</h2>
+                <button class="kanban-modal-close" onclick="window.demandBoard?.closeCreateModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body">
+                <form th:action="@{/demands/create}" th:object="${newDemand}" method="post" class="kanban-create-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="titulo">Título *</label>
+                            <input type="text" id="titulo" th:field="*{titulo}" placeholder="Resumo objetivo da demanda" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridade">Prioridade *</label>
+                            <select id="prioridade" th:field="*{prioridade}" required>
+                                <option th:each="priority : ${priorityOptions}" th:value="${priority}" th:text="${priority.displayName}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dueDate">Prazo</label>
+                            <input type="datetime-local" id="dueDate" th:field="*{dueDate}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descricao">Descrição *</label>
+                        <textarea id="descricao" th:field="*{descricao}" rows="4" placeholder="Descreva a demanda com contexto e objetivos" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cargos destinatários *</label>
+                        <div class="role-checkbox-group">
+                            <label th:each="role : ${availableRoles}" class="role-checkbox-item">
+                                <input type="checkbox" name="targetRolesList" th:value="${role.code}" th:id="'create-role-' + ${role.code}">
+                                <span th:text="${role.displayName}">Cargo</span>
+                            </label>
+                        </div>
+                        <small class="text-muted">Selecione os times que devem receber esta demanda</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="window.demandBoard?.closeCreateModal?.()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-send-fill"></i> Criar Demanda
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            if (body) {
+                body.classList.remove('no-dark-blur');
+            }
+
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
+    <script th:src="@{/js/demand-kanban.js}"></script>
+</section>
 </body>
 </html>
