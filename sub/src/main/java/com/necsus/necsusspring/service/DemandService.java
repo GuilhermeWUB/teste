@@ -60,6 +60,16 @@ public class DemandService {
     @Transactional(readOnly = true)
     public DemandBoardSnapshot getBoardSnapshot() {
         List<Demand> demands = findAll();
+        return createBoardSnapshot(demands);
+    }
+
+    @Transactional(readOnly = true)
+    public DemandBoardSnapshot getBoardSnapshotByRole(String role) {
+        List<Demand> demands = findByTargetRole(role);
+        return createBoardSnapshot(demands);
+    }
+
+    private DemandBoardSnapshot createBoardSnapshot(List<Demand> demands) {
         List<DemandBoardCardDto> cards = demands.stream()
                 .map(DemandBoardCardDto::from)
                 .toList();
