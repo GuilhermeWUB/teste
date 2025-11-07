@@ -75,7 +75,7 @@ public class DemandControllerTest {
     }
 
     @Test
-    public void testIndex_WithUserRole_ShouldRedirectToMyDemands() throws Exception {
+    public void testIndex_WithUserRole_ShouldRedirectToHome() throws Exception {
         when(authentication.getName()).thenReturn("user");
         when(authentication.getAuthorities()).thenReturn(
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
@@ -83,7 +83,7 @@ public class DemandControllerTest {
 
         mockMvc.perform(get("/demands").principal(authentication))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/demands/my-demands"));
+                .andExpect(redirectedUrl("/"));
     }
 
     @Test
@@ -121,38 +121,39 @@ public class DemandControllerTest {
     }
 
     @Test
-    public void testShowMyDemands_ShouldReturnAccessibleDemands() throws Exception {
+    public void testShowMyDemands_WithUserRole_ShouldBeBlocked() throws Exception {
         when(authentication.getName()).thenReturn("testuser");
         when(authentication.getAuthorities()).thenReturn(
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
-        when(userAccountService.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(demandService.findAccessibleByUser(testUser, "USER")).thenReturn(Arrays.asList(testDemand));
+
+        mockMvc.perform(get("/demands/my-demands").principal(authentication))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        verify(demandService, never()).findAccessibleByUser(any(), any());
+    }
+
+    @Test
+    public void testShowMyDemands_WithOtherRole_ShouldShowDemands() throws Exception {
+        UserAccount rhUser = new UserAccount();
+        rhUser.setId(3L);
+        rhUser.setUsername("rhuser");
+        rhUser.setRole(RoleType.RH.getCode());
+
+        when(authentication.getName()).thenReturn("rhuser");
+        when(authentication.getAuthorities()).thenReturn(
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_RH"))
+        );
+        when(userAccountService.findByUsername("rhuser")).thenReturn(Optional.of(rhUser));
+        when(demandService.findAccessibleByUser(rhUser, "RH")).thenReturn(Arrays.asList(testDemand));
 
         mockMvc.perform(get("/demands/my-demands").principal(authentication))
                 .andExpect(status().isOk())
                 .andExpect(view().name("minhas_demandas"))
-                .andExpect(model().attributeExists("demands"))
-                .andExpect(model().attribute("demands", Arrays.asList(testDemand)));
+                .andExpect(model().attributeExists("demands"));
 
-        verify(demandService, times(1)).findAccessibleByUser(testUser, "USER");
-    }
-
-    @Test
-    public void testShowMyDemands_WithStatusFilter_ShouldFilterDemands() throws Exception {
-        when(authentication.getName()).thenReturn("testuser");
-        when(authentication.getAuthorities()).thenReturn(
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
-        );
-        when(userAccountService.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(demandService.findAccessibleByUser(testUser, "USER")).thenReturn(Arrays.asList(testDemand));
-
-        mockMvc.perform(get("/demands/my-demands")
-                        .param("status", "ABERTA")
-                        .principal(authentication))
-                .andExpect(status().isOk())
-                .andExpect(view().name("minhas_demandas"))
-                .andExpect(model().attributeExists("statusFilter"));
+        verify(demandService, times(1)).findAccessibleByUser(rhUser, "RH");
     }
 
     @Test
@@ -215,21 +216,18 @@ public class DemandControllerTest {
     }
 
     @Test
-    public void testAssignToMe_ShouldAssignDemandToCurrentUser() throws Exception {
+    public void testAssignToMe_WithUserRole_ShouldBeBlocked() throws Exception {
         when(authentication.getName()).thenReturn("testuser");
         when(authentication.getAuthorities()).thenReturn(
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
-        when(userAccountService.findByUsername("testuser")).thenReturn(Optional.of(testUser));
-        when(demandService.findById(1L)).thenReturn(Optional.of(testDemand));
-        when(demandService.assignToUser(1L, testUser)).thenReturn(testDemand);
 
         mockMvc.perform(post("/demands/1/assign-to-me")
                         .principal(authentication))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/demands/my-demands"));
+                .andExpect(redirectedUrl("/"));
 
-        verify(demandService, times(1)).assignToUser(1L, testUser);
+        verify(demandService, never()).assignToUser(any(), any());
     }
 
     @Test

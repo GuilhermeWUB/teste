@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public enum RoleType {
     ADMIN("ADMIN", "Administrador", true),
-    USER("USER", "Usuário", false),
+    USER("USER", "Associado", false),
     RH("RH", "RH", true),
     FINANCEIRO("FINANCEIRO", "Financeiro", true),
     COMERCIAL("COMERCIAL", "Comercial", true),
