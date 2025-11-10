@@ -435,7 +435,7 @@ public class EventController {
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFilename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + downloadFilename + "\"")
                     .body(resource);
 
         } catch (ResponseStatusException e) {
