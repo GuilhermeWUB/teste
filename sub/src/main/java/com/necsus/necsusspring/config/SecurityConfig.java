@@ -66,6 +66,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 new AntPathRequestMatcher("/me/**")
                         ).hasAnyRole(AUTHENTICATED_ROLES)
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/comunicados/**")
+                        ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
