@@ -3,18 +3,28 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
+import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
 import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.*;
 
@@ -27,13 +37,16 @@ public class EventController {
     private final EventService eventService;
     private final PartnerService partnerService;
     private final VehicleService vehicleService;
+    private final FileStorageService fileStorageService;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
-                           VehicleService vehicleService) {
+                           VehicleService vehicleService,
+                           FileStorageService fileStorageService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
+        this.fileStorageService = fileStorageService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -195,6 +208,11 @@ public class EventController {
     @PostMapping
     public String createEvent(@Valid @ModelAttribute("event") Event event,
                               BindingResult result,
+                              @RequestParam(value = "docCrlv", required = false) MultipartFile docCrlv,
+                              @RequestParam(value = "docCnh", required = false) MultipartFile docCnh,
+                              @RequestParam(value = "docBo", required = false) MultipartFile docBo,
+                              @RequestParam(value = "docComprovanteResidencia", required = false) MultipartFile docComprovanteResidencia,
+                              @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura,
                               RedirectAttributes redirectAttributes,
                               Model model) {
         // Validações manuais para garantir que IDs foram enviados
@@ -206,6 +224,37 @@ public class EventController {
             return "cadastro_evento";
         }
         try {
+            // Processa upload dos documentos
+            if (docCrlv != null && !docCrlv.isEmpty()) {
+                String crlvPath = fileStorageService.storeFile(docCrlv);
+                event.setDocCrlvPath(crlvPath);
+                logger.info("CRLV anexado: {}", crlvPath);
+            }
+
+            if (docCnh != null && !docCnh.isEmpty()) {
+                String cnhPath = fileStorageService.storeFile(docCnh);
+                event.setDocCnhPath(cnhPath);
+                logger.info("CNH anexada: {}", cnhPath);
+            }
+
+            if (docBo != null && !docBo.isEmpty()) {
+                String boPath = fileStorageService.storeFile(docBo);
+                event.setDocBoPath(boPath);
+                logger.info("B.O. anexado: {}", boPath);
+            }
+
+            if (docComprovanteResidencia != null && !docComprovanteResidencia.isEmpty()) {
+                String compResPath = fileStorageService.storeFile(docComprovanteResidencia);
+                event.setDocComprovanteResidenciaPath(compResPath);
+                logger.info("Comprovante de residência anexado: {}", compResPath);
+            }
+
+            if (docTermoAbertura != null && !docTermoAbertura.isEmpty()) {
+                String termoPath = fileStorageService.storeFile(docTermoAbertura);
+                event.setDocTermoAberturaPath(termoPath);
+                logger.info("Termo de abertura anexado: {}", termoPath);
+            }
+
             eventService.create(event);
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
             return "redirect:/events/board";
@@ -324,6 +373,88 @@ public class EventController {
             logger.error("Erro ao exportar PDF: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    /**
+     * Download de documento anexado ao evento
+     * @param id ID do evento
+     * @param docType Tipo do documento (crlv, cnh, bo, comprovante_residencia, termo_abertura)
+     * @return Arquivo para download
+     */
+    @GetMapping("/{id}/download/{docType}")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadDocument(@PathVariable Long id, @PathVariable String docType) {
+        try {
+            Event event = eventService.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
+
+            // Determina qual campo de documento usar baseado no tipo
+            String filePath = switch (docType.toLowerCase()) {
+                case "crlv" -> event.getDocCrlvPath();
+                case "cnh" -> event.getDocCnhPath();
+                case "bo" -> event.getDocBoPath();
+                case "comprovante_residencia" -> event.getDocComprovanteResidenciaPath();
+                case "termo_abertura" -> event.getDocTermoAberturaPath();
+                default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de documento inválido");
+            };
+
+            if (filePath == null || filePath.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Documento não encontrado");
+            }
+
+            // Carregar o arquivo como Resource
+            Path file = Paths.get(filePath);
+            Resource resource = new UrlResource(file.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Arquivo não encontrado ou não pode ser lido");
+            }
+
+            // Determinar o tipo de conteúdo
+            String contentType = "application/octet-stream";
+            String filename = file.getFileName().toString();
+            if (filename.toLowerCase().endsWith(".pdf")) {
+                contentType = "application/pdf";
+            } else if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else if (filename.toLowerCase().endsWith(".png")) {
+                contentType = "image/png";
+            }
+
+            // Criar nome amigável para o download
+            String downloadFilename = switch (docType.toLowerCase()) {
+                case "crlv" -> "CRLV_Evento_" + id + getExtension(filename);
+                case "cnh" -> "CNH_Evento_" + id + getExtension(filename);
+                case "bo" -> "BO_Evento_" + id + getExtension(filename);
+                case "comprovante_residencia" -> "Comprovante_Residencia_Evento_" + id + getExtension(filename);
+                case "termo_abertura" -> "Termo_Abertura_Evento_" + id + getExtension(filename);
+                default -> filename;
+            };
+
+            logger.info("Download de documento solicitado - Evento: {}, Tipo: {}, Arquivo: {}", id, docType, filePath);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + downloadFilename + "\"")
+                    .body(resource);
+
+        } catch (ResponseStatusException e) {
+            throw e;
+        } catch (MalformedURLException e) {
+            logger.error("Erro ao construir URL do arquivo - Evento: {}, Tipo: {}", id, docType, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao acessar o arquivo");
+        } catch (Exception e) {
+            logger.error("Erro ao baixar documento - Evento: {}, Tipo: {}", id, docType, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao baixar documento");
+        }
+    }
+
+    /**
+     * Método auxiliar para extrair a extensão do arquivo
+     */
+    private String getExtension(String filename) {
+        int lastDot = filename.lastIndexOf('.');
+        return (lastDot == -1) ? "" : filename.substring(lastDot);
     }
 
 }

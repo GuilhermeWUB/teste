@@ -30,13 +30,19 @@ public record EventBoardCardDto(
         Long vehicleId,
         String placaManual,
         LocalDate dataVencimento,
-        String analistaResponsavel
+        String analistaResponsavel,
+        Boolean hasCrlv,
+        Boolean hasCnh,
+        Boolean hasBo,
+        Boolean hasComprovanteResidencia,
+        Boolean hasTermoAbertura
 ) {
 
     public static EventBoardCardDto from(Event event) {
         if (event == null) {
             return new EventBoardCardDto(null, null, null, Status.COMUNICADO.name(), Status.COMUNICADO.getDisplayName(),
-                    null, null, "secondary", null, null, null, null, null, null, null, null, null, null, null);
+                    null, null, "secondary", null, null, null, null, null, null, null, null, null, null, null,
+                    false, false, false, false, false);
         }
 
         final Status status = Optional.ofNullable(event.getStatus()).orElse(Status.COMUNICADO);
@@ -65,7 +71,12 @@ public record EventBoardCardDto(
                 vehicle != null ? vehicle.getId() : null,
                 event.getPlacaManual(),
                 event.getDataVencimento(),
-                event.getAnalistaResponsavel()
+                event.getAnalistaResponsavel(),
+                event.getDocCrlvPath() != null && !event.getDocCrlvPath().isEmpty(),
+                event.getDocCnhPath() != null && !event.getDocCnhPath().isEmpty(),
+                event.getDocBoPath() != null && !event.getDocBoPath().isEmpty(),
+                event.getDocComprovanteResidenciaPath() != null && !event.getDocComprovanteResidenciaPath().isEmpty(),
+                event.getDocTermoAberturaPath() != null && !event.getDocTermoAberturaPath().isEmpty()
         );
     }
 }

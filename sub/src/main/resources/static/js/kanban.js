@@ -588,6 +588,32 @@
                 .map(field => `  <div class="kanban-modal-row"><span>${field.label}:</span><strong>${escapeHtml(field.value)}</strong></div>`),
             '</div>'
         ];
+
+        // Adicionar seção de documentos se houver algum documento anexado
+        const documents = [
+            { type: 'crlv', label: 'CRLV', has: card.hasCrlv },
+            { type: 'cnh', label: 'CNH', has: card.hasCnh },
+            { type: 'bo', label: 'B.O.', has: card.hasBo },
+            { type: 'comprovante_residencia', label: 'Comprovante de Residência', has: card.hasComprovanteResidencia },
+            { type: 'termo_abertura', label: 'Termo de Abertura', has: card.hasTermoAbertura }
+        ];
+
+        const availableDocs = documents.filter(doc => doc.has);
+
+        if (availableDocs.length > 0) {
+            html.push('<div class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6);">');
+            html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Documentos Anexados</h5>');
+            html.push('<div style="display: flex; flex-direction: column; gap: 8px;">');
+
+            availableDocs.forEach(doc => {
+                const downloadUrl = `/events/${card.id}/download/${doc.type}`;
+                html.push(`  <a href="${downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); border-radius: 6px; color: var(--text-primary, #2c3e50); text-decoration: none; font-size: 13px; transition: all 0.2s;"><i class="bi bi-file-earmark-arrow-down" style="font-size: 16px;"></i><span>${escapeHtml(doc.label)}</span></a>`);
+            });
+
+            html.push('</div>');
+            html.push('</div>');
+        }
+
         return html.join('\n');
     }
 
