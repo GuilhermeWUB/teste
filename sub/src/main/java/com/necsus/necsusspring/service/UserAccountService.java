@@ -84,6 +84,13 @@ public class UserAccountService implements UserDetailsService {
         return userAccountRepository.findAll(Sort.by(Sort.Direction.ASC, "fullName"));
     }
 
+    public Optional<UserAccount> findById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        return userAccountRepository.findById(id);
+    }
+
     public Optional<UserAccount> findByUsername(String username) {
         if (username == null) {
             return Optional.empty();
@@ -96,6 +103,24 @@ public class UserAccountService implements UserDetailsService {
             return Optional.empty();
         }
         return userAccountRepository.findByEmail(email);
+    }
+
+    /**
+     * Busca usuários por lista de roles
+     * @param roles Lista de códigos de roles (ex: ["RH", "FINANCEIRO"])
+     * @return Lista de usuários que possuem alguma das roles especificadas
+     */
+    public List<UserAccount> findByRoles(List<String> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return List.of();
+        }
+
+        // Normaliza as roles para uppercase
+        Set<String> normalizedRoles = roles.stream()
+                .map(this::normalizeRole)
+                .collect(Collectors.toSet());
+
+        return userAccountRepository.findByRoleIn(normalizedRoles);
     }
 
     public void updateRole(Long id, String role) {

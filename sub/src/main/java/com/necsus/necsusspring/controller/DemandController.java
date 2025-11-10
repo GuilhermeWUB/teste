@@ -162,12 +162,58 @@ public class DemandController {
     }
 
     /**
+     * API para buscar usuários por role(s)
+     * Retorna lista de usuários que possuem as roles selecionadas
+     */
+    @GetMapping("/api/users-by-roles")
+    @ResponseBody
+    public ResponseEntity<?> getUsersByRoles(
+            @RequestParam(value = "roles", required = false) List<String> roles,
+            Authentication authentication) {
+
+        String userRole = getUserRole(authentication);
+        if (!isDirectorOrAdmin(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Acesso negado"));
+        }
+
+        try {
+            if (roles == null || roles.isEmpty()) {
+                return ResponseEntity.ok(List.of());
+            }
+
+            // Busca todos os usuários que possuem alguma das roles selecionadas
+            List<UserAccount> users = userAccountService.findByRoles(roles);
+
+            // Converte para DTO simplificado
+            List<Map<String, Object>> usersDTO = users.stream()
+                    .map(user -> Map.of(
+                            "id", (Object) user.getId(),
+                            "fullName", user.getFullName(),
+                            "username", user.getUsername(),
+                            "email", user.getEmail(),
+                            "role", user.getRole()
+                    ))
+                    .collect(Collectors.toList());
+
+            logger.info("Retornando {} usuários para roles: {}", usersDTO.size(), roles);
+            return ResponseEntity.ok(usersDTO);
+
+        } catch (Exception e) {
+            logger.error("Erro ao buscar usuários por roles: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao buscar usuários"));
+        }
+    }
+
+    /**
      * Criar nova demanda
      */
     @PostMapping("/create")
     public String createDemand(
             @ModelAttribute("newDemand") Demand demand,
             @RequestParam(value = "targetRolesList", required = false) List<String> targetRolesList,
+            @RequestParam(value = "assignedToId", required = false) Long assignedToId,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
@@ -186,6 +232,19 @@ public class DemandController {
             // Define os cargos destinatários
             if (targetRolesList != null && !targetRolesList.isEmpty()) {
                 demand.setTargetRolesList(targetRolesList);
+            }
+
+            // Atribui a um funcionário específico se fornecido
+            if (assignedToId != null) {
+                UserAccount assignedUser = userAccountService.findById(assignedToId)
+                        .orElse(null);
+
+                if (assignedUser != null) {
+                    demand.setAssignedTo(assignedUser);
+                    logger.info("Demanda atribuída ao usuário: {} (ID: {})", assignedUser.getFullName(), assignedUser.getId());
+                } else {
+                    logger.warn("Usuário com ID {} não encontrado para atribuição", assignedToId);
+                }
             }
 
             demandService.createDemand(demand);
