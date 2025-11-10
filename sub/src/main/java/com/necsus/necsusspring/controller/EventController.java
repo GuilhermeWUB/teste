@@ -3,6 +3,7 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
+import com.necsus.necsusspring.service.EventObservationHistoryService;
 import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,15 +40,18 @@ public class EventController {
     private final PartnerService partnerService;
     private final VehicleService vehicleService;
     private final FileStorageService fileStorageService;
+    private final EventObservationHistoryService observationHistoryService;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
                            VehicleService vehicleService,
-                           FileStorageService fileStorageService) {
+                           FileStorageService fileStorageService,
+                           EventObservationHistoryService observationHistoryService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
         this.fileStorageService = fileStorageService;
+        this.observationHistoryService = observationHistoryService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -278,12 +283,17 @@ public class EventController {
                               @Valid @ModelAttribute("event") Event event,
                               BindingResult result,
                               RedirectAttributes redirectAttributes,
-                              Model model) {
+                              Model model,
+                              Authentication authentication) {
         if (result.hasErrors()) {
             return "update_evento";
         }
         event.setId(id);
-        eventService.update(id, event);
+
+        // Obtém username do usuário autenticado para rastreamento de histórico
+        String username = authentication != null ? authentication.getName() : "Sistema";
+        eventService.updateWithHistory(id, event, username);
+
         redirectAttributes.addFlashAttribute("successMessage", "Evento atualizado com sucesso!");
         return "redirect:/events";
     }
@@ -300,10 +310,14 @@ public class EventController {
      */
     @PutMapping("/api/{id}/update")
     @ResponseBody
-    public ResponseEntity<?> updateEventInline(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<?> updateEventInline(@PathVariable Long id,
+                                                @RequestBody Map<String, Object> updates,
+                                                Authentication authentication) {
         try {
-            Event updated = eventService.updatePartial(id, updates);
-            logger.info("Evento {} atualizado inline: {}", id, updates.keySet());
+            // Obtém username do usuário autenticado para rastreamento de histórico
+            String username = authentication != null ? authentication.getName() : "Sistema";
+            Event updated = eventService.updatePartialWithHistory(id, updates, username);
+            logger.info("Evento {} atualizado inline por {}: {}", id, username, updates.keySet());
 
             return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -446,6 +460,37 @@ public class EventController {
         } catch (Exception e) {
             logger.error("Erro ao baixar documento - Evento: {}, Tipo: {}", id, docType, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao baixar documento");
+        }
+    }
+
+    /**
+     * Busca o histórico de alterações das observações de um evento
+     * @param id ID do evento
+     * @return Lista de históricos em formato JSON
+     */
+    @GetMapping("/{id}/observation-history")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getObservationHistory(@PathVariable Long id) {
+        try {
+            List<EventObservationHistory> history = observationHistoryService.getHistoryByEventId(id);
+
+            // Converte para formato JSON amigável
+            List<Map<String, Object>> historyDtos = new ArrayList<>();
+            for (EventObservationHistory entry : history) {
+                Map<String, Object> dto = new HashMap<>();
+                dto.put("id", entry.getId());
+                dto.put("previousObservation", entry.getPreviousObservation());
+                dto.put("newObservation", entry.getNewObservation());
+                dto.put("modifiedBy", entry.getModifiedBy());
+                dto.put("modifiedAt", entry.getModifiedAt().toString());
+                historyDtos.add(dto);
+            }
+
+            return ResponseEntity.ok(historyDtos);
+
+        } catch (Exception e) {
+            logger.error("Erro ao buscar histórico de observações do evento {}: ", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }
 

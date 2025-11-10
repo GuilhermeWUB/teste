@@ -29,13 +29,16 @@ public class EventService {
     private final EventRepository eventRepository;
     private final PartnerRepository partnerRepository;
     private final VehicleRepository vehicleRepository;
+    private final EventObservationHistoryService observationHistoryService;
 
     public EventService(EventRepository eventRepository,
                         PartnerRepository partnerRepository,
-                        VehicleRepository vehicleRepository) {
+                        VehicleRepository vehicleRepository,
+                        EventObservationHistoryService observationHistoryService) {
         this.eventRepository = eventRepository;
         this.partnerRepository = partnerRepository;
         this.vehicleRepository = vehicleRepository;
+        this.observationHistoryService = observationHistoryService;
     }
 
     @Transactional(readOnly = true)
@@ -198,6 +201,97 @@ public class EventService {
         });
 
         return eventRepository.save(existing);
+    }
+
+    /**
+     * Atualização parcial com rastreamento de histórico de observações
+     */
+    @Transactional
+    public Event updatePartialWithHistory(Long id, java.util.Map<String, Object> updates, String modifiedBy) {
+        Event existing = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
+
+        // Captura observação anterior antes de fazer updates
+        String previousObservation = existing.getObservacoes();
+
+        // Atualiza apenas os campos fornecidos
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "titulo":
+                    if (value != null) existing.setTitulo(value.toString());
+                    break;
+                case "descricao":
+                    existing.setDescricao(value != null ? value.toString() : null);
+                    break;
+                case "status":
+                    if (value != null) existing.setStatus(Status.valueOf(value.toString()));
+                    break;
+                case "prioridade":
+                    existing.setPrioridade(value != null ? Prioridade.valueOf(value.toString()) : null);
+                    break;
+                case "dataVencimento":
+                    existing.setDataVencimento(value != null ? LocalDate.parse(value.toString()) : null);
+                    break;
+                case "analistaResponsavel":
+                    existing.setAnalistaResponsavel(value != null ? value.toString() : null);
+                    break;
+                case "observacoes":
+                    existing.setObservacoes(value != null ? value.toString() : null);
+                    break;
+                case "placaManual":
+                    existing.setPlacaManual(value != null ? value.toString() : null);
+                    break;
+            }
+        });
+
+        Event savedEvent = eventRepository.save(existing);
+
+        // Registra histórico se observação foi alterada e modifiedBy foi fornecido
+        if (modifiedBy != null && updates.containsKey("observacoes")) {
+            observationHistoryService.recordChange(savedEvent, previousObservation,
+                savedEvent.getObservacoes(), modifiedBy);
+        }
+
+        return savedEvent;
+    }
+
+    /**
+     * Atualiza o evento e registra histórico de mudanças nas observações
+     */
+    @Transactional
+    public Event updateWithHistory(Long id, Event eventPayload, String modifiedBy) {
+        Event existing = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
+
+        // Captura observação anterior para histórico
+        String previousObservation = existing.getObservacoes();
+
+        existing.setTitulo(eventPayload.getTitulo());
+        existing.setDescricao(eventPayload.getDescricao());
+        existing.setStatus(eventPayload.getStatus());
+        existing.setPrioridade(eventPayload.getPrioridade());
+        existing.setMotivo(eventPayload.getMotivo());
+        existing.setEnvolvimento(eventPayload.getEnvolvimento());
+        existing.setDataAconteceu(eventPayload.getDataAconteceu());
+        existing.setHoraAconteceu(eventPayload.getHoraAconteceu());
+        existing.setDataComunicacao(eventPayload.getDataComunicacao());
+        existing.setHoraComunicacao(eventPayload.getHoraComunicacao());
+        existing.setDataVencimento(eventPayload.getDataVencimento());
+        existing.setObservacoes(eventPayload.getObservacoes());
+        existing.setIdExterno(eventPayload.getIdExterno());
+        existing.setAnalistaResponsavel(eventPayload.getAnalistaResponsavel());
+        existing.setPlacaManual(eventPayload.getPlacaManual());
+        existing.setPartner(eventPayload.getPartner());
+        existing.setVehicle(eventPayload.getVehicle());
+
+        Event savedEvent = eventRepository.save(existing);
+
+        // Registra histórico se observação foi alterada
+        if (modifiedBy != null) {
+            observationHistoryService.recordChange(savedEvent, previousObservation, eventPayload.getObservacoes(), modifiedBy);
+        }
+
+        return savedEvent;
     }
 
     @Transactional
