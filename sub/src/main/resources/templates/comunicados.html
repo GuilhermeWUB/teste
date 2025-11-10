@@ -13,6 +13,130 @@
         </div>
     </div>
 
+    <!-- Mensagens de sucesso/erro -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Formulário para criar evento -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Reportar um Evento</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3">Utilize este formulário para reportar ocorrências, sinistros ou comunicar eventos relacionados aos seus veículos.</p>
+
+            <div th:if="${userPartner == null}" class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Não foi possível localizar seus dados de associado. Entre em contato com o administrador para resolver este problema.
+            </div>
+
+            <form th:if="${userPartner != null}" th:action="@{/comunicados/criar-evento}" th:object="${event}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" th:field="*{partner.id}" />
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="titulo" class="form-label fw-semibold">Título do Evento *</label>
+                        <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
+                               placeholder="Ex: Colisão no estacionamento" maxlength="200" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="status" class="form-label fw-semibold">Status *</label>
+                        <select class="form-select" id="status" th:field="*{status}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="status : ${statusOptions}"
+                                    th:value="${status}"
+                                    th:text="${status.displayName}">Status</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="descricao" class="form-label fw-semibold">Descrição do Ocorrido *</label>
+                        <textarea class="form-control" id="descricao" th:field="*{descricao}"
+                                  rows="4" placeholder="Descreva detalhadamente o que aconteceu..." required></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="motivo" class="form-label fw-semibold">Tipo de Ocorrência *</label>
+                        <select class="form-select" id="motivo" th:field="*{motivo}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="motivo : ${motivoOptions}"
+                                    th:value="${motivo}"
+                                    th:text="${motivo}">Motivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="envolvimento" class="form-label fw-semibold">Envolvimento *</label>
+                        <select class="form-select" id="envolvimento" th:field="*{envolvimento}" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="envolvimento : ${envolvimentoOptions}"
+                                    th:value="${envolvimento}"
+                                    th:text="${envolvimento}">Envolvimento</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="prioridade" class="form-label fw-semibold">Prioridade</label>
+                        <select class="form-select" id="prioridade" th:field="*{prioridade}">
+                            <option value="">Selecione...</option>
+                            <option th:each="prioridade : ${prioridadeOptions}"
+                                    th:value="${prioridade}"
+                                    th:text="${prioridade.displayName}">Prioridade</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="placaManual" class="form-label fw-semibold">Placa do Veículo</label>
+                        <input type="text" class="form-control" id="placaManual" th:field="*{placaManual}"
+                               placeholder="Ex: ABC-1234" maxlength="10">
+                        <small class="form-text text-muted">Informe a placa do veículo envolvido (opcional)</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dataAconteceu" class="form-label fw-semibold">Data do Ocorrido</label>
+                        <input type="date" class="form-control" id="dataAconteceu" th:field="*{dataAconteceu}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="observacoes" class="form-label fw-semibold">Observações Adicionais</label>
+                        <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
+                                  rows="2" placeholder="Informações complementares..."></textarea>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send-fill me-1"></i>Enviar Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Seção de Comunicados -->
+    <div class="mb-3">
+        <h4 class="fw-semibold"><i class="bi bi-megaphone me-2"></i>Avisos e Comunicados</h4>
+    </div>
+
     <div th:if="${#lists.isEmpty(comunicados)}" class="alert alert-info" role="alert">
         Não há comunicados no momento.
     </div>
