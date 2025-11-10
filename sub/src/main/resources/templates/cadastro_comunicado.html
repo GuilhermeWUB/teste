@@ -27,6 +27,7 @@
                                 <th>Motivo</th>
                                 <th>Data Comunicação</th>
                                 <th>Placa</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,6 +54,12 @@
                                           th:text="${ev.placaManual}">ABC-1234</span>
                                     <span th:if="${ev.placaManual == null or #strings.isEmpty(ev.placaManual)}"
                                           class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'openEditModal(' + ${ev.id} + ', \'' + ${#strings.escapeJavaScript(ev.descricao)} + '\')'">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -290,6 +297,39 @@
                 </form>
             </div>
         </div>
+
+        <!-- Modal de Edição de Descrição -->
+        <div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-labelledby="editDescriptionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editDescriptionModalLabel">
+                            <i class="bi bi-pencil-square"></i> Editar Descrição do Comunicado
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editDescriptionForm" method="post" th:action="@{/me/comunicado/update-description}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <input type="hidden" id="editEventId" name="eventId" />
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="editDescricao" class="form-label">Descrição *</label>
+                                <textarea class="form-control" id="editDescricao" name="descricao" rows="8" required></textarea>
+                                <small class="form-text text-muted">Atualize a descrição do seu comunicado</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -304,6 +344,19 @@
             statusSelect.value = 'COMUNICADO';
         }
     });
+
+    // Função para abrir o modal de edição
+    function openEditModal(eventId, currentDescription) {
+        console.log('[EDIT MODAL] Abrindo modal para evento:', eventId);
+
+        // Preenche os campos do modal
+        document.getElementById('editEventId').value = eventId;
+        document.getElementById('editDescricao').value = currentDescription || '';
+
+        // Abre o modal usando Bootstrap 5
+        const modal = new bootstrap.Modal(document.getElementById('editDescriptionModal'));
+        modal.show();
+    }
 </script>
 
 </body>
