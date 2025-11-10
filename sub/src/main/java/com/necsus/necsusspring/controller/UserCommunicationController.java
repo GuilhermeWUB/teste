@@ -188,4 +188,64 @@ public class UserCommunicationController {
             return "cadastro_comunicado";
         }
     }
+
+    /**
+     * Atualiza a descrição de um comunicado do Associado
+     */
+    @PostMapping("/comunicado/update-description")
+    public String updateDescription(@RequestParam Long eventId,
+                                     @RequestParam String descricao,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            // Busca o associado do usuário logado
+            var userOpt = userAccountService.findByUsername(authentication.getName());
+            if (userOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("formError", "Usuário não encontrado.");
+                return "redirect:/me/comunicado";
+            }
+
+            var partnerOpt = partnerService.getPartnerByEmail(userOpt.get().getEmail());
+            if (partnerOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("formError", "Seu usuário não está vinculado a um associado.");
+                return "redirect:/me/comunicado";
+            }
+
+            Partner partner = partnerOpt.get();
+
+            // Busca o evento
+            var eventOpt = eventService.findById(eventId);
+            if (eventOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("formError", "Evento não encontrado.");
+                return "redirect:/me/comunicado";
+            }
+
+            Event event = eventOpt.get();
+
+            // Valida que o evento pertence ao associado logado (segurança)
+            if (event.getPartner() == null || !event.getPartner().getId().equals(partner.getId())) {
+                logger.warn("Tentativa de edição não autorizada - Associado {} tentou editar evento {} de outro associado",
+                        partner.getId(), eventId);
+                redirectAttributes.addFlashAttribute("formError", "Você não tem permissão para editar este evento.");
+                return "redirect:/me/comunicado";
+            }
+
+            // Atualiza a descrição
+            event.setDescricao(descricao);
+            eventService.update(eventId, event);
+
+            logger.info("Descrição do evento {} atualizada pelo associado {} (ID: {})", eventId, partner.getName(), partner.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Descrição atualizada com sucesso!");
+            return "redirect:/me/comunicado";
+
+        } catch (Exception ex) {
+            logger.error("Erro ao atualizar descrição do evento {}: ", eventId, ex);
+            redirectAttributes.addFlashAttribute("formError", "Não foi possível atualizar a descrição. Tente novamente.");
+            return "redirect:/me/comunicado";
+        }
+    }
 }
