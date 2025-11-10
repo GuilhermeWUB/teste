@@ -51,7 +51,7 @@
                                     </div>
                                     <div class="admin-users__person-info">
                                         <strong th:text="${user.fullName != null and !#strings.isEmpty(#strings.trim(user.fullName)) ? user.fullName : 'Usuário sem nome'}"></strong>
-                                        <span class="admin-users__person-username" th:text="'@' + ${user.username}"></span>
+                                        <span class="admin-users__person-username" th:text="|@${user.username}|"></span>
                                     </div>
                                 </div>
                             </td>
