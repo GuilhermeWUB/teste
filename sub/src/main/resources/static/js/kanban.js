@@ -554,6 +554,10 @@
         }
 
         modalBody.innerHTML = buildModalContent(card);
+
+        // Carrega histórico de observações de forma assíncrona
+        loadObservationHistory(card.id);
+
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -614,7 +618,86 @@
             html.push('</div>');
         }
 
+        // Adicionar seção de histórico de observações (será preenchida dinamicamente)
+        html.push('<div id="observation-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Histórico de Observações</h5>');
+        html.push('<div id="observation-history-content" style="display: flex; flex-direction: column; gap: 12px;"></div>');
+        html.push('</div>');
+
         return html.join('\n');
+    }
+
+    async function loadObservationHistory(eventId) {
+        try {
+            const response = await fetch(`/events/${eventId}/observation-history`, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                console.warn('[KANBAN] Erro ao carregar histórico de observações:', response.status);
+                return;
+            }
+
+            const history = await response.json();
+
+            if (!history || history.length === 0) {
+                return; // Não mostra a seção se não houver histórico
+            }
+
+            const section = document.getElementById('observation-history-section');
+            const content = document.getElementById('observation-history-content');
+
+            if (!section || !content) {
+                return;
+            }
+
+            // Limpa conteúdo anterior
+            content.innerHTML = '';
+
+            // Adiciona cada entrada do histórico
+            history.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, #f8f9fa); border-left: 3px solid var(--primary-color, #0d6efd); border-radius: 4px;';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, #6c757d);';
+
+                const modifiedBy = document.createElement('span');
+                modifiedBy.innerHTML = `<i class="bi bi-person"></i> <strong>${escapeHtml(entry.modifiedBy || 'Sistema')}</strong>`;
+
+                const modifiedAt = document.createElement('span');
+                const date = new Date(entry.modifiedAt);
+                modifiedAt.innerHTML = `<i class="bi bi-clock"></i> ${date.toLocaleString('pt-BR')}`;
+
+                headerDiv.appendChild(modifiedBy);
+                headerDiv.appendChild(modifiedAt);
+
+                const changesDiv = document.createElement('div');
+                changesDiv.style.cssText = 'display: grid; grid-template-columns: 1fr; gap: 8px; font-size: 13px;';
+
+                if (entry.previousObservation) {
+                    const prevDiv = document.createElement('div');
+                    prevDiv.innerHTML = `<strong style="color: var(--danger-color, #dc3545);">Anterior:</strong> <span style="color: var(--text-secondary, #6c757d); font-style: italic;">${escapeHtml(entry.previousObservation)}</span>`;
+                    changesDiv.appendChild(prevDiv);
+                }
+
+                if (entry.newObservation) {
+                    const newDiv = document.createElement('div');
+                    newDiv.innerHTML = `<strong style="color: var(--success-color, #198754);">Nova:</strong> <span style="color: var(--text-primary, #2c3e50);">${escapeHtml(entry.newObservation)}</span>`;
+                    changesDiv.appendChild(newDiv);
+                }
+
+                entryDiv.appendChild(headerDiv);
+                entryDiv.appendChild(changesDiv);
+                content.appendChild(entryDiv);
+            });
+
+            // Mostra a seção
+            section.style.display = 'block';
+
+        } catch (error) {
+            console.error('[KANBAN] Erro ao carregar histórico de observações:', error);
+        }
     }
 
     function escapeHtml(value) {
