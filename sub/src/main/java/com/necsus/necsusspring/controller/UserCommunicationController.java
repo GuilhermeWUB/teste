@@ -44,15 +44,6 @@ public class UserCommunicationController {
         return Envolvimento.values();
     }
 
-    @ModelAttribute("statusOptions")
-    public Status[] statusOptions() {
-        // Retorna apenas os status permitidos para o usuário Associado criar
-        return new Status[]{
-            Status.COMUNICADO,
-            Status.ABERTO
-        };
-    }
-
     /**
      * Exibe o formulário de cadastro de comunicado e lista os comunicados do Associado
      */
@@ -128,10 +119,8 @@ public class UserCommunicationController {
         // Força o partner do usuário logado (segurança)
         event.setPartner(partner);
 
-        // Valida que o status seja apenas COMUNICADO ou ABERTO
-        if (event.getStatus() != Status.COMUNICADO && event.getStatus() != Status.ABERTO) {
-            result.rejectValue("status", "Invalid", "Status inválido para associados");
-        }
+        // Força status padrão COMUNICADO (segurança - Associado não pode escolher status)
+        event.setStatus(Status.COMUNICADO);
 
         if (result.hasErrors()) {
             model.addAttribute("partner", partner);
