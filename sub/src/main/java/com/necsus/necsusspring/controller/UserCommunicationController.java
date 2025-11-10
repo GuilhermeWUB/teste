@@ -55,7 +55,7 @@ public class UserCommunicationController {
     }
 
     /**
-     * Exibe o formulário de cadastro de comunicado para o Associado
+     * Exibe o formulário de cadastro de comunicado e lista os comunicados do Associado
      */
     @GetMapping("/comunicado")
     public String showCommunicationForm(Authentication authentication, Model model) {
@@ -63,7 +63,7 @@ public class UserCommunicationController {
             return "redirect:/login";
         }
 
-        model.addAttribute("pageTitle", "SUB - Criar Comunicado");
+        model.addAttribute("pageTitle", "SUB - Meus Comunicados");
 
         return userAccountService.findByUsername(authentication.getName())
                 .map(user -> partnerService.getPartnerByEmail(user.getEmail())
@@ -72,9 +72,14 @@ public class UserCommunicationController {
                             event.setStatus(Status.COMUNICADO); // Status padrão para Associados
                             event.setPartner(partner); // Pre-preenche com o associado logado
 
+                            // Busca todos os eventos criados por este associado
+                            java.util.List<Event> myEvents = eventService.listByPartnerId(partner.getId());
+                            logger.info("Associado {} (ID: {}) possui {} eventos", partner.getName(), partner.getId(), myEvents.size());
+
                             model.addAttribute("event", event);
                             model.addAttribute("partner", partner);
                             model.addAttribute("readOnlyPartner", true); // Flag para desabilitar seleção de associado
+                            model.addAttribute("myEvents", myEvents); // Lista de eventos do associado
 
                             return "cadastro_comunicado";
                         })

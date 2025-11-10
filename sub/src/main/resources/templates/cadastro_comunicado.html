@@ -10,9 +10,68 @@
 
 <section layout:fragment="content">
     <div class="event-form py-4">
+        <!-- Lista de Comunicados Criados -->
+        <div class="card shadow mb-4" th:if="${myEvents != null and !myEvents.isEmpty()}">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-list-check"></i> Meus Comunicados</h4>
+                <p class="text-muted small mb-0 mt-2">Acompanhe o status dos seus comunicados</p>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Status</th>
+                                <th>Motivo</th>
+                                <th>Data Criação</th>
+                                <th>Placa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ev : ${myEvents}">
+                                <td><span class="badge bg-secondary" th:text="${ev.id}">1</span></td>
+                                <td>
+                                    <strong th:text="${ev.titulo}">Título do evento</strong>
+                                    <br>
+                                    <small class="text-muted" th:text="${#strings.abbreviate(ev.descricao, 60)}">Descrição...</small>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${ev.status.phase == 1 ? 'bg-info' :
+                                                          ev.status.phase == 2 ? 'bg-warning text-dark' :
+                                                          ev.status.phase == 3 ? 'bg-primary' :
+                                                          ev.status.phase == 4 ? 'bg-success' :
+                                                          ev.status.phase == 5 ? 'bg-danger' : 'bg-secondary'}"
+                                          th:text="${ev.status.displayName}">Status</span>
+                                </td>
+                                <td th:text="${ev.motivo}">Motivo</td>
+                                <td th:text="${ev.createdAt != null ? #temporals.format(ev.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2025 10:00</td>
+                                <td>
+                                    <span th:if="${ev.placaManual != null and !#strings.isEmpty(ev.placaManual)}"
+                                          th:text="${ev.placaManual}">ABC-1234</span>
+                                    <span th:if="${ev.placaManual == null or #strings.isEmpty(ev.placaManual)}"
+                                          class="text-muted">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensagem quando não há comunicados -->
+        <div class="alert alert-info mb-4" th:if="${myEvents == null or myEvents.isEmpty()}">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Você ainda não criou nenhum comunicado.</strong>
+            Preencha o formulário abaixo para criar seu primeiro comunicado.
+        </div>
+
+        <!-- Formulário de Criação -->
         <div class="card shadow event-form__card">
             <div class="card-header">
-                <h4 class="mb-0"><i class="bi bi-megaphone"></i> Criar Comunicado</h4>
+                <h4 class="mb-0"><i class="bi bi-megaphone"></i> Criar Novo Comunicado</h4>
                 <p class="text-muted small mb-0 mt-2">Registre aqui comunicações sobre eventos relacionados ao seu veículo</p>
             </div>
             <div class="card-body">
