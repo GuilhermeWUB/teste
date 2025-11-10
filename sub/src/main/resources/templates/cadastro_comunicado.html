@@ -25,7 +25,7 @@
                                 <th>Título</th>
                                 <th>Status</th>
                                 <th>Motivo</th>
-                                <th>Data Criação</th>
+                                <th>Data Comunicação</th>
                                 <th>Placa</th>
                             </tr>
                         </thead>
@@ -39,15 +39,15 @@
                                 </td>
                                 <td>
                                     <span class="badge"
-                                          th:classappend="${ev.status.phase == 1 ? 'bg-info' :
-                                                          ev.status.phase == 2 ? 'bg-warning text-dark' :
-                                                          ev.status.phase == 3 ? 'bg-primary' :
-                                                          ev.status.phase == 4 ? 'bg-success' :
-                                                          ev.status.phase == 5 ? 'bg-danger' : 'bg-secondary'}"
+                                          th:classappend="${ev.status.getPhase() == 1 ? 'bg-info' :
+                                                          ev.status.getPhase() == 2 ? 'bg-warning text-dark' :
+                                                          ev.status.getPhase() == 3 ? 'bg-primary' :
+                                                          ev.status.getPhase() == 4 ? 'bg-success' :
+                                                          ev.status.getPhase() == 5 ? 'bg-danger' : 'bg-secondary'}"
                                           th:text="${ev.status.displayName}">Status</span>
                                 </td>
                                 <td th:text="${ev.motivo}">Motivo</td>
-                                <td th:text="${ev.createdAt != null ? #temporals.format(ev.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/01/2025 10:00</td>
+                                <td th:text="${ev.dataComunicacao != null ? #temporals.format(ev.dataComunicacao, 'dd/MM/yyyy') : '-'}">01/01/2025</td>
                                 <td>
                                     <span th:if="${ev.placaManual != null and !#strings.isEmpty(ev.placaManual)}"
                                           th:text="${ev.placaManual}">ABC-1234</span>
