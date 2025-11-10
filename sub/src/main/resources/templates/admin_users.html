@@ -47,19 +47,17 @@
                             <td>
                                 <div class="admin-users__person">
                                     <div class="admin-users__avatar" aria-hidden="true">
-                                        <span th:text="${user.fullName != null and !#strings.isEmpty(#strings.trim(user.fullName)) ? #strings.substring(#strings.trim(user.fullName), 0, 1) : 'U'}"></span>
+                                        <span th:text="${user.fullName != null and #strings.length(user.fullName) > 0 ? #strings.substring(user.fullName, 0, 1) : 'U'}">U</span>
                                     </div>
                                     <div class="admin-users__person-info">
-                                        <strong th:text="${user.fullName != null and !#strings.isEmpty(#strings.trim(user.fullName)) ? user.fullName : 'Usuário sem nome'}"></strong>
-                                        <span class="admin-users__person-username" th:text="|@${user.username}|"></span>
+                                        <strong th:text="${user.fullName != null ? user.fullName : 'Sem nome'}">Nome do Usuário</strong>
+                                        <span class="admin-users__person-username">@<span th:text="${user.username}">username</span></span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="admin-users__email" th:text="${user.email != null and !#strings.isEmpty(#strings.trim(user.email)) ? user.email : 'E-mail não informado'}"></td>
+                            <td class="admin-users__email" th:text="${user.email}">email@example.com</td>
                             <td>
-                                <span class="admin-users__role-badge"
-                                      th:classappend="${T(com.necsus.necsusspring.model.RoleType).hasAdminPrivileges(user.role) ? 'admin-users__role-badge--admin' : 'admin-users__role-badge--standard'}"
-                                      th:text="${T(com.necsus.necsusspring.model.RoleType).displayNameFor(user.role)}"></span>
+                                <span class="admin-users__role-badge" th:text="${user.role}">ROLE</span>
                             </td>
                             <td>
                                 <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post"
@@ -69,7 +67,7 @@
                                         <option th:each="role : ${availableRoles}"
                                                 th:value="${role.code}"
                                                 th:selected="${role.code == user.role}"
-                                                th:text="${role.displayName}"></option>
+                                                th:text="${role.displayName}">Role</option>
                                     </select>
                                     <button type="submit" class="admin-users__action-btn" title="Atualizar permissão">
                                         <i class="bi bi-arrow-repeat" aria-hidden="true"></i>
@@ -151,7 +149,7 @@
                                 <option value="">Selecione uma permissão</option>
                                 <option th:each="role : ${availableRoles}"
                                         th:value="${role.code}"
-                                        th:text="${role.displayName}"></option>
+                                        th:text="${role.displayName}">Role</option>
                             </select>
                         </div>
                     </div>
