@@ -210,6 +210,8 @@
             </div>
             <div class="kanban-modal-body">
                 <form th:action="@{/demands/create}" th:object="${newDemand}" method="post" class="kanban-create-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="titulo">Título *</label>
@@ -251,11 +253,12 @@
                         <small class="text-muted" id="assigned-help-text">Selecione um ou mais setores acima para ver os funcionários disponíveis</small>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary" onclick="window.demandBoard?.closeCreateModal?.()">
+                    <div class="form-actions" style="display: flex !important; justify-content: flex-end !important; gap: 0.75rem !important; margin-top: 2rem !important;">
+                        <button type="button" class="btn-secondary" onclick="window.demandBoard?.closeCreateModal?.()" style="display: inline-flex !important;">
+                            <i class="bi bi-x-circle"></i>
                             Cancelar
                         </button>
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary" style="display: inline-flex !important;">
                             <i class="bi bi-send-fill"></i> Criar Demanda
                         </button>
                     </div>
