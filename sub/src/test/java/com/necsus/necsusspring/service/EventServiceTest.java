@@ -52,7 +52,7 @@ public class EventServiceTest {
         testEvent.setId(1L);
         testEvent.setTitulo("Test Event");
         testEvent.setDescricao("Test Description");
-        testEvent.setStatus(Status.A_FAZER);
+        testEvent.setStatus(Status.COMUNICADO);
         testEvent.setPartner(testPartner);
         testEvent.setVehicle(testVehicle);
         testEvent.setDataVencimento(LocalDate.now());
@@ -85,14 +85,14 @@ public class EventServiceTest {
     @Test
     public void testListByStatus_ShouldReturnEventsWithGivenStatus() {
         List<Event> events = Arrays.asList(testEvent);
-        when(eventRepository.findByStatus(Status.A_FAZER)).thenReturn(events);
+        when(eventRepository.findByStatus(Status.COMUNICADO)).thenReturn(events);
 
-        List<Event> result = eventService.listByStatus(Status.A_FAZER);
+        List<Event> result = eventService.listByStatus(Status.COMUNICADO);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(Status.A_FAZER, result.get(0).getStatus());
-        verify(eventRepository, times(1)).findByStatus(Status.A_FAZER);
+        assertEquals(Status.COMUNICADO, result.get(0).getStatus());
+        verify(eventRepository, times(1)).findByStatus(Status.COMUNICADO);
     }
 
     @Test
@@ -163,13 +163,13 @@ public class EventServiceTest {
         when(vehicleRepository.findById(1L)).thenReturn(Optional.of(testVehicle));
         when(eventRepository.save(any(Event.class))).thenAnswer(invocation -> {
             Event event = invocation.getArgument(0);
-            assertEquals(Status.A_FAZER, event.getStatus());
+            assertEquals(Status.COMUNICADO, event.getStatus());
             return event;
         });
 
         eventService.create(testEvent);
 
-        verify(eventRepository, times(1)).save(argThat(event -> event.getStatus() == Status.A_FAZER));
+        verify(eventRepository, times(1)).save(argThat(event -> event.getStatus() == Status.COMUNICADO));
     }
 
     @Test
@@ -223,7 +223,7 @@ public class EventServiceTest {
         Event updatedEvent = new Event();
         updatedEvent.setTitulo("Updated Title");
         updatedEvent.setDescricao("Updated Description");
-        updatedEvent.setStatus(Status.FINALIZADO);
+        updatedEvent.setStatus(Status.ENTREGUES);
         updatedEvent.setPrioridade(Prioridade.ALTA);
         updatedEvent.setPartner(testPartner);
         updatedEvent.setVehicle(testVehicle);
@@ -235,7 +235,7 @@ public class EventServiceTest {
 
         assertNotNull(result);
         assertEquals("Updated Title", result.getTitulo());
-        assertEquals(Status.FINALIZADO, result.getStatus());
+        assertEquals(Status.ENTREGUES, result.getStatus());
         verify(eventRepository, times(1)).findById(1L);
         verify(eventRepository, times(1)).save(testEvent);
     }
@@ -258,10 +258,10 @@ public class EventServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(testEvent));
         when(eventRepository.save(any(Event.class))).thenReturn(testEvent);
 
-        Event result = eventService.updateStatus(1L, Status.EM_ANDAMENTO);
+        Event result = eventService.updateStatus(1L, Status.VISTORIA);
 
         assertNotNull(result);
-        assertEquals(Status.EM_ANDAMENTO, result.getStatus());
+        assertEquals(Status.VISTORIA, result.getStatus());
         verify(eventRepository, times(1)).findById(1L);
         verify(eventRepository, times(1)).save(testEvent);
     }
@@ -271,7 +271,7 @@ public class EventServiceTest {
         when(eventRepository.findById(999L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            eventService.updateStatus(999L, Status.FINALIZADO);
+            eventService.updateStatus(999L, Status.ENTREGUES);
         });
 
         assertTrue(exception.getMessage().contains("Event not found"));
@@ -282,7 +282,7 @@ public class EventServiceTest {
     public void testUpdatePartial_ShouldUpdateSpecifiedFields() {
         Map<String, Object> updates = new HashMap<>();
         updates.put("titulo", "Partially Updated Title");
-        updates.put("status", "EM_ANDAMENTO");
+        updates.put("status", "VISTORIA");
         updates.put("prioridade", "ALTA");
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(testEvent));
@@ -292,7 +292,7 @@ public class EventServiceTest {
 
         assertNotNull(result);
         assertEquals("Partially Updated Title", result.getTitulo());
-        assertEquals(Status.EM_ANDAMENTO, result.getStatus());
+        assertEquals(Status.VISTORIA, result.getStatus());
         assertEquals(Prioridade.ALTA, result.getPrioridade());
         verify(eventRepository, times(1)).save(testEvent);
     }

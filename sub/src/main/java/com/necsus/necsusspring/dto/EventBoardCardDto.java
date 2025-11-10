@@ -35,11 +35,11 @@ public record EventBoardCardDto(
 
     public static EventBoardCardDto from(Event event) {
         if (event == null) {
-            return new EventBoardCardDto(null, null, null, Status.A_FAZER.name(), Status.A_FAZER.getDisplayName(),
+            return new EventBoardCardDto(null, null, null, Status.COMUNICADO.name(), Status.COMUNICADO.getDisplayName(),
                     null, null, "secondary", null, null, null, null, null, null, null, null, null, null, null);
         }
 
-        final Status status = Optional.ofNullable(event.getStatus()).orElse(Status.A_FAZER);
+        final Status status = Optional.ofNullable(event.getStatus()).orElse(Status.COMUNICADO);
         final Prioridade prioridade = event.getPrioridade();
         final Motivo motivo = event.getMotivo();
         final Envolvimento envolvimento = event.getEnvolvimento();
