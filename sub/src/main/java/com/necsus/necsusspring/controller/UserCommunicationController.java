@@ -4,6 +4,7 @@ import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.UserAccountService;
+import com.necsus.necsusspring.service.VehicleService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -21,13 +22,16 @@ public class UserCommunicationController {
     private final UserAccountService userAccountService;
     private final PartnerService partnerService;
     private final EventService eventService;
+    private final VehicleService vehicleService;
 
     public UserCommunicationController(UserAccountService userAccountService,
                                        PartnerService partnerService,
-                                       EventService eventService) {
+                                       EventService eventService,
+                                       VehicleService vehicleService) {
         this.userAccountService = userAccountService;
         this.partnerService = partnerService;
         this.eventService = eventService;
+        this.vehicleService = vehicleService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -47,11 +51,6 @@ public class UserCommunicationController {
             Status.COMUNICADO,
             Status.ABERTO
         };
-    }
-
-    @ModelAttribute("prioridadeOptions")
-    public Prioridade[] prioridadeOptions() {
-        return Prioridade.values();
     }
 
     /**
@@ -76,10 +75,15 @@ public class UserCommunicationController {
                             java.util.List<Event> myEvents = eventService.listByPartnerId(partner.getId());
                             logger.info("Associado {} (ID: {}) possui {} eventos", partner.getName(), partner.getId(), myEvents.size());
 
+                            // Busca todos os veículos do associado para o select de placas
+                            java.util.List<Vehicle> myVehicles = vehicleService.listByPartnerId(partner.getId());
+                            logger.info("Associado {} (ID: {}) possui {} veículos", partner.getName(), partner.getId(), myVehicles.size());
+
                             model.addAttribute("event", event);
                             model.addAttribute("partner", partner);
                             model.addAttribute("readOnlyPartner", true); // Flag para desabilitar seleção de associado
                             model.addAttribute("myEvents", myEvents); // Lista de eventos do associado
+                            model.addAttribute("myVehicles", myVehicles); // Lista de veículos do associado
 
                             return "cadastro_comunicado";
                         })
@@ -132,6 +136,9 @@ public class UserCommunicationController {
         if (result.hasErrors()) {
             model.addAttribute("partner", partner);
             model.addAttribute("readOnlyPartner", true);
+            // Recarrega veículos e eventos para exibir novamente em caso de erro
+            model.addAttribute("myVehicles", vehicleService.listByPartnerId(partner.getId()));
+            model.addAttribute("myEvents", eventService.listByPartnerId(partner.getId()));
             return "cadastro_comunicado";
         }
 
@@ -145,6 +152,9 @@ public class UserCommunicationController {
             model.addAttribute("formError", ex.getMessage() != null ? ex.getMessage() : "Não foi possível salvar o comunicado. Tente novamente.");
             model.addAttribute("partner", partner);
             model.addAttribute("readOnlyPartner", true);
+            // Recarrega veículos e eventos para exibir novamente em caso de erro
+            model.addAttribute("myVehicles", vehicleService.listByPartnerId(partner.getId()));
+            model.addAttribute("myEvents", eventService.listByPartnerId(partner.getId()));
             return "cadastro_comunicado";
         }
     }

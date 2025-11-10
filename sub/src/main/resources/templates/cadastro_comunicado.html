@@ -131,16 +131,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label for="prioridade" class="form-label">Prioridade</label>
-                            <select class="form-select" id="prioridade" th:field="*{prioridade}">
-                                <option value="">Selecione...</option>
-                                <option th:each="prioridade : ${prioridadeOptions}"
-                                        th:value="${prioridade}"
-                                        th:text="${prioridade.displayName}">Prioridade</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="motivo" class="form-label">Motivo *</label>
                             <select class="form-select" id="motivo" th:field="*{motivo}" required>
                                 <option value="">Selecione...</option>
@@ -150,7 +141,7 @@
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="envolvimento" class="form-label">Envolvimento *</label>
                             <select class="form-select" id="envolvimento" th:field="*{envolvimento}" required>
                                 <option value="">Selecione...</option>
@@ -168,11 +159,24 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="placaManual" class="form-label">Placa do Veículo</label>
-                            <input type="text" class="form-control" id="placaManual" th:field="*{placaManual}"
-                                   placeholder="Ex: ABC-1234" maxlength="10">
-                            <small class="form-text text-muted">Informe a placa do veículo envolvido no evento</small>
+                        <div class="col-md-12">
+                            <label for="placaManual" class="form-label">Selecione o Veículo</label>
+                            <select class="form-select" id="placaManual" th:field="*{placaManual}">
+                                <option value="">Selecione um veículo...</option>
+                                <option th:each="vehicle : ${myVehicles}"
+                                        th:value="${vehicle.plaque}"
+                                        th:text="${vehicle.plaque + ' - ' + vehicle.description + ' (' + vehicle.modelYear + ')'}">
+                                    ABC-1234 - Honda Civic (2020)
+                                </option>
+                            </select>
+                            <small class="form-text text-muted">
+                                <span th:if="${myVehicles != null and !myVehicles.isEmpty()}">
+                                    Selecione um dos seus veículos cadastrados
+                                </span>
+                                <span th:if="${myVehicles == null or myVehicles.isEmpty()}" class="text-warning">
+                                    <i class="bi bi-exclamation-triangle"></i> Você não possui veículos cadastrados. Deixe em branco se não aplicável.
+                                </span>
+                            </small>
                         </div>
                     </div>
 
