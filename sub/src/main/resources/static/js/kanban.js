@@ -582,7 +582,8 @@
             { label: 'Motivo', value: card.motivoLabel },
             { label: 'Envolvimento', value: card.envolvimentoLabel },
             { label: 'Analista Responsável', value: card.analistaResponsavel },
-            { label: 'Data de vencimento', value: card.dataVencimento ? formatDate(card.dataVencimento) : null }
+            { label: 'Data de vencimento', value: card.dataVencimento ? formatDate(card.dataVencimento) : null },
+            { label: 'Observações', value: card.observacoes }
         ];
 
         const html = [
