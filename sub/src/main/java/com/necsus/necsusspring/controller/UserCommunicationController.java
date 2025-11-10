@@ -2,6 +2,7 @@ package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
+import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.UserAccountService;
 import com.necsus.necsusspring.service.VehicleService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -23,15 +25,18 @@ public class UserCommunicationController {
     private final PartnerService partnerService;
     private final EventService eventService;
     private final VehicleService vehicleService;
+    private final FileStorageService fileStorageService;
 
     public UserCommunicationController(UserAccountService userAccountService,
                                        PartnerService partnerService,
                                        EventService eventService,
-                                       VehicleService vehicleService) {
+                                       VehicleService vehicleService,
+                                       FileStorageService fileStorageService) {
         this.userAccountService = userAccountService;
         this.partnerService = partnerService;
         this.eventService = eventService;
         this.vehicleService = vehicleService;
+        this.fileStorageService = fileStorageService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -94,6 +99,11 @@ public class UserCommunicationController {
     @PostMapping("/comunicado")
     public String createCommunication(@Valid @ModelAttribute("event") Event event,
                                       BindingResult result,
+                                      @RequestParam(value = "docCrlv", required = false) MultipartFile docCrlv,
+                                      @RequestParam(value = "docCnh", required = false) MultipartFile docCnh,
+                                      @RequestParam(value = "docBo", required = false) MultipartFile docBo,
+                                      @RequestParam(value = "docComprovanteResidencia", required = false) MultipartFile docComprovanteResidencia,
+                                      @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura,
                                       Authentication authentication,
                                       RedirectAttributes redirectAttributes,
                                       Model model) {
@@ -132,6 +142,37 @@ public class UserCommunicationController {
         }
 
         try {
+            // Processa upload dos documentos
+            if (docCrlv != null && !docCrlv.isEmpty()) {
+                String crlvPath = fileStorageService.storeFile(docCrlv);
+                event.setDocCrlvPath(crlvPath);
+                logger.info("CRLV anexado ao comunicado: {}", crlvPath);
+            }
+
+            if (docCnh != null && !docCnh.isEmpty()) {
+                String cnhPath = fileStorageService.storeFile(docCnh);
+                event.setDocCnhPath(cnhPath);
+                logger.info("CNH anexada ao comunicado: {}", cnhPath);
+            }
+
+            if (docBo != null && !docBo.isEmpty()) {
+                String boPath = fileStorageService.storeFile(docBo);
+                event.setDocBoPath(boPath);
+                logger.info("B.O. anexado ao comunicado: {}", boPath);
+            }
+
+            if (docComprovanteResidencia != null && !docComprovanteResidencia.isEmpty()) {
+                String compResPath = fileStorageService.storeFile(docComprovanteResidencia);
+                event.setDocComprovanteResidenciaPath(compResPath);
+                logger.info("Comprovante de residência anexado ao comunicado: {}", compResPath);
+            }
+
+            if (docTermoAbertura != null && !docTermoAbertura.isEmpty()) {
+                String termoPath = fileStorageService.storeFile(docTermoAbertura);
+                event.setDocTermoAberturaPath(termoPath);
+                logger.info("Termo de abertura anexado ao comunicado: {}", termoPath);
+            }
+
             eventService.create(event);
             logger.info("Comunicado criado com sucesso pelo associado: {} (ID: {})", partner.getName(), partner.getId());
             redirectAttributes.addFlashAttribute("successMessage", "Comunicado cadastrado com sucesso! Aguarde o contato do administrador.");
