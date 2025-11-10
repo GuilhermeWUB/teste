@@ -65,12 +65,6 @@
                    placeholder="Ex: ABC-1234" maxlength="10" />
             <small class="text-muted">Campo opcional</small>
         </div>
-        <div class="col-12">
-            <label for="observacoes" class="form-label">Observações</label>
-            <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
-                      rows="3" placeholder="Observações adicionais..."></textarea>
-            <small class="text-muted">As alterações neste campo serão registradas no histórico</small>
-        </div>
         <div class="col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Salvar alterações</button>
             <a th:href="@{/events}" class="btn btn-secondary">Cancelar</a>
