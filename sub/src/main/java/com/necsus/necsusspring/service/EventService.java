@@ -101,9 +101,9 @@ public class EventService {
 
     @Transactional
     public Event create(Event event) {
-        // Se status não foi definido, define como A_FAZER por padrão
+        // Se status não foi definido, define como COMUNICADO por padrão
         if (event.getStatus() == null) {
-            event.setStatus(Status.A_FAZER);
+            event.setStatus(Status.COMUNICADO);
         }
         // Resolver referências de Partner e Vehicle a partir dos IDs enviados pelo formulário
         if (event.getPartner() != null && event.getPartner().getId() != null) {

@@ -184,7 +184,7 @@ public class EventController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         Event event = new Event();
-        event.setStatus(Status.A_FAZER); // Status padrão
+        event.setStatus(Status.COMUNICADO); // Status padrão
         // Instanciar partner para permitir binding de partner.id no formulário
         event.setPartner(new Partner());
         // Vehicle agora é opcional, não precisa instanciar

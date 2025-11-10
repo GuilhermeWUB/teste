@@ -4,7 +4,18 @@
         search: "",
         advancedFilters: {
             prioridade: ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'],
-            status: ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'],
+            status: [
+                // Fase 1 - Comunicação
+                'COMUNICADO', 'ABERTO',
+                // Fase 2 - Análise
+                'VISTORIA', 'ANALISE', 'SINDICANCIA', 'DESISTENCIA',
+                // Fase 3 - Negociação
+                'ORCAMENTO', 'COTA_PARTICIPACAO', 'ACORDO_ANDAMENTO',
+                // Fase 4 - Execução
+                'COMPRA', 'AGENDADO', 'REPAROS_LIBERADOS', 'COMPLEMENTOS', 'ENTREGUES', 'PESQUISA_SATISFACAO',
+                // Fase 5 - Garantia
+                'ABERTURA_GARANTIA', 'VISTORIA_GARANTIA', 'GARANTIA_AUTORIZADA', 'GARANTIA_ENTREGUE'
+            ],
             envolvimento: ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'],
             motivo: ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'],
             dateFrom: null,
@@ -19,10 +30,30 @@
     };
 
     const statusLabels = {
-        A_FAZER: 'A Fazer',
-        EM_ANDAMENTO: 'Em Andamento',
-        AGUARDANDO: 'Aguardando',
-        CONCLUIDO: 'Concluído'
+        // Fase 1 - Comunicação
+        COMUNICADO: '1.0 Comunicado',
+        ABERTO: '1.1 Aberto',
+        // Fase 2 - Análise
+        VISTORIA: '2.0 Vistoria',
+        ANALISE: '2.1 Análise',
+        SINDICANCIA: '2.2 Sindicância',
+        DESISTENCIA: '2.8 Desistência',
+        // Fase 3 - Negociação
+        ORCAMENTO: '3.0 Orçamento',
+        COTA_PARTICIPACAO: '3.1 Cota de Participação',
+        ACORDO_ANDAMENTO: '3.2 Acordo em Andamento',
+        // Fase 4 - Execução
+        COMPRA: '4.0 Compra',
+        AGENDADO: '4.1 Agendado',
+        REPAROS_LIBERADOS: '4.2 Reparos Liberados',
+        COMPLEMENTOS: '4.3 Complementos',
+        ENTREGUES: '4.7 Entregues',
+        PESQUISA_SATISFACAO: '4.8 Pesquisa de Satisfação',
+        // Fase 5 - Garantia
+        ABERTURA_GARANTIA: '5.0 Abertura de Garantia',
+        VISTORIA_GARANTIA: '5.1 Vistoria de Garantia',
+        GARANTIA_AUTORIZADA: '5.2 Garantia Autorizada',
+        GARANTIA_ENTREGUE: '5.7 Garantia Entregue'
     };
 
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -265,7 +296,7 @@
 
     function groupByStatus(cards) {
         return cards.reduce((acc, card) => {
-            const status = card.status || 'A_FAZER';
+            const status = card.status || 'COMUNICADO';
             acc[status] = acc[status] || [];
             acc[status].push(card);
             return acc;

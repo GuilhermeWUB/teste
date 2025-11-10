@@ -3,6 +3,7 @@
 <head>
     <title>Eventos - Kanban</title>
     <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+    <link rel="stylesheet" th:href="@{/css/kanban-phases.css}">
 </head>
 <body>
 <section layout:fragment="content">
@@ -38,65 +39,293 @@
             </div>
         </div>
 
-        <!-- Board com as colunas -->
+        <!-- Board com as colunas agrupadas por fase -->
         <div class="kanban-board">
-            <!-- Coluna A FAZER -->
-            <div class="kanban-column" data-status="A_FAZER">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>A Fazer</h3>
-                        <span class="column-count">0</span>
+            <!-- FASE 1: Comunicação -->
+            <div class="kanban-phase" data-phase="1">
+                <div class="phase-header" onclick="kanbanBoard.togglePhase(1)">
+                    <div class="phase-info">
+                        <i class="bi bi-chevron-down phase-toggle-icon"></i>
+                        <h2 class="phase-title">Fase 1 - Comunicação</h2>
+                        <span class="phase-count">0</span>
                     </div>
-                    <button class="column-add-btn" onclick="window.location.href='/events/new'">
-                        <i class="bi bi-plus"></i> Novo
-                    </button>
                 </div>
-                <div class="tasks-container">
+                <div class="phase-columns">
+                    <!-- 1.0 Comunicado -->
+                    <div class="kanban-column" data-status="COMUNICADO" data-phase="1">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">1.0</span>
+                                <h3>Comunicado</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 1.1 Aberto -->
+                    <div class="kanban-column" data-status="ABERTO" data-phase="1">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">1.1</span>
+                                <h3>Aberto</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Coluna EM ANDAMENTO -->
-            <div class="kanban-column" data-status="EM_ANDAMENTO">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Em Andamento</h3>
-                        <span class="column-count">0</span>
+            <!-- FASE 2: Análise -->
+            <div class="kanban-phase" data-phase="2">
+                <div class="phase-header" onclick="kanbanBoard.togglePhase(2)">
+                    <div class="phase-info">
+                        <i class="bi bi-chevron-down phase-toggle-icon"></i>
+                        <h2 class="phase-title">Fase 2 - Análise</h2>
+                        <span class="phase-count">0</span>
                     </div>
-                    <button class="column-add-btn" onclick="window.location.href='/events/new'">
-                        <i class="bi bi-plus"></i> Novo
-                    </button>
                 </div>
-                <div class="tasks-container">
+                <div class="phase-columns">
+                    <!-- 2.0 Vistoria -->
+                    <div class="kanban-column" data-status="VISTORIA" data-phase="2">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">2.0</span>
+                                <h3>Vistoria</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 2.1 Análise -->
+                    <div class="kanban-column" data-status="ANALISE" data-phase="2">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">2.1</span>
+                                <h3>Análise</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 2.2 Sindicância -->
+                    <div class="kanban-column" data-status="SINDICANCIA" data-phase="2">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">2.2</span>
+                                <h3>Sindicância</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 2.8 Desistência -->
+                    <div class="kanban-column" data-status="DESISTENCIA" data-phase="2">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">2.8</span>
+                                <h3>Desistência</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Coluna AGUARDANDO -->
-            <div class="kanban-column" data-status="AGUARDANDO">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Aguardando</h3>
-                        <span class="column-count">0</span>
+            <!-- FASE 3: Negociação -->
+            <div class="kanban-phase" data-phase="3">
+                <div class="phase-header" onclick="kanbanBoard.togglePhase(3)">
+                    <div class="phase-info">
+                        <i class="bi bi-chevron-down phase-toggle-icon"></i>
+                        <h2 class="phase-title">Fase 3 - Negociação</h2>
+                        <span class="phase-count">0</span>
                     </div>
-                    <button class="column-add-btn" onclick="window.location.href='/events/new'">
-                        <i class="bi bi-plus"></i> Novo
-                    </button>
                 </div>
-                <div class="tasks-container">
+                <div class="phase-columns">
+                    <!-- 3.0 Orçamento -->
+                    <div class="kanban-column" data-status="ORCAMENTO" data-phase="3">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">3.0</span>
+                                <h3>Orçamento</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 3.1 Cota de Participação -->
+                    <div class="kanban-column" data-status="COTA_PARTICIPACAO" data-phase="3">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">3.1</span>
+                                <h3>Cota de Participação</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 3.2 Acordo em Andamento -->
+                    <div class="kanban-column" data-status="ACORDO_ANDAMENTO" data-phase="3">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">3.2</span>
+                                <h3>Acordo em Andamento</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Coluna CONCLUÍDO -->
-            <div class="kanban-column" data-status="CONCLUIDO">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Concluído</h3>
-                        <span class="column-count">0</span>
+            <!-- FASE 4: Execução -->
+            <div class="kanban-phase" data-phase="4">
+                <div class="phase-header" onclick="kanbanBoard.togglePhase(4)">
+                    <div class="phase-info">
+                        <i class="bi bi-chevron-down phase-toggle-icon"></i>
+                        <h2 class="phase-title">Fase 4 - Execução</h2>
+                        <span class="phase-count">0</span>
                     </div>
-                    <button class="column-add-btn" onclick="window.location.href='/events/new'">
-                        <i class="bi bi-plus"></i> Novo
-                    </button>
                 </div>
-                <div class="tasks-container">
+                <div class="phase-columns">
+                    <!-- 4.0 Compra -->
+                    <div class="kanban-column" data-status="COMPRA" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.0</span>
+                                <h3>Compra</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 4.1 Agendado -->
+                    <div class="kanban-column" data-status="AGENDADO" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.1</span>
+                                <h3>Agendado</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 4.2 Reparos Liberados -->
+                    <div class="kanban-column" data-status="REPAROS_LIBERADOS" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.2</span>
+                                <h3>Reparos Liberados</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 4.3 Complementos -->
+                    <div class="kanban-column" data-status="COMPLEMENTOS" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.3</span>
+                                <h3>Complementos</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 4.7 Entregues -->
+                    <div class="kanban-column" data-status="ENTREGUES" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.7</span>
+                                <h3>Entregues</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 4.8 Pesquisa de Satisfação -->
+                    <div class="kanban-column" data-status="PESQUISA_SATISFACAO" data-phase="4">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">4.8</span>
+                                <h3>Pesquisa de Satisfação</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FASE 5: Garantia -->
+            <div class="kanban-phase" data-phase="5">
+                <div class="phase-header" onclick="kanbanBoard.togglePhase(5)">
+                    <div class="phase-info">
+                        <i class="bi bi-chevron-down phase-toggle-icon"></i>
+                        <h2 class="phase-title">Fase 5 - Garantia</h2>
+                        <span class="phase-count">0</span>
+                    </div>
+                </div>
+                <div class="phase-columns">
+                    <!-- 5.0 Abertura de Garantia -->
+                    <div class="kanban-column" data-status="ABERTURA_GARANTIA" data-phase="5">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">5.0</span>
+                                <h3>Abertura de Garantia</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 5.1 Vistoria de Garantia -->
+                    <div class="kanban-column" data-status="VISTORIA_GARANTIA" data-phase="5">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">5.1</span>
+                                <h3>Vistoria de Garantia</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 5.2 Garantia Autorizada -->
+                    <div class="kanban-column" data-status="GARANTIA_AUTORIZADA" data-phase="5">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">5.2</span>
+                                <h3>Garantia Autorizada</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <!-- 5.7 Garantia Entregue -->
+                    <div class="kanban-column" data-status="GARANTIA_ENTREGUE" data-phase="5">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <span class="column-code">5.7</span>
+                                <h3>Garantia Entregue</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,22 +376,106 @@
                         <i class="bi bi-list-check"></i> Status
                     </h4>
                     <div class="filter-options">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="status" value="A_FAZER" checked>
-                            <span class="checkbox-label">A Fazer</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="status" value="EM_ANDAMENTO" checked>
-                            <span class="checkbox-label">Em Andamento</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="status" value="AGUARDANDO" checked>
-                            <span class="checkbox-label">Aguardando</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="status" value="CONCLUIDO" checked>
-                            <span class="checkbox-label">Concluído</span>
-                        </label>
+                        <!-- Fase 1: Comunicação -->
+                        <div class="filter-phase-group">
+                            <h5 class="filter-phase-title">Fase 1 - Comunicação</h5>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="COMUNICADO" checked>
+                                <span class="checkbox-label">1.0 Comunicado</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ABERTO" checked>
+                                <span class="checkbox-label">1.1 Aberto</span>
+                            </label>
+                        </div>
+
+                        <!-- Fase 2: Análise -->
+                        <div class="filter-phase-group">
+                            <h5 class="filter-phase-title">Fase 2 - Análise</h5>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="VISTORIA" checked>
+                                <span class="checkbox-label">2.0 Vistoria</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ANALISE" checked>
+                                <span class="checkbox-label">2.1 Análise</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="SINDICANCIA" checked>
+                                <span class="checkbox-label">2.2 Sindicância</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="DESISTENCIA" checked>
+                                <span class="checkbox-label">2.8 Desistência</span>
+                            </label>
+                        </div>
+
+                        <!-- Fase 3: Negociação -->
+                        <div class="filter-phase-group">
+                            <h5 class="filter-phase-title">Fase 3 - Negociação</h5>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ORCAMENTO" checked>
+                                <span class="checkbox-label">3.0 Orçamento</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="COTA_PARTICIPACAO" checked>
+                                <span class="checkbox-label">3.1 Cota de Participação</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ACORDO_ANDAMENTO" checked>
+                                <span class="checkbox-label">3.2 Acordo em Andamento</span>
+                            </label>
+                        </div>
+
+                        <!-- Fase 4: Execução -->
+                        <div class="filter-phase-group">
+                            <h5 class="filter-phase-title">Fase 4 - Execução</h5>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="COMPRA" checked>
+                                <span class="checkbox-label">4.0 Compra</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="AGENDADO" checked>
+                                <span class="checkbox-label">4.1 Agendado</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="REPAROS_LIBERADOS" checked>
+                                <span class="checkbox-label">4.2 Reparos Liberados</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="COMPLEMENTOS" checked>
+                                <span class="checkbox-label">4.3 Complementos</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ENTREGUES" checked>
+                                <span class="checkbox-label">4.7 Entregues</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="PESQUISA_SATISFACAO" checked>
+                                <span class="checkbox-label">4.8 Pesquisa de Satisfação</span>
+                            </label>
+                        </div>
+
+                        <!-- Fase 5: Garantia -->
+                        <div class="filter-phase-group">
+                            <h5 class="filter-phase-title">Fase 5 - Garantia</h5>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="ABERTURA_GARANTIA" checked>
+                                <span class="checkbox-label">5.0 Abertura de Garantia</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="VISTORIA_GARANTIA" checked>
+                                <span class="checkbox-label">5.1 Vistoria de Garantia</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="GARANTIA_AUTORIZADA" checked>
+                                <span class="checkbox-label">5.2 Garantia Autorizada</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="status" value="GARANTIA_ENTREGUE" checked>
+                                <span class="checkbox-label">5.7 Garantia Entregue</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -312,6 +625,7 @@
 
     <!-- Script único e limpo -->
     <script th:src="@{/js/kanban.js}"></script>
+    <script th:src="@{/js/kanban-phases.js}"></script>
 </section>
 </body>
 </html>
