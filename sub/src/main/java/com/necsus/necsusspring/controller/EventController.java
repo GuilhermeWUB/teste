@@ -3,6 +3,7 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
+import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -27,13 +29,16 @@ public class EventController {
     private final EventService eventService;
     private final PartnerService partnerService;
     private final VehicleService vehicleService;
+    private final FileStorageService fileStorageService;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
-                           VehicleService vehicleService) {
+                           VehicleService vehicleService,
+                           FileStorageService fileStorageService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
+        this.fileStorageService = fileStorageService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -195,6 +200,11 @@ public class EventController {
     @PostMapping
     public String createEvent(@Valid @ModelAttribute("event") Event event,
                               BindingResult result,
+                              @RequestParam(value = "docCrlv", required = false) MultipartFile docCrlv,
+                              @RequestParam(value = "docCnh", required = false) MultipartFile docCnh,
+                              @RequestParam(value = "docBo", required = false) MultipartFile docBo,
+                              @RequestParam(value = "docComprovanteResidencia", required = false) MultipartFile docComprovanteResidencia,
+                              @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura,
                               RedirectAttributes redirectAttributes,
                               Model model) {
         // Validações manuais para garantir que IDs foram enviados
@@ -206,6 +216,37 @@ public class EventController {
             return "cadastro_evento";
         }
         try {
+            // Processa upload dos documentos
+            if (docCrlv != null && !docCrlv.isEmpty()) {
+                String crlvPath = fileStorageService.storeFile(docCrlv);
+                event.setDocCrlvPath(crlvPath);
+                logger.info("CRLV anexado: {}", crlvPath);
+            }
+
+            if (docCnh != null && !docCnh.isEmpty()) {
+                String cnhPath = fileStorageService.storeFile(docCnh);
+                event.setDocCnhPath(cnhPath);
+                logger.info("CNH anexada: {}", cnhPath);
+            }
+
+            if (docBo != null && !docBo.isEmpty()) {
+                String boPath = fileStorageService.storeFile(docBo);
+                event.setDocBoPath(boPath);
+                logger.info("B.O. anexado: {}", boPath);
+            }
+
+            if (docComprovanteResidencia != null && !docComprovanteResidencia.isEmpty()) {
+                String compResPath = fileStorageService.storeFile(docComprovanteResidencia);
+                event.setDocComprovanteResidenciaPath(compResPath);
+                logger.info("Comprovante de residência anexado: {}", compResPath);
+            }
+
+            if (docTermoAbertura != null && !docTermoAbertura.isEmpty()) {
+                String termoPath = fileStorageService.storeFile(docTermoAbertura);
+                event.setDocTermoAberturaPath(termoPath);
+                logger.info("Termo de abertura anexado: {}", termoPath);
+            }
+
             eventService.create(event);
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
             return "redirect:/events/board";

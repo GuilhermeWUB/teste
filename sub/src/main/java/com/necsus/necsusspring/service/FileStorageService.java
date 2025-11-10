@@ -25,6 +25,33 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * Armazena um único arquivo
+     * @param file arquivo a ser armazenado
+     * @return path do arquivo armazenado ou null se o arquivo estiver vazio
+     */
+    public String storeFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            String filename = UUID.randomUUID().toString() + extension;
+            Path targetLocation = uploadDir.resolve(filename);
+
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return targetLocation.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao salvar arquivo: " + file.getOriginalFilename(), e);
+        }
+    }
+
     public List<String> storeFiles(MultipartFile[] files) {
         List<String> filePaths = new ArrayList<>();
 
@@ -34,20 +61,9 @@ public class FileStorageService {
 
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
-                try {
-                    String originalFilename = file.getOriginalFilename();
-                    String extension = "";
-                    if (originalFilename != null && originalFilename.contains(".")) {
-                        extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                    }
-
-                    String filename = UUID.randomUUID().toString() + extension;
-                    Path targetLocation = uploadDir.resolve(filename);
-
-                    Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-                    filePaths.add(targetLocation.toString());
-                } catch (IOException e) {
-                    throw new RuntimeException("Erro ao salvar arquivo: " + file.getOriginalFilename(), e);
+                String filePath = storeFile(file);
+                if (filePath != null) {
+                    filePaths.add(filePath);
                 }
             }
         }

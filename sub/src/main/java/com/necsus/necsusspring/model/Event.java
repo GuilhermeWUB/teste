@@ -73,6 +73,22 @@ public class Event {
     @Size(max = 10, message = "A placa deve ter no máximo 10 caracteres")
     private String placaManual;
 
+    // Documentos anexados ao evento
+    @Column(name = "doc_crlv_path")
+    private String docCrlvPath;
+
+    @Column(name = "doc_cnh_path")
+    private String docCnhPath;
+
+    @Column(name = "doc_bo_path")
+    private String docBoPath;
+
+    @Column(name = "doc_comprovante_residencia_path")
+    private String docComprovanteResidenciaPath;
+
+    @Column(name = "doc_termo_abertura_path")
+    private String docTermoAberturaPath;
+
     // Método auxiliar para exibir prioridade formatada
     public String getPrioridadeFormatted() {
         return prioridade != null ? prioridade.getDisplayName() : "";
