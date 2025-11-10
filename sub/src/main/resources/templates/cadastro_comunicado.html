@@ -56,8 +56,9 @@
                                           class="text-muted">-</span>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-primary"
-                                            th:onclick="'openEditModal(' + ${ev.id} + ', \'' + ${#strings.escapeJavaScript(ev.descricao)} + '\')'">
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-edit-description"
+                                            th:data-event-id="${ev.id}"
+                                            th:data-description="${ev.descricao}">
                                         <i class="bi bi-pencil"></i> Editar
                                     </button>
                                 </td>
@@ -343,20 +344,26 @@
         if (statusSelect && !statusSelect.value) {
             statusSelect.value = 'COMUNICADO';
         }
+
+        // Adiciona event listeners aos botões de editar
+        const editButtons = document.querySelectorAll('.btn-edit-description');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.getAttribute('data-event-id');
+                const currentDescription = this.getAttribute('data-description') || '';
+
+                console.log('[EDIT MODAL] Abrindo modal para evento:', eventId);
+
+                // Preenche os campos do modal
+                document.getElementById('editEventId').value = eventId;
+                document.getElementById('editDescricao').value = currentDescription;
+
+                // Abre o modal usando Bootstrap 5
+                const modal = new bootstrap.Modal(document.getElementById('editDescriptionModal'));
+                modal.show();
+            });
+        });
     });
-
-    // Função para abrir o modal de edição
-    function openEditModal(eventId, currentDescription) {
-        console.log('[EDIT MODAL] Abrindo modal para evento:', eventId);
-
-        // Preenche os campos do modal
-        document.getElementById('editEventId').value = eventId;
-        document.getElementById('editDescricao').value = currentDescription || '';
-
-        // Abre o modal usando Bootstrap 5
-        const modal = new bootstrap.Modal(document.getElementById('editDescriptionModal'));
-        modal.show();
-    }
 </script>
 
 </body>
