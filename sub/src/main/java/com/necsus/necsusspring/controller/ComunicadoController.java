@@ -91,7 +91,7 @@ public class ComunicadoController {
 
         // Cria um novo evento para o formulário
         Event event = new Event();
-        event.setStatus(Status.A_FAZER); // Status padrão
+        event.setStatus(Status.ABERTO); // Status padrão
         if (partner != null) {
             event.setPartner(partner);
         } else {
