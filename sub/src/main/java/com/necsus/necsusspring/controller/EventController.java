@@ -282,12 +282,17 @@ public class EventController {
                               @Valid @ModelAttribute("event") Event event,
                               BindingResult result,
                               RedirectAttributes redirectAttributes,
-                              Model model) {
+                              Model model,
+                              Authentication authentication) {
         if (result.hasErrors()) {
             return "update_evento";
         }
         event.setId(id);
-        eventService.update(id, event);
+
+        // Obtém username do usuário autenticado para rastreamento de histórico
+        String username = authentication != null ? authentication.getName() : "Sistema";
+        eventService.updateWithHistory(id, event, username);
+
         redirectAttributes.addFlashAttribute("successMessage", "Evento atualizado com sucesso!");
         return "redirect:/events";
     }
@@ -304,10 +309,14 @@ public class EventController {
      */
     @PutMapping("/api/{id}/update")
     @ResponseBody
-    public ResponseEntity<?> updateEventInline(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<?> updateEventInline(@PathVariable Long id,
+                                                @RequestBody Map<String, Object> updates,
+                                                Authentication authentication) {
         try {
-            Event updated = eventService.updatePartial(id, updates);
-            logger.info("Evento {} atualizado inline: {}", id, updates.keySet());
+            // Obtém username do usuário autenticado para rastreamento de histórico
+            String username = authentication != null ? authentication.getName() : "Sistema";
+            Event updated = eventService.updatePartialWithHistory(id, updates, username);
+            logger.info("Evento {} atualizado inline por {}: {}", id, username, updates.keySet());
 
             return ResponseEntity.ok(Map.of(
                 "success", true,
