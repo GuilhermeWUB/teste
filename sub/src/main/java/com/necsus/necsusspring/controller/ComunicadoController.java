@@ -82,6 +82,13 @@ public class ComunicadoController {
         // Busca o parceiro associado ao usuário logado
         Partner partner = getPartnerForUser(authentication);
 
+        // Busca os eventos criados pelo associado
+        List<Event> userEvents = List.of();
+        if (partner != null) {
+            userEvents = eventService.listByPartnerId(partner.getId());
+            logger.info("Encontrados {} eventos para o associado ID: {}", userEvents.size(), partner.getId());
+        }
+
         // Cria um novo evento para o formulário
         Event event = new Event();
         event.setStatus(Status.A_FAZER); // Status padrão
@@ -95,6 +102,7 @@ public class ComunicadoController {
         model.addAttribute("comunicados", comunicados);
         model.addAttribute("event", event);
         model.addAttribute("userPartner", partner);
+        model.addAttribute("userEvents", userEvents);
 
         return "comunicados";
     }
@@ -135,6 +143,7 @@ public class ComunicadoController {
         if (result.hasErrors()) {
             model.addAttribute("comunicados", comunicadoService.listVisiveis());
             model.addAttribute("userPartner", partner);
+            model.addAttribute("userEvents", eventService.listByPartnerId(partner.getId()));
             return "comunicados";
         }
 
