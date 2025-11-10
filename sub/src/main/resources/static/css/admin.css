@@ -21,6 +21,25 @@
     --admin-transition: 0.28s ease;
 }
 
+html[data-theme="light"] {
+    --admin-bg: linear-gradient(135deg, #f8f5ff 0%, #eef2ff 45%, #e0f2fe 100%);
+    --admin-card-bg: rgba(255, 255, 255, 0.95);
+    --admin-card-border: rgba(148, 163, 184, 0.16);
+    --admin-glass: rgba(255, 255, 255, 0.85);
+    --admin-glass-border: rgba(148, 163, 184, 0.18);
+    --admin-primary: #7c3aed;
+    --admin-primary-strong: #5b21b6;
+    --admin-primary-soft: rgba(124, 58, 237, 0.12);
+    --admin-primary-soft-border: rgba(124, 58, 237, 0.24);
+    --admin-secondary: #475569;
+    --admin-body: #1f2937;
+    --admin-headline: #0f172a;
+    --admin-danger: #dc2626;
+    --admin-success: #16a34a;
+    --admin-shadow: 0 18px 40px rgba(148, 163, 184, 0.18);
+    --admin-backdrop-filter: saturate(140%) blur(18px);
+}
+
 .admin-users {
     position: relative;
     padding: clamp(2.5rem, 4vw, 4rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vw, 4.5rem);
@@ -43,8 +62,7 @@
 .admin-users__container {
     position: relative;
     z-index: 1;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: clamp(1.75rem, 4vw, 2.75rem);
@@ -668,4 +686,242 @@
         flex-direction: column-reverse;
         align-items: stretch;
     }
+}
+
+html[data-theme="light"] .admin-users {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__background {
+    background: radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.14), transparent 60%),
+                radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.15), transparent 70%),
+                radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.12), transparent 75%);
+    opacity: 0.85;
+}
+
+html[data-theme="light"] .admin-users__eyebrow {
+    color: rgba(79, 70, 229, 0.75);
+}
+
+html[data-theme="light"] .admin-users__title {
+    color: var(--admin-headline);
+}
+
+html[data-theme="light"] .admin-users__subtitle {
+    color: var(--admin-secondary);
+}
+
+html[data-theme="light"] .admin-users__header,
+html[data-theme="light"] .admin-users__panel {
+    background: var(--admin-card-bg);
+    border-color: var(--admin-card-border);
+    box-shadow: var(--admin-shadow);
+}
+
+html[data-theme="light"] .admin-users__summary-card {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(148, 163, 184, 0.18);
+    box-shadow: 0 16px 32px rgba(148, 163, 184, 0.18);
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__summary-card--highlight {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(59, 130, 246, 0.16));
+    border-color: rgba(124, 58, 237, 0.28);
+}
+
+html[data-theme="light"] .admin-users__summary-card--soft {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(99, 102, 241, 0.16));
+    border-color: rgba(14, 165, 233, 0.24);
+}
+
+html[data-theme="light"] .admin-users__summary-icon {
+    background: rgba(124, 58, 237, 0.12);
+    color: #4338ca;
+}
+
+html[data-theme="light"] .admin-users__primary-btn {
+    box-shadow: 0 18px 38px rgba(124, 58, 237, 0.28);
+}
+
+html[data-theme="light"] .admin-users__secondary-btn {
+    background: rgba(124, 58, 237, 0.1);
+    color: #5b21b6;
+    border-color: rgba(124, 58, 237, 0.24);
+}
+
+html[data-theme="light"] .admin-users__secondary-btn:hover,
+html[data-theme="light"] .admin-users__secondary-btn:focus-visible {
+    background: rgba(124, 58, 237, 0.16);
+}
+
+html[data-theme="light"] .admin-users__toolbar {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__search,
+html[data-theme="light"] .admin-users__filter {
+    background: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="light"] .admin-users__search:focus-within,
+html[data-theme="light"] .admin-users__role-select:focus,
+html[data-theme="light"] .admin-users__filter:focus-within {
+    border-color: rgba(124, 58, 237, 0.45);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.18);
+}
+
+html[data-theme="light"] .admin-users__search i,
+html[data-theme="light"] .admin-users__filter i {
+    color: #6366f1;
+}
+
+html[data-theme="light"] .admin-users__search input {
+    color: var(--admin-headline);
+}
+
+html[data-theme="light"] .admin-users__search input::placeholder {
+    color: #94a3b8;
+}
+
+html[data-theme="light"] .admin-users__alert {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__alert--success {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+html[data-theme="light"] .admin-users__alert--error {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+html[data-theme="light"] .admin-users__table-wrapper {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 22px 38px rgba(148, 163, 184, 0.18);
+}
+
+html[data-theme="light"] .admin-users__table-wrapper--empty {
+    background: rgba(248, 250, 252, 0.9);
+    border-color: rgba(148, 163, 184, 0.3);
+}
+
+html[data-theme="light"] .admin-users-table {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users-table thead {
+    background: rgba(237, 233, 254, 0.9);
+    color: #4338ca;
+}
+
+html[data-theme="light"] .admin-users-table th,
+html[data-theme="light"] .admin-users-table td {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+html[data-theme="light"] .admin-users__row:hover {
+    background: rgba(226, 232, 240, 0.45);
+}
+
+html[data-theme="light"] .admin-users__person-username {
+    color: #64748b;
+}
+
+html[data-theme="light"] .admin-users__email {
+    color: #334155;
+}
+
+html[data-theme="light"] .admin-users__role-badge {
+    background: rgba(237, 233, 254, 0.9);
+    color: #5b21b6;
+    border-color: rgba(124, 58, 237, 0.28);
+}
+
+html[data-theme="light"] .admin-users__actions {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__role-select {
+    background: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__action-btn {
+    border: 1px solid rgba(124, 58, 237, 0.32);
+    background: rgba(124, 58, 237, 0.12);
+    color: #5b21b6;
+}
+
+html[data-theme="light"] .admin-users__action-btn:hover,
+html[data-theme="light"] .admin-users__action-btn:focus-visible {
+    background: rgba(124, 58, 237, 0.18);
+}
+
+html[data-theme="light"] .admin-users__empty-icon {
+    background: rgba(241, 245, 249, 0.95);
+    border-color: rgba(148, 163, 184, 0.35);
+    color: #64748b;
+}
+
+html[data-theme="light"] .admin-users__empty-text {
+    color: #64748b;
+}
+
+html[data-theme="light"] .admin-users__modal {
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 24px 48px rgba(148, 163, 184, 0.22);
+}
+
+html[data-theme="light"] .admin-users__modal-header {
+    background: linear-gradient(135deg, rgba(237, 233, 254, 0.85), rgba(224, 231, 255, 0.85));
+    border-bottom-color: rgba(203, 213, 225, 0.6);
+    color: var(--admin-headline);
+}
+
+html[data-theme="light"] .admin-users__modal-eyebrow {
+    color: rgba(79, 70, 229, 0.75);
+}
+
+html[data-theme="light"] .admin-users__modal-subtitle {
+    color: #475569;
+}
+
+html[data-theme="light"] .admin-users__modal-grid .form-floating {
+    background: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(203, 213, 225, 0.8);
+}
+
+html[data-theme="light"] .admin-users__modal-grid .form-floating > label {
+    color: #475569;
+}
+
+html[data-theme="light"] .admin-users__modal-grid .form-floating > .form-control,
+html[data-theme="light"] .admin-users__modal-grid .form-floating > .form-select {
+    color: var(--admin-body);
+}
+
+html[data-theme="light"] .admin-users__password-field .password-toggle {
+    color: #6366f1;
+}
+
+html[data-theme="light"] .admin-users__password-field small {
+    color: #64748b;
+}
+
+html[data-theme="light"] .admin-users__modal-footer {
+    border-top-color: rgba(203, 213, 225, 0.6);
+}
+
+html[data-theme="light"] .admin-users__modal .form-floating > .form-select option {
+    color: #1f2937;
 }
