@@ -210,6 +210,8 @@
             </div>
             <div class="kanban-modal-body">
                 <form th:action="@{/demands/create}" th:object="${newDemand}" method="post" class="kanban-create-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="titulo">Título *</label>
@@ -234,20 +236,29 @@
 
                     <div class="form-group">
                         <label>Cargos destinatários *</label>
-                        <div class="role-checkbox-group">
+                        <div class="role-checkbox-group" id="role-checkbox-group">
                             <label th:each="role : ${availableRoles}" class="role-checkbox-item">
-                                <input type="checkbox" name="targetRolesList" th:value="${role.code}" th:id="'create-role-' + ${role.code}">
+                                <input type="checkbox" name="targetRolesList" th:value="${role.code}" th:id="'create-role-' + ${role.code}" class="role-checkbox-input">
                                 <span th:text="${role.displayName}">Cargo</span>
                             </label>
                         </div>
                         <small class="text-muted">Selecione os times que devem receber esta demanda</small>
                     </div>
 
-                    <div class="form-actions">
-                        <button type="button" class="btn-secondary" onclick="window.demandBoard?.closeCreateModal?.()">
+                    <div class="form-group">
+                        <label for="assignedToId">Atribuir a um funcionário específico (opcional)</label>
+                        <select id="assignedToId" name="assignedToId" class="form-control">
+                            <option value="">Selecione um funcionário...</option>
+                        </select>
+                        <small class="text-muted" id="assigned-help-text">Selecione um ou mais setores acima para ver os funcionários disponíveis</small>
+                    </div>
+
+                    <div class="form-actions" style="display: flex !important; justify-content: flex-end !important; gap: 0.75rem !important; margin-top: 2rem !important;">
+                        <button type="button" class="btn-secondary" onclick="window.demandBoard?.closeCreateModal?.()" style="display: inline-flex !important;">
+                            <i class="bi bi-x-circle"></i>
                             Cancelar
                         </button>
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary" style="display: inline-flex !important;">
                             <i class="bi bi-send-fill"></i> Criar Demanda
                         </button>
                     </div>
@@ -277,6 +288,86 @@
             if (pageContent) {
                 pageContent.classList.add('kanban-content-stretch');
             }
+
+            // Funcionalidade: Buscar funcionários por setores selecionados
+            const roleCheckboxes = document.querySelectorAll('.role-checkbox-input');
+            const assignedToSelect = document.getElementById('assignedToId');
+            const helpText = document.getElementById('assigned-help-text');
+
+            async function updateEmployeeList() {
+                const selectedRoles = Array.from(roleCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                if (selectedRoles.length === 0) {
+                    assignedToSelect.innerHTML = '<option value="">Selecione um funcionário...</option>';
+                    assignedToSelect.disabled = true;
+                    helpText.textContent = 'Selecione um ou mais setores acima para ver os funcionários disponíveis';
+                    helpText.classList.remove('text-success');
+                    helpText.classList.add('text-muted');
+                    return;
+                }
+
+                try {
+                    helpText.textContent = 'Carregando funcionários...';
+                    helpText.classList.remove('text-muted');
+                    helpText.classList.add('text-success');
+
+                    const params = new URLSearchParams();
+                    selectedRoles.forEach(role => params.append('roles', role));
+
+                    const response = await fetch(`/demands/api/users-by-roles?${params.toString()}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erro ao buscar funcionários');
+                    }
+
+                    const users = await response.json();
+
+                    assignedToSelect.innerHTML = '<option value="">Selecione um funcionário...</option>';
+
+                    if (users.length === 0) {
+                        assignedToSelect.innerHTML += '<option value="" disabled>Nenhum funcionário encontrado para os setores selecionados</option>';
+                        helpText.textContent = 'Nenhum funcionário encontrado para os setores selecionados';
+                        helpText.classList.remove('text-success');
+                        helpText.classList.add('text-warning');
+                    } else {
+                        users.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = `${user.fullName} (${user.email})`;
+                            assignedToSelect.appendChild(option);
+                        });
+
+                        helpText.textContent = `${users.length} funcionário(s) disponível(is)`;
+                        helpText.classList.remove('text-muted');
+                        helpText.classList.add('text-success');
+                    }
+
+                    assignedToSelect.disabled = false;
+
+                } catch (error) {
+                    console.error('Erro ao buscar funcionários:', error);
+                    assignedToSelect.innerHTML = '<option value="">Erro ao carregar funcionários</option>';
+                    assignedToSelect.disabled = true;
+                    helpText.textContent = 'Erro ao carregar funcionários. Tente novamente.';
+                    helpText.classList.remove('text-success');
+                    helpText.classList.add('text-danger');
+                }
+            }
+
+            // Adiciona listeners aos checkboxes
+            roleCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateEmployeeList);
+            });
+
+            // Estado inicial: select desabilitado
+            assignedToSelect.disabled = true;
         });
     </script>
     <script th:src="@{/js/demand-kanban.js}"></script>

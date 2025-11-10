@@ -4,6 +4,7 @@ import com.necsus.necsusspring.model.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
@@ -19,4 +20,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     long countByRole(String role);
 
     long countByRoleIn(Collection<String> roles);
+
+    List<UserAccount> findByRoleIn(Collection<String> roles);
 }
