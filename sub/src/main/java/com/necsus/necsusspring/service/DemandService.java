@@ -217,7 +217,9 @@ public class DemandService {
                 message,
                 NotificationType.DEMAND,
                 "/demands/" + demand.getId(),
-                demand.getId()
+                demand.getId(),
+                "DEMAND",
+                null
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal
@@ -287,7 +289,9 @@ public class DemandService {
                 message,
                 NotificationType.DEMAND,
                 "/demands/" + demand.getId(),
-                demand.getId()
+                demand.getId(),
+                "DEMAND",
+                null
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal
