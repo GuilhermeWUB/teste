@@ -51,9 +51,13 @@
                 Não foi possível localizar seus dados de associado. Entre em contato com o administrador para resolver este problema.
             </div>
 
-            <form th:if="${userPartner != null}" th:action="@{/comunicados/criar-evento}" th:object="${event}" method="post">
+            <form th:if="${userPartner != null}" th:action="@{/comunicados/criar-evento}" th:object="${event}" method="post" id="formCriarEvento">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" th:field="*{partner.id}" />
+
+                <!-- Campos ocultos para Data da Comunicação (preenchidos automaticamente) -->
+                <input type="hidden" id="dataComunicacao" th:field="*{dataComunicacao}" />
+                <input type="hidden" id="horaComunicacao" th:field="*{horaComunicacao}" />
 
                 <div class="row mb-3">
                     <div class="col-md-8">
@@ -288,6 +292,32 @@
                         formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 }, 350); // Aguarda a animação do collapse
+            });
+        }
+
+        // Auto-preenche Data da Comunicação e Hora da Comunicação ao submeter o formulário
+        var formCriarEvento = document.getElementById('formCriarEvento');
+        if (formCriarEvento) {
+            formCriarEvento.addEventListener('submit', function(event) {
+                // Obtém a data e hora atual
+                var agora = new Date();
+
+                // Formata a data no padrão ISO (yyyy-MM-dd) para o campo de data
+                var ano = agora.getFullYear();
+                var mes = String(agora.getMonth() + 1).padStart(2, '0');
+                var dia = String(agora.getDate()).padStart(2, '0');
+                var dataFormatada = ano + '-' + mes + '-' + dia;
+
+                // Obtém a hora no formato HHmm (ex: 1430 para 14:30)
+                var horas = String(agora.getHours()).padStart(2, '0');
+                var minutos = String(agora.getMinutes()).padStart(2, '0');
+                var horaFormatada = parseInt(horas + minutos);
+
+                // Preenche os campos ocultos
+                document.getElementById('dataComunicacao').value = dataFormatada;
+                document.getElementById('horaComunicacao').value = horaFormatada;
+
+                console.log('Data da Comunicação preenchida automaticamente:', dataFormatada, horaFormatada);
             });
         }
     });
