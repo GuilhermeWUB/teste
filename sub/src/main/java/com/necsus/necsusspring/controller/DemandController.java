@@ -54,25 +54,25 @@ public class DemandController {
             return "redirect:/";
         }
 
-        // Admin e Diretoria vão para painel de gestão
-        if (isDirectorOrAdmin(userRole)) {
+        // Usuários que podem criar demandas (ADMIN, DIRETORIA, GERENTE, GESTOR) vão para painel de gestão
+        if (RoleType.canCreateDemands(userRole)) {
             return "redirect:/demands/director";
         }
 
-        // Outros usuários vão para suas demandas
+        // Colaboradores vão para suas demandas (apenas visualização)
         return "redirect:/demands/my-demands";
     }
 
     /**
      * Painel do Diretor - Criar e gerenciar demandas
-     * Acessível apenas para DIRETORIA e ADMIN
+     * Acessível apenas para usuários que podem criar demandas (ADMIN, DIRETORIA, GERENTE, GESTOR)
      */
     @GetMapping("/director")
     public String showDirectorPanel(Authentication authentication, Model model) {
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
-            logger.warn("Acesso negado ao painel de diretor. Role: {}", userRole);
+        if (!RoleType.canCreateDemands(userRole)) {
+            logger.warn("Acesso negado ao painel de criação de demandas. Role {} não pode criar demandas.", userRole);
             return "redirect:/demands/my-demands";
         }
 
@@ -96,10 +96,11 @@ public class DemandController {
         model.addAttribute("canceladas", canceladas);
         model.addAttribute("totalDemands", roleDemands.size());
         model.addAttribute("newDemand", new Demand());
-        model.addAttribute("availableRoles", getAvailableRoles());
+        model.addAttribute("availableRoles", getAvailableRolesForUser(userRole));
         model.addAttribute("statusOptions", DemandStatus.values());
         model.addAttribute("priorityOptions", DemandPriority.values());
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("userRole", userRole);
 
         return "demandas_diretor";
     }
@@ -109,7 +110,7 @@ public class DemandController {
     public ResponseEntity<?> getBoardSnapshot(Authentication authentication) {
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error", "Acesso negado"));
         }
@@ -129,7 +130,7 @@ public class DemandController {
             Authentication authentication) {
 
         String userRole = getUserRole(authentication);
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             logger.warn("Tentativa de atualizar status da demanda {} sem permissão. Role: {}", id, userRole);
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error", "Você não tem permissão para atualizar demandas."));
@@ -162,6 +163,31 @@ public class DemandController {
     }
 
     /**
+     * API para retornar os roles disponíveis baseado na hierarquia do usuário logado
+     */
+    @GetMapping("/api/available-roles")
+    @ResponseBody
+    public ResponseEntity<?> getAvailableRoles(Authentication authentication) {
+        String userRole = getUserRole(authentication);
+
+        if (!RoleType.canCreateDemands(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Acesso negado"));
+        }
+
+        List<RoleType> availableRoles = RoleType.getTargetRolesFor(userRole);
+
+        List<Map<String, String>> rolesDTO = availableRoles.stream()
+                .map(role -> Map.of(
+                        "code", role.getCode(),
+                        "displayName", role.getDisplayName()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(rolesDTO);
+    }
+
+    /**
      * API para buscar usuários por role(s)
      * Retorna lista de usuários que possuem as roles selecionadas
      */
@@ -172,7 +198,7 @@ public class DemandController {
             Authentication authentication) {
 
         String userRole = getUserRole(authentication);
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(Map.of("error", "Acesso negado"));
         }
@@ -219,10 +245,18 @@ public class DemandController {
 
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             logger.warn("Tentativa de criar demanda sem permissão. Role: {}", userRole);
             redirectAttributes.addFlashAttribute("error", "Você não tem permissão para criar demandas.");
             return "redirect:/demands/my-demands";
+        }
+
+        // Verifica se os roles de destino são válidos para a hierarquia do usuário
+        List<String> allowedRoles = RoleType.getTargetRoleCodesFor(userRole);
+        if (targetRolesList != null && !allowedRoles.containsAll(targetRolesList)) {
+            logger.warn("Tentativa de criar demanda para roles não permitidos. User role: {}, Target roles: {}", userRole, targetRolesList);
+            redirectAttributes.addFlashAttribute("error", "Você não tem permissão para enviar demandas para alguns dos cargos selecionados.");
+            return "redirect:/demands/director";
         }
 
         try {
@@ -433,7 +467,7 @@ public class DemandController {
     }
 
     /**
-     * Editar demanda (apenas diretor/admin)
+     * Editar demanda (apenas quem pode criar demandas)
      */
     @GetMapping("/{id}/edit")
     public String editDemand(
@@ -444,7 +478,7 @@ public class DemandController {
 
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             redirectAttributes.addFlashAttribute("error", "Você não tem permissão para editar demandas.");
             return "redirect:/demands/my-demands";
         }
@@ -453,7 +487,7 @@ public class DemandController {
                 .orElseThrow(() -> new RuntimeException("Demanda não encontrada"));
 
         model.addAttribute("demand", demand);
-        model.addAttribute("availableRoles", getAvailableRoles());
+        model.addAttribute("availableRoles", getAvailableRolesForUser(userRole));
         model.addAttribute("statusOptions", DemandStatus.values());
         model.addAttribute("priorityOptions", DemandPriority.values());
         model.addAttribute("selectedRoles", demand.getTargetRolesList());
@@ -474,9 +508,17 @@ public class DemandController {
 
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             redirectAttributes.addFlashAttribute("error", "Você não tem permissão para editar demandas.");
             return "redirect:/demands/my-demands";
+        }
+
+        // Verifica se os roles de destino são válidos para a hierarquia do usuário
+        List<String> allowedRoles = RoleType.getTargetRoleCodesFor(userRole);
+        if (targetRolesList != null && !allowedRoles.containsAll(targetRolesList)) {
+            logger.warn("Tentativa de atualizar demanda com roles não permitidos. User role: {}, Target roles: {}", userRole, targetRolesList);
+            redirectAttributes.addFlashAttribute("error", "Você não tem permissão para enviar demandas para alguns dos cargos selecionados.");
+            return "redirect:/demands/director";
         }
 
         try {
@@ -507,7 +549,7 @@ public class DemandController {
     }
 
     /**
-     * Deletar demanda (apenas diretor/admin)
+     * Deletar demanda (apenas quem pode criar demandas)
      */
     @PostMapping("/{id}/delete")
     public String deleteDemand(
@@ -517,7 +559,7 @@ public class DemandController {
 
         String userRole = getUserRole(authentication);
 
-        if (!isDirectorOrAdmin(userRole)) {
+        if (!RoleType.canCreateDemands(userRole)) {
             redirectAttributes.addFlashAttribute("error", "Você não tem permissão para deletar demandas.");
             return "redirect:/demands/my-demands";
         }
@@ -557,13 +599,13 @@ public class DemandController {
     }
 
     private boolean hasAccessToDemand(Demand demand, UserAccount user, String userRole) {
-        // Admin e Diretoria têm acesso a tudo
-        if (isDirectorOrAdmin(userRole)) {
+        // Quem pode criar demandas tem acesso a tudo
+        if (RoleType.canCreateDemands(userRole)) {
             return true;
         }
 
         // Criador tem acesso
-        if (demand.getCreatedBy().getId().equals(user.getId())) {
+        if (demand.getCreatedBy() != null && demand.getCreatedBy().getId().equals(user.getId())) {
             return true;
         }
 
@@ -577,6 +619,18 @@ public class DemandController {
         return targetRoles.contains(userRole);
     }
 
+    /**
+     * Retorna os roles disponíveis para o usuário baseado em sua hierarquia
+     */
+    private List<RoleType> getAvailableRolesForUser(String userRole) {
+        return RoleType.getTargetRolesFor(userRole);
+    }
+
+    /**
+     * Mantido para compatibilidade - usa a nova lógica de hierarquia
+     * @deprecated Use getAvailableRolesForUser(String userRole) instead
+     */
+    @Deprecated
     private List<RoleType> getAvailableRoles() {
         // Retorna todos os roles exceto USER e ADMIN
         return Arrays.stream(RoleType.values())
