@@ -234,13 +234,7 @@ public class DemandService {
         if (status == null) {
             return "Desconhecido";
         }
-        return switch (status) {
-            case PENDENTE -> "Pendente";
-            case EM_ANDAMENTO -> "Em Andamento";
-            case AGUARDANDO_RESPOSTA -> "Aguardando Resposta";
-            case CONCLUIDA -> "Concluída";
-            case CANCELADA -> "Cancelada";
-        };
+        return status.getDisplayName();
     }
 
     /**
