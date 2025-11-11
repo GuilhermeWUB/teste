@@ -22,9 +22,11 @@ import java.util.Optional;
 public class DemandService {
 
     private final DemandRepository demandRepository;
+    private final NotificationService notificationService;
 
-    public DemandService(DemandRepository demandRepository) {
+    public DemandService(DemandRepository demandRepository, NotificationService notificationService) {
         this.demandRepository = demandRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -40,7 +42,18 @@ public class DemandService {
      */
     @Transactional
     public Demand updateDemand(Demand demand) {
-        return demandRepository.save(demand);
+        // Busca demanda anterior para comparar status
+        Optional<Demand> oldDemandOpt = findById(demand.getId());
+        DemandStatus oldStatus = oldDemandOpt.map(Demand::getStatus).orElse(null);
+
+        Demand savedDemand = demandRepository.save(demand);
+
+        // Notifica o criador se o status mudou
+        if (oldStatus != null && oldStatus != savedDemand.getStatus() && savedDemand.getCreatedBy() != null) {
+            notifyStatusChange(savedDemand, oldStatus, savedDemand.getStatus());
+        }
+
+        return savedDemand;
     }
 
     /**
@@ -170,10 +183,61 @@ public class DemandService {
         Optional<Demand> optionalDemand = findById(id);
         if (optionalDemand.isPresent()) {
             Demand demand = optionalDemand.get();
+            DemandStatus oldStatus = demand.getStatus();
             demand.setStatus(newStatus);
-            return demandRepository.save(demand);
+            Demand savedDemand = demandRepository.save(demand);
+
+            // Notifica o criador da demanda sobre a mudança de status
+            if (oldStatus != newStatus && demand.getCreatedBy() != null) {
+                notifyStatusChange(demand, oldStatus, newStatus);
+            }
+
+            return savedDemand;
         }
         throw new RuntimeException("Demanda não encontrada com ID: " + id);
+    }
+
+    /**
+     * Envia notificação ao criador da demanda sobre mudança de status
+     */
+    private void notifyStatusChange(Demand demand, DemandStatus oldStatus, DemandStatus newStatus) {
+        try {
+            String title = "Status da Demanda Atualizado";
+            String message = String.format(
+                "A demanda \"%s\" mudou de status: %s → %s",
+                demand.getTitulo(),
+                getStatusLabel(oldStatus),
+                getStatusLabel(newStatus)
+            );
+
+            notificationService.createNotification(
+                demand.getCreatedBy(),
+                title,
+                message,
+                com.necsus.necsusspring.model.NotificationType.DEMAND,
+                "/demands/" + demand.getId(),
+                demand.getId()
+            );
+        } catch (Exception e) {
+            // Log do erro mas não interrompe o fluxo principal
+            System.err.println("Erro ao enviar notificação de mudança de status da demanda: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Retorna o label legível do status
+     */
+    private String getStatusLabel(DemandStatus status) {
+        if (status == null) {
+            return "Desconhecido";
+        }
+        return switch (status) {
+            case PENDENTE -> "Pendente";
+            case EM_ANDAMENTO -> "Em Andamento";
+            case AGUARDANDO_RESPOSTA -> "Aguardando Resposta";
+            case CONCLUIDA -> "Concluída";
+            case CANCELADA -> "Cancelada";
+        };
     }
 
     /**
@@ -184,10 +248,49 @@ public class DemandService {
         Optional<Demand> optionalDemand = findById(demandId);
         if (optionalDemand.isPresent()) {
             Demand demand = optionalDemand.get();
+            DemandStatus oldStatus = demand.getStatus();
             demand.setAssignedTo(user);
             demand.setStatus(DemandStatus.EM_ANDAMENTO);
-            return demandRepository.save(demand);
+            Demand savedDemand = demandRepository.save(demand);
+
+            // Notifica o criador da demanda sobre a atribuição
+            if (demand.getCreatedBy() != null) {
+                notifyAssignment(demand, user);
+            }
+
+            // Notifica sobre mudança de status se houve mudança
+            if (oldStatus != DemandStatus.EM_ANDAMENTO && demand.getCreatedBy() != null) {
+                notifyStatusChange(demand, oldStatus, DemandStatus.EM_ANDAMENTO);
+            }
+
+            return savedDemand;
         }
         throw new RuntimeException("Demanda não encontrada com ID: " + demandId);
+    }
+
+    /**
+     * Envia notificação ao criador da demanda sobre atribuição
+     */
+    private void notifyAssignment(Demand demand, UserAccount assignedUser) {
+        try {
+            String title = "Demanda Atribuída";
+            String message = String.format(
+                "A demanda \"%s\" foi atribuída a %s",
+                demand.getTitulo(),
+                assignedUser.getFullName() != null ? assignedUser.getFullName() : assignedUser.getUsername()
+            );
+
+            notificationService.createNotification(
+                demand.getCreatedBy(),
+                title,
+                message,
+                com.necsus.necsusspring.model.NotificationType.DEMAND,
+                "/demands/" + demand.getId(),
+                demand.getId()
+            );
+        } catch (Exception e) {
+            // Log do erro mas não interrompe o fluxo principal
+            System.err.println("Erro ao enviar notificação de atribuição da demanda: " + e.getMessage());
+        }
     }
 }
