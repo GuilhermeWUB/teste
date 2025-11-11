@@ -4,6 +4,7 @@ import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
 import com.necsus.necsusspring.service.EventObservationHistoryService;
+import com.necsus.necsusspring.service.EventDescriptionHistoryService;
 import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
@@ -41,17 +42,20 @@ public class EventController {
     private final VehicleService vehicleService;
     private final FileStorageService fileStorageService;
     private final EventObservationHistoryService observationHistoryService;
+    private final EventDescriptionHistoryService descriptionHistoryService;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
                            VehicleService vehicleService,
                            FileStorageService fileStorageService,
-                           EventObservationHistoryService observationHistoryService) {
+                           EventObservationHistoryService observationHistoryService,
+                           EventDescriptionHistoryService descriptionHistoryService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
         this.fileStorageService = fileStorageService;
         this.observationHistoryService = observationHistoryService;
+        this.descriptionHistoryService = descriptionHistoryService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -490,6 +494,37 @@ public class EventController {
 
         } catch (Exception e) {
             logger.error("Erro ao buscar histórico de observações do evento {}: ", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
+    }
+
+    /**
+     * Busca o histórico de alterações da descrição de um evento
+     * @param id ID do evento
+     * @return Lista de históricos em formato JSON
+     */
+    @GetMapping("/{id}/description-history")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getDescriptionHistory(@PathVariable Long id) {
+        try {
+            List<EventDescriptionHistory> history = descriptionHistoryService.getHistoryByEventId(id);
+
+            // Converte para formato JSON amigável
+            List<Map<String, Object>> historyDtos = new ArrayList<>();
+            for (EventDescriptionHistory entry : history) {
+                Map<String, Object> dto = new HashMap<>();
+                dto.put("id", entry.getId());
+                dto.put("previousDescription", entry.getPreviousDescription());
+                dto.put("newDescription", entry.getNewDescription());
+                dto.put("modifiedBy", entry.getModifiedBy());
+                dto.put("modifiedAt", entry.getModifiedAt().toString());
+                historyDtos.add(dto);
+            }
+
+            return ResponseEntity.ok(historyDtos);
+
+        } catch (Exception e) {
+            logger.error("Erro ao buscar histórico de descrição do evento {}: ", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }

@@ -30,15 +30,18 @@ public class EventService {
     private final PartnerRepository partnerRepository;
     private final VehicleRepository vehicleRepository;
     private final EventObservationHistoryService observationHistoryService;
+    private final EventDescriptionHistoryService descriptionHistoryService;
 
     public EventService(EventRepository eventRepository,
                         PartnerRepository partnerRepository,
                         VehicleRepository vehicleRepository,
-                        EventObservationHistoryService observationHistoryService) {
+                        EventObservationHistoryService observationHistoryService,
+                        EventDescriptionHistoryService descriptionHistoryService) {
         this.eventRepository = eventRepository;
         this.partnerRepository = partnerRepository;
         this.vehicleRepository = vehicleRepository;
         this.observationHistoryService = observationHistoryService;
+        this.descriptionHistoryService = descriptionHistoryService;
     }
 
     @Transactional(readOnly = true)
@@ -204,15 +207,16 @@ public class EventService {
     }
 
     /**
-     * Atualização parcial com rastreamento de histórico de observações
+     * Atualização parcial com rastreamento de histórico de observações e descrições
      */
     @Transactional
     public Event updatePartialWithHistory(Long id, java.util.Map<String, Object> updates, String modifiedBy) {
         Event existing = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
 
-        // Captura observação anterior antes de fazer updates
+        // Captura valores anteriores antes de fazer updates
         String previousObservation = existing.getObservacoes();
+        String previousDescription = existing.getDescricao();
 
         // Atualiza apenas os campos fornecidos
         updates.forEach((key, value) -> {
@@ -252,19 +256,26 @@ public class EventService {
                 savedEvent.getObservacoes(), modifiedBy);
         }
 
+        // Registra histórico se descrição foi alterada e modifiedBy foi fornecido
+        if (modifiedBy != null && updates.containsKey("descricao")) {
+            descriptionHistoryService.recordChange(savedEvent, previousDescription,
+                savedEvent.getDescricao(), modifiedBy);
+        }
+
         return savedEvent;
     }
 
     /**
-     * Atualiza o evento e registra histórico de mudanças nas observações
+     * Atualiza o evento e registra histórico de mudanças nas observações e descrições
      */
     @Transactional
     public Event updateWithHistory(Long id, Event eventPayload, String modifiedBy) {
         Event existing = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id " + id));
 
-        // Captura observação anterior para histórico
+        // Captura valores anteriores para histórico
         String previousObservation = existing.getObservacoes();
+        String previousDescription = existing.getDescricao();
 
         existing.setTitulo(eventPayload.getTitulo());
         existing.setDescricao(eventPayload.getDescricao());
@@ -289,6 +300,7 @@ public class EventService {
         // Registra histórico se observação foi alterada
         if (modifiedBy != null) {
             observationHistoryService.recordChange(savedEvent, previousObservation, eventPayload.getObservacoes(), modifiedBy);
+            descriptionHistoryService.recordChange(savedEvent, previousDescription, eventPayload.getDescricao(), modifiedBy);
         }
 
         return savedEvent;
