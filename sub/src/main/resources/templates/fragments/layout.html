@@ -45,11 +45,26 @@
             <li th:if="${isAdmin}">
                 <a th:href="@{/events}">Eventos</a>
             </li>
-            <li th:if="${isAdmin}">
-                <a th:href="@{/demands}">Demandas</a>
-            </li>
-            <li th:if="${canAccessMyDemands}">
-                <a th:href="@{/demands/my-demands}">Minhas Demandas</a>
+
+            <li th:if="${hasDemandsAccess}" class="nav-item nav-item-dropdown">
+                <button type="button" class="nav-dropdown-toggle" data-nav-dropdown aria-expanded="false" aria-haspopup="true">
+                    <span>Demandas</span>
+                    <i class="bi bi-chevron-down nav-dropdown-icon" aria-hidden="true"></i>
+                </button>
+                <ul class="nav-dropdown-menu" role="menu">
+                    <li th:if="${canCreateDemands}" role="none">
+                        <a role="menuitem" th:href="@{/demands/director}" class="nav-dropdown-link">
+                            <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                            <span>Criar Demanda</span>
+                        </a>
+                    </li>
+                    <li th:if="${canAccessMyDemands}" role="none">
+                        <a role="menuitem" th:href="@{/demands/my-demands}" class="nav-dropdown-link">
+                            <i class="bi bi-list-check" aria-hidden="true"></i>
+                            <span>Minhas Demandas</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <li th:if="${isAdmin}" class="nav-item nav-item-dropdown">
