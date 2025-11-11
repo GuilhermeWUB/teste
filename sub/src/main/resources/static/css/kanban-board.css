@@ -675,6 +675,24 @@ html[data-theme="dark"] .kanban-wrapper {
     backdrop-filter: blur(8px);
     z-index: 1050;
     padding: 2rem;
+    /* CSS custom properties reused by inline styles inside the modal */
+    --text-primary: var(--kanban-text);
+    --text-secondary: var(--kanban-muted);
+    --border-color: var(--kanban-divider);
+    --bg-secondary: var(--kanban-panel-bg);
+    --primary-color: var(--color-primary, #0d6efd);
+    --success-color: var(--color-success, #22c55e);
+    --danger-color: var(--color-danger, #f87171);
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue 50%)) {
+    .kanban-modal {
+        --bg-secondary: color-mix(in srgb, var(--kanban-panel-bg) 94%, rgba(255, 255, 255, 0.06));
+    }
+
+    html[data-theme="dark"] .kanban-modal {
+        --bg-secondary: color-mix(in srgb, var(--kanban-panel-bg) 88%, rgba(255, 255, 255, 0.08));
+    }
 }
 
 .kanban-modal.active {

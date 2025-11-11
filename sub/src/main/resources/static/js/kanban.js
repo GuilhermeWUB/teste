@@ -607,13 +607,13 @@
         const availableDocs = documents.filter(doc => doc.has);
 
         if (availableDocs.length > 0) {
-            html.push('<div class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6);">');
-            html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Documentos Anexados</h5>');
+            html.push('<div class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, var(--kanban-divider, #dee2e6));">');
+            html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, var(--kanban-text, #2c3e50));">Documentos Anexados</h5>');
             html.push('<div style="display: flex; flex-direction: column; gap: 8px;">');
 
             availableDocs.forEach(doc => {
                 const downloadUrl = `/events/${card.id}/download/${doc.type}`;
-                html.push(`  <a href="${downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); border-radius: 6px; color: var(--text-primary, #2c3e50); text-decoration: none; font-size: 13px; transition: all 0.2s;"><i class="bi bi-file-earmark-arrow-down" style="font-size: 16px;"></i><span>${escapeHtml(doc.label)}</span></a>`);
+                html.push(`  <a href="${downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary, var(--kanban-panel-bg, #f8f9fa)); border: 1px solid var(--border-color, var(--kanban-divider, #dee2e6)); border-radius: 6px; color: var(--text-primary, var(--kanban-text, #2c3e50)); text-decoration: none; font-size: 13px; transition: all 0.2s;"><i class="bi bi-file-earmark-arrow-down" style="font-size: 16px;"></i><span>${escapeHtml(doc.label)}</span></a>`);
             });
 
             html.push('</div>');
@@ -621,14 +621,14 @@
         }
 
         // Adicionar seção de histórico de descrições (será preenchida dinamicamente)
-        html.push('<div id="description-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
-        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Histórico de Alterações da Descrição</h5>');
+        html.push('<div id="description-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, var(--kanban-divider, #dee2e6)); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, var(--kanban-text, #2c3e50));">Histórico de Alterações da Descrição</h5>');
         html.push('<div id="description-history-content" style="display: flex; flex-direction: column; gap: 12px;"></div>');
         html.push('</div>');
 
         // Adicionar seção de histórico de observações (será preenchida dinamicamente)
-        html.push('<div id="observation-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
-        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Histórico de Alterações das Observações</h5>');
+        html.push('<div id="observation-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, var(--kanban-divider, #dee2e6)); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, var(--kanban-text, #2c3e50));">Histórico de Alterações das Observações</h5>');
         html.push('<div id="observation-history-content" style="display: flex; flex-direction: column; gap: 12px;"></div>');
         html.push('</div>');
 
@@ -665,10 +665,10 @@
             // Adiciona cada entrada do histórico
             history.forEach(entry => {
                 const entryDiv = document.createElement('div');
-                entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, #f8f9fa); border-left: 3px solid var(--success-color, #198754); border-radius: 4px;';
+                entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, var(--kanban-panel-bg, #f8f9fa)); border-left: 3px solid var(--success-color, var(--color-success, #198754)); border-radius: 4px;';
 
                 const headerDiv = document.createElement('div');
-                headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, #6c757d);';
+                headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, var(--kanban-muted, #6c757d));';
 
                 const modifiedBy = document.createElement('span');
                 modifiedBy.innerHTML = `<i class="bi bi-person"></i> <strong>${escapeHtml(entry.modifiedBy || 'Sistema')}</strong>`;
@@ -685,13 +685,13 @@
 
                 if (entry.previousDescription) {
                     const prevDiv = document.createElement('div');
-                    prevDiv.innerHTML = `<strong style="color: var(--danger-color, #dc3545);">Anterior:</strong> <span style="color: var(--text-secondary, #6c757d); font-style: italic;">${escapeHtml(entry.previousDescription)}</span>`;
+                    prevDiv.innerHTML = `<strong style="color: var(--danger-color, var(--color-danger, #dc3545));">Anterior:</strong> <span style="color: var(--text-secondary, var(--kanban-muted, #6c757d)); font-style: italic;">${escapeHtml(entry.previousDescription)}</span>`;
                     changesDiv.appendChild(prevDiv);
                 }
 
                 if (entry.newDescription) {
                     const newDiv = document.createElement('div');
-                    newDiv.innerHTML = `<strong style="color: var(--success-color, #198754);">Nova:</strong> <span style="color: var(--text-primary, #2c3e50);">${escapeHtml(entry.newDescription)}</span>`;
+                    newDiv.innerHTML = `<strong style="color: var(--success-color, var(--color-success, #198754));">Nova:</strong> <span style="color: var(--text-primary, var(--kanban-text, #2c3e50));">${escapeHtml(entry.newDescription)}</span>`;
                     changesDiv.appendChild(newDiv);
                 }
 
@@ -738,10 +738,10 @@
             // Adiciona cada entrada do histórico
             history.forEach(entry => {
                 const entryDiv = document.createElement('div');
-                entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, #f8f9fa); border-left: 3px solid var(--primary-color, #0d6efd); border-radius: 4px;';
+                entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, var(--kanban-panel-bg, #f8f9fa)); border-left: 3px solid var(--primary-color, var(--color-primary, #0d6efd)); border-radius: 4px;';
 
                 const headerDiv = document.createElement('div');
-                headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, #6c757d);';
+                headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, var(--kanban-muted, #6c757d));';
 
                 const modifiedBy = document.createElement('span');
                 modifiedBy.innerHTML = `<i class="bi bi-person"></i> <strong>${escapeHtml(entry.modifiedBy || 'Sistema')}</strong>`;
@@ -758,13 +758,13 @@
 
                 if (entry.previousObservation) {
                     const prevDiv = document.createElement('div');
-                    prevDiv.innerHTML = `<strong style="color: var(--danger-color, #dc3545);">Anterior:</strong> <span style="color: var(--text-secondary, #6c757d); font-style: italic;">${escapeHtml(entry.previousObservation)}</span>`;
+                    prevDiv.innerHTML = `<strong style="color: var(--danger-color, var(--color-danger, #dc3545));">Anterior:</strong> <span style="color: var(--text-secondary, var(--kanban-muted, #6c757d)); font-style: italic;">${escapeHtml(entry.previousObservation)}</span>`;
                     changesDiv.appendChild(prevDiv);
                 }
 
                 if (entry.newObservation) {
                     const newDiv = document.createElement('div');
-                    newDiv.innerHTML = `<strong style="color: var(--success-color, #198754);">Nova:</strong> <span style="color: var(--text-primary, #2c3e50);">${escapeHtml(entry.newObservation)}</span>`;
+                    newDiv.innerHTML = `<strong style="color: var(--success-color, var(--color-success, #198754));">Nova:</strong> <span style="color: var(--text-primary, var(--kanban-text, #2c3e50));">${escapeHtml(entry.newObservation)}</span>`;
                     changesDiv.appendChild(newDiv);
                 }
 
