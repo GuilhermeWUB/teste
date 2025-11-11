@@ -74,12 +74,20 @@ public class VehicleController {
             @RequestParam(value = "partnerId", required = false) Long partnerId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
             Model model) {
 
         // Limita o tamanho entre 1 e 30
         size = Math.min(Math.max(size, 1), 30);
 
-        org.springframework.data.domain.Page<Vehicle> vehiclePage = vehicleService.listAllPaginated(partnerId, page, size);
+        org.springframework.data.domain.Page<Vehicle> vehiclePage;
+
+        // Se houver termo de pesquisa, usa o método de pesquisa
+        if (search != null && !search.trim().isEmpty()) {
+            vehiclePage = vehicleService.searchVehiclesPaginated(search.trim(), partnerId, page, size);
+        } else {
+            vehiclePage = vehicleService.listAllPaginated(partnerId, page, size);
+        }
 
         model.addAttribute("vehicles", vehiclePage.getContent());
         model.addAttribute("currentPage", page);
@@ -89,6 +97,7 @@ public class VehicleController {
         model.addAttribute("hasNext", vehiclePage.hasNext());
         model.addAttribute("hasPrevious", vehiclePage.hasPrevious());
         model.addAttribute("partnerId", partnerId);
+        model.addAttribute("search", search);
 
         if (partnerId != null) {
             partnerService.getPartnerById(partnerId)

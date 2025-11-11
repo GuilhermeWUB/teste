@@ -59,12 +59,20 @@ public class PartnerController {
     public String listPartners(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
             Model model) {
 
         // Limita o tamanho entre 1 e 30
         size = Math.min(Math.max(size, 1), 30);
 
-        org.springframework.data.domain.Page<Partner> partnerPage = partnerService.getAllPartnersPaginated(page, size);
+        org.springframework.data.domain.Page<Partner> partnerPage;
+
+        // Se houver termo de pesquisa, usa o método de pesquisa, senão lista todos
+        if (search != null && !search.trim().isEmpty()) {
+            partnerPage = partnerService.searchPartnersPaginated(search.trim(), page, size);
+        } else {
+            partnerPage = partnerService.getAllPartnersPaginated(page, size);
+        }
 
         model.addAttribute("partners", partnerPage.getContent());
         model.addAttribute("currentPage", page);
@@ -73,6 +81,7 @@ public class PartnerController {
         model.addAttribute("pageSize", size);
         model.addAttribute("hasNext", partnerPage.hasNext());
         model.addAttribute("hasPrevious", partnerPage.hasPrevious());
+        model.addAttribute("search", search);
 
         return "lista_associados";
     }

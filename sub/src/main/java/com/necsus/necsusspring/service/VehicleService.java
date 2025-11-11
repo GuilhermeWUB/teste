@@ -78,6 +78,35 @@ public class VehicleService {
         return vehiclePage;
     }
 
+    /**
+     * Pesquisa veículos por marca, modelo ou placa com paginação.
+     * @param searchTerm Termo de pesquisa
+     * @param partnerId ID do associado (opcional)
+     * @param page Número da página (começa em 0)
+     * @param size Quantidade de itens por página (máximo 30)
+     * @return Page contendo os veículos que correspondem à pesquisa
+     */
+    @Transactional(readOnly = true)
+    public Page<Vehicle> searchVehiclesPaginated(String searchTerm, Long partnerId, int page, int size) {
+        // Limita o tamanho máximo a 30 itens por página
+        size = Math.min(size, 30);
+        size = Math.max(size, 1); // Mínimo 1 item
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("plaque").ascending());
+
+        Page<Vehicle> vehiclePage;
+        if (partnerId != null) {
+            vehiclePage = vehicleRepository.searchByMakerModelOrPlaqueAndPartner(searchTerm, partnerId, pageable);
+        } else {
+            vehiclePage = vehicleRepository.searchByMakerModelOrPlaque(searchTerm, pageable);
+        }
+
+        // Carrega payment para cada veículo
+        vehiclePage.forEach(this::ensurePaymentLoaded);
+
+        return vehiclePage;
+    }
+
     @Transactional(readOnly = true)
     public List<Vehicle> listByPartnerId(Long partnerId) {
         if (partnerId == null) {

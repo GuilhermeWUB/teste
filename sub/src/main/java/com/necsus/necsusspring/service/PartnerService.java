@@ -48,6 +48,22 @@ public class PartnerService {
         return partnerRepository.findAllWithVehicles(pageable);
     }
 
+    /**
+     * Pesquisa associados por nome ou CPF com paginação.
+     * @param searchTerm Termo de pesquisa (nome ou CPF)
+     * @param page Número da página (começa em 0)
+     * @param size Quantidade de itens por página (máximo 30)
+     * @return Page contendo os associados que correspondem à pesquisa
+     */
+    public Page<Partner> searchPartnersPaginated(String searchTerm, int page, int size) {
+        // Limita o tamanho máximo a 30 itens por página
+        size = Math.min(size, 30);
+        size = Math.max(size, 1); // Mínimo 1 item
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return partnerRepository.searchByNameOrCpf(searchTerm, pageable);
+    }
+
     public Optional<Partner> getPartnerById(Long id) {
         return partnerRepository.findByIdWithAllRelationships(id);
     }
