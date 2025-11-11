@@ -234,9 +234,12 @@ public class UserCommunicationController {
                 return "redirect:/me/comunicado";
             }
 
-            // Atualiza a descrição
-            event.setDescricao(descricao);
-            eventService.update(eventId, event);
+            // Usa Map para atualização parcial, evitando problema de cache do JPA
+            String modifiedBy = partner.getName() + " (Associado)";
+            java.util.Map<String, Object> updates = new java.util.HashMap<>();
+            updates.put("descricao", descricao);
+
+            eventService.updatePartialWithHistory(eventId, updates, modifiedBy);
 
             logger.info("Descrição do evento {} atualizada pelo associado {} (ID: {})", eventId, partner.getName(), partner.getId());
             redirectAttributes.addFlashAttribute("successMessage", "Descrição atualizada com sucesso!");
