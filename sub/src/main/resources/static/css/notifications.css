@@ -1,0 +1,43 @@
+.notification-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+.notification-item:hover {
+    background-color: var(--hover-bg, #f8f9fa);
+    transform: translateX(5px);
+}
+[data-theme="dark"] .notification-item:hover {
+    background-color: #2d2d2d;
+}
+.notification-unread {
+    background-color: #f0f7ff;
+    border-left-color: #0d6efd;
+    font-weight: 500;
+}
+[data-theme="dark"] .notification-unread {
+    background-color: #1a2a3a;
+}
+.notification-read {
+    background-color: #ffffff;
+    opacity: 0.9;
+}
+[data-theme="dark"] .notification-read {
+    background-color: #1e1e1e;
+}
+.notification-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.25rem;
+}
+.priority-badge-URGENTE { background-color: #dc3545; color: white; }
+.priority-badge-ALTA { background-color: #fd7e14; color: white; }
+.priority-badge-MEDIA { background-color: #ffc107; color: black; }
+.priority-badge-BAIXA { background-color: #6c757d; color: white; }

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head th:replace="~{fragments/layout :: head}"></head>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout}" data-theme="light">
+<head>
+    <title>Notificações</title>
+    <th:block layout:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    </th:block>
+</head>
 <body>
-<header th:replace="~{fragments/layout :: header}"></header>
-
-<section class="page">
+<section class="page" layout:fragment="content">
     <div class="container">
         <div class="page-header">
             <h1 class="page-title">
@@ -123,26 +126,26 @@
                                     <i class="bi bi-box-arrow-up-right me-1"></i>Visualizar
                                 </a>
                                 <button type="button"
-                                        class="btn btn-outline-secondary btn-sm mark-read-btn"
+                                        class="btn btn-outline-secondary btn-sm"
                                         th:if="${notification.status.name() == 'UNREAD'}"
-                                        th:data-id="${notification.id}">
+                                        th:data-id="${notification.id}" data-action="mark-read">
                                     <i class="bi bi-check me-1"></i>Marcar como lida
                                 </button>
                                 <button type="button"
-                                        class="btn btn-outline-secondary btn-sm mark-unread-btn"
+                                        class="btn btn-outline-secondary btn-sm"
                                         th:if="${notification.status.name() == 'READ'}"
-                                        th:data-id="${notification.id}">
+                                        th:data-id="${notification.id}" data-action="mark-unread">
                                     <i class="bi bi-envelope me-1"></i>Marcar como não lida
                                 </button>
                                 <button type="button"
-                                        class="btn btn-outline-warning btn-sm archive-btn"
+                                        class="btn btn-outline-warning btn-sm"
                                         th:if="${notification.status.name() != 'ARCHIVED'}"
-                                        th:data-id="${notification.id}">
+                                        th:data-id="${notification.id}" data-action="archive">
                                     <i class="bi bi-archive me-1"></i>Arquivar
                                 </button>
                                 <button type="button"
-                                        class="btn btn-outline-danger btn-sm delete-btn"
-                                        th:data-id="${notification.id}">
+                                        class="btn btn-outline-danger btn-sm"
+                                        th:data-id="${notification.id}" data-action="delete">
                                     <i class="bi bi-trash me-1"></i>Deletar
                                 </button>
                             </div>
@@ -177,184 +180,8 @@
         </nav>
     </div>
 </section>
-
-<!-- Estilos específicos da página de notificações -->
-<style>
-    .notification-item {
-        transition: all 0.3s ease;
-        border-left: 4px solid transparent;
-    }
-    .notification-item:hover {
-        background-color: var(--hover-bg, #f8f9fa);
-        transform: translateX(5px);
-    }
-    [data-theme="dark"] .notification-item:hover {
-        background-color: #2d2d2d;
-    }
-    .notification-unread {
-        background-color: #f0f7ff;
-        border-left-color: #0d6efd;
-        font-weight: 500;
-    }
-    [data-theme="dark"] .notification-unread {
-        background-color: #1a2a3a;
-    }
-    .notification-read {
-        background-color: #ffffff;
-        opacity: 0.9;
-    }
-    [data-theme="dark"] .notification-read {
-        background-color: #1e1e1e;
-    }
-    .notification-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-    .notification-icon {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 1.25rem;
-    }
-    .priority-badge-URGENTE { background-color: #dc3545; color: white; }
-    .priority-badge-ALTA { background-color: #fd7e14; color: white; }
-    .priority-badge-MEDIA { background-color: #ffc107; color: black; }
-    .priority-badge-BAIXA { background-color: #6c757d; color: white; }
-</style>
-
-<!-- JavaScript para ações das notificações -->
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        const csrfToken = /*[[${_csrf.token}]]*/ '';
-        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
-
-        // Marcar como lida
-        document.querySelectorAll('.mark-read-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                markAsRead(id);
-            });
-        });
-
-        // Marcar como não lida
-        document.querySelectorAll('.mark-unread-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                markAsUnread(id);
-            });
-        });
-
-        // Arquivar
-        document.querySelectorAll('.archive-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                archiveNotification(id);
-            });
-        });
-
-        // Deletar
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (confirm('Tem certeza que deseja deletar esta notificação?')) {
-                    const id = this.dataset.id;
-                    deleteNotification(id);
-                }
-            });
-        });
-
-        // Marcar todas como lidas
-        const markAllBtn = document.getElementById('markAllReadBtn');
-        if (markAllBtn) {
-            markAllBtn.addEventListener('click', function() {
-                markAllAsRead();
-            });
-        }
-
-        function markAsRead(id) {
-            fetch(`/notifications/api/${id}/mark-read`, {
-                method: 'POST',
-                headers: {
-                    [csrfHeader]: csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-
-        function markAsUnread(id) {
-            fetch(`/notifications/api/${id}/mark-unread`, {
-                method: 'POST',
-                headers: {
-                    [csrfHeader]: csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-
-        function archiveNotification(id) {
-            fetch(`/notifications/api/${id}/archive`, {
-                method: 'POST',
-                headers: {
-                    [csrfHeader]: csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-
-        function deleteNotification(id) {
-            fetch(`/notifications/api/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    [csrfHeader]: csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-
-        function markAllAsRead() {
-            fetch('/notifications/api/mark-all-read', {
-                method: 'POST',
-                headers: {
-                    [csrfHeader]: csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-    });
-</script>
-
-<script th:src="@{/js/notification-dropdown.js}"></script>
+<th:block layout:fragment="scripts">
+    <script th:src="@{/js/notifications.js}"></script>
+</th:block>
 </body>
 </html>
