@@ -15,11 +15,11 @@
         </a>
     </div>
 
-    <!-- Barra de Pesquisa -->
+    <!-- Barra de Pesquisa e Controles -->
     <div class="card mb-3">
         <div class="card-body">
             <form th:action="@{/partners}" method="get">
-                <div class="row align-items-end">
+                <div class="row align-items-end mb-3">
                     <div class="col-md-6">
                         <label for="searchName" class="form-label">
                             <i class="bi bi-search"></i> Pesquisar por nome ou CPF
@@ -32,6 +32,32 @@
                                th:value="${search}"
                                autofocus>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label d-block text-muted">
+                            <i class="bi bi-people"></i> Resumo da listagem
+                        </label>
+                        <div class="p-3 rounded-3 border border-secondary text-muted small d-flex flex-column flex-lg-row gap-2 gap-lg-4 justify-content-between">
+                            <span>
+                                Mostrando <strong th:text="${#lists.size(partners)}">0</strong> de
+                                <strong th:text="${totalItems}">0</strong> associados
+                            </span>
+                            <span>
+                                Página <strong th:text="${currentPage + 1}">1</strong> de
+                                <strong th:text="${totalPages}">1</strong>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label for="pageSize" class="form-label">Itens por página</label>
+                        <select id="pageSize" name="size" class="form-select">
+                            <option value="10" th:selected="${pageSize == 10}">10</option>
+                            <option value="20" th:selected="${pageSize == 20}">20</option>
+                            <option value="30" th:selected="${pageSize == 30}">30</option>
+                        </select>
+                    </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="bi bi-search"></i> Pesquisar
@@ -42,36 +68,12 @@
                             <i class="bi bi-x-circle"></i> Limpar
                         </a>
                     </div>
+                    <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                        <label class="form-label d-block text-muted">Total</label>
+                        <strong class="text-primary fs-5" th:text="${totalItems} + ' associados'">0 associados</strong>
+                    </div>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Controle de Paginação Superior -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <label for="pageSize" class="form-label mb-1">Itens por página:</label>
-                    <select id="pageSize" class="form-select" onchange="changePageSize(this.value)">
-                        <option value="10" th:selected="${pageSize == 10}">10</option>
-                        <option value="20" th:selected="${pageSize == 20}">20</option>
-                        <option value="30" th:selected="${pageSize == 30}">30</option>
-                    </select>
-                </div>
-                <div class="col-md-6 text-center">
-                    <span class="text-muted">
-                        Mostrando <strong th:text="${#lists.size(partners)}">0</strong> de
-                        <strong th:text="${totalItems}">0</strong> associados
-                    </span>
-                </div>
-                <div class="col-md-3 text-end">
-                    <span class="text-muted">
-                        Página <strong th:text="${currentPage + 1}">1</strong> de
-                        <strong th:text="${totalPages}">1</strong>
-                    </span>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -151,13 +153,6 @@
         </ul>
     </nav>
 
-    <script>
-        function changePageSize(newSize) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const search = urlParams.get('search') || '';
-            window.location.href = '/partners?page=0&size=' + newSize + (search ? '&search=' + encodeURIComponent(search) : '');
-        }
-    </script>
 </section>
 
 </body>
