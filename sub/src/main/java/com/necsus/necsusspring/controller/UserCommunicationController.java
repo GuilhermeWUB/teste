@@ -234,9 +234,10 @@ public class UserCommunicationController {
                 return "redirect:/me/comunicado";
             }
 
-            // Atualiza a descrição
+            // Atualiza a descrição usando updateWithHistory para rastrear mudanças
             event.setDescricao(descricao);
-            eventService.update(eventId, event);
+            String modifiedBy = partner.getName() + " (Associado)";
+            eventService.updateWithHistory(eventId, event, modifiedBy);
 
             logger.info("Descrição do evento {} atualizada pelo associado {} (ID: {})", eventId, partner.getName(), partner.getId());
             redirectAttributes.addFlashAttribute("successMessage", "Descrição atualizada com sucesso!");
