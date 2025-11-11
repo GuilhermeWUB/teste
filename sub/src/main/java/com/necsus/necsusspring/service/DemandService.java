@@ -4,6 +4,7 @@ import com.necsus.necsusspring.dto.DemandBoardCardDto;
 import com.necsus.necsusspring.dto.DemandBoardSnapshot;
 import com.necsus.necsusspring.model.Demand;
 import com.necsus.necsusspring.model.DemandStatus;
+import com.necsus.necsusspring.model.NotificationType;
 import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.model.UserAccount;
 import com.necsus.necsusspring.repository.DemandRepository;
@@ -214,7 +215,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                com.necsus.necsusspring.model.NotificationType.DEMAND,
+                NotificationType.DEMAND,
                 "/demands/" + demand.getId(),
                 demand.getId()
             );
@@ -284,7 +285,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                com.necsus.necsusspring.model.NotificationType.DEMAND,
+                NotificationType.DEMAND,
                 "/demands/" + demand.getId(),
                 demand.getId()
             );
