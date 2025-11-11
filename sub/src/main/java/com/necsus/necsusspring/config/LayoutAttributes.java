@@ -59,14 +59,36 @@ public class LayoutAttributes {
         if (!isAuthenticated(authentication)) {
             return false;
         }
-        String userRole = authentication.getAuthorities().stream()
+        String userRole = getUserRole(authentication);
+        return RoleType.canAccessMyDemands(userRole);
+    }
+
+    @ModelAttribute("canCreateDemands")
+    public boolean canCreateDemands(Authentication authentication) {
+        if (!isAuthenticated(authentication)) {
+            return false;
+        }
+        String userRole = getUserRole(authentication);
+        return RoleType.canCreateDemands(userRole);
+    }
+
+    @ModelAttribute("hasDemandsAccess")
+    public boolean hasDemandsAccess(Authentication authentication) {
+        if (!isAuthenticated(authentication)) {
+            return false;
+        }
+        String userRole = getUserRole(authentication);
+        // Qualquer um que possa criar OU acessar minhas demandas tem acesso ao menu
+        return RoleType.canCreateDemands(userRole) || RoleType.canAccessMyDemands(userRole);
+    }
+
+    private String getUserRole(Authentication authentication) {
+        return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(auth -> auth.startsWith("ROLE_"))
                 .map(auth -> auth.substring(5)) // Remove "ROLE_" prefix
                 .findFirst()
                 .orElse(null);
-
-        return RoleType.canAccessMyDemands(userRole);
     }
 
     private boolean isAuthenticated(Authentication authentication) {

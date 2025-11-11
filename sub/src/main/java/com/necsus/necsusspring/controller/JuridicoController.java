@@ -1,0 +1,53 @@
+package com.necsus.necsusspring.controller;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * Controller para gerenciar as páginas do módulo Jurídico
+ * Acessível apenas para administradores
+ */
+@Controller
+@RequestMapping("/juridico")
+@PreAuthorize("hasRole('ADMIN')")
+public class JuridicoController {
+
+    /**
+     * Página de Cobrança Terceiro
+     */
+    @GetMapping("/cobranca-terceiro")
+    public String cobrancaTerceiro(Model model) {
+        model.addAttribute("pageTitle", "Cobrança Terceiro - Jurídico");
+        return "juridico/cobranca_terceiro";
+    }
+
+    /**
+     * Página de Cobrança Fidelidade
+     */
+    @GetMapping("/cobranca-fidelidade")
+    public String cobrancaFidelidade(Model model) {
+        model.addAttribute("pageTitle", "Cobrança Fidelidade - Jurídico");
+        return "juridico/cobranca_fidelidade";
+    }
+
+    /**
+     * Página de Processos em Geral
+     */
+    @GetMapping("/processos")
+    public String processos(Model model) {
+        model.addAttribute("pageTitle", "Processos em Geral - Jurídico");
+        return "juridico/processos";
+    }
+
+    /**
+     * Página de Acordos a pagar
+     */
+    @GetMapping("/acordos")
+    public String acordos(Model model) {
+        model.addAttribute("pageTitle", "Acordos a pagar - Jurídico");
+        return "juridico/acordos";
+    }
+}
