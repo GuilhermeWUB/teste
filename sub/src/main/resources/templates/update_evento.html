@@ -43,12 +43,12 @@
         </div>
         <div class="col-md-6">
             <label for="dataComunicacao" class="form-label">Data da comunicação</label>
-            <input type="date" id="dataComunicacao" class="form-control" th:field="*{dataComunicacao}" />
+            <input type="date" id="dataComunicacao" class="form-control" name="dataComunicacao" th:value="${event.dataComunicacao}" />
             <div class="text-danger" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
         </div>
         <div class="col-md-6">
             <label for="horaComunicacao" class="form-label">Horário da comunicação (hhmm)</label>
-            <input type="number" id="horaComunicacao" class="form-control" th:field="*{horaComunicacao}" min="0" max="2359" step="1" />
+            <input type="number" id="horaComunicacao" class="form-control" name="horaComunicacao" th:value="${event.horaComunicacao}" min="0" max="2359" step="1" />
             <div class="text-danger" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
         </div>
         <div class="col-md-6">

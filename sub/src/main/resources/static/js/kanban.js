@@ -573,6 +573,13 @@
     }
 
     function buildModalContent(card) {
+        // Formata hora no formato HH:MM
+        const formatHora = (hora) => {
+            if (!hora) return null;
+            const horaStr = String(hora).padStart(4, '0');
+            return `${horaStr.substring(0, 2)}:${horaStr.substring(2, 4)}`;
+        };
+
         const fields = [
             { label: 'Título', value: card.titulo },
             { label: 'Descrição', value: card.descricao },
@@ -583,7 +590,11 @@
             { label: 'Motivo', value: card.motivoLabel },
             { label: 'Envolvimento', value: card.envolvimentoLabel },
             { label: 'Analista Responsável', value: card.analistaResponsavel },
-            { label: 'Data de vencimento', value: card.dataVencimento ? formatDate(card.dataVencimento) : null },
+            { label: 'Data do Ocorrido', value: card.dataAconteceu ? formatDate(card.dataAconteceu) : null },
+            { label: 'Hora do Ocorrido', value: formatHora(card.horaAconteceu) },
+            { label: 'Data da Comunicação', value: card.dataComunicacao ? formatDate(card.dataComunicacao) : null },
+            { label: 'Hora da Comunicação', value: formatHora(card.horaComunicacao) },
+            { label: 'Data de Vencimento', value: card.dataVencimento ? formatDate(card.dataVencimento) : null },
             { label: 'Observações', value: card.observacoes }
         ];
 

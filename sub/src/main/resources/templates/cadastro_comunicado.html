@@ -99,6 +99,10 @@
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" th:field="*{partner.id}" />
 
+                    <!-- Campos ocultos para Data da Comunicação (preenchidos automaticamente) -->
+                    <input type="hidden" id="dataComunicacao" name="dataComunicacao" />
+                    <input type="hidden" id="horaComunicacao" name="horaComunicacao" />
+
                     <!-- Informações do Associado (Read-only) -->
                     <div class="section-title">
                         <h5><i class="bi bi-person-circle"></i> Seus Dados</h5>
@@ -194,29 +198,17 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label for="dataAconteceu" class="form-label">Data do Ocorrido</label>
                             <input type="date" class="form-control" id="dataAconteceu" th:field="*{dataAconteceu}">
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dataAconteceu')}" th:errors="*{dataAconteceu}"></div>
                         </div>
-                        <div class="col-md-2">
-                            <label for="horaAconteceu" class="form-label">Hora (HHMM)</label>
+                        <div class="col-md-6">
+                            <label for="horaAconteceu" class="form-label">Hora do Ocorrido (HHMM)</label>
                             <input type="number" class="form-control" id="horaAconteceu" th:field="*{horaAconteceu}"
-                                   min="0" max="2359" step="1" placeholder="Ex: 0900">
-                            <small class="text-muted">Formato: 0900, 1430</small>
+                                   min="0" max="2359" step="1" placeholder="Ex: 0900, 1430">
+                            <small class="text-muted">Formato: 0900 para 9h, 1430 para 14h30</small>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('horaAconteceu')}" th:errors="*{horaAconteceu}"></div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="dataComunicacao" class="form-label">Data da Comunicação</label>
-                            <input type="date" class="form-control" id="dataComunicacao" th:field="*{dataComunicacao}">
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dataComunicacao')}" th:errors="*{dataComunicacao}"></div>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="horaComunicacao" class="form-label">Hora (HHMM)</label>
-                            <input type="number" class="form-control" id="horaComunicacao" th:field="*{horaComunicacao}"
-                                   min="0" max="2359" step="1" placeholder="Ex: 1430">
-                            <small class="text-muted">Formato: 0900, 1430</small>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('horaComunicacao')}" th:errors="*{horaComunicacao}"></div>
                         </div>
                     </div>
 
@@ -388,6 +380,32 @@
         const statusSelect = document.getElementById('status');
         if (statusSelect && !statusSelect.value) {
             statusSelect.value = 'COMUNICADO';
+        }
+
+        // Auto-preenche Data da Comunicação e Hora da Comunicação ao submeter o formulário
+        const comunicadoForm = document.getElementById('comunicadoForm');
+        if (comunicadoForm) {
+            comunicadoForm.addEventListener('submit', function(event) {
+                // Obtém a data e hora atual
+                const agora = new Date();
+
+                // Formata a data no padrão ISO (yyyy-MM-dd) para o campo de data
+                const ano = agora.getFullYear();
+                const mes = String(agora.getMonth() + 1).padStart(2, '0');
+                const dia = String(agora.getDate()).padStart(2, '0');
+                const dataFormatada = ano + '-' + mes + '-' + dia;
+
+                // Obtém a hora no formato HHmm (ex: 1430 para 14:30)
+                const horas = String(agora.getHours()).padStart(2, '0');
+                const minutos = String(agora.getMinutes()).padStart(2, '0');
+                const horaFormatada = parseInt(horas + minutos);
+
+                // Preenche os campos ocultos
+                document.getElementById('dataComunicacao').value = dataFormatada;
+                document.getElementById('horaComunicacao').value = horaFormatada;
+
+                console.log('[COMUNICADO FORM] Data da Comunicação preenchida automaticamente:', dataFormatada, horaFormatada);
+            });
         }
 
         // Adiciona event listeners aos botões de editar descrição
