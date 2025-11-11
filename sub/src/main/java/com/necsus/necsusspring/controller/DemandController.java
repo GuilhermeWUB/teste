@@ -295,7 +295,8 @@ public class DemandController {
     }
 
     /**
-     * Minhas Demandas - Visualização para usuários comuns
+     * Minhas Demandas - Visualização para usuários (exceto DIRETORIA e USER/Associado)
+     * Acessível para: ADMIN, GERENTE, GESTOR e todos os COLABORADORES
      */
     @GetMapping("/my-demands")
     public String showMyDemands(
@@ -305,9 +306,13 @@ public class DemandController {
 
         String userRole = getUserRole(authentication);
 
-        // Bloqueia acesso de Associados (USER)
-        if ("USER".equals(userRole)) {
-            logger.warn("Acesso negado às demandas. Role USER/Associado não tem acesso. Role: {}", userRole);
+        // Bloqueia acesso de DIRETORIA e USER (Associado)
+        if (!RoleType.canAccessMyDemands(userRole)) {
+            logger.warn("Acesso negado a Minhas Demandas. Role {} não tem permissão.", userRole);
+            // DIRETORIA redireciona para painel de diretor, outros para home
+            if ("DIRETORIA".equals(userRole)) {
+                return "redirect:/demands/director";
+            }
             return "redirect:/";
         }
 

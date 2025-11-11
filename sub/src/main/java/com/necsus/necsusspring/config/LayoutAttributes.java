@@ -54,6 +54,21 @@ public class LayoutAttributes {
         return authentication.getName();
     }
 
+    @ModelAttribute("canAccessMyDemands")
+    public boolean canAccessMyDemands(Authentication authentication) {
+        if (!isAuthenticated(authentication)) {
+            return false;
+        }
+        String userRole = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .map(auth -> auth.substring(5)) // Remove "ROLE_" prefix
+                .findFirst()
+                .orElse(null);
+
+        return RoleType.canAccessMyDemands(userRole);
+    }
+
     private boolean isAuthenticated(Authentication authentication) {
         return authentication != null
                 && authentication.isAuthenticated()

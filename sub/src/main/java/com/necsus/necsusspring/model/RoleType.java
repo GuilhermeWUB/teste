@@ -224,6 +224,26 @@ public enum RoleType {
     }
 
     /**
+     * Verifica se um role pode acessar a página "Minhas Demandas"
+     * Todos podem acessar, EXCETO DIRETORIA e USER (Associado)
+     * Quem pode acessar: ADMIN, GERENTE, GESTOR e todos os COLABORADORES
+     */
+    public static boolean canAccessMyDemands(String code) {
+        if (code == null) {
+            return false;
+        }
+        String normalized = code.trim().toUpperCase(Locale.ROOT);
+
+        // DIRETORIA e USER (Associado) NÃO podem acessar
+        if ("DIRETORIA".equals(normalized) || "USER".equals(normalized)) {
+            return false;
+        }
+
+        // Todos os outros podem acessar (ADMIN, GERENTE, GESTOR, e colaboradores)
+        return true;
+    }
+
+    /**
      * Retorna os códigos dos roles para os quais o role especificado pode enviar demandas
      */
     public static List<String> getTargetRoleCodesFor(String code) {

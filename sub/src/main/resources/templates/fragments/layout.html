@@ -48,6 +48,9 @@
             <li th:if="${isAdmin}">
                 <a th:href="@{/demands}">Demandas</a>
             </li>
+            <li th:if="${canAccessMyDemands}">
+                <a th:href="@{/demands/my-demands}">Minhas Demandas</a>
+            </li>
 
             <li th:if="${isAdmin}" class="nav-item nav-item-dropdown">
                 <button type="button" class="nav-dropdown-toggle" data-nav-dropdown aria-expanded="false" aria-haspopup="true">
