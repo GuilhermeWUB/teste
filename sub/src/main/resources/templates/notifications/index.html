@@ -4,81 +4,102 @@
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 
-<section class="page">
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="bi bi-bell-fill"></i>
-                Notificações
-            </h1>
-            <p class="page-subtitle">Acompanhe suas notificações e atualizações do sistema</p>
-            <div class="d-flex gap-2 mt-2">
-                <span class="badge bg-primary" th:text="${unreadCount} + ' não lidas'">0 não lidas</span>
-                <span class="badge bg-secondary" th:text="${totalCount} + ' total'">0 total</span>
-            </div>
-        </div>
+<link rel="stylesheet" th:href="@{/css/notifications.css}" />
 
-        <!-- Mensagens de sucesso/erro -->
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-            <span th:text="${successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-            <span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <!-- Filtros e Ações -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                    <div class="btn-group" role="group" aria-label="Filtros">
-                        <a th:href="@{/notifications}"
-                           th:class="${filter == 'all'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-list me-1"></i>Todas
-                        </a>
-                        <a th:href="@{/notifications(filter='unread')}"
-                           th:class="${filter == 'unread'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-envelope me-1"></i>Não Lidas
-                        </a>
-                        <a th:href="@{/notifications(filter='archived')}"
-                           th:class="${filter == 'archived'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-archive me-1"></i>Arquivadas
-                        </a>
-                    </div>
-                    <button type="button" class="btn btn-success" id="markAllReadBtn" th:if="${unreadCount > 0}">
-                        <i class="bi bi-check-all me-1"></i>Marcar Todas como Lidas
-                    </button>
+<section class="notifications-page">
+    <div class="notifications-container">
+        <div class="hero-card">
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+                <div>
+                    <h1 class="hero-title">Notificações</h1>
+                    <p class="hero-subtitle">Acompanhe alertas, comunicados e atualizações importantes do sistema</p>
                 </div>
             </div>
+            <div class="hero-actions">
+                <div class="status-badges">
+                    <span class="status-pill status-pill--primary">
+                        <i class="bi bi-envelope-open me-1"></i>
+                        <span th:text="${unreadCount}">0</span>
+                        <span>não lidas</span>
+                    </span>
+                    <span class="status-pill">
+                        <i class="bi bi-collection me-1"></i>
+                        <span th:text="${totalCount}">0</span>
+                        <span>no total</span>
+                    </span>
+                </div>
+                <button type="button" class="btn btn-hero" id="markAllReadBtn" th:if="${unreadCount > 0}">
+                    <i class="bi bi-check-all"></i>
+                    Marcar todas como lidas
+                </button>
+            </div>
         </div>
 
-        <!-- Lista de Notificações -->
-        <div th:if="${notifications.isEmpty()}" class="alert alert-info text-center" role="alert">
-            <i class="bi bi-info-circle me-2"></i>
-            <span th:if="${filter == 'unread'}">Você não tem notificações não lidas.</span>
-            <span th:if="${filter == 'archived'}">Você não tem notificações arquivadas.</span>
-            <span th:if="${filter == 'all'}">Você não tem notificações.</span>
+        <div th:if="${successMessage}" class="feedback-card feedback-card--success alert alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <div class="feedback-content">
+                <h6>Ação concluída</h6>
+                <p th:text="${successMessage}"></p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
 
-        <div class="list-group shadow-sm" th:if="${!notifications.isEmpty()}">
-            <div th:each="notification : ${notifications}"
-                 th:class="'list-group-item list-group-item-action notification-item ' +
-                          (${notification.status.name() == 'UNREAD'} ? 'notification-unread' : 'notification-read')"
+        <div th:if="${errorMessage}" class="feedback-card feedback-card--danger alert alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div class="feedback-content">
+                <h6>Algo deu errado</h6>
+                <p th:text="${errorMessage}"></p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+
+        <div class="filters-card">
+            <div class="filters-group" role="group" aria-label="Filtros de notificações">
+                <a th:href="@{/notifications}"
+                   th:class="${filter == 'all'} ? 'filters-button active' : 'filters-button'">
+                    <i class="bi bi-list"></i>
+                    Todas
+                </a>
+                <a th:href="@{/notifications(filter='unread')}"
+                   th:class="${filter == 'unread'} ? 'filters-button active' : 'filters-button'">
+                    <i class="bi bi-envelope"></i>
+                    Não lidas
+                </a>
+                <a th:href="@{/notifications(filter='archived')}"
+                   th:class="${filter == 'archived'} ? 'filters-button active' : 'filters-button'">
+                    <i class="bi bi-archive"></i>
+                    Arquivadas
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${notifications.isEmpty()}" class="empty-state" role="alert">
+            <div class="empty-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h2>Nenhuma notificação por aqui</h2>
+            <p th:if="${filter == 'unread'}">Você está em dia! Não há notificações não lidas.</p>
+            <p th:if="${filter == 'archived'}">Você ainda não arquivou nenhuma notificação.</p>
+            <p th:if="${filter == 'all'}">Assim que houver novidades, elas aparecerão aqui.</p>
+        </div>
+
+        <div class="notification-timeline" th:if="${!notifications.isEmpty()}">
+            <div class="notification-card" th:each="notification : ${notifications}"
+                 th:classappend="${notification.status.name() == 'UNREAD'} ? ' notification-card--unread' : ''"
                  th:data-notification-id="${notification.id}">
-
-                <div class="d-flex align-items-start gap-3">
-                    <!-- Ícone do tipo de notificação -->
-                    <div class="notification-icon flex-shrink-0"
-                         th:classappend="${notification.type.name() == 'EVENT'} ? 'bg-primary text-white' :
-                                       ${notification.type.name() == 'DEMAND'} ? 'bg-warning text-dark' :
-                                       ${notification.type.name() == 'PAYMENT'} ? 'bg-success text-white' :
-                                       ${notification.type.name() == 'BANK_SLIP'} ? 'bg-info text-white' :
-                                       ${notification.type.name() == 'ALERT'} ? 'bg-danger text-white' :
-                                       ${notification.type.name() == 'SYSTEM'} ? 'bg-secondary text-white' :
-                                       'bg-light text-dark'">
+                <div class="notification-marker"></div>
+                <div class="notification-header">
+                    <div class="notification-icon"
+                         th:classappend="${notification.type.name() == 'EVENT'} ? ' icon-event' :
+                                        ${notification.type.name() == 'DEMAND'} ? ' icon-demand' :
+                                        ${notification.type.name() == 'PAYMENT'} ? ' icon-payment' :
+                                        ${notification.type.name() == 'BANK_SLIP'} ? ' icon-bank-slip' :
+                                        ${notification.type.name() == 'ALERT'} ? ' icon-alert' :
+                                        ${notification.type.name() == 'SYSTEM'} ? ' icon-system' :
+                                        ' icon-default'">
                         <i th:class="${notification.type.name() == 'EVENT'} ? 'bi bi-calendar-event' :
                                      ${notification.type.name() == 'DEMAND'} ? 'bi bi-list-task' :
                                      ${notification.type.name() == 'PAYMENT'} ? 'bi bi-credit-card' :
@@ -87,75 +108,74 @@
                                      ${notification.type.name() == 'SYSTEM'} ? 'bi bi-gear' :
                                      'bi bi-info-circle'"></i>
                     </div>
-
-                    <!-- Conteúdo da notificação -->
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h6 class="mb-0" th:text="${notification.title}">Título da Notificação</h6>
-                            <div class="d-flex gap-1 flex-shrink-0">
-                                <span class="badge notification-badge"
-                                      th:classappend="${notification.type.name() == 'EVENT'} ? 'bg-primary' :
-                                                    ${notification.type.name() == 'DEMAND'} ? 'bg-warning text-dark' :
-                                                    ${notification.type.name() == 'PAYMENT'} ? 'bg-success' :
-                                                    ${notification.type.name() == 'BANK_SLIP'} ? 'bg-info' :
-                                                    ${notification.type.name() == 'ALERT'} ? 'bg-danger' :
-                                                    'bg-secondary'"
-                                      th:text="${notification.type.displayName}">Tipo</span>
-                                <span th:if="${notification.priority != null}"
-                                      class="badge notification-badge"
-                                      th:classappend="'priority-badge-' + ${notification.priority.name()}"
-                                      th:text="${notification.priority.name()}">Prioridade</span>
-                            </div>
+                    <div class="notification-title-group">
+                        <h3 class="notification-title" th:text="${notification.title}">Título da Notificação</h3>
+                        <div class="notification-tags">
+                            <span class="tag"
+                                  th:classappend="${notification.type.name() == 'EVENT'} ? ' tag-event' :
+                                                ${notification.type.name() == 'DEMAND'} ? ' tag-demand' :
+                                                ${notification.type.name() == 'PAYMENT'} ? ' tag-payment' :
+                                                ${notification.type.name() == 'BANK_SLIP'} ? ' tag-bank-slip' :
+                                                ${notification.type.name() == 'ALERT'} ? ' tag-alert' :
+                                                ' tag-system'"
+                                  th:text="${notification.type.displayName}">Tipo</span>
+                            <span th:if="${notification.priority != null}"
+                                  class="tag tag-priority"
+                                  th:classappend="' tag-priority-' + ${notification.priority.name()}"
+                                  th:text="${notification.priority.name()}">Prioridade</span>
                         </div>
+                    </div>
+                </div>
 
-                        <p class="mb-2 text-muted small" th:text="${notification.message}">Mensagem da notificação</p>
+                <p class="notification-message" th:text="${notification.message}">Mensagem da notificação</p>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                <i class="bi bi-clock me-1"></i>
-                                <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">Data</span>
-                            </small>
-
-                            <div class="btn-group btn-group-sm" role="group">
-                                <a th:if="${notification.actionUrl != null}"
-                                   th:href="@{${notification.actionUrl}}"
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-box-arrow-up-right me-1"></i>Visualizar
-                                </a>
-                                <button type="button"
-                                        class="btn btn-outline-secondary btn-sm mark-read-btn"
-                                        th:if="${notification.status.name() == 'UNREAD'}"
-                                        th:data-id="${notification.id}">
-                                    <i class="bi bi-check me-1"></i>Marcar como lida
-                                </button>
-                                <button type="button"
-                                        class="btn btn-outline-secondary btn-sm mark-unread-btn"
-                                        th:if="${notification.status.name() == 'READ'}"
-                                        th:data-id="${notification.id}">
-                                    <i class="bi bi-envelope me-1"></i>Marcar como não lida
-                                </button>
-                                <button type="button"
-                                        class="btn btn-outline-warning btn-sm archive-btn"
-                                        th:if="${notification.status.name() != 'ARCHIVED'}"
-                                        th:data-id="${notification.id}">
-                                    <i class="bi bi-archive me-1"></i>Arquivar
-                                </button>
-                                <button type="button"
-                                        class="btn btn-outline-danger btn-sm delete-btn"
-                                        th:data-id="${notification.id}">
-                                    <i class="bi bi-trash me-1"></i>Deletar
-                                </button>
-                            </div>
-                        </div>
+                <div class="notification-footer">
+                    <div class="notification-meta">
+                        <i class="bi bi-clock"></i>
+                        <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">Data</span>
+                    </div>
+                    <div class="notification-actions">
+                        <a th:if="${notification.actionUrl != null}"
+                           th:href="@{${notification.actionUrl}}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            Visualizar
+                        </a>
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm mark-read-btn"
+                                th:if="${notification.status.name() == 'UNREAD'}"
+                                th:data-id="${notification.id}">
+                            <i class="bi bi-check"></i>
+                            Marcar como lida
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm mark-unread-btn"
+                                th:if="${notification.status.name() == 'READ'}"
+                                th:data-id="${notification.id}">
+                            <i class="bi bi-envelope"></i>
+                            Marcar como não lida
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-warning btn-sm archive-btn"
+                                th:if="${notification.status.name() != 'ARCHIVED'}"
+                                th:data-id="${notification.id}">
+                            <i class="bi bi-archive"></i>
+                            Arquivar
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm delete-btn"
+                                th:data-id="${notification.id}">
+                            <i class="bi bi-trash"></i>
+                            Deletar
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Paginação -->
-        <nav th:if="${totalPages > 1}" aria-label="Navegação de notificações" class="mt-4">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+        <nav th:if="${totalPages > 1}" aria-label="Navegação de notificações" class="pagination-wrapper">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${currentPage == 0} ? ' disabled'">
                     <a class="page-link" th:href="@{/notifications(page=${currentPage - 1}, filter=${filter})}" aria-label="Anterior">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
@@ -164,11 +184,11 @@
                 <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
                     th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
                     class="page-item"
-                    th:classappend="${pageNum == currentPage} ? 'active'">
+                    th:classappend="${pageNum == currentPage} ? ' active'">
                     <a class="page-link" th:href="@{/notifications(page=${pageNum}, filter=${filter})}" th:text="${pageNum + 1}">1</a>
                 </li>
 
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? ' disabled'">
                     <a class="page-link" th:href="@{/notifications(page=${currentPage + 1}, filter=${filter})}" aria-label="Próxima">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
@@ -178,60 +198,11 @@
     </div>
 </section>
 
-<!-- Estilos específicos da página de notificações -->
-<style>
-    .notification-item {
-        transition: all 0.3s ease;
-        border-left: 4px solid transparent;
-    }
-    .notification-item:hover {
-        background-color: var(--hover-bg, #f8f9fa);
-        transform: translateX(5px);
-    }
-    [data-theme="dark"] .notification-item:hover {
-        background-color: #2d2d2d;
-    }
-    .notification-unread {
-        background-color: #f0f7ff;
-        border-left-color: #0d6efd;
-        font-weight: 500;
-    }
-    [data-theme="dark"] .notification-unread {
-        background-color: #1a2a3a;
-    }
-    .notification-read {
-        background-color: #ffffff;
-        opacity: 0.9;
-    }
-    [data-theme="dark"] .notification-read {
-        background-color: #1e1e1e;
-    }
-    .notification-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-    .notification-icon {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 1.25rem;
-    }
-    .priority-badge-URGENTE { background-color: #dc3545; color: white; }
-    .priority-badge-ALTA { background-color: #fd7e14; color: white; }
-    .priority-badge-MEDIA { background-color: #ffc107; color: black; }
-    .priority-badge-BAIXA { background-color: #6c757d; color: white; }
-</style>
-
-<!-- JavaScript para ações das notificações -->
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = /*[[${_csrf.token}]]*/ '';
         const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
 
-        // Marcar como lida
         document.querySelectorAll('.mark-read-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
@@ -239,7 +210,6 @@
             });
         });
 
-        // Marcar como não lida
         document.querySelectorAll('.mark-unread-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
@@ -247,7 +217,6 @@
             });
         });
 
-        // Arquivar
         document.querySelectorAll('.archive-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
@@ -255,7 +224,6 @@
             });
         });
 
-        // Deletar
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (confirm('Tem certeza que deseja deletar esta notificação?')) {
@@ -265,7 +233,6 @@
             });
         });
 
-        // Marcar todas como lidas
         const markAllBtn = document.getElementById('markAllReadBtn');
         if (markAllBtn) {
             markAllBtn.addEventListener('click', function() {
