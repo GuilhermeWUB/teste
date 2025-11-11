@@ -15,6 +15,38 @@
         </a>
     </div>
 
+    <!-- Barra de Pesquisa -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form th:action="@{/partners}" method="get">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label for="searchName" class="form-label">
+                            <i class="bi bi-search"></i> Pesquisar por nome ou CPF
+                        </label>
+                        <input type="text"
+                               id="searchName"
+                               name="search"
+                               class="form-control"
+                               placeholder="Digite o nome ou CPF do associado..."
+                               th:value="${search}"
+                               autofocus>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Pesquisar
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-secondary w-100" th:href="@{/partners}">
+                            <i class="bi bi-x-circle"></i> Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Controle de Paginação Superior -->
     <div class="card mb-3">
         <div class="card-body">
@@ -81,14 +113,14 @@
         <ul class="pagination justify-content-center">
             <!-- Primeira Página -->
             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{/partners(page=0, size=${pageSize})}">
+                <a class="page-link" th:href="@{/partners(page=0, size=${pageSize}, search=${search})}">
                     <i class="bi bi-chevron-double-left"></i>
                 </a>
             </li>
 
             <!-- Página Anterior -->
             <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
-                <a class="page-link" th:href="@{/partners(page=${currentPage - 1}, size=${pageSize})}">
+                <a class="page-link" th:href="@{/partners(page=${currentPage - 1}, size=${pageSize}, search=${search})}">
                     <i class="bi bi-chevron-left"></i>
                 </a>
             </li>
@@ -99,20 +131,20 @@
                 th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
                 th:classappend="${pageNum == currentPage} ? 'active'">
                 <a class="page-link"
-                   th:href="@{/partners(page=${pageNum}, size=${pageSize})}"
+                   th:href="@{/partners(page=${pageNum}, size=${pageSize}, search=${search})}"
                    th:text="${pageNum + 1}">1</a>
             </li>
 
             <!-- Próxima Página -->
             <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
-                <a class="page-link" th:href="@{/partners(page=${currentPage + 1}, size=${pageSize})}">
+                <a class="page-link" th:href="@{/partners(page=${currentPage + 1}, size=${pageSize}, search=${search})}">
                     <i class="bi bi-chevron-right"></i>
                 </a>
             </li>
 
             <!-- Última Página -->
             <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{/partners(page=${totalPages - 1}, size=${pageSize})}">
+                <a class="page-link" th:href="@{/partners(page=${totalPages - 1}, size=${pageSize}, search=${search})}">
                     <i class="bi bi-chevron-double-right"></i>
                 </a>
             </li>
@@ -121,7 +153,9 @@
 
     <script>
         function changePageSize(newSize) {
-            window.location.href = '/partners?page=0&size=' + newSize;
+            const urlParams = new URLSearchParams(window.location.search);
+            const search = urlParams.get('search') || '';
+            window.location.href = '/partners?page=0&size=' + newSize + (search ? '&search=' + encodeURIComponent(search) : '');
         }
     </script>
 </section>

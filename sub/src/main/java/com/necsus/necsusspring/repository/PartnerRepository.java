@@ -27,4 +27,13 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
            "LEFT JOIN FETCH p.vehicles",
            countQuery = "SELECT COUNT(p) FROM Partner p")
     Page<Partner> findAllWithVehicles(Pageable pageable);
+
+    @Query(value = "SELECT DISTINCT p FROM Partner p " +
+           "LEFT JOIN FETCH p.vehicles " +
+           "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+           "OR REPLACE(p.cpf, '.', '') LIKE CONCAT('%', REPLACE(REPLACE(:searchTerm, '.', ''), '-', ''), '%')",
+           countQuery = "SELECT COUNT(p) FROM Partner p " +
+           "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+           "OR REPLACE(p.cpf, '.', '') LIKE CONCAT('%', REPLACE(REPLACE(:searchTerm, '.', ''), '-', ''), '%')")
+    Page<Partner> searchByNameOrCpf(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

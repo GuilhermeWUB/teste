@@ -20,13 +20,27 @@
 
     <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
 
-    <!-- Controles de Paginação e Filtro -->
+    <!-- Barra de Pesquisa e Filtros -->
     <div class="card mb-3">
         <div class="card-body">
             <form th:action="@{/vehicles}" method="get">
-                <div class="row align-items-end">
-                    <div class="col-md-4">
-                        <label for="partnerId" class="form-label">Filtrar por associado</label>
+                <!-- Linha 1: Pesquisa e Filtro de Associado -->
+                <div class="row align-items-end mb-3">
+                    <div class="col-md-6">
+                        <label for="searchVehicle" class="form-label">
+                            <i class="bi bi-search"></i> Pesquisar veículo
+                        </label>
+                        <input type="text"
+                               id="searchVehicle"
+                               name="search"
+                               class="form-control"
+                               placeholder="Digite marca, modelo ou placa..."
+                               th:value="${search}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="partnerId" class="form-label">
+                            <i class="bi bi-person"></i> Filtrar por associado
+                        </label>
                         <select id="partnerId" name="partnerId" class="form-select">
                             <option value="" th:selected="${partnerId == null}">Todos os associados</option>
                             <option th:each="partner : ${partners}"
@@ -35,7 +49,11 @@
                                     th:selected="${partnerId != null and partnerId == partner.id}"></option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                </div>
+
+                <!-- Linha 2: Controles de Ação -->
+                <div class="row align-items-end">
+                    <div class="col-md-3">
                         <label for="pageSize" class="form-label">Itens por página</label>
                         <select id="pageSize" name="size" class="form-select">
                             <option value="10" th:selected="${pageSize == 10}">10</option>
@@ -43,20 +61,19 @@
                             <option value="30" th:selected="${pageSize == 30}">30</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-funnel"></i> Filtrar
+                            <i class="bi bi-search"></i> Pesquisar
                         </button>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <a class="btn btn-secondary w-100" th:href="@{/vehicles}">
                             <i class="bi bi-x-circle"></i> Limpar
                         </a>
                     </div>
-                    <div class="col-md-2 text-end">
-                        <small class="text-muted">
-                            <strong th:text="${totalItems}">0</strong> veículos
-                        </small>
+                    <div class="col-md-3 text-end">
+                        <label class="form-label d-block text-muted">Total</label>
+                        <strong class="text-primary fs-5" th:text="${totalItems} + ' veículos'">0 veículos</strong>
                     </div>
                 </div>
             </form>
@@ -122,7 +139,7 @@
                 <!-- Primeira Página -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/vehicles(page=0, size=${pageSize}, partnerId=${partnerId})}">
+                       th:href="@{/vehicles(page=0, size=${pageSize}, partnerId=${partnerId}, search=${search})}">
                         <i class="bi bi-chevron-double-left"></i>
                     </a>
                 </li>
@@ -130,7 +147,7 @@
                 <!-- Página Anterior -->
                 <li class="page-item" th:classappend="${!hasPrevious} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/vehicles(page=${currentPage - 1}, size=${pageSize}, partnerId=${partnerId})}">
+                       th:href="@{/vehicles(page=${currentPage - 1}, size=${pageSize}, partnerId=${partnerId}, search=${search})}">
                         <i class="bi bi-chevron-left"></i>
                     </a>
                 </li>
@@ -141,14 +158,14 @@
                     th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
                     th:classappend="${pageNum == currentPage} ? 'active'">
                     <a class="page-link"
-                       th:href="@{/vehicles(page=${pageNum}, size=${pageSize}, partnerId=${partnerId})}"
+                       th:href="@{/vehicles(page=${pageNum}, size=${pageSize}, partnerId=${partnerId}, search=${search})}"
                        th:text="${pageNum + 1}">1</a>
                 </li>
 
                 <!-- Próxima Página -->
                 <li class="page-item" th:classappend="${!hasNext} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/vehicles(page=${currentPage + 1}, size=${pageSize}, partnerId=${partnerId})}">
+                       th:href="@{/vehicles(page=${currentPage + 1}, size=${pageSize}, partnerId=${partnerId}, search=${search})}">
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>
@@ -156,7 +173,7 @@
                 <!-- Última Página -->
                 <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/vehicles(page=${totalPages - 1}, size=${pageSize}, partnerId=${partnerId})}">
+                       th:href="@{/vehicles(page=${totalPages - 1}, size=${pageSize}, partnerId=${partnerId}, search=${search})}">
                         <i class="bi bi-chevron-double-right"></i>
                     </a>
                 </li>
