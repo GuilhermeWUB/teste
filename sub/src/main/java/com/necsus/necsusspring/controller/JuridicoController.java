@@ -21,7 +21,7 @@ public class JuridicoController {
      */
     @GetMapping(value = "/cobranca", produces = MediaType.TEXT_HTML_VALUE)
     public String cobranca(Model model) {
-        model.addAttribute("pageTitle", "Cobrança - Jurídico");
+        model.addAttribute("pageTitle", "Processos em Geral - Jurídico");
         return "juridico/cobranca";
     }
 

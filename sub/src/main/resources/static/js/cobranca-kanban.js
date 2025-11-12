@@ -1,48 +1,12 @@
 (function () {
-    const STATUS_ORDER = [
-        'EM_ABERTO_7_0',
-        'EM_CONTATO_7_1',
-        'COBRANCA_JUDICIAL_7_2',
-        'ACORDO_ASSINADO_7_3'
-    ];
-    const PRIORIDADES = ['ALTA', 'MEDIA', 'BAIXA'];
+    console.log('[PROCESSOS-KANBAN] Script carregado com sucesso');
 
-    const statusLabels = {
-        EM_ABERTO_7_0: 'Em Aberto 7.0',
-        EM_CONTATO_7_1: 'Em Contato 7.1',
-        COBRANCA_JUDICIAL_7_2: 'Cobrança Judicial 7.2',
-        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
-    };
-
-    const statusIcons = {
-        EM_ABERTO_7_0: 'bi-flag',
-        EM_CONTATO_7_1: 'bi-telephone-outbound',
-        COBRANCA_JUDICIAL_7_2: 'bi-bank',
-        ACORDO_ASSINADO_7_3: 'bi-pen'
-    };
-
-    const priorityLabels = {
-        ALTA: 'Alta',
-        MEDIA: 'Média',
-        BAIXA: 'Baixa'
-    };
-
-    const originLabels = {
-        JUDICIAL: 'Judicial',
-        EXTRAJUDICIAL: 'Extrajudicial'
-    };
+    const API_BASE = '/juridico/api/processos';
+    const ALL_STATUS = ['EM_ABERTO_7_0', 'EM_CONTATO_7_1', 'PROCESSO_JUDICIAL_7_2', 'ACORDO_ASSINADO_7_3'];
 
     const state = {
         cards: [],
-        search: '',
-        filters: {
-            prioridade: [...PRIORIDADES],
-            status: [...STATUS_ORDER],
-            origem: 'TODAS',
-            responsavel: '',
-            dateFrom: null,
-            dateTo: null
-        }
+        search: ''
     };
 
     const dragState = {
@@ -50,47 +14,49 @@
         originStatus: null
     };
 
+    const statusLabels = {
+        EM_ABERTO_7_0: 'Em Aberto 7.0',
+        EM_CONTATO_7_1: 'Em Contato 7.1',
+        PROCESSO_JUDICIAL_7_2: 'Processo Judicial 7.2',
+        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
+    };
+
     const selectors = {
         board: () => document.querySelector('.kanban-board'),
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
         searchInput: () => document.getElementById('kanban-search'),
-        btnAdvancedFilters: () => document.getElementById('btn-advanced-filters'),
-        btnClearFilters: () => document.getElementById('btn-clear-filters'),
-        filtersModal: () => document.getElementById('filters-modal'),
         modal: () => document.getElementById('kanban-modal'),
         modalBody: () => document.querySelector('#kanban-modal .kanban-modal-body'),
-        createModal: () => document.getElementById('create-cobranca-modal'),
-        createForm: () => document.getElementById('create-cobranca-form'),
-        filterResponsavel: () => document.getElementById('filter-responsavel'),
-        filterDateFrom: () => document.getElementById('filter-date-from'),
-        filterDateTo: () => document.getElementById('filter-date-to'),
-        filterCount: () => document.querySelector('#btn-advanced-filters .filter-count')
+        createModal: () => document.getElementById('create-processo-modal'),
+        createForm: () => document.getElementById('create-processo-form'),
+        createError: () => document.getElementById('create-processo-error')
     };
 
-    const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
-    const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
+    function buildHeaders(extra = {}) {
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            ...extra
+        };
 
-    const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        return headers;
+    }
 
     function init() {
+        console.log('[PROCESSOS-KANBAN] Inicializando...');
+
         if (!selectors.board()) {
+            console.error('[PROCESSOS-KANBAN] Board não encontrado!');
             return;
         }
 
+        console.log('[PROCESSOS-KANBAN] Board encontrado, carregando eventos...');
         bindEvents();
         loadBoard();
     }
@@ -99,37 +65,14 @@
         const search = selectors.searchInput();
         if (search) {
             search.addEventListener('input', () => {
-                state.search = (search.value || '').toLowerCase();
+                state.search = search.value.toLowerCase();
                 render();
             });
         }
 
-        const btnFilters = selectors.btnAdvancedFilters();
-        if (btnFilters) {
-            btnFilters.addEventListener('click', openFiltersModal);
-        }
-
-        const btnClearFilters = selectors.btnClearFilters();
-        if (btnClearFilters) {
-            btnClearFilters.addEventListener('click', clearAllFilters);
-        }
-
-        const filtersModal = selectors.filtersModal();
-        if (filtersModal) {
-            filtersModal.addEventListener('click', event => {
-                if (event.target === filtersModal) {
-                    closeFiltersModal();
-                }
-            });
-        }
-
-        const detailsModal = selectors.modal();
-        if (detailsModal) {
-            detailsModal.addEventListener('click', event => {
-                if (event.target === detailsModal) {
-                    closeModal();
-                }
-            });
+        const createForm = selectors.createForm();
+        if (createForm) {
+            createForm.addEventListener('submit', handleCreateSubmit);
         }
 
         const createModal = selectors.createModal();
@@ -141,176 +84,45 @@
             });
         }
 
-        const createForm = selectors.createForm();
-        if (createForm) {
-            createForm.addEventListener('submit', handleCreateSubmit);
-        }
-
-        const filterResponsavel = selectors.filterResponsavel();
-        if (filterResponsavel) {
-            filterResponsavel.addEventListener('input', event => {
-                state.filters.responsavel = (event.target.value || '').trim();
-                updateFilterBadge();
-            });
-        }
-
-        const dateFrom = selectors.filterDateFrom();
-        if (dateFrom) {
-            dateFrom.addEventListener('change', event => {
-                state.filters.dateFrom = parseDate(event.target.value);
-                updateFilterBadge();
-            });
-        }
-
-        const dateTo = selectors.filterDateTo();
-        if (dateTo) {
-            dateTo.addEventListener('change', event => {
-                state.filters.dateTo = parseDate(event.target.value, true);
-                updateFilterBadge();
-            });
-        }
-
-        document.querySelectorAll('input[name="prioridade"]').forEach(input => {
-            input.addEventListener('change', () => {
-                const checked = Array.from(document.querySelectorAll('input[name="prioridade"]:checked'))
-                    .map(el => el.value);
-                state.filters.prioridade = checked;
-                updateFilterBadge();
-            });
-        });
-
-        document.querySelectorAll('input[name="status"]').forEach(input => {
-            input.addEventListener('change', () => {
-                const checked = Array.from(document.querySelectorAll('input[name="status"]:checked'))
-                    .map(el => el.value);
-                state.filters.status = checked;
-                updateFilterBadge();
-            });
-        });
-
-        document.querySelectorAll('input[name="origem"]').forEach(input => {
-            input.addEventListener('change', event => {
-                if (event.target.checked) {
-                    state.filters.origem = event.target.value || 'TODAS';
-                    updateFilterBadge();
-                }
-            });
-        });
-
         document.addEventListener('keydown', event => {
-            if (event.key !== 'Escape') {
-                return;
-            }
-            if (selectors.filtersModal()?.classList.contains('active')) {
-                closeFiltersModal();
-                return;
-            }
-            if (selectors.modal()?.classList.contains('active')) {
-                closeModal();
-                return;
-            }
-            if (selectors.createModal()?.classList.contains('active')) {
+            if (event.key === 'Escape') {
                 closeCreateModal();
+                closeModal();
             }
         });
     }
 
     async function loadBoard() {
+        console.log('[PROCESSOS-KANBAN] Carregando processos...');
         try {
-            const response = await fetch('/juridico/api/cobranca/board', {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            const response = await fetch(API_BASE, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
-                throw new Error('Falha ao carregar dados remotos');
+                throw new Error('Erro ao carregar processos');
             }
 
-            const payload = await response.json();
-            const cards = normalizePayload(payload);
-            state.cards = cards.length ? cards : buildSeedData();
+            const data = await response.json();
+            console.log('[PROCESSOS-KANBAN] Processos carregados:', data);
+
+            if (Array.isArray(data)) {
+                state.cards = data;
+            } else {
+                state.cards = [];
+            }
+
+            render();
         } catch (error) {
-            console.warn('[COBRANCA-KANBAN] Usando dados locais devido a erro:', error);
-            state.cards = buildSeedData();
+            console.error('[PROCESSOS-KANBAN] Erro ao carregar processos:', error);
+            state.cards = [];
+            render();
         }
-
-        render();
-        updateFilterBadge();
-    }
-
-    function normalizePayload(payload) {
-        if (!payload) {
-            return [];
-        }
-
-        const rawCards = Array.isArray(payload) ? payload :
-            (Array.isArray(payload.cards) ? payload.cards :
-                (payload.cobrancas ? Object.values(payload.cobrancas).flat() : []));
-
-        return rawCards.map(item => normalizeCard(item)).filter(Boolean);
-    }
-
-    function normalizeCard(raw) {
-        if (!raw) {
-            return null;
-        }
-
-        const status = (raw.status || raw.situacao || '').toString().toUpperCase();
-        const prioridade = (raw.prioridade || raw.prioridadeNegociacao || '').toString().toUpperCase();
-        const origem = (raw.origem || raw.tipoCobranca || '').toString().toUpperCase();
-
-        const card = {
-            id: raw.id || raw.codigo || cryptoRandomId(),
-            referencia: raw.referencia || raw.titulo || raw.processo || 'Cobrança sem referência',
-            devedor: raw.devedor || raw.debtor || raw.cliente || 'Não informado',
-            valor: parseAmount(raw.valor || raw.montante || raw.amount),
-            status: STATUS_ORDER.includes(status) ? status : 'EM_ABERTO_7_0',
-            prioridade: PRIORIDADES.includes(prioridade) ? prioridade : 'MEDIA',
-            responsavel: raw.responsavel || raw.owner || raw.advogado || '',
-            origem: origem === 'JUDICIAL' || origem === 'EXTRAJUDICIAL' ? origem : 'JUDICIAL',
-            prazo: normalizeDate(raw.prazo || raw.dataPrazo || raw.dueDate),
-            ultimaAtualizacao: normalizeDateTime(raw.ultimaAtualizacao || raw.atualizacao || raw.updatedAt),
-            detalhes: raw.detalhes || raw.observacoes || raw.description || '',
-            contato: raw.contato || raw.telefone || raw.phone || '',
-            email: raw.email || raw.contatoEmail || '',
-            documento: raw.documento || raw.cpfCnpj || raw.document || ''
-        };
-
-        return card;
-    }
-
-    function parseAmount(value) {
-        if (value === null || value === undefined || value === '') {
-            return null;
-        }
-        const number = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^0-9,-]/g, '').replace(',', '.'));
-        return Number.isFinite(number) ? number : null;
-    }
-
-    function normalizeDate(value) {
-        if (!value) {
-            return null;
-        }
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) {
-            return null;
-        }
-        return date.toISOString().slice(0, 10);
-    }
-
-    function normalizeDateTime(value) {
-        if (!value) {
-            return null;
-        }
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) {
-            return null;
-        }
-        return date.toISOString();
     }
 
     function render() {
         const columns = selectors.columns();
-        if (!columns.length) {
+        if (columns.length === 0) {
             return;
         }
 
@@ -322,9 +134,8 @@
             const container = column.querySelector('.tasks-container');
             const counter = column.querySelector('.column-count');
 
-            const items = grouped[status] || [];
             if (counter) {
-                counter.textContent = items.length;
+                counter.textContent = grouped[status] ? grouped[status].length : 0;
             }
 
             if (!container) {
@@ -334,7 +145,8 @@
             bindColumnDropZone(column);
             container.innerHTML = '';
 
-            if (!items.length) {
+            const items = grouped[status] || [];
+            if (items.length === 0) {
                 container.appendChild(createEmptyState());
                 return;
             }
@@ -346,144 +158,76 @@
     }
 
     function applyFilters(cards) {
-        const term = state.search;
-        const filters = state.filters;
-
         return cards.filter(card => {
-            if (!filters.prioridade.length || !filters.prioridade.includes(card.prioridade)) {
-                return false;
-            }
+            if (state.search) {
+                const searchLower = state.search;
+                const autor = (card.autor || '').toLowerCase();
+                const reu = (card.reu || '').toLowerCase();
+                const numeroProcesso = (card.numeroProcesso || '').toLowerCase();
 
-            if (!filters.status.length || !filters.status.includes(card.status)) {
-                return false;
-            }
-
-            if (filters.origem !== 'TODAS' && card.origem !== filters.origem) {
-                return false;
-            }
-
-            if (filters.responsavel) {
-                const responsavel = (card.responsavel || '').toLowerCase();
-                if (!responsavel.includes(filters.responsavel.toLowerCase())) {
+                if (!autor.includes(searchLower) &&
+                    !reu.includes(searchLower) &&
+                    !numeroProcesso.includes(searchLower)) {
                     return false;
                 }
             }
 
-            if (filters.dateFrom && card.ultimaAtualizacao) {
-                const updated = new Date(card.ultimaAtualizacao);
-                if (updated < filters.dateFrom) {
-                    return false;
-                }
-            }
-
-            if (filters.dateTo && card.ultimaAtualizacao) {
-                const updated = new Date(card.ultimaAtualizacao);
-                if (updated > filters.dateTo) {
-                    return false;
-                }
-            }
-
-            if (!term) {
-                return true;
-            }
-
-            const haystack = [
-                card.referencia,
-                card.devedor,
-                card.responsavel,
-                card.detalhes,
-                originLabels[card.origem]
-            ].filter(Boolean).join(' ').toLowerCase();
-
-            return haystack.includes(term);
+            return true;
         });
     }
 
     function groupByStatus(cards) {
-        return cards.reduce((acc, card) => {
-            const status = card.status || 'NOVO';
-            acc[status] = acc[status] || [];
-            acc[status].push(card);
-            return acc;
-        }, {});
+        const grouped = {};
+        ALL_STATUS.forEach(status => {
+            grouped[status] = [];
+        });
+
+        cards.forEach(card => {
+            const status = card.status || 'EM_ABERTO_7_0';
+            if (grouped[status]) {
+                grouped[status].push(card);
+            }
+        });
+
+        return grouped;
     }
 
     function createCard(card) {
         const article = document.createElement('article');
-        article.className = 'task-card cobranca-card';
+        article.className = 'task-card';
         article.dataset.id = card.id;
-        if (card.origem) {
-            article.dataset.origem = card.origem;
-        }
 
         const header = document.createElement('div');
         header.className = 'task-card-header';
 
         const title = document.createElement('h4');
-        title.innerHTML = `<i class="bi ${statusIcons[card.status] || 'bi-kanban'}"></i> ${escapeHtml(card.referencia)}`;
+        title.textContent = card.numeroProcesso || 'Sem número';
         header.appendChild(title);
-
-        const priority = document.createElement('span');
-        priority.className = `badge priority-${card.prioridade}`;
-        priority.textContent = priorityLabels[card.prioridade] || card.prioridade;
-        header.appendChild(priority);
 
         article.appendChild(header);
 
         const body = document.createElement('div');
         body.className = 'task-card-body';
 
-        const debtor = document.createElement('p');
-        debtor.className = 'cobranca-card-row';
-        debtor.innerHTML = `<span class="label"><i class="bi bi-person"></i> Devedor</span><span class="value">${escapeHtml(card.devedor || 'Não informado')}</span>`;
-        body.appendChild(debtor);
+        const autorP = document.createElement('p');
+        autorP.innerHTML = '<strong>Autor:</strong> ' + escapeHtml(card.autor || 'N/A');
+        body.appendChild(autorP);
 
-        if (card.valor !== null) {
-            const amount = document.createElement('p');
-            amount.className = 'cobranca-card-row';
-            amount.innerHTML = `<span class="label"><i class="bi bi-cash-coin"></i> Valor</span><span class="value">${formatCurrency(card.valor)}</span>`;
-            body.appendChild(amount);
-        }
+        const reuP = document.createElement('p');
+        reuP.innerHTML = '<strong>Réu:</strong> ' + escapeHtml(card.reu || 'N/A');
+        body.appendChild(reuP);
 
-        if (card.prazo) {
-            const due = document.createElement('p');
-            due.className = 'cobranca-card-row';
-            due.innerHTML = `<span class="label"><i class="bi bi-calendar-event"></i> Prazo</span><span class="value">${formatDate(card.prazo)}</span>`;
-            body.appendChild(due);
+        const materiaP = document.createElement('p');
+        materiaP.innerHTML = '<strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A');
+        body.appendChild(materiaP);
+
+        if (card.valorCausa) {
+            const valorP = document.createElement('p');
+            valorP.innerHTML = '<strong>Valor:</strong> R$ ' + formatCurrency(card.valorCausa);
+            body.appendChild(valorP);
         }
 
         article.appendChild(body);
-
-        const footer = document.createElement('div');
-        footer.className = 'task-card-footer';
-
-        const meta = document.createElement('div');
-        meta.className = 'task-card-meta';
-
-        const origin = document.createElement('span');
-        origin.className = 'badge badge-origin';
-        if (card.origem) {
-            origin.dataset.origin = card.origem;
-        }
-        origin.textContent = originLabels[card.origem] || 'Origem não informada';
-        meta.appendChild(origin);
-
-        if (card.responsavel) {
-            const owner = document.createElement('span');
-            owner.className = 'date';
-            owner.innerHTML = `<i class="bi bi-person-check"></i> ${escapeHtml(card.responsavel)}`;
-            meta.appendChild(owner);
-        }
-
-        if (card.ultimaAtualizacao) {
-            const updated = document.createElement('span');
-            updated.className = 'date';
-            updated.innerHTML = `<i class="bi bi-clock"></i> ${formatDateTime(card.ultimaAtualizacao)}`;
-            meta.appendChild(updated);
-        }
-
-        footer.appendChild(meta);
-        article.appendChild(footer);
 
         article.addEventListener('click', () => openModal(card));
 
@@ -491,10 +235,10 @@
     }
 
     function createEmptyState() {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'empty-state';
-        wrapper.innerHTML = '<i class="bi bi-inbox"></i> Nenhuma cobrança aqui ainda';
-        return wrapper;
+        const div = document.createElement('div');
+        div.className = 'empty-state';
+        div.innerHTML = '<i class="bi bi-inbox"></i> Nenhum processo aqui ainda';
+        return div;
     }
 
     function enableDragAndDrop() {
@@ -531,8 +275,6 @@
 
     function handleDragEnd(event) {
         event.currentTarget.classList.remove('is-dragging');
-        dragState.cardId = null;
-        dragState.originStatus = null;
     }
 
     function handleDragOver(event) {
@@ -542,380 +284,377 @@
         }
     }
 
-    function handleDrop(event) {
+    async function handleDrop(event) {
         event.preventDefault();
+
         const container = event.currentTarget;
         const column = container.closest('.kanban-column');
         const targetStatus = column?.dataset.status;
         const cardId = dragState.cardId || event.dataTransfer?.getData('text/plain');
-        const normalizedCardId = cardId ? String(cardId).trim() : '';
 
-        if (!normalizedCardId || !targetStatus) {
+        if (!cardId || !targetStatus) {
             return;
         }
 
-        const card = state.cards.find(item => String(item.id) === normalizedCardId);
-        if (!card || card.status === targetStatus) {
+        const card = state.cards.find(item => String(item.id) === String(cardId));
+        if (!card) {
             return;
         }
 
+        const previousStatus = card.status;
+        if (previousStatus === targetStatus) {
+            return;
+        }
+
+        // Atualização otimista
         card.status = targetStatus;
-        card.ultimaAtualizacao = new Date().toISOString();
         render();
+
+        try {
+            const response = await fetch(API_BASE + '/' + cardId + '/status', {
+                method: 'PUT',
+                headers: buildHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }),
+                body: JSON.stringify({ status: targetStatus })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao atualizar status');
+            }
+
+            console.log('[PROCESSOS-KANBAN] Status atualizado com sucesso');
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao atualizar status:', error);
+            // Reverte em caso de erro
+            card.status = previousStatus;
+            render();
+            alert('Não foi possível atualizar o status do processo.');
+        } finally {
+            dragState.cardId = null;
+            dragState.originStatus = null;
+        }
     }
 
     function openModal(card) {
         const modal = selectors.modal();
         const modalBody = selectors.modalBody();
+
         if (!modal || !modalBody) {
             return;
         }
 
-        modalBody.innerHTML = buildModalContent(card);
+        modalBody.innerHTML = '<div class="detail-section"><h3>Informações do Processo</h3>' +
+            '<p><strong>Número:</strong> ' + escapeHtml(card.numeroProcesso || 'N/A') + '</p>' +
+            '<p><strong>Autor:</strong> ' + escapeHtml(card.autor || 'N/A') + '</p>' +
+            '<p><strong>Réu:</strong> ' + escapeHtml(card.reu || 'N/A') + '</p>' +
+            '<p><strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A') + '</p>' +
+            '<p><strong>Valor da Causa:</strong> R$ ' + formatCurrency(card.valorCausa || 0) + '</p>' +
+            '<p><strong>Status:</strong> ' + (statusLabels[card.status] || card.status) + '</p>' +
+            '</div><div class="detail-section"><h3>Pedidos</h3>' +
+            '<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>' +
+            '<div class="modal-actions">' +
+            '<button type="button" class="btn btn-primary" onclick="window.processosBoard.openEditModal(' + card.id + ')">' +
+            '<i class="bi bi-pencil"></i> Editar</button>' +
+            '<button type="button" class="btn btn-danger" onclick="window.processosBoard.deleteProcess(' + card.id + ')">' +
+            '<i class="bi bi-trash"></i> Deletar</button>' +
+            '</div>';
+
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
-    }
-
-    function buildModalContent(card) {
-        const details = [
-            { label: 'Referência', value: card.referencia },
-            { label: 'Devedor', value: card.devedor },
-            { label: 'Responsável', value: card.responsavel || '—' },
-            { label: 'Origem', value: originLabels[card.origem] || '—' },
-            { label: 'Status', value: statusLabels[card.status] || card.status },
-            { label: 'Prioridade', value: priorityLabels[card.prioridade] || card.prioridade },
-            { label: 'Valor', value: card.valor !== null ? formatCurrency(card.valor) : '—' },
-            { label: 'Prazo', value: card.prazo ? formatDate(card.prazo) : '—' },
-            { label: 'Atualizado em', value: card.ultimaAtualizacao ? formatDateTime(card.ultimaAtualizacao) : '—' },
-            { label: 'Documento', value: card.documento || '—' },
-            { label: 'Contato', value: card.contato || '—' },
-            { label: 'E-mail', value: card.email || '—' }
-        ];
-
-        const list = details.map(item => `
-            <div class="detail-row">
-                <span class="detail-label">${escapeHtml(item.label)}</span>
-                <span class="detail-value">${escapeHtml(item.value)}</span>
-            </div>
-        `).join('');
-
-        const notes = card.detalhes ? `
-            <div class="detail-notes">
-                <h3>Histórico e observações</h3>
-                <p>${escapeHtml(card.detalhes)}</p>
-            </div>
-        ` : '';
-
-        return `
-            <article class="cobranca-details">
-                <header class="details-header">
-                    <span class="status-badge status-${card.status}">${escapeHtml(statusLabels[card.status] || card.status)}</span>
-                    <h2>${escapeHtml(card.referencia)}</h2>
-                    <p class="subtitle">${escapeHtml(card.devedor || '—')}</p>
-                </header>
-                <section class="details-grid">${list}</section>
-                ${notes}
-            </article>
-        `;
     }
 
     function closeModal() {
         const modal = selectors.modal();
-        if (!modal) {
-            return;
+        if (modal) {
+            modal.classList.remove('active');
         }
-        modal.classList.remove('active');
-        document.body.classList.remove('kanban-modal-open');
-    }
-
-    function openFiltersModal() {
-        selectors.filtersModal()?.classList.add('active');
-        document.body.classList.add('kanban-modal-open');
-    }
-
-    function closeFiltersModal() {
-        selectors.filtersModal()?.classList.remove('active');
         document.body.classList.remove('kanban-modal-open');
     }
 
     function openCreateModal() {
+        console.log('[PROCESSOS-KANBAN] Abrindo modal de criação');
+
         const modal = selectors.createModal();
+        const form = selectors.createForm();
+
         if (!modal) {
+            console.error('[PROCESSOS-KANBAN] Modal de criação não encontrado!');
             return;
         }
+
+        showCreateError('');
+
+        if (form) {
+            form.reset();
+        }
+
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
+
+        console.log('[PROCESSOS-KANBAN] Modal aberto');
     }
 
     function closeCreateModal() {
         const modal = selectors.createModal();
         const form = selectors.createForm();
+
         if (modal) {
             modal.classList.remove('active');
         }
+
         if (form) {
             form.reset();
+            delete form.dataset.editingId;
+
+            // Restaura o título do modal
+            const modalHeader = modal.querySelector('.kanban-modal-header h2');
+            if (modalHeader) {
+                modalHeader.innerHTML = '<i class="bi bi-plus-circle"></i> Novo Processo';
+            }
+
+            // Restaura o texto do botão de submit
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Registrar';
+            }
         }
+
+        showCreateError('');
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function handleCreateSubmit(event) {
-        event.preventDefault();
-        const form = event.currentTarget;
-        const data = new FormData(form);
-
-        const card = normalizeCard({
-            id: cryptoRandomId(),
-            referencia: data.get('referencia'),
-            devedor: data.get('devedor'),
-            prioridade: data.get('prioridade'),
-            valor: data.get('valor'),
-            prazo: data.get('prazo'),
-            responsavel: data.get('responsavel'),
-            origem: data.get('origem'),
-            status: data.get('status'),
-            ultimaAtualizacao: data.get('atualizacao') || new Date().toISOString(),
-            detalhes: data.get('detalhes')
-        });
-
-        state.cards.unshift(card);
-        render();
-        closeCreateModal();
-    }
-
-    function applyFilters() {
-        updateFilterBadge();
-        render();
-        closeFiltersModal();
-    }
-
-    function resetFilters() {
-        state.filters = {
-            prioridade: [...PRIORIDADES],
-            status: [...STATUS_ORDER],
-            origem: 'TODAS',
-            responsavel: '',
-            dateFrom: null,
-            dateTo: null
-        };
-
-        document.querySelectorAll('input[name="prioridade"]').forEach(input => {
-            input.checked = true;
-        });
-        document.querySelectorAll('input[name="status"]').forEach(input => {
-            input.checked = true;
-        });
-        const origemTodas = document.querySelector('input[name="origem"][value="TODAS"]');
-        if (origemTodas) {
-            origemTodas.checked = true;
-        }
-        const responsavel = selectors.filterResponsavel();
-        if (responsavel) {
-            responsavel.value = '';
-        }
-        const dateFrom = selectors.filterDateFrom();
-        if (dateFrom) {
-            dateFrom.value = '';
-        }
-        const dateTo = selectors.filterDateTo();
-        if (dateTo) {
-            dateTo.value = '';
-        }
-
-        updateFilterBadge();
-        render();
-    }
-
-    function clearAllFilters() {
-        resetFilters();
-        closeFiltersModal();
-    }
-
-    function updateFilterBadge() {
-        const badge = selectors.filterCount();
-        const btnClear = selectors.btnClearFilters();
-        if (!badge || !btnClear) {
+    function showCreateError(message) {
+        const error = selectors.createError();
+        if (!error) {
             return;
         }
 
-        let active = 0;
-        if (state.filters.prioridade.length && state.filters.prioridade.length !== PRIORIDADES.length) {
-            active += 1;
-        }
-        if (state.filters.status.length && state.filters.status.length !== STATUS_ORDER.length) {
-            active += 1;
-        }
-        if (state.filters.origem !== 'TODAS') {
-            active += 1;
-        }
-        if (state.filters.responsavel) {
-            active += 1;
-        }
-        if (state.filters.dateFrom) {
-            active += 1;
-        }
-        if (state.filters.dateTo) {
-            active += 1;
+        if (!message) {
+            error.textContent = '';
+            error.classList.remove('active');
+            return;
         }
 
-        if (active > 0) {
-            badge.textContent = String(active);
-            badge.style.display = 'inline-flex';
-            btnClear.style.display = 'inline-flex';
-        } else {
-            badge.style.display = 'none';
-            btnClear.style.display = 'none';
+        error.textContent = message;
+        error.classList.add('active');
+    }
+
+    async function handleCreateSubmit(event) {
+        event.preventDefault();
+        console.log('[PROCESSOS-KANBAN] Formulário submetido');
+
+        const form = event.currentTarget;
+        if (!form) {
+            return;
+        }
+
+        const isEditing = !!form.dataset.editingId;
+        const editingId = form.dataset.editingId;
+
+        const data = new FormData(form);
+        const autor = data.get('autor')?.toString().trim();
+        const reu = data.get('reu')?.toString().trim();
+        const materia = data.get('materia')?.toString().trim();
+        const numeroProcesso = data.get('numeroProcesso')?.toString().trim();
+        const pedidos = data.get('pedidos')?.toString().trim();
+        const valorCausaStr = data.get('valorCausa')?.toString().replace(',', '.');
+        const valorCausa = parseFloat(valorCausaStr);
+
+        if (!autor || !reu || !materia || !numeroProcesso || !pedidos) {
+            showCreateError('Todos os campos são obrigatórios.');
+            return;
+        }
+
+        if (!valorCausa || valorCausa < 0) {
+            showCreateError('Informe um valor da causa válido.');
+            return;
+        }
+
+        const payload = {
+            autor: autor,
+            reu: reu,
+            materia: materia,
+            numeroProcesso: numeroProcesso,
+            valorCausa: valorCausa,
+            pedidos: pedidos
+        };
+
+        console.log('[PROCESSOS-KANBAN] Enviando payload:', payload, 'Edição:', isEditing);
+
+        try {
+            const url = isEditing ? API_BASE + '/' + editingId : API_BASE;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: buildHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }),
+                body: JSON.stringify(payload)
+            });
+
+            console.log('[PROCESSOS-KANBAN] Response status:', response.status);
+
+            if (!response.ok) {
+                let message = isEditing ? 'Não foi possível atualizar o processo.' : 'Não foi possível criar o processo.';
+                try {
+                    const errorData = await response.json();
+                    message = errorData.message || errorData.error || message;
+                } catch (e) {
+                    const textError = await response.text();
+                    console.error('[PROCESSOS-KANBAN] Erro:', textError);
+                }
+                showCreateError(message);
+                return;
+            }
+
+            const savedProcess = await response.json();
+            console.log('[PROCESSOS-KANBAN] Processo salvo:', savedProcess);
+
+            if (isEditing) {
+                // Atualiza o processo no estado
+                const index = state.cards.findIndex(c => c.id === parseInt(editingId));
+                if (index !== -1) {
+                    state.cards[index] = savedProcess;
+                }
+            } else {
+                // Adiciona novo processo ao início
+                state.cards.unshift(savedProcess);
+            }
+
+            render();
+            closeCreateModal();
+
+            if (isEditing) {
+                alert('Processo atualizado com sucesso!');
+            }
+
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao salvar processo:', error);
+            showCreateError('Ocorreu um erro ao salvar o processo. Tente novamente.');
+        }
+    }
+
+    function openEditModal(processId) {
+        console.log('[PROCESSOS-KANBAN] Abrindo modal de edição para processo:', processId);
+
+        const card = state.cards.find(c => c.id === processId);
+        if (!card) {
+            console.error('[PROCESSOS-KANBAN] Processo não encontrado:', processId);
+            return;
+        }
+
+        closeModal();
+
+        const modal = selectors.createModal();
+        const form = selectors.createForm();
+
+        if (!modal || !form) {
+            console.error('[PROCESSOS-KANBAN] Modal ou form não encontrado!');
+            return;
+        }
+
+        // Preenche o formulário com os dados do processo
+        form.querySelector('#create-autor').value = card.autor || '';
+        form.querySelector('#create-reu').value = card.reu || '';
+        form.querySelector('#create-materia').value = card.materia || '';
+        form.querySelector('#create-numero-processo').value = card.numeroProcesso || '';
+        form.querySelector('#create-valor-causa').value = card.valorCausa || '';
+        form.querySelector('#create-pedidos').value = card.pedidos || '';
+
+        // Marca o formulário como edição
+        form.dataset.editingId = processId;
+
+        // Muda o título do modal
+        const modalHeader = modal.querySelector('.kanban-modal-header h2');
+        if (modalHeader) {
+            modalHeader.innerHTML = '<i class="bi bi-pencil"></i> Editar Processo';
+        }
+
+        // Muda o texto do botão de submit
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="bi bi-save"></i> Salvar';
+        }
+
+        showCreateError('');
+        modal.classList.add('active');
+        document.body.classList.add('kanban-modal-open');
+
+        console.log('[PROCESSOS-KANBAN] Modal de edição aberto');
+    }
+
+    async function deleteProcess(processId) {
+        console.log('[PROCESSOS-KANBAN] Solicitando exclusão do processo:', processId);
+
+        const card = state.cards.find(c => c.id === processId);
+        if (!card) {
+            console.error('[PROCESSOS-KANBAN] Processo não encontrado:', processId);
+            return;
+        }
+
+        const confirmMsg = 'Tem certeza que deseja excluir o processo "' + card.numeroProcesso + '"?\n\nEsta ação não pode ser desfeita.';
+        if (!confirm(confirmMsg)) {
+            console.log('[PROCESSOS-KANBAN] Exclusão cancelada pelo usuário');
+            return;
+        }
+
+        try {
+            const response = await fetch(API_BASE + '/' + processId, {
+                method: 'DELETE',
+                headers: buildHeaders({
+                    'Accept': 'application/json'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao deletar processo');
+            }
+
+            console.log('[PROCESSOS-KANBAN] Processo deletado com sucesso');
+
+            // Remove do estado local
+            state.cards = state.cards.filter(c => c.id !== processId);
+
+            closeModal();
+            render();
+
+            alert('Processo excluído com sucesso!');
+
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao deletar processo:', error);
+            alert('Não foi possível excluir o processo. Tente novamente.');
         }
     }
 
     function formatCurrency(value) {
-        return currencyFormatter.format(value || 0);
+        return new Intl.NumberFormat('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(value);
     }
 
-    function formatDate(value) {
-        if (!value) {
-            return '—';
-        }
-        const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? '—' : dateFormatter.format(date);
-    }
-
-    function formatDateTime(value) {
-        if (!value) {
-            return '—';
-        }
-        const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? '—' : dateTimeFormatter.format(date);
-    }
-
-    function parseDate(value, isEndOfDay = false) {
-        if (!value) {
-            return null;
-        }
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) {
-            return null;
-        }
-        if (isEndOfDay) {
-            date.setHours(23, 59, 59, 999);
-        }
-        return date;
-    }
-
-    function escapeHtml(value) {
-        if (value === null || value === undefined) {
-            return '';
-        }
-        return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
-    function cryptoRandomId() {
-        if (window.crypto?.randomUUID) {
-            return window.crypto.randomUUID();
-        }
-        return `cobranca-${Math.random().toString(36).slice(2, 10)}`;
-    }
-
-    function buildSeedData() {
-        const now = new Date();
-        return [
-            {
-                id: cryptoRandomId(),
-                referencia: 'PROC-2024-001',
-                devedor: 'Transportadora Alfa Ltda.',
-                valor: 18500.32,
-                status: 'EM_ABERTO_7_0',
-                prioridade: 'ALTA',
-                responsavel: 'Maria Barbosa',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15)),
-                ultimaAtualizacao: normalizeDateTime(now),
-                detalhes: 'Cobrança referente a contrato de prestação de serviço cancelado. Aguardando documentação do cliente.',
-                contato: '(11) 98888-1234',
-                email: 'financeiro@transportadoraalfa.com',
-                documento: '27.123.456/0001-90'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'ACORDO-NEG-233',
-                devedor: 'João Batista de Souza',
-                valor: 7200.00,
-                status: 'EM_CONTATO_7_1',
-                prioridade: 'MEDIA',
-                responsavel: 'Caroline Ribeiro',
-                origem: 'EXTRAJUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 20)),
-                detalhes: 'Em negociação de parcelamento em 4x. Cliente aguarda envio do termo de acordo revisado.',
-                contato: '(41) 97777-8899',
-                email: 'joao.souza@email.com',
-                documento: '123.456.789-00'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'PROC-2023-887',
-                devedor: 'Construtora Vértice S/A',
-                valor: 54890.47,
-                status: 'COBRANCA_JUDICIAL_7_2',
-                prioridade: 'ALTA',
-                responsavel: 'Ricardo Ferraz',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 48)),
-                detalhes: 'Processo com audiência marcada. Avaliando proposta de acordo apresentada pelo advogado da parte contrária.',
-                contato: '(31) 95555-6677',
-                email: 'contato@construtoravertice.com',
-                documento: '15.456.789/0001-12'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'NEG-2024-054',
-                devedor: 'Mercado Nova Era ME',
-                valor: 3950.90,
-                status: 'ACORDO_ASSINADO_7_3',
-                prioridade: 'MEDIA',
-                responsavel: 'Patrícia Gomes',
-                origem: 'EXTRAJUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 3)),
-                detalhes: 'Acordo firmado com pagamento em 2 parcelas. Primeira parcela vence em 5 dias.',
-                contato: '(21) 96666-7788',
-                email: 'contato@mercadonnovaera.com',
-                documento: '09.987.654/0001-44'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'ENC-2023-410',
-                devedor: 'Logística Horizonte LTDA',
-                valor: 12800.00,
-                status: 'ACORDO_ASSINADO_7_3',
-                prioridade: 'BAIXA',
-                responsavel: 'Eduardo Martins',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 12)),
-                detalhes: 'Cobrança encerrada após quitação integral. Arquivar documentação.',
-                contato: '(51) 93333-4455',
-                email: 'contato@logisticahorizonte.com',
-                documento: '38.654.321/0001-77'
-            }
-        ];
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        window.cobrancaBoard = {
-            applyFilters,
-            resetFilters,
-            closeFiltersModal,
-            openCreateModal,
-            closeCreateModal,
-            closeModal
+        console.log('[PROCESSOS-KANBAN] DOM carregado, inicializando...');
+
+        window.processosBoard = {
+            openCreateModal: openCreateModal,
+            closeCreateModal: closeCreateModal,
+            closeModal: closeModal,
+            openEditModal: openEditModal,
+            deleteProcess: deleteProcess
         };
+
+        console.log('[PROCESSOS-KANBAN] window.processosBoard criado:', window.processosBoard);
 
         init();
     });
