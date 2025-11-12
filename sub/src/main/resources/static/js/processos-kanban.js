@@ -841,13 +841,18 @@
 
         try {
             const data = new FormData(form);
-            const payload = {
-                autor: (data.get('autor') || '').toString().trim(),
-                reu: (data.get('reu') || '').toString().trim(),
-                materia: (data.get('materia') || '').toString().trim(),
-                numeroProcesso: (data.get('numeroProcesso') || '').toString().trim(),
-                pedidos: (data.get('pedidos') || '').toString().trim()
-            };
+
+            // Validação dos campos obrigatórios
+            const autor = (data.get('autor') || '').toString().trim();
+            const reu = (data.get('reu') || '').toString().trim();
+            const materia = (data.get('materia') || '').toString().trim();
+            const numeroProcesso = (data.get('numeroProcesso') || '').toString().trim();
+            const pedidos = (data.get('pedidos') || '').toString().trim();
+
+            if (!autor || !reu || !materia || !numeroProcesso || !pedidos) {
+                showCreateError('Todos os campos são obrigatórios.');
+                return;
+            }
 
             const valorString = (data.get('valorCausa') || '').toString().replace(',', '.');
             const valorCausa = Number.parseFloat(valorString);
@@ -857,7 +862,16 @@
                 return;
             }
 
-            payload.valorCausa = Number.parseFloat(valorCausa.toFixed(2));
+            const payload = {
+                autor: autor,
+                reu: reu,
+                materia: materia,
+                numeroProcesso: numeroProcesso,
+                valorCausa: valorCausa,
+                pedidos: pedidos
+            };
+
+            console.log('[PROCESSOS-KANBAN] Criando processo com payload:', payload);
 
             const response = await fetch(API_BASE, {
                 method: 'POST',
@@ -868,21 +882,29 @@
                 body: JSON.stringify(payload)
             });
 
+            console.log('[PROCESSOS-KANBAN] Response status:', response.status);
+
             if (!response.ok) {
                 let message = 'Não foi possível registrar o processo.';
                 try {
                     const errorBody = await response.json();
+                    console.error('[PROCESSOS-KANBAN] Erro do servidor:', errorBody);
                     if (errorBody?.message) {
                         message = errorBody.message;
+                    } else if (errorBody?.error) {
+                        message = errorBody.error;
                     }
                 } catch (parseError) {
-                    console.warn('[PROCESSOS-KANBAN] Não foi possível interpretar o erro do cadastro.', parseError);
+                    const textError = await response.text();
+                    console.error('[PROCESSOS-KANBAN] Erro como texto:', textError);
                 }
                 showCreateError(message);
                 return;
             }
 
             const created = await response.json();
+            console.log('[PROCESSOS-KANBAN] Processo criado com sucesso:', created);
+
             const card = normalizeCard(created);
             if (card) {
                 const targetStatus = (() => {
@@ -905,7 +927,7 @@
             closeCreateModal();
         } catch (error) {
             console.error('[PROCESSOS-KANBAN] Erro ao registrar processo:', error);
-            showCreateError('Ocorreu um erro ao registrar o processo. Tente novamente.');
+            showCreateError('Ocorreu um erro ao registrar o processo. Tente novamente: ' + error.message);
         } finally {
             setCreateLoading(false);
             form.dataset.submitting = 'false';

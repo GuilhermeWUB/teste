@@ -52,6 +52,7 @@ public class LegalProcess {
         this.numeroProcesso = numeroProcesso;
         this.valorCausa = valorCausa;
         this.pedidos = pedidos;
+        this.status = LegalProcessStatus.EM_ABERTO_7_0;
     }
 
     public Long getId() {
