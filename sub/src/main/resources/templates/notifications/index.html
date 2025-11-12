@@ -4,74 +4,114 @@
 <body>
 <header th:replace="~{fragments/layout :: header}"></header>
 
-<section class="page">
+<section class="notifications-page">
     <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="bi bi-bell-fill"></i>
-                Notificações
-            </h1>
-            <p class="page-subtitle">Acompanhe suas notificações e atualizações do sistema</p>
-            <div class="d-flex gap-2 mt-2">
-                <span class="badge bg-primary" th:text="${unreadCount} + ' não lidas'">0 não lidas</span>
-                <span class="badge bg-secondary" th:text="${totalCount} + ' total'">0 total</span>
+        <div class="page-hero card shadow-sm border-0 overflow-hidden mb-4">
+            <div class="hero-backdrop"></div>
+            <div class="hero-content">
+                <div>
+                    <span class="hero-eyebrow">Central de Alertas</span>
+                    <h1 class="hero-title">
+                        <i class="bi bi-bell-fill me-2"></i>
+                        Notificações
+                    </h1>
+                    <p class="hero-subtitle">Acompanhe mensagens importantes, alertas de pagamento e atualizações de processos em um só lugar.</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card" aria-live="polite">
+                        <div class="stat-icon bg-primary text-white">
+                            <i class="bi bi-envelope-open"></i>
+                        </div>
+                        <div>
+                            <span class="stat-label">Não lidas</span>
+                            <strong class="stat-value" th:text="${unreadCount}">0</strong>
+                        </div>
+                    </div>
+                    <div class="stat-card" aria-live="polite">
+                        <div class="stat-icon bg-success text-white">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <div>
+                            <span class="stat-label">Total</span>
+                            <strong class="stat-value" th:text="${totalCount}">0</strong>
+                        </div>
+                    </div>
+                    <div class="stat-card d-none d-md-flex">
+                        <div class="stat-icon bg-info text-white">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <div>
+                            <span class="stat-label">Filtro ativo</span>
+                            <strong class="stat-value text-capitalize" th:text="${filter == 'all'} ? 'Todos' : (${filter == 'unread'} ? 'Não lidas' : 'Arquivadas')">Todos</strong>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Mensagens de sucesso/erro -->
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
             <span th:text="${successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
 
         <!-- Filtros e Ações -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-                    <div class="btn-group" role="group" aria-label="Filtros">
-                        <a th:href="@{/notifications}"
-                           th:class="${filter == 'all'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-list me-1"></i>Todas
-                        </a>
-                        <a th:href="@{/notifications(filter='unread')}"
-                           th:class="${filter == 'unread'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-envelope me-1"></i>Não Lidas
-                        </a>
-                        <a th:href="@{/notifications(filter='archived')}"
-                           th:class="${filter == 'archived'} ? 'btn btn-primary' : 'btn btn-outline-primary'">
-                            <i class="bi bi-archive me-1"></i>Arquivadas
-                        </a>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body d-flex flex-column gap-3 gap-md-2 flex-lg-row align-items-lg-center justify-content-between">
+                <nav class="filters" aria-label="Filtrar notificações">
+                    <a th:href="@{/notifications}" class="filter-chip" th:classappend="${filter == 'all'} ? ' active'">
+                        <i class="bi bi-list-ul me-1"></i>Todas
+                    </a>
+                    <a th:href="@{/notifications(filter='unread')}" class="filter-chip" th:classappend="${filter == 'unread'} ? ' active'">
+                        <i class="bi bi-envelope me-1"></i>Não lidas
+                    </a>
+                    <a th:href="@{/notifications(filter='archived')}" class="filter-chip" th:classappend="${filter == 'archived'} ? ' active'">
+                        <i class="bi bi-archive me-1"></i>Arquivadas
+                    </a>
+                </nav>
+
+                <div class="tools d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center w-100 w-lg-auto">
+                    <div class="search-wrapper flex-grow-1">
+                        <label class="visually-hidden" for="notificationSearch">Buscar notificações</label>
+                        <span class="search-icon"><i class="bi bi-search"></i></span>
+                        <input id="notificationSearch" type="search" class="form-control shadow-none" placeholder="Buscar por título, conteúdo ou tipo" autocomplete="off">
                     </div>
-                    <button type="button" class="btn btn-success" id="markAllReadBtn" th:if="${unreadCount > 0}">
-                        <i class="bi bi-check-all me-1"></i>Marcar Todas como Lidas
+                    <button type="button" class="btn btn-success ms-md-2" id="markAllReadBtn" th:if="${unreadCount > 0}">
+                        <i class="bi bi-check-all me-1"></i>Marcar todas como lidas
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Lista de Notificações -->
-        <div th:if="${notifications.isEmpty()}" class="alert alert-info text-center" role="alert">
-            <i class="bi bi-info-circle me-2"></i>
-            <span th:if="${filter == 'unread'}">Você não tem notificações não lidas.</span>
-            <span th:if="${filter == 'archived'}">Você não tem notificações arquivadas.</span>
-            <span th:if="${filter == 'all'}">Você não tem notificações.</span>
+        <!-- Estado vazio -->
+        <div th:if="${notifications.isEmpty()}" class="empty-state card border-0 shadow-sm text-center p-4">
+            <div class="empty-illustration">
+                <i class="bi bi-bell-slash"></i>
+            </div>
+            <h2 class="empty-title">Tudo em dia!</h2>
+            <p class="empty-description">
+                <span th:if="${filter == 'unread'}">Você não tem notificações não lidas.</span>
+                <span th:if="${filter == 'archived'}">Você não tem notificações arquivadas.</span>
+                <span th:if="${filter == 'all'}">Nenhuma notificação foi encontrada no momento.</span>
+            </p>
         </div>
 
-        <div class="list-group shadow-sm" th:if="${!notifications.isEmpty()}">
-            <div th:each="notification : ${notifications}"
-                 th:class="'list-group-item list-group-item-action notification-item ' +
-                          (${notification.status.name() == 'UNREAD'} ? 'notification-unread' : 'notification-read')"
-                 th:data-notification-id="${notification.id}">
-
-                <div class="d-flex align-items-start gap-3">
-                    <!-- Ícone do tipo de notificação -->
-                    <div class="notification-icon flex-shrink-0"
+        <!-- Lista de notificações -->
+        <div th:if="${!notifications.isEmpty()}" class="notification-wrapper">
+            <div class="notification-timeline">
+                <article th:each="notification : ${notifications}"
+                         th:class="'notification-card ' +
+                                   (${notification.status.name() == 'UNREAD'} ? 'notification-unread' :
+                                   ${notification.status.name() == 'ARCHIVED'} ? 'notification-archived' : 'notification-read')"
+                         th:data-notification-id="${notification.id}"
+                         th:attr="data-title=${notification.title}, data-message=${notification.message}, data-type=${notification.type.displayName}, data-priority=${notification.priority != null ? notification.priority.name() : ''}">
+                    <div class="timeline-marker"
                          th:classappend="${notification.type.name() == 'EVENT'} ? 'bg-primary text-white' :
                                        ${notification.type.name() == 'DEMAND'} ? 'bg-warning text-dark' :
                                        ${notification.type.name() == 'PAYMENT'} ? 'bg-success text-white' :
@@ -88,35 +128,47 @@
                                      'bi bi-info-circle'"></i>
                     </div>
 
-                    <!-- Conteúdo da notificação -->
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h6 class="mb-0" th:text="${notification.title}">Título da Notificação</h6>
-                            <div class="d-flex gap-1 flex-shrink-0">
-                                <span class="badge notification-badge"
-                                      th:classappend="${notification.type.name() == 'EVENT'} ? 'bg-primary' :
-                                                    ${notification.type.name() == 'DEMAND'} ? 'bg-warning text-dark' :
-                                                    ${notification.type.name() == 'PAYMENT'} ? 'bg-success' :
-                                                    ${notification.type.name() == 'BANK_SLIP'} ? 'bg-info' :
-                                                    ${notification.type.name() == 'ALERT'} ? 'bg-danger' :
-                                                    'bg-secondary'"
-                                      th:text="${notification.type.displayName}">Tipo</span>
-                                <span th:if="${notification.priority != null}"
-                                      class="badge notification-badge"
-                                      th:classappend="'priority-badge-' + ${notification.priority.name()}"
-                                      th:text="${notification.priority.name()}">Prioridade</span>
+                    <div class="notification-card-body">
+                        <div class="notification-header">
+                            <div>
+                                <h2 class="notification-title mb-0" th:text="${notification.title}">Título da Notificação</h2>
+                                <div class="notification-meta d-flex flex-wrap align-items-center gap-2 mt-2">
+                                    <span class="badge rounded-pill notification-badge"
+                                          th:classappend="${notification.type.name() == 'EVENT'} ? 'bg-primary' :
+                                                        ${notification.type.name() == 'DEMAND'} ? 'bg-warning text-dark' :
+                                                        ${notification.type.name() == 'PAYMENT'} ? 'bg-success' :
+                                                        ${notification.type.name() == 'BANK_SLIP'} ? 'bg-info text-dark' :
+                                                        ${notification.type.name() == 'ALERT'} ? 'bg-danger' :
+                                                        'bg-secondary'"
+                                          th:text="${notification.type.displayName}">Tipo</span>
+                                    <span th:if="${notification.priority != null}"
+                                          class="badge rounded-pill notification-badge"
+                                          th:classappend="'priority-badge-' + ${notification.priority.name()}"
+                                          th:text="${notification.priority.name()}">Prioridade</span>
+                                    <span class="status-pill" th:text="${#strings.capitalizeFully(#strings.replace(notification.status.name(), '_', ' '))}">Status</span>
+                                </div>
+                            </div>
+                            <div class="notification-time text-end">
+                                <small class="text-muted" th:text="${#temporals.format(notification.createdAt, 'dd MMM yyyy')}">12 Mai 2023</small>
+                                <small class="text-muted d-block" th:text="${#temporals.format(notification.createdAt, 'HH:mm')}">09:30</small>
                             </div>
                         </div>
 
-                        <p class="mb-2 text-muted small" th:text="${notification.message}">Mensagem da notificação</p>
+                        <div class="notification-content">
+                            <p class="notification-message" th:id="'message-' + ${notification.id}" th:text="${notification.message}">
+                                Mensagem da notificação
+                            </p>
+                            <button type="button" class="btn btn-link btn-sm p-0 toggle-message" th:attr="data-target='message-' + ${notification.id}">
+                                Ver mais
+                            </button>
+                        </div>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
+                        <div class="notification-footer">
+                            <div class="notification-tags">
                                 <i class="bi bi-clock me-1"></i>
                                 <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy HH:mm')}">Data</span>
-                            </small>
-
-                            <div class="btn-group btn-group-sm" role="group">
+                            </div>
+                            <div class="notification-actions btn-toolbar gap-2">
                                 <a th:if="${notification.actionUrl != null}"
                                    th:href="@{${notification.actionUrl}}"
                                    class="btn btn-outline-primary btn-sm">
@@ -148,26 +200,27 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </article>
+            </div>
+            <div class="alert alert-light shadow-sm text-center mt-3 d-none" id="emptySearchState" role="status">
+                <i class="bi bi-search me-2"></i>Nenhuma notificação corresponde ao filtro atual.
             </div>
         </div>
 
         <!-- Paginação -->
         <nav th:if="${totalPages > 1}" aria-label="Navegação de notificações" class="mt-4">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center mb-0">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link" th:href="@{/notifications(page=${currentPage - 1}, filter=${filter})}" aria-label="Anterior">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-
                 <li th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
                     th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
                     class="page-item"
-                    th:classappend="${pageNum == currentPage} ? 'active'">
+                    th:classappend="${pageNum == currentPage} ? ' active'">
                     <a class="page-link" th:href="@{/notifications(page=${pageNum}, filter=${filter})}" th:text="${pageNum + 1}">1</a>
                 </li>
-
                 <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                     <a class="page-link" th:href="@{/notifications(page=${currentPage + 1}, filter=${filter})}" aria-label="Próxima">
                         <span aria-hidden="true">&raquo;</span>
@@ -180,56 +233,604 @@
 
 <!-- Estilos específicos da página de notificações -->
 <style>
-    .notification-item {
-        transition: all 0.3s ease;
-        border-left: 4px solid transparent;
+    :root {
+        --notification-bg: #ffffff;
+        --notification-border: rgba(13, 110, 253, 0.08);
+        --notification-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+        --notification-hover: #f6f9ff;
+        --timeline-line: rgba(13, 110, 253, 0.08);
     }
-    .notification-item:hover {
-        background-color: var(--hover-bg, #f8f9fa);
-        transform: translateX(5px);
+
+    [data-theme="dark"] {
+        --notification-bg: #151922;
+        --notification-border: rgba(255, 255, 255, 0.05);
+        --notification-shadow: 0 10px 20px rgba(0, 0, 0, 0.45);
+        --notification-hover: rgba(13, 110, 253, 0.1);
+        --timeline-line: rgba(255, 255, 255, 0.08);
     }
-    [data-theme="dark"] .notification-item:hover {
-        background-color: #2d2d2d;
+
+    .notifications-page {
+        padding: 2rem 0 4rem;
+        background: linear-gradient(180deg, rgba(13, 110, 253, 0.05) 0%, rgba(13, 110, 253, 0) 60%);
+        min-height: calc(100vh - 80px);
     }
-    .notification-unread {
-        background-color: #f0f7ff;
-        border-left-color: #0d6efd;
-        font-weight: 500;
+
+    .page-hero {
+        position: relative;
+        border-radius: 1.25rem;
     }
-    [data-theme="dark"] .notification-unread {
-        background-color: #1a2a3a;
-    }
-    .notification-read {
-        background-color: #ffffff;
+
+    .hero-backdrop {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top left, rgba(13, 110, 253, 0.2), transparent 60%),
+                    radial-gradient(circle at bottom right, rgba(25, 135, 84, 0.25), transparent 55%);
         opacity: 0.9;
     }
-    [data-theme="dark"] .notification-read {
-        background-color: #1e1e1e;
+
+    .hero-content {
+        position: relative;
+        padding: 2.5rem 2.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
     }
-    .notification-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
+
+    .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #0d6efd;
     }
-    .notification-icon {
-        width: 40px;
-        height: 40px;
+
+    [data-theme="dark"] .hero-eyebrow {
+        color: #9ec5fe;
+    }
+
+    .hero-title {
+        font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    [data-theme="dark"] .hero-title {
+        color: #f8fafc;
+    }
+
+    .hero-subtitle {
+        margin: 0;
+        max-width: 42rem;
+        color: #475569;
+        font-size: 1rem;
+    }
+
+    [data-theme="dark"] .hero-subtitle {
+        color: #cbd5f5;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .stat-card {
         display: flex;
         align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 1.25rem;
+        gap: 0.85rem;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 0.85rem;
+        padding: 0.85rem 1rem;
+        box-shadow: 0 18px 24px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(6px);
     }
+
+    [data-theme="dark"] .stat-card {
+        background: rgba(21, 25, 34, 0.8);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .stat-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 0.75rem;
+        font-size: 1.25rem;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    [data-theme="dark"] .stat-label {
+        color: #cbd5f5;
+    }
+
+    .stat-value {
+        font-size: 1.4rem;
+        color: #0f172a;
+    }
+
+    [data-theme="dark"] .stat-value {
+        color: #f8fafc;
+    }
+
+    .filters {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(13, 110, 253, 0.3);
+        color: #0d6efd;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: rgba(13, 110, 253, 0.06);
+    }
+
+    .filter-chip:hover,
+    .filter-chip:focus {
+        background: rgba(13, 110, 253, 0.12);
+        color: #0a58ca;
+        text-decoration: none;
+    }
+
+    .filter-chip.active {
+        background: #0d6efd;
+        color: #fff;
+        box-shadow: 0 8px 16px rgba(13, 110, 253, 0.25);
+    }
+
+    [data-theme="dark"] .filter-chip {
+        border-color: rgba(158, 197, 254, 0.35);
+        color: #9ec5fe;
+        background: rgba(13, 110, 253, 0.18);
+    }
+
+    [data-theme="dark"] .filter-chip.active {
+        background: #0b5ed7;
+        box-shadow: 0 12px 20px rgba(13, 110, 253, 0.35);
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-wrapper input {
+        border-radius: 999px;
+        padding-left: 2.5rem;
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 0.95rem;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1rem;
+        pointer-events: none;
+    }
+
+    [data-theme="dark"] .search-icon {
+        color: #cbd5f5;
+    }
+
+    .empty-state {
+        border-radius: 1.25rem;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 100%);
+    }
+
+    [data-theme="dark"] .empty-state {
+        background: linear-gradient(180deg, rgba(21, 25, 34, 0.95) 0%, rgba(21, 25, 34, 0.85) 100%);
+    }
+
+    .empty-illustration {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        background: rgba(13, 110, 253, 0.12);
+        display: grid;
+        place-items: center;
+        font-size: 2.5rem;
+        color: #0d6efd;
+    }
+
+    [data-theme="dark"] .empty-illustration {
+        background: rgba(158, 197, 254, 0.16);
+        color: #9ec5fe;
+    }
+
+    .empty-title {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    [data-theme="dark"] .empty-title {
+        color: #e2e8f0;
+    }
+
+    .empty-description {
+        margin: 0;
+        color: #475569;
+    }
+
+    [data-theme="dark"] .empty-description {
+        color: #cbd5f5;
+    }
+
+    .notification-wrapper {
+        background: transparent;
+    }
+
+    .notification-timeline {
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .notification-timeline::before {
+        content: "";
+        position: absolute;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        left: 28px;
+        width: 2px;
+        background: var(--timeline-line);
+    }
+
+    .notification-card {
+        position: relative;
+        display: flex;
+        gap: 1.5rem;
+        background: var(--notification-bg);
+        border: 1px solid var(--notification-border);
+        border-radius: 1.1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--notification-shadow);
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .notification-card:last-child {
+        margin-bottom: 0.5rem;
+    }
+
+    .notification-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(13, 110, 253, 0.25);
+        box-shadow: 0 18px 30px rgba(15, 23, 42, 0.12);
+        background: var(--notification-hover);
+    }
+
+    .notification-card.notification-unread {
+        border-left: 4px solid #0d6efd;
+        box-shadow: 0 18px 36px rgba(13, 110, 253, 0.18);
+    }
+
+    .notification-card.notification-archived {
+        opacity: 0.85;
+    }
+
+    .timeline-marker {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .notification-card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .notification-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.35;
+    }
+
+    [data-theme="dark"] .notification-title {
+        color: #f8fafc;
+    }
+
+    .notification-meta {
+        font-size: 0.85rem;
+        color: #475569;
+    }
+
+    [data-theme="dark"] .notification-meta {
+        color: #cbd5f5;
+    }
+
+    .status-pill {
+        background: rgba(15, 118, 110, 0.08);
+        color: #0f766e;
+        border-radius: 999px;
+        padding: 0.2rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    [data-theme="dark"] .status-pill {
+        background: rgba(59, 130, 246, 0.2);
+        color: #bae6fd;
+    }
+
+    .notification-time {
+        min-width: 76px;
+    }
+
+    .notification-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .notification-message {
+        margin: 0;
+        color: #475569;
+        line-height: 1.6;
+        font-size: 0.97rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        max-height: 4.8em;
+        transition: max-height 0.3s ease;
+    }
+
+    .notification-message.expanded {
+        -webkit-line-clamp: unset;
+        max-height: 100vh;
+    }
+
+    [data-theme="dark"] .notification-message {
+        color: #cbd5f5;
+    }
+
+    .toggle-message {
+        align-self: flex-start;
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    .toggle-message:hover,
+    .toggle-message:focus {
+        color: #0a58ca;
+        text-decoration: none;
+    }
+
+    [data-theme="dark"] .toggle-message {
+        color: #9ec5fe;
+    }
+
+    [data-theme="dark"] .toggle-message:hover,
+    [data-theme="dark"] .toggle-message:focus {
+        color: #b6d4fe;
+    }
+
+    .notification-footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .notification-tags {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    [data-theme="dark"] .notification-tags {
+        color: #cbd5f5;
+    }
+
+    .notification-actions .btn {
+        border-radius: 999px;
+    }
+
+    .notification-actions .btn-outline-secondary {
+        border-color: rgba(148, 163, 184, 0.6);
+        color: #475569;
+    }
+
+    .notification-actions .btn-outline-secondary:hover,
+    .notification-actions .btn-outline-secondary:focus {
+        background: rgba(71, 85, 105, 0.12);
+        color: #0f172a;
+    }
+
+    [data-theme="dark"] .notification-actions .btn-outline-secondary {
+        color: #e2e8f0;
+        border-color: rgba(226, 232, 240, 0.25);
+    }
+
+    [data-theme="dark"] .notification-actions .btn-outline-secondary:hover,
+    [data-theme="dark"] .notification-actions .btn-outline-secondary:focus {
+        background: rgba(226, 232, 240, 0.15);
+        color: #f8fafc;
+    }
+
     .priority-badge-URGENTE { background-color: #dc3545; color: white; }
     .priority-badge-ALTA { background-color: #fd7e14; color: white; }
-    .priority-badge-MEDIA { background-color: #ffc107; color: black; }
+    .priority-badge-MEDIA { background-color: #ffc107; color: #0f172a; }
     .priority-badge-BAIXA { background-color: #6c757d; color: white; }
+
+    @media (max-width: 992px) {
+        .notification-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .notification-time {
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .notifications-page {
+            padding-top: 1.5rem;
+        }
+
+        .hero-content {
+            padding: 1.75rem;
+        }
+
+        .notification-card {
+            flex-direction: column;
+            padding: 1.25rem;
+        }
+
+        .notification-timeline::before {
+            left: 20px;
+        }
+
+        .timeline-marker {
+            width: 48px;
+            height: 48px;
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filters {
+            width: 100%;
+        }
+
+        .filters .filter-chip {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+        .tools {
+            width: 100%;
+        }
+
+        .notification-actions {
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .notification-actions .btn {
+            flex: 1 1 auto;
+        }
+    }
 </style>
 
-<!-- JavaScript para ações das notificações -->
+<!-- JavaScript para ações e aprimoramentos das notificações -->
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const csrfToken = /*[[${_csrf.token}]]*/ '';
         const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        const notificationCards = Array.from(document.querySelectorAll('.notification-card'));
+        const searchInput = document.getElementById('notificationSearch');
+        const emptySearchState = document.getElementById('emptySearchState');
+
+        function applySearchFilter() {
+            if (!searchInput) {
+                return;
+            }
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            notificationCards.forEach(card => {
+                if (!query) {
+                    card.classList.remove('d-none');
+                    visibleCount++;
+                    return;
+                }
+
+                const haystack = [card.dataset.title, card.dataset.message, card.dataset.type, card.dataset.priority]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+
+                const match = haystack.includes(query);
+                card.classList.toggle('d-none', !match);
+                if (match) {
+                    visibleCount++;
+                }
+            });
+
+            if (emptySearchState) {
+                emptySearchState.classList.toggle('d-none', visibleCount !== 0);
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applySearchFilter);
+        }
+
+        // Controla botões de "Ver mais"
+        notificationCards.forEach(card => {
+            const targetId = card.querySelector('.toggle-message')?.getAttribute('data-target');
+            if (!targetId) {
+                return;
+            }
+            const message = document.getElementById(targetId);
+            const toggleBtn = card.querySelector('.toggle-message');
+            if (!message || !toggleBtn) {
+                return;
+            }
+
+            const isClamped = message.scrollHeight > message.clientHeight + 4;
+            if (!isClamped) {
+                toggleBtn.classList.add('d-none');
+            } else {
+                toggleBtn.addEventListener('click', function() {
+                    const expanded = message.classList.toggle('expanded');
+                    card.classList.toggle('notification-expanded', expanded);
+                    toggleBtn.textContent = expanded ? 'Ver menos' : 'Ver mais';
+                });
+            }
+        });
 
         // Marcar como lida
         document.querySelectorAll('.mark-read-btn').forEach(btn => {
@@ -280,13 +881,13 @@
                     [csrfHeader]: csrfToken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
         }
 
         function markAsUnread(id) {
@@ -296,13 +897,13 @@
                     [csrfHeader]: csrfToken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
         }
 
         function archiveNotification(id) {
@@ -312,13 +913,13 @@
                     [csrfHeader]: csrfToken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
         }
 
         function deleteNotification(id) {
@@ -328,13 +929,13 @@
                     [csrfHeader]: csrfToken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
         }
 
         function markAllAsRead() {
@@ -344,13 +945,13 @@
                     [csrfHeader]: csrfToken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
         }
     });
 </script>
