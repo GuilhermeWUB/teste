@@ -33,6 +33,10 @@ public class LegalProcess {
     @Column(name = "pedidos", columnDefinition = "TEXT", nullable = false)
     private String pedidos;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private LegalProcessStatus status = LegalProcessStatus.EM_ABERTO_7_0;
+
     public LegalProcess() {
     }
 
@@ -100,6 +104,14 @@ public class LegalProcess {
 
     public void setPedidos(String pedidos) {
         this.pedidos = pedidos;
+    }
+
+    public LegalProcessStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LegalProcessStatus status) {
+        this.status = status;
     }
 
     @Override

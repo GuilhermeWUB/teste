@@ -599,7 +599,7 @@
         }
     }
 
-    function handleDrop(event) {
+    async function handleDrop(event) {
         event.preventDefault();
         const container = event.currentTarget;
         const column = container.closest('.kanban-column');
@@ -612,13 +612,60 @@
         }
 
         const card = state.cards.find(item => String(item.id) === normalizedCardId);
-        if (!card || card.status === targetStatus) {
+        if (!card) {
             return;
         }
 
+        const previousStatus = card.status || dragState.originStatus;
+        if (previousStatus === targetStatus) {
+            return;
+        }
+
+        // Atualização otimista da UI
         card.status = targetStatus;
         card.ultimaAtualizacao = new Date().toISOString();
         render();
+
+        // Persiste no backend
+        try {
+            const response = await persistCardStatusChange(normalizedCardId, targetStatus);
+            if (response && response.process) {
+                // Sincroniza dados do backend
+                Object.assign(card, normalizeCard(response.process));
+                render();
+            }
+        } catch (error) {
+            console.error('[KANBAN] Falha ao atualizar status:', error);
+            // Reverte em caso de erro
+            card.status = previousStatus;
+            render();
+            alert('Não foi possível atualizar o status do processo. Tente novamente.');
+        } finally {
+            dragState.cardId = null;
+            dragState.originStatus = null;
+        }
+    }
+
+    async function persistCardStatusChange(cardId, newStatus) {
+        const response = await fetch(`/juridico/api/processos/${cardId}/status`, {
+            method: 'PUT',
+            headers: buildHeaders({
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }),
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (!response.ok) {
+            const message = await response.text();
+            throw new Error(message || 'Erro ao atualizar status');
+        }
+
+        try {
+            return await response.json();
+        } catch (error) {
+            return null;
+        }
     }
 
     function openModal(card) {

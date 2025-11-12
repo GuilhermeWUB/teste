@@ -2,6 +2,7 @@ package com.necsus.necsusspring.service;
 
 import com.necsus.necsusspring.dto.LegalProcessRequest;
 import com.necsus.necsusspring.model.LegalProcess;
+import com.necsus.necsusspring.model.LegalProcessStatus;
 import com.necsus.necsusspring.repository.LegalProcessRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Sort;
@@ -57,5 +58,18 @@ public class LegalProcessService {
     public void delete(Long id) {
         LegalProcess existing = findById(id);
         legalProcessRepository.delete(existing);
+    }
+
+    /**
+     * Atualiza o status de um processo jurídico no Kanban.
+     *
+     * @param id ID do processo
+     * @param newStatus Novo status
+     * @return Processo atualizado
+     */
+    public LegalProcess updateStatus(Long id, LegalProcessStatus newStatus) {
+        LegalProcess process = findById(id);
+        process.setStatus(newStatus);
+        return legalProcessRepository.save(process);
     }
 }
