@@ -225,66 +225,40 @@
             </div>
             <div class="kanban-modal-body">
                 <form class="kanban-create-form" id="create-processo-form">
+                    <div id="create-processo-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="create-referencia">Referência *</label>
-                            <input type="text" id="create-referencia" name="referencia" placeholder="Processo ou contrato" required>
+                            <label for="create-autor">Autor *</label>
+                            <input type="text" id="create-autor" name="autor" placeholder="Nome do autor" required>
                         </div>
                         <div class="form-group">
-                            <label for="create-devedor">Devedor *</label>
-                            <input type="text" id="create-devedor" name="devedor" placeholder="Nome do devedor" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="create-prioridade">Prioridade *</label>
-                            <select id="create-prioridade" name="prioridade" required>
-                                <option value="ALTA">Alta</option>
-                                <option value="MEDIA">Média</option>
-                                <option value="BAIXA">Baixa</option>
-                            </select>
+                            <label for="create-reu">Réu *</label>
+                            <input type="text" id="create-reu" name="reu" placeholder="Nome do réu" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="create-valor">Valor estimado (R$)</label>
-                            <input type="number" id="create-valor" name="valor" step="0.01" min="0" placeholder="0,00">
+                            <label for="create-materia">Matéria *</label>
+                            <input type="text" id="create-materia" name="materia" placeholder="Matéria do processo" required>
                         </div>
                         <div class="form-group">
-                            <label for="create-prazo">Prazo</label>
-                            <input type="date" id="create-prazo" name="prazo">
-                        </div>
-                        <div class="form-group">
-                            <label for="create-responsavel">Responsável</label>
-                            <input type="text" id="create-responsavel" name="responsavel" placeholder="Responsável interno">
+                            <label for="create-numero-processo">Número do processo *</label>
+                            <input type="text" id="create-numero-processo" name="numeroProcesso" placeholder="0000000-00.0000.0.00.0000" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="create-origem">Origem *</label>
-                            <select id="create-origem" name="origem" required>
-                                <option value="JUDICIAL">Judicial</option>
-                                <option value="EXTRAJUDICIAL">Extrajudicial</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="create-status">Status *</label>
-                            <select id="create-status" name="status" required>
-                                <option value="EM_ABERTO_7_0">Em Aberto 7.0</option>
-                                <option value="EM_CONTATO_7_1">Em Contato 7.1</option>
-                                <option value="PROCESSO_JUDICIAL_7_2">Processo Judicial 7.2</option>
-                                <option value="ACORDO_ASSINADO_7_3">Acordo Assinado 7.3</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="create-atualizacao">Data de atualização</label>
-                            <input type="date" id="create-atualizacao" name="atualizacao">
+                            <label for="create-valor-causa">Valor da causa (R$) *</label>
+                            <input type="number" id="create-valor-causa" name="valorCausa" step="0.01" min="0" placeholder="0,00" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="create-detalhes">Detalhes</label>
-                        <textarea id="create-detalhes" name="detalhes" rows="4" placeholder="Descreva o histórico e movimentações do processo"></textarea>
+                        <label for="create-pedidos">Pedidos *</label>
+                        <textarea id="create-pedidos" name="pedidos" rows="4" placeholder="Descreva os pedidos principais" required></textarea>
                     </div>
 
                     <div class="form-actions">

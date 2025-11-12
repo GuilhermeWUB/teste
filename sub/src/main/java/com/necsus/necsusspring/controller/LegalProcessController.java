@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/juridico/processos", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/juridico/api/processos", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ADMIN')")
 public class LegalProcessController {
 

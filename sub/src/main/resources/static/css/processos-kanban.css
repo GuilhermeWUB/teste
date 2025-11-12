@@ -121,6 +121,26 @@
     color: var(--processos-accent);
 }
 
+.create-processo-error {
+    display: none;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #991b1b;
+    font-weight: 500;
+}
+
+.create-processo-error.active {
+    display: block;
+}
+
+.kanban-create-form .btn.is-loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
 .task-card.processos-card .task-card-body {
     display: flex;
     flex-direction: column;
@@ -147,6 +167,14 @@
 .processos-card-row .value {
     font-weight: 600;
     color: var(--kanban-text);
+}
+
+.processos-card-pedidos .value {
+    display: block;
+    max-height: 4.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap;
 }
 
 .badge-origin {
