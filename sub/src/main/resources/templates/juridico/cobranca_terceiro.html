@@ -47,10 +47,10 @@
         </div>
 
         <div class="kanban-board cobranca-board">
-            <div class="kanban-column" data-status="NOVO">
+            <div class="kanban-column" data-status="EM_ABERTO_7_0">
                 <div class="column-header">
                     <div class="column-title">
-                        <h3>Novas cobranças</h3>
+                        <h3>Em Aberto 7.0</h3>
                         <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
@@ -60,10 +60,10 @@
                 <div class="tasks-container"></div>
             </div>
 
-            <div class="kanban-column" data-status="EM_ANALISE">
+            <div class="kanban-column" data-status="EM_CONTATO_7_1">
                 <div class="column-header">
                     <div class="column-title">
-                        <h3>Em análise</h3>
+                        <h3>Em Contato 7.1</h3>
                         <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
@@ -73,10 +73,10 @@
                 <div class="tasks-container"></div>
             </div>
 
-            <div class="kanban-column" data-status="NEGOCIACAO">
+            <div class="kanban-column" data-status="COBRANCA_JUDICIAL_7_2">
                 <div class="column-header">
                     <div class="column-title">
-                        <h3>Negociação ativa</h3>
+                        <h3>Cobrança Judicial 7.2</h3>
                         <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
@@ -86,23 +86,10 @@
                 <div class="tasks-container"></div>
             </div>
 
-            <div class="kanban-column" data-status="ACORDO_FIRMADO">
+            <div class="kanban-column" data-status="ACORDO_ASSINADO_7_3">
                 <div class="column-header">
                     <div class="column-title">
-                        <h3>Acordo firmado</h3>
-                        <span class="column-count">0</span>
-                    </div>
-                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Registrar
-                    </button>
-                </div>
-                <div class="tasks-container"></div>
-            </div>
-
-            <div class="kanban-column" data-status="ENCERRADO">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Encerrados</h3>
+                        <h3>Acordo Assinado 7.3</h3>
                         <span class="column-count">0</span>
                     </div>
                     <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
@@ -144,25 +131,21 @@
                 <div class="filter-section">
                     <h4 class="filter-section-title"><i class="bi bi-columns-gap"></i> Status</h4>
                     <div class="filter-options" id="filter-status-options">
-                        <label class="filter-checkbox" data-status="NOVO">
-                            <input type="checkbox" name="status" value="NOVO" checked>
-                            <span class="checkbox-label">Novas cobranças</span>
+                        <label class="filter-checkbox" data-status="EM_ABERTO_7_0">
+                            <input type="checkbox" name="status" value="EM_ABERTO_7_0" checked>
+                            <span class="checkbox-label">Em Aberto 7.0</span>
                         </label>
-                        <label class="filter-checkbox" data-status="EM_ANALISE">
-                            <input type="checkbox" name="status" value="EM_ANALISE" checked>
-                            <span class="checkbox-label">Em análise</span>
+                        <label class="filter-checkbox" data-status="EM_CONTATO_7_1">
+                            <input type="checkbox" name="status" value="EM_CONTATO_7_1" checked>
+                            <span class="checkbox-label">Em Contato 7.1</span>
                         </label>
-                        <label class="filter-checkbox" data-status="NEGOCIACAO">
-                            <input type="checkbox" name="status" value="NEGOCIACAO" checked>
-                            <span class="checkbox-label">Negociação ativa</span>
+                        <label class="filter-checkbox" data-status="COBRANCA_JUDICIAL_7_2">
+                            <input type="checkbox" name="status" value="COBRANCA_JUDICIAL_7_2" checked>
+                            <span class="checkbox-label">Cobrança Judicial 7.2</span>
                         </label>
-                        <label class="filter-checkbox" data-status="ACORDO_FIRMADO">
-                            <input type="checkbox" name="status" value="ACORDO_FIRMADO" checked>
-                            <span class="checkbox-label">Acordo firmado</span>
-                        </label>
-                        <label class="filter-checkbox" data-status="ENCERRADO">
-                            <input type="checkbox" name="status" value="ENCERRADO" checked>
-                            <span class="checkbox-label">Encerrados</span>
+                        <label class="filter-checkbox" data-status="ACORDO_ASSINADO_7_3">
+                            <input type="checkbox" name="status" value="ACORDO_ASSINADO_7_3" checked>
+                            <span class="checkbox-label">Acordo Assinado 7.3</span>
                         </label>
                     </div>
                 </div>
@@ -286,11 +269,10 @@
                         <div class="form-group">
                             <label for="create-status">Status *</label>
                             <select id="create-status" name="status" required>
-                                <option value="NOVO">Nova cobrança</option>
-                                <option value="EM_ANALISE">Em análise</option>
-                                <option value="NEGOCIACAO">Negociação ativa</option>
-                                <option value="ACORDO_FIRMADO">Acordo firmado</option>
-                                <option value="ENCERRADO">Encerrado</option>
+                                <option value="EM_ABERTO_7_0">Em Aberto 7.0</option>
+                                <option value="EM_CONTATO_7_1">Em Contato 7.1</option>
+                                <option value="COBRANCA_JUDICIAL_7_2">Cobrança Judicial 7.2</option>
+                                <option value="ACORDO_ASSINADO_7_3">Acordo Assinado 7.3</option>
                             </select>
                         </div>
                         <div class="form-group">
