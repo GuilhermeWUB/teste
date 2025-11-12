@@ -282,6 +282,14 @@
 </section>
 
 <script>
+    console.log('[DEBUG] HTML carregado - antes de processos-kanban.js');
+    console.log('[DEBUG] Buscando elementos do DOM:');
+    console.log('[DEBUG] .kanban-board:', document.querySelector('.kanban-board'));
+    console.log('[DEBUG] #create-processo-modal:', document.getElementById('create-processo-modal'));
+    console.log('[DEBUG] #create-processo-form:', document.getElementById('create-processo-form'));
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const body = document.body;
         if (body) {
@@ -305,5 +313,9 @@
     });
 </script>
 <script th:src="@{/js/processos-kanban.js}"></script>
+<script>
+    console.log('[DEBUG] Depois de carregar processos-kanban.js');
+    console.log('[DEBUG] window.processosBoard existe?', typeof window.processosBoard);
+</script>
 </body>
 </html>
