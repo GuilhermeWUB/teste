@@ -8,55 +8,61 @@
 <body>
 <section layout:fragment="content" class="error-page">
     <div class="card error-card">
-        <div class="error-card__header">
-            <div class="error-card__icon" aria-hidden="true">
-                <i class="bi bi-exclamation-triangle-fill"></i>
+        <div class="error-card__content">
+            <div class="error-card__header">
+                <div class="error-card__icon" aria-hidden="true">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h1 class="error-card__title">Algo deu errado</h1>
+                <p class="error-card__subtitle">
+                    <span th:text="${status} != null ? 'Código ' + status : 'Erro não identificado'">Código 500</span>
+                    <span th:if="${error} != null" th:text="'• ' + error">• Internal Server Error</span>
+                </p>
+                <p class="error-card__description"
+                   th:text="${message} != null ? message : 'Ocorreu um erro inesperado. Nossa equipe já foi notificada.'">
+                    Ocorreu um erro inesperado. Nossa equipe já foi notificada.
+                </p>
             </div>
-            <h1 class="error-card__title">Algo deu errado</h1>
-            <p class="error-card__subtitle">
-                <span th:text="${status} != null ? 'Código ' + status : 'Erro não identificado'">Código 500</span>
-                <span th:if="${error} != null" th:text="'• ' + error">• Internal Server Error</span>
-            </p>
-            <p class="error-card__description"
-               th:text="${message} != null ? message : 'Ocorreu um erro inesperado. Nossa equipe já foi notificada.'">
-                Ocorreu um erro inesperado. Nossa equipe já foi notificada.
-            </p>
+
+            <div class="error-card__details">
+                <dl class="error-meta">
+                    <div class="error-meta__item">
+                        <dt class="error-meta__label">Momento</dt>
+                        <dd class="error-meta__value" th:text="${timestamp} != null ? timestamp : '-'">-</dd>
+                    </div>
+                    <div class="error-meta__item">
+                        <dt class="error-meta__label">Status</dt>
+                        <dd class="error-meta__value" th:text="${status} != null ? status : '-'">500</dd>
+                    </div>
+                    <div class="error-meta__item" th:if="${error} != null">
+                        <dt class="error-meta__label">Erro</dt>
+                        <dd class="error-meta__value" th:text="${error}">Internal Server Error</dd>
+                    </div>
+                    <div class="error-meta__item">
+                        <dt class="error-meta__label">Mensagem</dt>
+                        <dd class="error-meta__value"
+                            th:text="${message} != null ? message : 'Ocorreu um erro inesperado'">
+                            Ocorreu um erro inesperado
+                        </dd>
+                    </div>
+                    <div class="error-meta__item">
+                        <dt class="error-meta__label">Caminho</dt>
+                        <dd class="error-meta__value" th:text="${path} != null ? path : '-'">-</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="error-card__actions">
+                <a class="btn btn-primary" th:href="@{/login}">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Voltar para o login</span>
+                </a>
+            </div>
         </div>
 
-        <div class="error-card__details">
-            <dl class="error-meta">
-                <div class="error-meta__item">
-                    <dt class="error-meta__label">Momento</dt>
-                    <dd class="error-meta__value" th:text="${timestamp} != null ? timestamp : '-'">-</dd>
-                </div>
-                <div class="error-meta__item">
-                    <dt class="error-meta__label">Status</dt>
-                    <dd class="error-meta__value" th:text="${status} != null ? status : '-'">500</dd>
-                </div>
-                <div class="error-meta__item" th:if="${error} != null">
-                    <dt class="error-meta__label">Erro</dt>
-                    <dd class="error-meta__value" th:text="${error}">Internal Server Error</dd>
-                </div>
-                <div class="error-meta__item">
-                    <dt class="error-meta__label">Mensagem</dt>
-                    <dd class="error-meta__value"
-                        th:text="${message} != null ? message : 'Ocorreu um erro inesperado'">
-                        Ocorreu um erro inesperado
-                    </dd>
-                </div>
-                <div class="error-meta__item">
-                    <dt class="error-meta__label">Caminho</dt>
-                    <dd class="error-meta__value" th:text="${path} != null ? path : '-'">-</dd>
-                </div>
-            </dl>
-        </div>
-
-        <div class="error-card__actions">
-            <a class="btn btn-primary" th:href="@{/login}">
-                <i class="bi bi-arrow-left"></i>
-                <span>Voltar para o login</span>
-            </a>
-        </div>
+        <figure class="error-card__illustration">
+            <img th:src="@{/images/error-rocket.svg}" src="/images/error-rocket.svg" alt="Ilustração de um foguete quebrado e uma pessoa surpresa">
+        </figure>
     </div>
 </section>
 </body>
