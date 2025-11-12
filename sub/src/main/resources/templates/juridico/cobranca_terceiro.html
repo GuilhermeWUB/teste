@@ -9,34 +9,30 @@
 <body class="cobranca-terceiro-page">
 <section layout:fragment="content" class="cobranca-kanban-page">
     <div class="kanban-wrapper cobranca-kanban-wrapper">
-        <header class="cobranca-kanban-hero">
-            <div class="cobranca-kanban-hero__info">
-                <span class="cobranca-kanban-hero__eyebrow">
-                    <i class="bi bi-kanban"></i>
-                    Jornada de cobrança
-                </span>
-                <h1>Cobranças de Terceiros</h1>
+        <div class="kanban-header cobranca-kanban-header">
+            <div class="kanban-header-info">
+                <h1><i class="bi bi-kanban"></i> Cobranças de Terceiros</h1>
                 <p>Acompanhe o avanço das negociações de cobrança com visão clara por status e prioridade.</p>
             </div>
-            <div class="cobranca-kanban-hero__actions">
-                <button class="btn-nova-cobranca" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
-                    <i class="bi bi-plus-circle"></i> Nova Cobrança
-                </button>
-            </div>
-        </header>
+        </div>
 
-        <div class="cobranca-kanban-toolbar">
-            <div class="kanban-search">
-                <i class="bi bi-search"></i>
-                <input type="text" id="kanban-search" placeholder="Buscar por devedor, responsável ou referência" autocomplete="off"/>
-            </div>
-            <div class="cobranca-kanban-toolbar__actions">
+        <div class="kanban-controls cobranca-kanban-controls">
+            <div class="kanban-controls-left">
+                <div class="kanban-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="kanban-search" placeholder="Buscar por devedor, responsável ou referência" autocomplete="off"/>
+                </div>
                 <button class="kanban-filter-btn" id="btn-advanced-filters">
                     <i class="bi bi-funnel-fill"></i> Filtros
                     <span class="filter-count" style="display: none;">0</span>
                 </button>
                 <button class="kanban-clear-filters" id="btn-clear-filters" style="display: none;">
                     <i class="bi bi-x-circle"></i> Limpar Filtros
+                </button>
+            </div>
+            <div class="kanban-actions">
+                <button class="btn-nova-cobranca" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                    <i class="bi bi-plus-circle"></i> Nova Cobrança
                 </button>
             </div>
         </div>
