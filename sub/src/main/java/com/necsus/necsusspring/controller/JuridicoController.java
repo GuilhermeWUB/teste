@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class JuridicoController {
 
     /**
-     * Página de Cobrança Terceiro
+     * Página de Cobrança
      */
-    @GetMapping("/cobranca-terceiro")
-    public String cobrancaTerceiro(Model model) {
-        model.addAttribute("pageTitle", "Cobrança Terceiro - Jurídico");
-        return "juridico/cobranca_terceiro";
+    @GetMapping("/cobranca")
+    public String cobranca(Model model) {
+        model.addAttribute("pageTitle", "Cobrança - Jurídico");
+        return "juridico/cobranca";
     }
 
     /**

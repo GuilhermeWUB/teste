@@ -217,7 +217,7 @@
 
     async function loadBoard() {
         try {
-            const response = await fetch('/juridico/api/cobranca-terceiro/board', {
+            const response = await fetch('/juridico/api/cobranca/board', {
                 headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
             });
 

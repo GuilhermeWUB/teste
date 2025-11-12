@@ -1,11 +1,11 @@
-.cobranca-terceiro-page main.page > .container {
+.cobranca-page main.page > .container {
     width: 100%;
     max-width: 100%;
     margin: 0;
     padding: 0;
 }
 
-.cobranca-terceiro-page main.page > .container > .page-content {
+.cobranca-page main.page > .container > .page-content {
     flex: 1;
     gap: 0;
 }
