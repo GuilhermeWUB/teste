@@ -1,0 +1,251 @@
+.cobranca-board {
+    --cobranca-accent: #5b21b6;
+    --cobranca-accent-soft: rgba(91, 33, 182, 0.12);
+    --cobranca-border: rgba(91, 33, 182, 0.25);
+    --cobranca-tag-judicial: rgba(37, 99, 235, 0.14);
+    --cobranca-tag-extrajudicial: rgba(16, 185, 129, 0.15);
+}
+
+.cobranca-board .kanban-column {
+    border-top: 3px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.cobranca-board .kanban-column[data-status="NOVO"] {
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+.cobranca-board .kanban-column[data-status="EM_ANALISE"] {
+    border-color: rgba(99, 102, 241, 0.6);
+}
+
+.cobranca-board .kanban-column[data-status="NEGOCIACAO"] {
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
+.cobranca-board .kanban-column[data-status="ACORDO_FIRMADO"] {
+    border-color: rgba(16, 185, 129, 0.6);
+}
+
+.cobranca-board .kanban-column[data-status="ENCERRADO"] {
+    border-color: rgba(148, 163, 184, 0.6);
+}
+
+.btn-nova-cobranca,
+.column-add-btn {
+    background: linear-gradient(135deg, #5b21b6, #7c3aed);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 18px rgba(91, 33, 182, 0.25);
+}
+
+.btn-nova-cobranca:hover,
+.column-add-btn:hover {
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    color: #fff;
+}
+
+.task-card.cobranca-card {
+    border: 1px solid var(--cobranca-border);
+    box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
+}
+
+.task-card.cobranca-card .task-card-header h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.task-card.cobranca-card .task-card-header h4 i {
+    font-size: 1rem;
+    color: var(--cobranca-accent);
+}
+
+.task-card.cobranca-card .task-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: 0.6rem;
+}
+
+.cobranca-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.cobranca-card-row .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--kanban-muted);
+    font-weight: 500;
+}
+
+.cobranca-card-row .value {
+    font-weight: 600;
+    color: var(--kanban-text);
+}
+
+.badge-origin {
+    background: var(--cobranca-tag-judicial);
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.task-card[data-origem="EXTRAJUDICIAL"] .badge-origin,
+.badge-origin[data-origin="EXTRAJUDICIAL"] {
+    background: var(--cobranca-tag-extrajudicial);
+    color: #047857;
+}
+
+.priority-ALTA {
+    background: rgba(220, 38, 38, 0.18);
+    color: #b91c1c;
+}
+
+.priority-MEDIA {
+    background: rgba(234, 179, 8, 0.22);
+    color: #b45309;
+}
+
+.priority-BAIXA {
+    background: rgba(59, 130, 246, 0.18);
+    color: #1d4ed8;
+}
+
+.cobranca-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cobranca-details .details-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.cobranca-details .details-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--kanban-text);
+}
+
+.cobranca-details .details-header .subtitle {
+    margin: 0;
+    color: var(--kanban-muted);
+}
+
+.status-badge {
+    align-self: flex-start;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+}
+
+.status-NOVO {
+    background: rgba(59, 130, 246, 0.15);
+    color: #1d4ed8;
+}
+
+.status-EM_ANALISE {
+    background: rgba(99, 102, 241, 0.16);
+    color: #4338ca;
+}
+
+.status-NEGOCIACAO {
+    background: rgba(245, 158, 11, 0.18);
+    color: #b45309;
+}
+
+.status-ACORDO_FIRMADO {
+    background: rgba(16, 185, 129, 0.18);
+    color: #047857;
+}
+
+.status-ENCERRADO {
+    background: rgba(148, 163, 184, 0.2);
+    color: #475569;
+}
+
+.details-grid {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.08);
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--kanban-muted);
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--kanban-text);
+    word-break: break-word;
+}
+
+.detail-notes {
+    background: rgba(91, 33, 182, 0.05);
+    border: 1px dashed rgba(91, 33, 182, 0.25);
+    border-radius: 16px;
+    padding: 1.25rem;
+}
+
+.detail-notes h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: var(--kanban-text);
+}
+
+.detail-notes p {
+    margin: 0;
+    color: var(--kanban-muted);
+    line-height: 1.5;
+}
+
+@media (max-width: 992px) {
+    .kanban-header {
+        align-items: flex-start;
+    }
+
+    .cobranca-card-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cobranca-card-row .value {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .btn-nova-cobranca {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .kanban-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
