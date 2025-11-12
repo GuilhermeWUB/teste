@@ -353,7 +353,13 @@
             '<p><strong>Valor da Causa:</strong> R$ ' + formatCurrency(card.valorCausa || 0) + '</p>' +
             '<p><strong>Status:</strong> ' + (statusLabels[card.status] || card.status) + '</p>' +
             '</div><div class="detail-section"><h3>Pedidos</h3>' +
-            '<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>';
+            '<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>' +
+            '<div class="modal-actions">' +
+            '<button type="button" class="btn btn-primary" onclick="window.processosBoard.openEditModal(' + card.id + ')">' +
+            '<i class="bi bi-pencil"></i> Editar</button>' +
+            '<button type="button" class="btn btn-danger" onclick="window.processosBoard.deleteProcess(' + card.id + ')">' +
+            '<i class="bi bi-trash"></i> Deletar</button>' +
+            '</div>';
 
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
@@ -400,6 +406,19 @@
 
         if (form) {
             form.reset();
+            delete form.dataset.editingId;
+
+            // Restaura o título do modal
+            const modalHeader = modal.querySelector('.kanban-modal-header h2');
+            if (modalHeader) {
+                modalHeader.innerHTML = '<i class="bi bi-plus-circle"></i> Novo Processo';
+            }
+
+            // Restaura o texto do botão de submit
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Registrar';
+            }
         }
 
         showCreateError('');
@@ -431,6 +450,9 @@
             return;
         }
 
+        const isEditing = !!form.dataset.editingId;
+        const editingId = form.dataset.editingId;
+
         const data = new FormData(form);
         const autor = data.get('autor')?.toString().trim();
         const reu = data.get('reu')?.toString().trim();
@@ -459,11 +481,14 @@
             pedidos: pedidos
         };
 
-        console.log('[PROCESSOS-KANBAN] Enviando payload:', payload);
+        console.log('[PROCESSOS-KANBAN] Enviando payload:', payload, 'Edição:', isEditing);
 
         try {
-            const response = await fetch(API_BASE, {
-                method: 'POST',
+            const url = isEditing ? API_BASE + '/' + editingId : API_BASE;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
                 headers: buildHeaders({
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -474,7 +499,7 @@
             console.log('[PROCESSOS-KANBAN] Response status:', response.status);
 
             if (!response.ok) {
-                let message = 'Não foi possível criar o processo.';
+                let message = isEditing ? 'Não foi possível atualizar o processo.' : 'Não foi possível criar o processo.';
                 try {
                     const errorData = await response.json();
                     message = errorData.message || errorData.error || message;
@@ -486,16 +511,122 @@
                 return;
             }
 
-            const created = await response.json();
-            console.log('[PROCESSOS-KANBAN] Processo criado:', created);
+            const savedProcess = await response.json();
+            console.log('[PROCESSOS-KANBAN] Processo salvo:', savedProcess);
 
-            state.cards.unshift(created);
+            if (isEditing) {
+                // Atualiza o processo no estado
+                const index = state.cards.findIndex(c => c.id === parseInt(editingId));
+                if (index !== -1) {
+                    state.cards[index] = savedProcess;
+                }
+            } else {
+                // Adiciona novo processo ao início
+                state.cards.unshift(savedProcess);
+            }
+
             render();
             closeCreateModal();
 
+            if (isEditing) {
+                alert('Processo atualizado com sucesso!');
+            }
+
         } catch (error) {
-            console.error('[PROCESSOS-KANBAN] Erro ao criar processo:', error);
-            showCreateError('Ocorreu um erro ao criar o processo. Tente novamente.');
+            console.error('[PROCESSOS-KANBAN] Erro ao salvar processo:', error);
+            showCreateError('Ocorreu um erro ao salvar o processo. Tente novamente.');
+        }
+    }
+
+    function openEditModal(processId) {
+        console.log('[PROCESSOS-KANBAN] Abrindo modal de edição para processo:', processId);
+
+        const card = state.cards.find(c => c.id === processId);
+        if (!card) {
+            console.error('[PROCESSOS-KANBAN] Processo não encontrado:', processId);
+            return;
+        }
+
+        closeModal();
+
+        const modal = selectors.createModal();
+        const form = selectors.createForm();
+
+        if (!modal || !form) {
+            console.error('[PROCESSOS-KANBAN] Modal ou form não encontrado!');
+            return;
+        }
+
+        // Preenche o formulário com os dados do processo
+        form.querySelector('#create-autor').value = card.autor || '';
+        form.querySelector('#create-reu').value = card.reu || '';
+        form.querySelector('#create-materia').value = card.materia || '';
+        form.querySelector('#create-numero-processo').value = card.numeroProcesso || '';
+        form.querySelector('#create-valor-causa').value = card.valorCausa || '';
+        form.querySelector('#create-pedidos').value = card.pedidos || '';
+
+        // Marca o formulário como edição
+        form.dataset.editingId = processId;
+
+        // Muda o título do modal
+        const modalHeader = modal.querySelector('.kanban-modal-header h2');
+        if (modalHeader) {
+            modalHeader.innerHTML = '<i class="bi bi-pencil"></i> Editar Processo';
+        }
+
+        // Muda o texto do botão de submit
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="bi bi-save"></i> Salvar';
+        }
+
+        showCreateError('');
+        modal.classList.add('active');
+        document.body.classList.add('kanban-modal-open');
+
+        console.log('[PROCESSOS-KANBAN] Modal de edição aberto');
+    }
+
+    async function deleteProcess(processId) {
+        console.log('[PROCESSOS-KANBAN] Solicitando exclusão do processo:', processId);
+
+        const card = state.cards.find(c => c.id === processId);
+        if (!card) {
+            console.error('[PROCESSOS-KANBAN] Processo não encontrado:', processId);
+            return;
+        }
+
+        const confirmMsg = 'Tem certeza que deseja excluir o processo "' + card.numeroProcesso + '"?\n\nEsta ação não pode ser desfeita.';
+        if (!confirm(confirmMsg)) {
+            console.log('[PROCESSOS-KANBAN] Exclusão cancelada pelo usuário');
+            return;
+        }
+
+        try {
+            const response = await fetch(API_BASE + '/' + processId, {
+                method: 'DELETE',
+                headers: buildHeaders({
+                    'Accept': 'application/json'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao deletar processo');
+            }
+
+            console.log('[PROCESSOS-KANBAN] Processo deletado com sucesso');
+
+            // Remove do estado local
+            state.cards = state.cards.filter(c => c.id !== processId);
+
+            closeModal();
+            render();
+
+            alert('Processo excluído com sucesso!');
+
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao deletar processo:', error);
+            alert('Não foi possível excluir o processo. Tente novamente.');
         }
     }
 
@@ -518,7 +649,9 @@
         window.processosBoard = {
             openCreateModal: openCreateModal,
             closeCreateModal: closeCreateModal,
-            closeModal: closeModal
+            closeModal: closeModal,
+            openEditModal: openEditModal,
+            deleteProcess: deleteProcess
         };
 
         console.log('[PROCESSOS-KANBAN] window.processosBoard criado:', window.processosBoard);
