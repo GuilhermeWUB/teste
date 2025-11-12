@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,7 @@ public class JuridicoController {
     /**
      * Página de Cobrança
      */
-    @GetMapping("/cobranca")
+    @GetMapping(value = "/cobranca", produces = MediaType.TEXT_HTML_VALUE)
     public String cobranca(Model model) {
         model.addAttribute("pageTitle", "Cobrança - Jurídico");
         return "juridico/cobranca";
@@ -27,7 +28,7 @@ public class JuridicoController {
     /**
      * Página de Cobrança Fidelidade
      */
-    @GetMapping("/cobranca-fidelidade")
+    @GetMapping(value = "/cobranca-fidelidade", produces = MediaType.TEXT_HTML_VALUE)
     public String cobrancaFidelidade(Model model) {
         model.addAttribute("pageTitle", "Cobrança Fidelidade - Jurídico");
         return "juridico/cobranca_fidelidade";
@@ -36,7 +37,7 @@ public class JuridicoController {
     /**
      * Página de Processos em Geral
      */
-    @GetMapping("/processos")
+    @GetMapping(value = "/processos", produces = MediaType.TEXT_HTML_VALUE)
     public String processos(Model model) {
         model.addAttribute("pageTitle", "Processos em Geral - Jurídico");
         return "juridico/processos";
@@ -45,7 +46,7 @@ public class JuridicoController {
     /**
      * Página de Acordos a pagar
      */
-    @GetMapping("/acordos")
+    @GetMapping(value = "/acordos", produces = MediaType.TEXT_HTML_VALUE)
     public String acordos(Model model) {
         model.addAttribute("pageTitle", "Acordos a pagar - Jurídico");
         return "juridico/acordos";
