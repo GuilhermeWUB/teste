@@ -1,34 +1,347 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head th:replace="~{fragments/layout :: head}"></head>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Cobrança de Terceiros - Jurídico</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+    <link rel="stylesheet" th:href="@{/css/cobranca-terceiro-kanban.css}">
+</head>
 <body>
-<header th:replace="~{fragments/layout :: header}"></header>
-
-<section class="page">
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="bi bi-file-earmark-text"></i>
-                Cobrança Terceiro
-            </h1>
-            <p class="page-subtitle">Gerenciamento de cobranças de terceiros</p>
+<section layout:fragment="content">
+    <div class="kanban-wrapper">
+        <div class="kanban-header">
+            <div class="kanban-header-info">
+                <h1><i class="bi bi-kanban"></i> Cobranças de Terceiros</h1>
+                <p>Acompanhe o avanço das negociações de cobrança com visão clara por status e prioridade.</p>
+            </div>
+            <div class="kanban-controls">
+                <div class="kanban-controls-left">
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="kanban-search" placeholder="Buscar por devedor, responsável ou referência" autocomplete="off"/>
+                    </div>
+                    <button class="kanban-filter-btn" id="btn-advanced-filters">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                        <span class="filter-count" style="display: none;">0</span>
+                    </button>
+                    <button class="kanban-clear-filters" id="btn-clear-filters" style="display: none;">
+                        <i class="bi bi-x-circle"></i> Limpar Filtros
+                    </button>
+                </div>
+                <div class="kanban-actions">
+                    <button class="btn-nova-cobranca" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Nova Cobrança
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>Em desenvolvimento:</strong> Página de Cobrança Terceiro em construção.
+        <div class="kanban-alerts">
+            <div class="kanban-alert info" role="alert">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Mova os cartões entre as colunas conforme a evolução da cobrança.</span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="kanban-board cobranca-board">
+            <div class="kanban-column" data-status="NOVO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Novas cobranças</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Registrar
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="EM_ANALISE">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Em análise</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Registrar
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="NEGOCIACAO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Negociação ativa</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Registrar
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="ACORDO_FIRMADO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Acordo firmado</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Registrar
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+
+            <div class="kanban-column" data-status="ENCERRADO">
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3>Encerrados</h3>
+                        <span class="column-count">0</span>
+                    </div>
+                    <button class="column-add-btn" type="button" onclick="window.cobrancaBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Registrar
+                    </button>
+                </div>
+                <div class="tasks-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="filters-modal" class="kanban-modal">
+        <div class="kanban-modal-content filters-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-funnel-fill"></i> Filtros avançados</h2>
+                <button class="kanban-modal-close" onclick="window.cobrancaBoard?.closeFiltersModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body filters-modal-body">
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-exclamation-triangle"></i> Prioridade</h4>
+                    <div class="filter-options" id="filter-priority-options">
+                        <label class="filter-checkbox" data-priority="ALTA">
+                            <input type="checkbox" name="prioridade" value="ALTA" checked>
+                            <span class="checkbox-label">Alta</span>
+                        </label>
+                        <label class="filter-checkbox" data-priority="MEDIA">
+                            <input type="checkbox" name="prioridade" value="MEDIA" checked>
+                            <span class="checkbox-label">Média</span>
+                        </label>
+                        <label class="filter-checkbox" data-priority="BAIXA">
+                            <input type="checkbox" name="prioridade" value="BAIXA" checked>
+                            <span class="checkbox-label">Baixa</span>
+                        </label>
+                    </div>
                 </div>
 
-                <p class="text-muted">
-                    Esta página será utilizada para gerenciar cobranças relacionadas a terceiros.
-                </p>
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-columns-gap"></i> Status</h4>
+                    <div class="filter-options" id="filter-status-options">
+                        <label class="filter-checkbox" data-status="NOVO">
+                            <input type="checkbox" name="status" value="NOVO" checked>
+                            <span class="checkbox-label">Novas cobranças</span>
+                        </label>
+                        <label class="filter-checkbox" data-status="EM_ANALISE">
+                            <input type="checkbox" name="status" value="EM_ANALISE" checked>
+                            <span class="checkbox-label">Em análise</span>
+                        </label>
+                        <label class="filter-checkbox" data-status="NEGOCIACAO">
+                            <input type="checkbox" name="status" value="NEGOCIACAO" checked>
+                            <span class="checkbox-label">Negociação ativa</span>
+                        </label>
+                        <label class="filter-checkbox" data-status="ACORDO_FIRMADO">
+                            <input type="checkbox" name="status" value="ACORDO_FIRMADO" checked>
+                            <span class="checkbox-label">Acordo firmado</span>
+                        </label>
+                        <label class="filter-checkbox" data-status="ENCERRADO">
+                            <input type="checkbox" name="status" value="ENCERRADO" checked>
+                            <span class="checkbox-label">Encerrados</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-geo-alt"></i> Origem</h4>
+                    <div class="filter-options" id="filter-origin-options">
+                        <label class="filter-checkbox">
+                            <input type="radio" name="origem" value="TODAS" checked>
+                            <span class="checkbox-label">Todas</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="radio" name="origem" value="JUDICIAL">
+                            <span class="checkbox-label">Judicial</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="radio" name="origem" value="EXTRAJUDICIAL">
+                            <span class="checkbox-label">Extrajudicial</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-person"></i> Responsável</h4>
+                    <div class="filter-text-input">
+                        <input type="text" id="filter-responsavel" class="form-control"
+                               placeholder="Nome do responsável" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4 class="filter-section-title"><i class="bi bi-calendar-event"></i> Atualização</h4>
+                    <div class="filter-date-range">
+                        <div class="filter-date-input">
+                            <label for="filter-date-from">De:</label>
+                            <input type="date" id="filter-date-from" class="form-control">
+                        </div>
+                        <div class="filter-date-input">
+                            <label for="filter-date-to">Até:</label>
+                            <input type="date" id="filter-date-to" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-filter-apply" type="button" onclick="window.cobrancaBoard?.applyFilters?.()">
+                        <i class="bi bi-check-circle"></i> Aplicar filtros
+                    </button>
+                    <button class="btn-filter-reset" type="button" onclick="window.cobrancaBoard?.resetFilters?.()">
+                        <i class="bi bi-arrow-clockwise"></i> Resetar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="kanban-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2>Detalhes da cobrança</h2>
+                <button class="kanban-modal-close" onclick="window.cobrancaBoard?.closeModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body"></div>
+        </div>
+    </div>
+
+    <div id="create-cobranca-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-plus-circle"></i> Nova Cobrança</h2>
+                <button class="kanban-modal-close" onclick="window.cobrancaBoard?.closeCreateModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body">
+                <form class="kanban-create-form" id="create-cobranca-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-referencia">Referência *</label>
+                            <input type="text" id="create-referencia" name="referencia" placeholder="Processo ou contrato" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-devedor">Devedor *</label>
+                            <input type="text" id="create-devedor" name="devedor" placeholder="Nome do devedor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-prioridade">Prioridade *</label>
+                            <select id="create-prioridade" name="prioridade" required>
+                                <option value="ALTA">Alta</option>
+                                <option value="MEDIA">Média</option>
+                                <option value="BAIXA">Baixa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-valor">Valor estimado (R$)</label>
+                            <input type="number" id="create-valor" name="valor" step="0.01" min="0" placeholder="0,00">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-prazo">Prazo</label>
+                            <input type="date" id="create-prazo" name="prazo">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-responsavel">Responsável</label>
+                            <input type="text" id="create-responsavel" name="responsavel" placeholder="Responsável interno">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-origem">Origem *</label>
+                            <select id="create-origem" name="origem" required>
+                                <option value="JUDICIAL">Judicial</option>
+                                <option value="EXTRAJUDICIAL">Extrajudicial</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-status">Status *</label>
+                            <select id="create-status" name="status" required>
+                                <option value="NOVO">Nova cobrança</option>
+                                <option value="EM_ANALISE">Em análise</option>
+                                <option value="NEGOCIACAO">Negociação ativa</option>
+                                <option value="ACORDO_FIRMADO">Acordo firmado</option>
+                                <option value="ENCERRADO">Encerrado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-atualizacao">Data de atualização</label>
+                            <input type="date" id="create-atualizacao" name="atualizacao">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create-detalhes">Detalhes</label>
+                        <textarea id="create-detalhes" name="detalhes" rows="4" placeholder="Descreva o histórico e acordos negociados"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.cobrancaBoard?.closeCreateModal?.()">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill"></i> Registrar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </section>
 
-<script th:src="@{/js/notification-dropdown.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const body = document.body;
+        if (body) {
+            body.classList.remove('no-dark-blur');
+        }
+
+        const main = document.querySelector('main.page');
+        if (main) {
+            main.classList.add('kanban-page');
+        }
+
+        const container = document.querySelector('main.page > .container');
+        if (container) {
+            container.classList.add('kanban-full-width');
+        }
+
+        const pageContent = document.querySelector('main.page > .container > .page-content');
+        if (pageContent) {
+            pageContent.classList.add('kanban-content-stretch');
+        }
+    });
+</script>
+<script th:src="@{/js/cobranca-terceiro-kanban.js}"></script>
 </body>
 </html>
