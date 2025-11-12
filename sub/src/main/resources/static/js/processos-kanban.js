@@ -1,4 +1,5 @@
 (function () {
+    console.log('[PROCESSOS-KANBAN] Script carregado');
     const API_BASE = '/juridico/api/processos';
 
     const STATUS_ORDER = [
@@ -108,7 +109,12 @@
     });
 
     function init() {
-        if (!selectors.board()) {
+        console.log('[PROCESSOS-KANBAN] init() chamado');
+        const board = selectors.board();
+        console.log('[PROCESSOS-KANBAN] Board encontrado:', board);
+
+        if (!board) {
+            console.error('[PROCESSOS-KANBAN] Board não encontrado! Cancelando inicialização.');
             return;
         }
 
@@ -740,13 +746,18 @@
     }
 
     function openCreateModal(status = STATUS_ORDER[0]) {
+        console.log('[PROCESSOS-KANBAN] openCreateModal chamado com status:', status);
         const modal = selectors.createModal();
         const form = selectors.createForm();
         const statusSummary = document.getElementById('create-processo-target');
         const normalizedStatus = STATUS_ORDER.includes(status) ? status : STATUS_ORDER[0];
         state.pendingCreateStatus = normalizedStatus;
 
+        console.log('[PROCESSOS-KANBAN] Modal encontrado:', modal);
+        console.log('[PROCESSOS-KANBAN] Form encontrado:', form);
+
         if (!modal) {
+            console.error('[PROCESSOS-KANBAN] Modal não encontrado!');
             return;
         }
 
@@ -1073,6 +1084,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('[PROCESSOS-KANBAN] DOMContentLoaded - Inicializando');
+
         window.processosBoard = {
             applyFilters,
             resetFilters,
@@ -1082,6 +1095,10 @@
             closeModal
         };
 
+        console.log('[PROCESSOS-KANBAN] window.processosBoard criado:', window.processosBoard);
+
         init();
+
+        console.log('[PROCESSOS-KANBAN] Inicialização completa');
     });
 })();
