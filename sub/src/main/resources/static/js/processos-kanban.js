@@ -60,7 +60,8 @@
             responsavel: '',
             dateFrom: null,
             dateTo: null
-        }
+        },
+        pendingCreateStatus: STATUS_ORDER[0]
     };
 
     const dragState = {
@@ -691,11 +692,40 @@
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function openCreateModal() {
+    function openCreateModal(status = STATUS_ORDER[0]) {
         const modal = selectors.createModal();
+        const form = selectors.createForm();
+        const statusSummary = document.getElementById('create-processo-target');
+        const normalizedStatus = STATUS_ORDER.includes(status) ? status : STATUS_ORDER[0];
+        state.pendingCreateStatus = normalizedStatus;
+
         if (!modal) {
             return;
         }
+
+        showCreateError('');
+        setCreateLoading(false);
+
+        if (form) {
+            form.reset();
+            delete form.dataset.submitting;
+            form.dataset.status = normalizedStatus;
+
+            const focusable = form.querySelector('input, textarea');
+            if (focusable) {
+                requestAnimationFrame(() => focusable.focus());
+            }
+        }
+
+        if (statusSummary) {
+            const label = statusLabels[normalizedStatus] || normalizedStatus;
+            const value = statusSummary.querySelector('.value');
+            if (value) {
+                value.textContent = label;
+            }
+            statusSummary.classList.add('active');
+        }
+
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
     }
@@ -709,7 +739,17 @@
         if (form) {
             form.reset();
             delete form.dataset.submitting;
+            delete form.dataset.status;
         }
+        const statusSummary = document.getElementById('create-processo-target');
+        if (statusSummary) {
+            statusSummary.classList.remove('active');
+            const value = statusSummary.querySelector('.value');
+            if (value) {
+                value.textContent = '';
+            }
+        }
+        state.pendingCreateStatus = STATUS_ORDER[0];
         showCreateError('');
         setCreateLoading(false);
         document.body.classList.remove('kanban-modal-open');
@@ -798,6 +838,19 @@
             const created = await response.json();
             const card = normalizeCard(created);
             if (card) {
+                const targetStatus = (() => {
+                    if (form?.dataset?.status && STATUS_ORDER.includes(form.dataset.status)) {
+                        return form.dataset.status;
+                    }
+                    if (state.pendingCreateStatus && STATUS_ORDER.includes(state.pendingCreateStatus)) {
+                        return state.pendingCreateStatus;
+                    }
+                    return null;
+                })();
+
+                if (targetStatus) {
+                    card.status = targetStatus;
+                }
                 state.cards.unshift(card);
                 render();
             }
