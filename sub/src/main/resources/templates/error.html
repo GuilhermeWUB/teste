@@ -9,6 +9,8 @@
 <section layout:fragment="content" class="error-page">
     <div class="error-stage">
         <div class="error-stage__glow" aria-hidden="true"></div>
+        <div class="error-stage__code" aria-hidden="true"
+             th:text="${status} != null ? status : '500'">500</div>
         <div class="error-stage__content">
             <div class="error-illustration" aria-hidden="true">
                 <div class="error-illustration__shadow"></div>
@@ -29,37 +31,37 @@
                     Algo explodiu por aqui. Já estamos trabalhando para resolver!
                 </p>
 
-                <div class="error-panel__meta">
-                    <div class="error-chip">
-                        <span class="error-chip__label">Momento</span>
-                        <span class="error-chip__value" th:text="${timestamp} != null ? timestamp : '-'">-</span>
-                    </div>
-                    <div class="error-chip">
-                        <span class="error-chip__label">Status</span>
-                        <span class="error-chip__value" th:text="${status} != null ? status : '-'">500</span>
-                    </div>
-                    <div class="error-chip" th:if="${error} != null">
-                        <span class="error-chip__label">Erro</span>
-                        <span class="error-chip__value" th:text="${error}">Internal Server Error</span>
-                    </div>
-                    <div class="error-chip">
-                        <span class="error-chip__label">Mensagem</span>
-                        <span class="error-chip__value" th:text="${message} != null ? message : 'Ocorreu um erro inesperado'">
-                            Ocorreu um erro inesperado
-                        </span>
-                    </div>
-                    <div class="error-chip">
-                        <span class="error-chip__label">Caminho</span>
-                        <span class="error-chip__value" th:text="${path} != null ? path : '-'">-</span>
-                    </div>
-                </div>
-
                 <div class="error-panel__actions">
                     <a class="error-button" th:href="@{/login}">
                         <span class="error-button__icon" aria-hidden="true">⟵</span>
                         <span>Voltar para o login</span>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <div class="error-details">
+            <div class="error-chip">
+                <span class="error-chip__label">Momento</span>
+                <span class="error-chip__value" th:text="${timestamp} != null ? timestamp : '-'">-</span>
+            </div>
+            <div class="error-chip">
+                <span class="error-chip__label">Status</span>
+                <span class="error-chip__value" th:text="${status} != null ? status : '-'">500</span>
+            </div>
+            <div class="error-chip" th:if="${error} != null">
+                <span class="error-chip__label">Erro</span>
+                <span class="error-chip__value" th:text="${error}">Internal Server Error</span>
+            </div>
+            <div class="error-chip">
+                <span class="error-chip__label">Mensagem</span>
+                <span class="error-chip__value" th:text="${message} != null ? message : 'Ocorreu um erro inesperado'">
+                    Ocorreu um erro inesperado
+                </span>
+            </div>
+            <div class="error-chip">
+                <span class="error-chip__label">Caminho</span>
+                <span class="error-chip__value" th:text="${path} != null ? path : '-'">-</span>
             </div>
         </div>
 
