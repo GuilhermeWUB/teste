@@ -1,21 +1,24 @@
 (function () {
-    const STATUS_ORDER = ['NOVO', 'EM_ANALISE', 'NEGOCIACAO', 'ACORDO_FIRMADO', 'ENCERRADO'];
+    const STATUS_ORDER = [
+        'EM_ABERTO_7_0',
+        'EM_CONTATO_7_1',
+        'COBRANCA_JUDICIAL_7_2',
+        'ACORDO_ASSINADO_7_3'
+    ];
     const PRIORIDADES = ['ALTA', 'MEDIA', 'BAIXA'];
 
     const statusLabels = {
-        NOVO: 'Novas cobranças',
-        EM_ANALISE: 'Em análise',
-        NEGOCIACAO: 'Negociação ativa',
-        ACORDO_FIRMADO: 'Acordo firmado',
-        ENCERRADO: 'Encerrado'
+        EM_ABERTO_7_0: 'Em Aberto 7.0',
+        EM_CONTATO_7_1: 'Em Contato 7.1',
+        COBRANCA_JUDICIAL_7_2: 'Cobrança Judicial 7.2',
+        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
     };
 
     const statusIcons = {
-        NOVO: 'bi-flag',
-        EM_ANALISE: 'bi-search',
-        NEGOCIACAO: 'bi-repeat',
-        ACORDO_FIRMADO: 'bi-hand-thumbs-up',
-        ENCERRADO: 'bi-archive'
+        EM_ABERTO_7_0: 'bi-flag',
+        EM_CONTATO_7_1: 'bi-telephone-outbound',
+        COBRANCA_JUDICIAL_7_2: 'bi-bank',
+        ACORDO_ASSINADO_7_3: 'bi-pen'
     };
 
     const priorityLabels = {
@@ -260,7 +263,7 @@
             referencia: raw.referencia || raw.titulo || raw.processo || 'Cobrança sem referência',
             devedor: raw.devedor || raw.debtor || raw.cliente || 'Não informado',
             valor: parseAmount(raw.valor || raw.montante || raw.amount),
-            status: STATUS_ORDER.includes(status) ? status : 'NOVO',
+            status: STATUS_ORDER.includes(status) ? status : 'EM_ABERTO_7_0',
             prioridade: PRIORIDADES.includes(prioridade) ? prioridade : 'MEDIA',
             responsavel: raw.responsavel || raw.owner || raw.advogado || '',
             origem: origem === 'JUDICIAL' || origem === 'EXTRAJUDICIAL' ? origem : 'JUDICIAL',
@@ -826,7 +829,7 @@
                 referencia: 'PROC-2024-001',
                 devedor: 'Transportadora Alfa Ltda.',
                 valor: 18500.32,
-                status: 'NOVO',
+                status: 'EM_ABERTO_7_0',
                 prioridade: 'ALTA',
                 responsavel: 'Maria Barbosa',
                 origem: 'JUDICIAL',
@@ -842,7 +845,7 @@
                 referencia: 'ACORDO-NEG-233',
                 devedor: 'João Batista de Souza',
                 valor: 7200.00,
-                status: 'NEGOCIACAO',
+                status: 'EM_CONTATO_7_1',
                 prioridade: 'MEDIA',
                 responsavel: 'Caroline Ribeiro',
                 origem: 'EXTRAJUDICIAL',
@@ -858,7 +861,7 @@
                 referencia: 'PROC-2023-887',
                 devedor: 'Construtora Vértice S/A',
                 valor: 54890.47,
-                status: 'EM_ANALISE',
+                status: 'COBRANCA_JUDICIAL_7_2',
                 prioridade: 'ALTA',
                 responsavel: 'Ricardo Ferraz',
                 origem: 'JUDICIAL',
@@ -874,7 +877,7 @@
                 referencia: 'NEG-2024-054',
                 devedor: 'Mercado Nova Era ME',
                 valor: 3950.90,
-                status: 'ACORDO_FIRMADO',
+                status: 'ACORDO_ASSINADO_7_3',
                 prioridade: 'MEDIA',
                 responsavel: 'Patrícia Gomes',
                 origem: 'EXTRAJUDICIAL',
@@ -890,7 +893,7 @@
                 referencia: 'ENC-2023-410',
                 devedor: 'Logística Horizonte LTDA',
                 valor: 12800.00,
-                status: 'ENCERRADO',
+                status: 'ACORDO_ASSINADO_7_3',
                 prioridade: 'BAIXA',
                 responsavel: 'Eduardo Martins',
                 origem: 'JUDICIAL',
