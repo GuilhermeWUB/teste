@@ -1,4 +1,6 @@
 (function () {
+    const API_BASE = '/juridico/api/processos';
+
     const STATUS_ORDER = [
         'EM_ABERTO_7_0',
         'EM_CONTATO_7_1',
@@ -32,6 +34,22 @@
         EXTRAJUDICIAL: 'Extrajudicial'
     };
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+    function buildHeaders(extra = {}) {
+        const headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            ...extra
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        return headers;
+    }
+
     const state = {
         cards: [],
         search: '',
@@ -61,6 +79,8 @@
         modalBody: () => document.querySelector('#kanban-modal .kanban-modal-body'),
         createModal: () => document.getElementById('create-processo-modal'),
         createForm: () => document.getElementById('create-processo-form'),
+        createError: () => document.getElementById('create-processo-error'),
+        createSubmit: () => document.querySelector('#create-processo-form button[type="submit"]'),
         filterResponsavel: () => document.getElementById('filter-responsavel'),
         filterDateFrom: () => document.getElementById('filter-date-from'),
         filterDateTo: () => document.getElementById('filter-date-to'),
@@ -217,8 +237,8 @@
 
     async function loadBoard() {
         try {
-            const response = await fetch('/juridico/api/processos/board', {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            const response = await fetch(API_BASE, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
@@ -226,11 +246,10 @@
             }
 
             const payload = await response.json();
-            const cards = normalizePayload(payload);
-            state.cards = cards.length ? cards : buildSeedData();
+            state.cards = normalizePayload(payload);
         } catch (error) {
-            console.warn('[PROCESSOS-KANBAN] Usando dados locais devido a erro:', error);
-            state.cards = buildSeedData();
+            console.error('[PROCESSOS-KANBAN] Falha ao carregar processos:', error);
+            state.cards = [];
         }
 
         render();
@@ -242,9 +261,17 @@
             return [];
         }
 
-        const rawCards = Array.isArray(payload) ? payload :
-            (Array.isArray(payload.cards) ? payload.cards :
-                (payload.processos ? Object.values(payload.processos).flat() : []));
+        let rawCards = [];
+
+        if (Array.isArray(payload)) {
+            rawCards = payload;
+        } else if (Array.isArray(payload.cards)) {
+            rawCards = payload.cards;
+        } else if (Array.isArray(payload.content)) {
+            rawCards = payload.content;
+        } else if (payload.processos) {
+            rawCards = Object.values(payload.processos).flat();
+        }
 
         return rawCards.map(item => normalizeCard(item)).filter(Boolean);
     }
@@ -254,26 +281,41 @@
             return null;
         }
 
-        const status = (raw.status || raw.situacao || '').toString().toUpperCase();
-        const prioridade = (raw.prioridade || raw.prioridadeNegociacao || '').toString().toUpperCase();
-        const origem = (raw.origem || raw.tipoProcesso || raw.tipoProcessos || '').toString().toUpperCase();
+        const numeroProcesso = (raw.numeroProcesso || raw.referencia || raw.processo || '').toString().trim();
+        const autor = (raw.autor || raw.responsavel || raw.devedor || '').toString().trim();
+        const reu = (raw.reu || raw.parteContraria || raw.cliente || '').toString().trim();
+        const materia = (raw.materia || raw.assunto || '').toString().trim();
+        const pedidos = (raw.pedidos || raw.detalhes || raw.observacoes || raw.description || '').toString().trim();
+        const status = (raw.status || '').toString().toUpperCase();
+        const prioridade = (raw.prioridade || '').toString().toUpperCase();
+        const origem = (raw.origem || raw.tipoProcesso || raw.tipoProcessos || 'JUDICIAL').toString().toUpperCase();
+        const valor = parseAmount(raw.valorCausa ?? raw.valor ?? raw.montante ?? raw.amount);
 
         const card = {
             id: raw.id || raw.codigo || cryptoRandomId(),
-            referencia: raw.referencia || raw.titulo || raw.processo || 'Processo sem referência',
-            devedor: raw.devedor || raw.debtor || raw.cliente || 'Não informado',
-            valor: parseAmount(raw.valor || raw.montante || raw.amount),
+            referencia: numeroProcesso || 'Processo sem número',
+            numeroProcesso: numeroProcesso || '—',
+            autor: autor || 'Não informado',
+            reu: reu || 'Não informado',
+            materia: materia || 'Matéria não informada',
+            pedidos: pedidos || '—',
+            valor,
+            valorCausa: valor,
             status: STATUS_ORDER.includes(status) ? status : 'EM_ABERTO_7_0',
             prioridade: PRIORIDADES.includes(prioridade) ? prioridade : 'MEDIA',
-            responsavel: raw.responsavel || raw.owner || raw.advogado || '',
-            origem: origem === 'JUDICIAL' || origem === 'EXTRAJUDICIAL' ? origem : 'JUDICIAL',
-            prazo: normalizeDate(raw.prazo || raw.dataPrazo || raw.dueDate),
+            responsavel: autor || '',
+            origem: origem === 'EXTRAJUDICIAL' ? 'EXTRAJUDICIAL' : 'JUDICIAL',
+            prazo: null,
             ultimaAtualizacao: normalizeDateTime(raw.ultimaAtualizacao || raw.atualizacao || raw.updatedAt),
-            detalhes: raw.detalhes || raw.observacoes || raw.description || '',
+            detalhes: pedidos || '',
             contato: raw.contato || raw.telefone || raw.phone || '',
             email: raw.email || raw.contatoEmail || '',
-            documento: raw.documento || raw.cpfCnpj || raw.document || ''
+            documento: numeroProcesso || ''
         };
+
+        if (!card.ultimaAtualizacao) {
+            card.ultimaAtualizacao = new Date().toISOString();
+        }
 
         return card;
     }
@@ -389,7 +431,11 @@
 
             const haystack = [
                 card.referencia,
-                card.devedor,
+                card.numeroProcesso,
+                card.autor,
+                card.reu,
+                card.materia,
+                card.pedidos,
                 card.responsavel,
                 card.detalhes,
                 originLabels[card.origem]
@@ -420,7 +466,7 @@
         header.className = 'task-card-header';
 
         const title = document.createElement('h4');
-        title.innerHTML = `<i class="bi ${statusIcons[card.status] || 'bi-kanban'}"></i> ${escapeHtml(card.referencia)}`;
+        title.innerHTML = `<i class="bi ${statusIcons[card.status] || 'bi-kanban'}"></i> ${escapeHtml(card.numeroProcesso)}`;
         header.appendChild(title);
 
         const priority = document.createElement('span');
@@ -433,23 +479,33 @@
         const body = document.createElement('div');
         body.className = 'task-card-body';
 
-        const debtor = document.createElement('p');
-        debtor.className = 'processos-card-row';
-        debtor.innerHTML = `<span class="label"><i class="bi bi-person"></i> Devedor</span><span class="value">${escapeHtml(card.devedor || 'Não informado')}</span>`;
-        body.appendChild(debtor);
+        const author = document.createElement('p');
+        author.className = 'processos-card-row';
+        author.innerHTML = `<span class="label"><i class="bi bi-person-badge"></i> Autor</span><span class="value">${escapeHtml(card.autor)}</span>`;
+        body.appendChild(author);
 
-        if (card.valor !== null) {
+        const defendant = document.createElement('p');
+        defendant.className = 'processos-card-row';
+        defendant.innerHTML = `<span class="label"><i class="bi bi-building"></i> Réu</span><span class="value">${escapeHtml(card.reu)}</span>`;
+        body.appendChild(defendant);
+
+        const subject = document.createElement('p');
+        subject.className = 'processos-card-row';
+        subject.innerHTML = `<span class="label"><i class="bi bi-journal-text"></i> Matéria</span><span class="value">${escapeHtml(card.materia)}</span>`;
+        body.appendChild(subject);
+
+        if (card.valorCausa !== null && card.valorCausa !== undefined) {
             const amount = document.createElement('p');
             amount.className = 'processos-card-row';
-            amount.innerHTML = `<span class="label"><i class="bi bi-cash-coin"></i> Valor</span><span class="value">${formatCurrency(card.valor)}</span>`;
+            amount.innerHTML = `<span class="label"><i class="bi bi-cash-coin"></i> Valor da causa</span><span class="value">${formatCurrency(card.valorCausa)}</span>`;
             body.appendChild(amount);
         }
 
-        if (card.prazo) {
-            const due = document.createElement('p');
-            due.className = 'processos-card-row';
-            due.innerHTML = `<span class="label"><i class="bi bi-calendar-event"></i> Prazo</span><span class="value">${formatDate(card.prazo)}</span>`;
-            body.appendChild(due);
+        if (card.pedidos && card.pedidos !== '—') {
+            const pedidos = document.createElement('p');
+            pedidos.className = 'processos-card-row processos-card-pedidos';
+            pedidos.innerHTML = `<span class="label"><i class="bi bi-list-check"></i> Pedidos</span><span class="value">${escapeHtml(card.pedidos)}</span>`;
+            body.appendChild(pedidos);
         }
 
         article.appendChild(body);
@@ -578,18 +634,15 @@
 
     function buildModalContent(card) {
         const details = [
-            { label: 'Referência', value: card.referencia },
-            { label: 'Devedor', value: card.devedor },
-            { label: 'Responsável', value: card.responsavel || '—' },
-            { label: 'Origem', value: originLabels[card.origem] || '—' },
+            { label: 'Número do processo', value: card.numeroProcesso },
+            { label: 'Autor', value: card.autor },
+            { label: 'Réu', value: card.reu },
+            { label: 'Matéria', value: card.materia },
             { label: 'Status', value: statusLabels[card.status] || card.status },
             { label: 'Prioridade', value: priorityLabels[card.prioridade] || card.prioridade },
-            { label: 'Valor', value: card.valor !== null ? formatCurrency(card.valor) : '—' },
-            { label: 'Prazo', value: card.prazo ? formatDate(card.prazo) : '—' },
-            { label: 'Atualizado em', value: card.ultimaAtualizacao ? formatDateTime(card.ultimaAtualizacao) : '—' },
-            { label: 'Documento', value: card.documento || '—' },
-            { label: 'Contato', value: card.contato || '—' },
-            { label: 'E-mail', value: card.email || '—' }
+            { label: 'Valor da causa', value: card.valorCausa !== null && card.valorCausa !== undefined ? formatCurrency(card.valorCausa) : '—' },
+            { label: 'Origem', value: originLabels[card.origem] || '—' },
+            { label: 'Atualizado em', value: card.ultimaAtualizacao ? formatDateTime(card.ultimaAtualizacao) : '—' }
         ];
 
         const list = details.map(item => `
@@ -599,10 +652,10 @@
             </div>
         `).join('');
 
-        const notes = card.detalhes ? `
+        const notes = card.pedidos && card.pedidos !== '—' ? `
             <div class="detail-notes">
-                <h3>Histórico e observações</h3>
-                <p>${escapeHtml(card.detalhes)}</p>
+                <h3>Pedidos</h3>
+                <p>${escapeHtml(card.pedidos)}</p>
             </div>
         ` : '';
 
@@ -610,8 +663,8 @@
             <article class="processos-details">
                 <header class="details-header">
                     <span class="status-badge status-${card.status}">${escapeHtml(statusLabels[card.status] || card.status)}</span>
-                    <h2>${escapeHtml(card.referencia)}</h2>
-                    <p class="subtitle">${escapeHtml(card.devedor || '—')}</p>
+                    <h2>${escapeHtml(card.numeroProcesso)}</h2>
+                    <p class="subtitle">${escapeHtml(`${card.autor} vs ${card.reu}`)}</p>
                 </header>
                 <section class="details-grid">${list}</section>
                 ${notes}
@@ -655,32 +708,108 @@
         }
         if (form) {
             form.reset();
+            delete form.dataset.submitting;
         }
+        showCreateError('');
+        setCreateLoading(false);
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function handleCreateSubmit(event) {
+    function setCreateLoading(isLoading) {
+        const submit = selectors.createSubmit();
+        if (!submit) {
+            return;
+        }
+
+        submit.disabled = Boolean(isLoading);
+        submit.classList.toggle('is-loading', Boolean(isLoading));
+    }
+
+    function showCreateError(message) {
+        const error = selectors.createError();
+        if (!error) {
+            return;
+        }
+
+        if (!message) {
+            error.textContent = '';
+            error.classList.remove('active');
+            return;
+        }
+
+        error.textContent = message;
+        error.classList.add('active');
+    }
+
+    async function handleCreateSubmit(event) {
         event.preventDefault();
         const form = event.currentTarget;
-        const data = new FormData(form);
+        if (!form || form.dataset.submitting === 'true') {
+            return;
+        }
 
-        const card = normalizeCard({
-            id: cryptoRandomId(),
-            referencia: data.get('referencia'),
-            devedor: data.get('devedor'),
-            prioridade: data.get('prioridade'),
-            valor: data.get('valor'),
-            prazo: data.get('prazo'),
-            responsavel: data.get('responsavel'),
-            origem: data.get('origem'),
-            status: data.get('status'),
-            ultimaAtualizacao: data.get('atualizacao') || new Date().toISOString(),
-            detalhes: data.get('detalhes')
-        });
+        showCreateError('');
+        form.dataset.submitting = 'true';
+        setCreateLoading(true);
 
-        state.cards.unshift(card);
-        render();
-        closeCreateModal();
+        try {
+            const data = new FormData(form);
+            const payload = {
+                autor: (data.get('autor') || '').toString().trim(),
+                reu: (data.get('reu') || '').toString().trim(),
+                materia: (data.get('materia') || '').toString().trim(),
+                numeroProcesso: (data.get('numeroProcesso') || '').toString().trim(),
+                pedidos: (data.get('pedidos') || '').toString().trim()
+            };
+
+            const valorString = (data.get('valorCausa') || '').toString().replace(',', '.');
+            const valorCausa = Number.parseFloat(valorString);
+
+            if (!Number.isFinite(valorCausa) || valorCausa < 0) {
+                showCreateError('Informe um valor da causa válido.');
+                return;
+            }
+
+            payload.valorCausa = Number.parseFloat(valorCausa.toFixed(2));
+
+            const response = await fetch(API_BASE, {
+                method: 'POST',
+                headers: buildHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }),
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                let message = 'Não foi possível registrar o processo.';
+                try {
+                    const errorBody = await response.json();
+                    if (errorBody?.message) {
+                        message = errorBody.message;
+                    }
+                } catch (parseError) {
+                    console.warn('[PROCESSOS-KANBAN] Não foi possível interpretar o erro do cadastro.', parseError);
+                }
+                showCreateError(message);
+                return;
+            }
+
+            const created = await response.json();
+            const card = normalizeCard(created);
+            if (card) {
+                state.cards.unshift(card);
+                render();
+            }
+
+            closeCreateModal();
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao registrar processo:', error);
+            showCreateError('Ocorreu um erro ao registrar o processo. Tente novamente.');
+        } finally {
+            setCreateLoading(false);
+            form.dataset.submitting = 'false';
+        }
     }
 
     function applyFilters() {
@@ -819,92 +948,6 @@
             return window.crypto.randomUUID();
         }
         return `processos-${Math.random().toString(36).slice(2, 10)}`;
-    }
-
-    function buildSeedData() {
-        const now = new Date();
-        return [
-            {
-                id: cryptoRandomId(),
-                referencia: 'PROC-2024-001',
-                devedor: 'Transportadora Alfa Ltda.',
-                valor: 18500.32,
-                status: 'EM_ABERTO_7_0',
-                prioridade: 'ALTA',
-                responsavel: 'Maria Barbosa',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15)),
-                ultimaAtualizacao: normalizeDateTime(now),
-                detalhes: 'Processo referente a contrato de prestação de serviço cancelado. Aguardando documentação do cliente.',
-                contato: '(11) 98888-1234',
-                email: 'financeiro@transportadoraalfa.com',
-                documento: '27.123.456/0001-90'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'ACORDO-NEG-233',
-                devedor: 'João Batista de Souza',
-                valor: 7200.00,
-                status: 'EM_CONTATO_7_1',
-                prioridade: 'MEDIA',
-                responsavel: 'Caroline Ribeiro',
-                origem: 'EXTRAJUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 20)),
-                detalhes: 'Em negociação de parcelamento em 4x. Cliente aguarda envio do termo de acordo revisado.',
-                contato: '(41) 97777-8899',
-                email: 'joao.souza@email.com',
-                documento: '123.456.789-00'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'PROC-2023-887',
-                devedor: 'Construtora Vértice S/A',
-                valor: 54890.47,
-                status: 'PROCESSO_JUDICIAL_7_2',
-                prioridade: 'ALTA',
-                responsavel: 'Ricardo Ferraz',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 48)),
-                detalhes: 'Processo com audiência marcada. Avaliando proposta de acordo apresentada pelo advogado da parte contrária.',
-                contato: '(31) 95555-6677',
-                email: 'contato@construtoravertice.com',
-                documento: '15.456.789/0001-12'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'NEG-2024-054',
-                devedor: 'Mercado Nova Era ME',
-                valor: 3950.90,
-                status: 'ACORDO_ASSINADO_7_3',
-                prioridade: 'MEDIA',
-                responsavel: 'Patrícia Gomes',
-                origem: 'EXTRAJUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3)),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 3)),
-                detalhes: 'Acordo firmado com pagamento em 2 parcelas. Primeira parcela vence em 5 dias.',
-                contato: '(21) 96666-7788',
-                email: 'contato@mercadonnovaera.com',
-                documento: '09.987.654/0001-44'
-            },
-            {
-                id: cryptoRandomId(),
-                referencia: 'ENC-2023-410',
-                devedor: 'Logística Horizonte LTDA',
-                valor: 12800.00,
-                status: 'ACORDO_ASSINADO_7_3',
-                prioridade: 'BAIXA',
-                responsavel: 'Eduardo Martins',
-                origem: 'JUDICIAL',
-                prazo: normalizeDate(new Date(now.getFullYear(), now.getMonth() - 2, now.getDate())),
-                ultimaAtualizacao: normalizeDateTime(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 12)),
-                detalhes: 'Processo encerrado após quitação integral. Arquivar documentação.',
-                contato: '(51) 93333-4455',
-                email: 'contato@logisticahorizonte.com',
-                documento: '38.654.321/0001-77'
-            }
-        ];
     }
 
     document.addEventListener('DOMContentLoaded', () => {
