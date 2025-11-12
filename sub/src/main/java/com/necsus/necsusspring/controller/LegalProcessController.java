@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/juridico/processos")
+@RequestMapping(value = "/juridico/processos", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ADMIN')")
 public class LegalProcessController {
 
@@ -28,17 +29,17 @@ public class LegalProcessController {
         this.legalProcessService = legalProcessService;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<LegalProcess> listProcesses() {
         return legalProcessService.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public LegalProcess getProcess(@PathVariable Long id) {
         return legalProcessService.findById(id);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LegalProcess> createProcess(@Valid @RequestBody LegalProcessRequest request) {
         LegalProcess created = legalProcessService.create(request);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -48,12 +49,12 @@ public class LegalProcessController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public LegalProcess updateProcess(@PathVariable Long id, @Valid @RequestBody LegalProcessRequest request) {
         return legalProcessService.update(id, request);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteProcess(@PathVariable Long id) {
         legalProcessService.delete(id);
         return ResponseEntity.noContent().build();
