@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
     <title>SUB - Algo saiu de órbita</title>
@@ -11,60 +12,67 @@
         <div class="error-stage__glow" aria-hidden="true"></div>
         <div class="error-stage__code" aria-hidden="true"
              th:text="${status} != null ? status : '500'">500</div>
+
+        <!-- Cabeçalho no topo -->
+        <header class="error-header">
+            <span class="error-panel__badge">Ops!</span>
+            <h1 class="error-panel__title">Nosso foguete<br>perdeu a rota!</h1>
+        </header>
+
+        <!-- Conteúdo principal -->
         <div class="error-stage__content">
             <div class="error-illustration" aria-hidden="true">
                 <div class="error-illustration__shadow"></div>
-                <img th:src="@{/images/ubinho_foguete.png}" src="/images/ubinho_foguete.png" alt="Foguete com defeito e mascote surpreso">
+                <img th:src="@{/images/ubinho_foguete_caido.png}"
+                     src="/images/ubinho_foguete_caido.png"
+                     alt="Foguete em chamas">
             </div>
 
             <div class="error-panel">
-                <span class="error-panel__badge">ops!</span>
-                <h1 class="error-panel__title">
-                    Nosso foguete perdeu a rota
-                </h1>
                 <p class="error-panel__subtitle">
                     <span th:text="${status} != null ? 'Código ' + status : 'Erro não identificado'">Código 500</span>
-                    <span th:if="${error} != null" th:text="'• ' + error">• Internal Server Error</span>
+                    <span th:if="${error} != null" th:text="'• ' + ${error}">• Internal Server Error</span>
                 </p>
                 <p class="error-panel__description"
-                   th:text="${message} != null ? message : 'Algo explodiu por aqui. Já estamos trabalhando para resolver!'">
+                   th:text="${message} != null ? ${message} : 'Algo explodiu por aqui. Já estamos trabalhando para resolver!'">
                     Algo explodiu por aqui. Já estamos trabalhando para resolver!
                 </p>
 
                 <div class="error-panel__actions">
                     <a class="error-button" th:href="@{/login}">
-                        <span class="error-button__icon" aria-hidden="true">⟵</span>
+                        <span class="error-button__icon" aria-hidden="true">←</span>
                         <span>Voltar para o login</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="error-details">
+        <!-- Rodapé com informações em linha -->
+        <footer class="error-details">
             <div class="error-chip">
                 <span class="error-chip__label">Momento</span>
-                <span class="error-chip__value" th:text="${timestamp} != null ? timestamp : '-'">-</span>
+                <span class="error-chip__value" th:text="${timestamp} != null ? ${timestamp} : 'timestamp'">timestamp</span>
             </div>
             <div class="error-chip">
-                <span class="error-chip__label">Status</span>
-                <span class="error-chip__value" th:text="${status} != null ? status : '-'">500</span>
-            </div>
-            <div class="error-chip" th:if="${error} != null">
-                <span class="error-chip__label">Erro</span>
-                <span class="error-chip__value" th:text="${error}">Internal Server Error</span>
+                <span class="error-chip__label">Status:</span>
+                <span class="error-chip__value" th:text="${status} != null ? ${status} : 'status'">status</span>
             </div>
             <div class="error-chip">
-                <span class="error-chip__label">Mensagem</span>
-                <span class="error-chip__value" th:text="${message} != null ? message : 'Ocorreu um erro inesperado'">
-                    Ocorreu um erro inesperado
-                </span>
+                <span class="error-chip__label">Erro:</span>
+                <span class="error-chip__value" th:text="${error} != null ? ${error} : 'None'">None</span>
             </div>
             <div class="error-chip">
-                <span class="error-chip__label">Caminho</span>
-                <span class="error-chip__value" th:text="${path} != null ? path : '-'">-</span>
+                <span class="error-chip__label">Mensagem:</span>
+                <span class="error-chip__value"
+                      th:text="${message} != null ? ${message} : 'message'">message</span>
             </div>
-        </div>
+            <div class="error-chip">
+                <span class="error-chip__label">Caminho:</span>
+                <span class="error-chip__value" th:text="${path} != null ? ${path} : '-'">caminho</span>
+            </div>
+        </footer>
 
+        <!-- Estrelas decorativas -->
         <ul class="error-stars" aria-hidden="true">
             <li></li>
             <li></li>
