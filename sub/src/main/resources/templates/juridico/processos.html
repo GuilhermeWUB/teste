@@ -31,7 +31,7 @@
                 </button>
             </div>
             <div class="kanban-actions">
-                <button class="btn-novo-processo" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                <button class="btn-novo-processo" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_ABERTO_7_0')">
                     <i class="bi bi-plus-circle"></i> Novo Processo
                 </button>
             </div>
@@ -54,7 +54,7 @@
                         <h3>Em Aberto 7.0</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_ABERTO_7_0')">
                         <i class="bi bi-plus"></i> Registrar
                     </button>
                 </div>
@@ -67,7 +67,7 @@
                         <h3>Em Contato 7.1</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_CONTATO_7_1')">
                         <i class="bi bi-plus"></i> Registrar
                     </button>
                 </div>
@@ -80,7 +80,7 @@
                         <h3>Processo Judicial 7.2</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('PROCESSO_JUDICIAL_7_2')">
                         <i class="bi bi-plus"></i> Registrar
                     </button>
                 </div>
@@ -93,7 +93,7 @@
                         <h3>Acordo Assinado 7.3</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('ACORDO_ASSINADO_7_3')">
                         <i class="bi bi-plus"></i> Registrar
                     </button>
                 </div>
@@ -226,6 +226,11 @@
             <div class="kanban-modal-body">
                 <form class="kanban-create-form" id="create-processo-form">
                     <div id="create-processo-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
+
+                    <div id="create-processo-target" class="create-processo-target" aria-live="polite">
+                        <span class="label"><i class="bi bi-kanban"></i> Registrar em</span>
+                        <span class="value"></span>
+                    </div>
 
                     <div class="form-row">
                         <div class="form-group">
