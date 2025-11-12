@@ -2,60 +2,58 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Processos - Jurídico</title>
+    <title>SUB - Processos Jurídicos</title>
     <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
-    <link rel="stylesheet" th:href="@{/css/processos-kanban.css}">
 </head>
-<body class="processos-page">
-<section layout:fragment="content" class="processos-kanban-page">
-    <div class="kanban-wrapper processos-kanban-wrapper">
-        <div class="kanban-header processos-kanban-header">
+<body>
+<section layout:fragment="content">
+    <div class="kanban-wrapper">
+        <div class="kanban-header">
             <div class="kanban-header-info">
-                <h1><i class="bi bi-kanban"></i> Processos</h1>
-                <p>Acompanhe o avanço dos processos jurídicos com visão clara por status e prioridade.</p>
+                <h1><i class="bi bi-kanban"></i> Processos Jurídicos</h1>
+                <p>Gerencie processos jurídicos e acompanhe o andamento em tempo real.</p>
             </div>
-        </div>
-
-        <div class="kanban-controls processos-kanban-controls">
-            <div class="kanban-controls-left">
-                <div class="kanban-search">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="kanban-search" placeholder="Buscar por devedor, responsável ou referência" autocomplete="off"/>
+            <div class="kanban-controls">
+                <div class="kanban-controls-left">
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="kanban-search" placeholder="Buscar por autor, réu ou número do processo..." autocomplete="off"/>
+                    </div>
                 </div>
-                <button class="kanban-filter-btn" id="btn-advanced-filters">
-                    <i class="bi bi-funnel-fill"></i> Filtros
-                    <span class="filter-count" style="display: none;">0</span>
-                </button>
-                <button class="kanban-clear-filters" id="btn-clear-filters" style="display: none;">
-                    <i class="bi bi-x-circle"></i> Limpar Filtros
-                </button>
-            </div>
-            <div class="kanban-actions">
-                <button class="btn-novo-processo" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_ABERTO_7_0')">
-                    <i class="bi bi-plus-circle"></i> Novo Processo
-                </button>
+                <div class="kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Novo Processo
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="kanban-alerts">
-            <div class="kanban-alert info" role="alert">
-                <i class="bi bi-info-circle-fill"></i>
-                <span>Mova os cartões entre as colunas conforme a evolução do processo.</span>
+            <div th:if="${success}" class="kanban-alert success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div th:if="${error}" class="kanban-alert danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${error}"></span>
                 <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
         </div>
 
-        <div class="kanban-board processos-board">
+        <div class="kanban-board">
             <div class="kanban-column" data-status="EM_ABERTO_7_0">
                 <div class="column-header">
                     <div class="column-title">
                         <h3>Em Aberto 7.0</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_ABERTO_7_0')">
-                        <i class="bi bi-plus"></i> Registrar
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
                     </button>
                 </div>
                 <div class="tasks-container"></div>
@@ -67,8 +65,8 @@
                         <h3>Em Contato 7.1</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('EM_CONTATO_7_1')">
-                        <i class="bi bi-plus"></i> Registrar
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
                     </button>
                 </div>
                 <div class="tasks-container"></div>
@@ -80,8 +78,8 @@
                         <h3>Processo Judicial 7.2</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('PROCESSO_JUDICIAL_7_2')">
-                        <i class="bi bi-plus"></i> Registrar
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
                     </button>
                 </div>
                 <div class="tasks-container"></div>
@@ -93,112 +91,11 @@
                         <h3>Acordo Assinado 7.3</h3>
                         <span class="column-count">0</span>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('ACORDO_ASSINADO_7_3')">
-                        <i class="bi bi-plus"></i> Registrar
+                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus"></i> Nova
                     </button>
                 </div>
                 <div class="tasks-container"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="filters-modal" class="kanban-modal">
-        <div class="kanban-modal-content filters-modal-content">
-            <div class="kanban-modal-header">
-                <h2><i class="bi bi-funnel-fill"></i> Filtros avançados</h2>
-                <button class="kanban-modal-close" onclick="window.processosBoard?.closeFiltersModal?.()">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <div class="kanban-modal-body filters-modal-body">
-                <div class="filter-section">
-                    <h4 class="filter-section-title"><i class="bi bi-exclamation-triangle"></i> Prioridade</h4>
-                    <div class="filter-options" id="filter-priority-options">
-                        <label class="filter-checkbox" data-priority="ALTA">
-                            <input type="checkbox" name="prioridade" value="ALTA" checked>
-                            <span class="checkbox-label">Alta</span>
-                        </label>
-                        <label class="filter-checkbox" data-priority="MEDIA">
-                            <input type="checkbox" name="prioridade" value="MEDIA" checked>
-                            <span class="checkbox-label">Média</span>
-                        </label>
-                        <label class="filter-checkbox" data-priority="BAIXA">
-                            <input type="checkbox" name="prioridade" value="BAIXA" checked>
-                            <span class="checkbox-label">Baixa</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h4 class="filter-section-title"><i class="bi bi-columns-gap"></i> Status</h4>
-                    <div class="filter-options" id="filter-status-options">
-                        <label class="filter-checkbox" data-status="EM_ABERTO_7_0">
-                            <input type="checkbox" name="status" value="EM_ABERTO_7_0" checked>
-                            <span class="checkbox-label">Em Aberto 7.0</span>
-                        </label>
-                        <label class="filter-checkbox" data-status="EM_CONTATO_7_1">
-                            <input type="checkbox" name="status" value="EM_CONTATO_7_1" checked>
-                            <span class="checkbox-label">Em Contato 7.1</span>
-                        </label>
-                        <label class="filter-checkbox" data-status="PROCESSO_JUDICIAL_7_2">
-                            <input type="checkbox" name="status" value="PROCESSO_JUDICIAL_7_2" checked>
-                            <span class="checkbox-label">Processo Judicial 7.2</span>
-                        </label>
-                        <label class="filter-checkbox" data-status="ACORDO_ASSINADO_7_3">
-                            <input type="checkbox" name="status" value="ACORDO_ASSINADO_7_3" checked>
-                            <span class="checkbox-label">Acordo Assinado 7.3</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h4 class="filter-section-title"><i class="bi bi-geo-alt"></i> Origem</h4>
-                    <div class="filter-options" id="filter-origin-options">
-                        <label class="filter-checkbox">
-                            <input type="radio" name="origem" value="TODAS" checked>
-                            <span class="checkbox-label">Todas</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="radio" name="origem" value="JUDICIAL">
-                            <span class="checkbox-label">Judicial</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="radio" name="origem" value="EXTRAJUDICIAL">
-                            <span class="checkbox-label">Extrajudicial</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h4 class="filter-section-title"><i class="bi bi-person"></i> Responsável</h4>
-                    <div class="filter-text-input">
-                        <input type="text" id="filter-responsavel" class="form-control"
-                               placeholder="Nome do responsável" autocomplete="off">
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h4 class="filter-section-title"><i class="bi bi-calendar-event"></i> Atualização</h4>
-                    <div class="filter-date-range">
-                        <div class="filter-date-input">
-                            <label for="filter-date-from">De:</label>
-                            <input type="date" id="filter-date-from" class="form-control">
-                        </div>
-                        <div class="filter-date-input">
-                            <label for="filter-date-to">Até:</label>
-                            <input type="date" id="filter-date-to" class="form-control">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="filter-actions">
-                    <button class="btn-filter-apply" type="button" onclick="window.processosBoard?.applyFilters?.()">
-                        <i class="bi bi-check-circle"></i> Aplicar filtros
-                    </button>
-                    <button class="btn-filter-reset" type="button" onclick="window.processosBoard?.resetFilters?.()">
-                        <i class="bi bi-arrow-clockwise"></i> Resetar
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -224,13 +121,8 @@
                 </button>
             </div>
             <div class="kanban-modal-body">
-                <form class="kanban-create-form" id="create-processo-form">
+                <form id="create-processo-form" class="kanban-create-form">
                     <div id="create-processo-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
-
-                    <div id="create-processo-target" class="create-processo-target" aria-live="polite">
-                        <span class="label"><i class="bi bi-kanban"></i> Registrar em</span>
-                        <span class="value"></span>
-                    </div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -249,14 +141,14 @@
                             <input type="text" id="create-materia" name="materia" placeholder="Matéria do processo" required>
                         </div>
                         <div class="form-group">
-                            <label for="create-numero-processo">Número do processo *</label>
+                            <label for="create-numero-processo">Nº Processo *</label>
                             <input type="text" id="create-numero-processo" name="numeroProcesso" placeholder="0000000-00.0000.0.00.0000" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="create-valor-causa">Valor da causa (R$) *</label>
+                            <label for="create-valor-causa">Valor da Causa (R$) *</label>
                             <input type="number" id="create-valor-causa" name="valorCausa" step="0.01" min="0" placeholder="0,00" required>
                         </div>
                     </div>
@@ -279,43 +171,31 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            if (body) {
+                body.classList.remove('no-dark-blur');
+            }
+
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
+    <script th:src="@{/js/processos-kanban.js}"></script>
 </section>
-
-<script>
-    console.log('[DEBUG] HTML carregado - antes de processos-kanban.js');
-    console.log('[DEBUG] Buscando elementos do DOM:');
-    console.log('[DEBUG] .kanban-board:', document.querySelector('.kanban-board'));
-    console.log('[DEBUG] #create-processo-modal:', document.getElementById('create-processo-modal'));
-    console.log('[DEBUG] #create-processo-form:', document.getElementById('create-processo-form'));
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const body = document.body;
-        if (body) {
-            body.classList.remove('no-dark-blur');
-        }
-
-        const main = document.querySelector('main.page');
-        if (main) {
-            main.classList.add('kanban-page');
-        }
-
-        const container = document.querySelector('main.page > .container');
-        if (container) {
-            container.classList.add('kanban-full-width');
-        }
-
-        const pageContent = document.querySelector('main.page > .container > .page-content');
-        if (pageContent) {
-            pageContent.classList.add('kanban-content-stretch');
-        }
-    });
-</script>
-<script th:src="@{/js/processos-kanban.js}"></script>
-<script>
-    console.log('[DEBUG] Depois de carregar processos-kanban.js');
-    console.log('[DEBUG] window.processosBoard existe?', typeof window.processosBoard);
-</script>
 </body>
 </html>
