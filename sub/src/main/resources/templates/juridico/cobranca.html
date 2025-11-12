@@ -2,16 +2,16 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{fragments/layout}">
 <head>
-    <title>Cobrança de Terceiros - Jurídico</title>
+    <title>Cobrança - Jurídico</title>
     <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
-    <link rel="stylesheet" th:href="@{/css/cobranca-terceiro-kanban.css}">
+    <link rel="stylesheet" th:href="@{/css/cobranca-kanban.css}">
 </head>
-<body class="cobranca-terceiro-page">
+<body class="cobranca-page">
 <section layout:fragment="content" class="cobranca-kanban-page">
     <div class="kanban-wrapper cobranca-kanban-wrapper">
         <div class="kanban-header cobranca-kanban-header">
             <div class="kanban-header-info">
-                <h1><i class="bi bi-kanban"></i> Cobranças de Terceiros</h1>
+                <h1><i class="bi bi-kanban"></i> Cobranças</h1>
                 <p>Acompanhe o avanço das negociações de cobrança com visão clara por status e prioridade.</p>
             </div>
         </div>
@@ -325,6 +325,6 @@
         }
     });
 </script>
-<script th:src="@{/js/cobranca-terceiro-kanban.js}"></script>
+<script th:src="@{/js/cobranca-kanban.js}"></script>
 </body>
 </html>
