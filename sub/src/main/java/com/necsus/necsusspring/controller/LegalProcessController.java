@@ -2,6 +2,7 @@ package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.dto.LegalProcessRequest;
 import com.necsus.necsusspring.model.LegalProcess;
+import com.necsus.necsusspring.model.LegalProcessStatus;
 import com.necsus.necsusspring.service.LegalProcessService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -58,6 +59,44 @@ public class LegalProcessController {
     public ResponseEntity<Void> deleteProcess(@PathVariable Long id) {
         legalProcessService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Atualiza o status de um processo jurídico (usado pelo drag-and-drop do Kanban).
+     *
+     * @param id ID do processo
+     * @param payload Objeto contendo o novo status
+     * @return Processo atualizado
+     */
+    @PutMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateProcessStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String statusValue = payload.get("status");
+            if (statusValue == null || statusValue.isBlank()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Status é obrigatório"));
+            }
+
+            LegalProcessStatus newStatus = LegalProcessStatus.valueOf(statusValue);
+            LegalProcess updated = legalProcessService.updateStatus(id, newStatus);
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Status atualizado com sucesso",
+                    "process", updated
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Status inválido: " + payload.get("status")));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao atualizar status do processo"));
+        }
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
