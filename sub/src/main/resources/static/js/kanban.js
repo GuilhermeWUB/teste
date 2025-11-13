@@ -679,6 +679,9 @@
             // Fechar o modal de detalhes se estiver aberto
             closeModal();
 
+            // Recarregar o board para garantir que o evento não permaneça na aba
+            await loadBoard();
+
             const numeroProcesso = typeof result === 'object' ? result.numeroProcesso : null;
             const message = typeof result === 'object' ? result.message : null;
             alert(message || `Evento enviado com sucesso para Jurídico/Cobrança (${legalType})!\nNúmero do processo: ${numeroProcesso || 'N/A'}`);
