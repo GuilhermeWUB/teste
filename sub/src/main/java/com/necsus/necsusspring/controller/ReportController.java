@@ -211,7 +211,7 @@ public class ReportController {
     }
 
     /**
-     * Endpoint para download do relatório de associados em Excel/CSV (completo)
+     * Endpoint para download do relatório de associados em Excel (completo)
      */
     @GetMapping("/partners/excel")
     public ResponseEntity<byte[]> downloadPartnersExcel() {
@@ -222,19 +222,19 @@ public class ReportController {
                 return ResponseEntity.noContent().build();
             }
 
-            byte[] csvFile = excelExportService.generatePartnerReportExcel(reportData.partners());
+            byte[] excelFile = excelExportService.generatePartnerReportExcel(reportData.partners());
 
             String filename = "relatorio_associados_" +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv";
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             headers.setContentDispositionFormData("attachment", filename);
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(csvFile);
+                    .body(excelFile);
 
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
@@ -242,7 +242,7 @@ public class ReportController {
     }
 
     /**
-     * Endpoint para download do relatório resumido de associados em Excel/CSV
+     * Endpoint para download do relatório resumido de associados em Excel
      */
     @GetMapping("/partners/excel/summary")
     public ResponseEntity<byte[]> downloadPartnersSummaryExcel() {
@@ -253,19 +253,19 @@ public class ReportController {
                 return ResponseEntity.noContent().build();
             }
 
-            byte[] csvFile = excelExportService.generatePartnerSummaryExcel(reportData);
+            byte[] excelFile = excelExportService.generatePartnerSummaryExcel(reportData);
 
             String filename = "relatorio_associados_resumo_" +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv";
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx";
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             headers.setContentDispositionFormData("attachment", filename);
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(csvFile);
+                    .body(excelFile);
 
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
