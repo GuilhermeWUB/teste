@@ -85,6 +85,8 @@ html[data-theme="dark"] {
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    max-width: 100%;
 }
 
 /* ========================================
@@ -99,6 +101,7 @@ html[data-theme="dark"] {
     border-radius: 12px;
     transition: all 0.25s ease;
     user-select: none;
+    width: 100%;
 }
 
 .phase-header:hover {
@@ -259,6 +262,7 @@ html[data-theme="dark"] .phase-count {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     max-height: 1000px;
     opacity: 1;
+    width: 100%;
 }
 
 .kanban-phase.collapsed .phase-columns {
