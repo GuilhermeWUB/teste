@@ -590,6 +590,13 @@
                 deleteEvent(card.id, deleteButton);
             });
         }
+
+        const sendLegalButton = modalBody.querySelector('[data-action="send-legal"]');
+        if (sendLegalButton) {
+            sendLegalButton.addEventListener('click', () => {
+                sendEventToLegal(card.id, sendLegalButton);
+            });
+        }
     }
 
     async function deleteEvent(eventId, triggerButton) {
@@ -627,6 +634,67 @@
         } catch (error) {
             console.error('[KANBAN] Erro ao remover evento:', error);
             alert('Não foi possível remover o evento. Tente novamente mais tarde.');
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalLabel;
+            }
+        }
+    }
+
+    async function sendEventToLegal(eventId, triggerButton) {
+        if (!eventId) {
+            return;
+        }
+
+        const button = triggerButton;
+        const originalLabel = button ? button.innerHTML : null;
+
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+            }
+
+            const response = await fetch(`/events/api/${eventId}/send-to-legal`, {
+                method: 'POST',
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            const responseText = await response.text();
+            let payload = {};
+            if (responseText) {
+                try {
+                    payload = JSON.parse(responseText);
+                } catch (jsonError) {
+                    payload = { raw: responseText };
+                }
+            }
+
+            if (response.status === 404) {
+                alert('Evento não encontrado. Ele pode ter sido removido.');
+                return;
+            }
+
+            if (response.status === 409) {
+                alert(payload.error || 'Este evento já foi enviado para o jurídico.');
+                return;
+            }
+
+            if (response.status === 400) {
+                alert(payload.error || 'Não foi possível enviar o evento. Verifique os dados.');
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(payload.error || 'Falha ao enviar para o jurídico');
+            }
+
+            alert(payload.message || 'Evento enviado para o jurídico com sucesso!');
+            closeModal();
+        } catch (error) {
+            console.error('[KANBAN] Erro ao enviar para jurídico:', error);
+            alert('Não foi possível enviar o evento para o jurídico. Tente novamente mais tarde.');
         } finally {
             if (button) {
                 button.disabled = false;

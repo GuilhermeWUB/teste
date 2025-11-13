@@ -1,14 +1,17 @@
 package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.dto.EventBoardSnapshot;
+import com.necsus.necsusspring.dto.LegalProcessRequest;
 import com.necsus.necsusspring.model.*;
 import com.necsus.necsusspring.service.EventService;
 import com.necsus.necsusspring.service.EventObservationHistoryService;
 import com.necsus.necsusspring.service.EventDescriptionHistoryService;
 import com.necsus.necsusspring.service.FileStorageService;
+import com.necsus.necsusspring.service.LegalProcessService;
 import com.necsus.necsusspring.service.PartnerService;
 import com.necsus.necsusspring.service.VehicleService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,19 +47,22 @@ public class EventController {
     private final FileStorageService fileStorageService;
     private final EventObservationHistoryService observationHistoryService;
     private final EventDescriptionHistoryService descriptionHistoryService;
+    private final LegalProcessService legalProcessService;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
                            VehicleService vehicleService,
                            FileStorageService fileStorageService,
                            EventObservationHistoryService observationHistoryService,
-                           EventDescriptionHistoryService descriptionHistoryService) {
+                           EventDescriptionHistoryService descriptionHistoryService,
+                           LegalProcessService legalProcessService) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
         this.fileStorageService = fileStorageService;
         this.observationHistoryService = observationHistoryService;
         this.descriptionHistoryService = descriptionHistoryService;
+        this.legalProcessService = legalProcessService;
     }
 
     @ModelAttribute("motivoOptions")
@@ -333,6 +340,64 @@ public class EventController {
             logger.error("Erro ao remover evento {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Erro ao remover evento"));
+        }
+    }
+
+    @PostMapping("/api/{id}/send-to-legal")
+    @ResponseBody
+    public ResponseEntity<?> sendEventToLegal(@PathVariable Long id) {
+        try {
+            Event event = eventService.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
+
+            Partner partner = event.getPartner();
+            if (partner == null || partner.getName() == null || partner.getName().isBlank()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Evento não possui associado vinculado."));
+            }
+
+            String autor = partner.getName();
+            String reu = Optional.ofNullable(event.getAnalistaResponsavel())
+                    .filter(name -> !name.isBlank())
+                    .orElse("Responsável não informado");
+            String materia = Optional.ofNullable(event.getMotivo())
+                    .map(Motivo::getDescricao)
+                    .orElse("Cobrança de Terceiros");
+            String pedidos = Optional.ofNullable(event.getObservacoes())
+                    .filter(obs -> !obs.isBlank())
+                    .orElse(event.getDescricao());
+            String numeroProcesso = String.format("EVT-%05d", event.getId());
+
+            LegalProcessRequest request = new LegalProcessRequest(
+                    autor,
+                    reu,
+                    materia,
+                    numeroProcesso,
+                    BigDecimal.ZERO,
+                    pedidos,
+                    LegalProcessType.TERCEIROS
+            );
+
+            LegalProcess process = legalProcessService.create(request);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Evento enviado para o jurídico com sucesso.");
+            response.put("processId", process.getId());
+            response.put("processNumber", process.getNumeroProcesso());
+
+            logger.info("Evento {} enviado para jurídico como processo {}", id, process.getNumeroProcesso());
+            return ResponseEntity.ok(response);
+        } catch (ResponseStatusException ex) {
+            throw ex;
+        } catch (DataIntegrityViolationException ex) {
+            logger.warn("Evento {} já havia sido enviado para o jurídico: {}", id, ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Este evento já foi enviado para o jurídico."));
+        } catch (Exception ex) {
+            logger.error("Erro ao enviar evento {} para o jurídico: {}", id, ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Não foi possível enviar o evento para o jurídico."));
         }
     }
 
