@@ -1,25 +1,69 @@
 # Database Migrations
 
-Este diretório contém scripts SQL para ajustes manuais no banco de dados.
+Este diretório contém as migrations gerenciadas pelo **Flyway**.
 
-## Como executar os scripts
+## ⚠️ IMPORTANTE: Migrations Automáticas com Flyway
 
-### Opção 1: Via psql (linha de comando)
+A partir desta versão, o projeto usa **Flyway** para gerenciar o schema do banco de dados automaticamente.
 
-```bash
-psql -h localhost -U admin -d ubsystem -f fix_vehicle_nullable.sql
+### O que mudou:
+- ✅ **Migrations automáticas**: Flyway aplica as migrations automaticamente na inicialização
+- ✅ **Versionamento**: Todas as migrations seguem o padrão `V{número}__{descrição}.sql`
+- ✅ **Controle de estado**: Flyway rastreia quais migrations já foram aplicadas
+- ⚠️ **Hibernate em modo validate**: O Hibernate apenas valida o schema, não o modifica mais
+
+### Como funciona:
+1. Ao iniciar a aplicação, o Flyway verifica a tabela `flyway_schema_history`
+2. Identifica quais migrations ainda não foram aplicadas
+3. Executa automaticamente as migrations pendentes em ordem
+4. Registra o sucesso ou falha de cada migration
+
+### ⚠️ NÃO execute migrations manualmente!
+
+As migrations serão aplicadas automaticamente pelo Flyway. Executar manualmente pode causar conflitos.
+
+## Estrutura das Migrations
+
+Todas as migrations seguem o padrão Flyway:
+- `V1__create_legal_processes_table.sql` - Cria tabela de processos jurídicos
+- `V2__add_document_fields_to_event.sql` - Adiciona campos de documento em eventos
+- `V3__create_notifications_table.sql` - Cria tabela de notificações
+- `V4__fix_user_created_at.sql` - Corrige campo created_at em users
+- `V5__fix_vehicle_nullable.sql` - Torna vehicle_id opcional
+- `V6__migrate_event_status_to_new_flow.sql` - Migra status de eventos
+- `V7__add_status_to_legal_processes.sql` - Adiciona coluna status
+- `V8__add_process_type_to_legal_processes.sql` - Adiciona tipo de cobrança
+- `V9__update_legal_process_status_check.sql` - **Atualiza constraint com regex**
+
+## Migration V9: Correção da Constraint
+
+A migration V9 resolve o erro de constraint ao criar processos RASTREADOR/FIDELIDADE:
+
+```sql
+-- Permite qualquer status que comece com RASTREADOR_ ou FIDELIDADE_
+ALTER TABLE legal_processes
+    ADD CONSTRAINT legal_processes_status_check CHECK (
+        status ~ '^RASTREADOR_'
+        OR status ~ '^FIDELIDADE_'
+        OR status IN (
+            'EM_ABERTO_7_0',
+            'EM_CONTATO_7_1',
+            'PROCESSO_JUDICIAL_7_2',
+            'ACORDO_ASSINADO_7_3'
+        )
+    );
 ```
 
-### Opção 2: Via pgAdmin ou outro cliente PostgreSQL
+### Como executar manualmente (apenas em desenvolvimento/debug)
 
-1. Conecte-se ao banco de dados `ubsystem`
-2. Abra o arquivo `fix_vehicle_nullable.sql`
-3. Execute o script SQL
-
-### Opção 3: Via Docker (se o PostgreSQL está em container)
+Se você precisar executar uma migration específica manualmente:
 
 ```bash
-docker exec -i <container_id> psql -U admin -d ubsystem < fix_vehicle_nullable.sql
+# Via psql
+psql -h localhost -U admin -d ubsystem -f V9__update_legal_process_status_check.sql
+
+# Via Docker
+docker exec -i <container_id> psql -U admin -d ubsystem < V9__update_legal_process_status_check.sql
 ```
 
 ## Scripts disponíveis
