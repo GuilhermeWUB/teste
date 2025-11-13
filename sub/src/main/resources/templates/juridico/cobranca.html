@@ -64,7 +64,7 @@
                                 <h3>Em Aberto</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('RASTREADOR')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -77,7 +77,7 @@
                                 <h3>Em Contato</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('RASTREADOR')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -90,7 +90,7 @@
                                 <h3>Acordo Assinado</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('RASTREADOR')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -103,7 +103,7 @@
                                 <h3>Rastreador Devolvido</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('RASTREADOR')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -116,7 +116,7 @@
                                 <h3>Reativação</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('RASTREADOR')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -143,7 +143,7 @@
                                 <h3>Em Aberto</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('FIDELIDADE')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -156,7 +156,7 @@
                                 <h3>Em Contato</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('FIDELIDADE')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -169,7 +169,7 @@
                                 <h3>Acordo Assinado</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('FIDELIDADE')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -182,7 +182,7 @@
                                 <h3>Reativação</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('FIDELIDADE')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -209,7 +209,7 @@
                                 <h3>Em Aberto</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('TERCEIROS')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -222,7 +222,7 @@
                                 <h3>Em Contato</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('TERCEIROS')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -235,7 +235,7 @@
                                 <h3>Processo Judicial</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('TERCEIROS')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -248,7 +248,7 @@
                                 <h3>Acordo Assinado</h3>
                                 <span class="column-count">0</span>
                             </div>
-                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.('TERCEIROS')">
                                 <i class="bi bi-plus"></i> Nova
                             </button>
                         </div>
@@ -282,6 +282,18 @@
             <div class="kanban-modal-body">
                 <form id="create-processo-form" class="kanban-create-form">
                     <div id="create-processo-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-process-type">Tipo de Cobrança *</label>
+                            <select id="create-process-type" name="processType" required>
+                                <option value="" selected disabled>Selecione um tipo</option>
+                                <option value="RASTREADOR">Rastreador</option>
+                                <option value="FIDELIDADE">Fidelidade</option>
+                                <option value="TERCEIROS">Terceiros</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-row">
                         <div class="form-group">

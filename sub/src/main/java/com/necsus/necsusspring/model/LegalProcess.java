@@ -37,6 +37,10 @@ public class LegalProcess {
     @Column(name = "status", nullable = false)
     private LegalProcessStatus status = LegalProcessStatus.EM_ABERTO_7_0;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "process_type", nullable = false)
+    private LegalProcessType processType = LegalProcessType.TERCEIROS;
+
     public LegalProcess() {
     }
 
@@ -45,14 +49,17 @@ public class LegalProcess {
                         String materia,
                         String numeroProcesso,
                         BigDecimal valorCausa,
-                        String pedidos) {
+                        String pedidos,
+                        LegalProcessType processType,
+                        LegalProcessStatus status) {
         this.autor = autor;
         this.reu = reu;
         this.materia = materia;
         this.numeroProcesso = numeroProcesso;
         this.valorCausa = valorCausa;
         this.pedidos = pedidos;
-        this.status = LegalProcessStatus.EM_ABERTO_7_0;
+        this.processType = processType != null ? processType : LegalProcessType.TERCEIROS;
+        this.status = status != null ? status : LegalProcessStatus.EM_ABERTO_7_0;
     }
 
     public Long getId() {
@@ -113,6 +120,14 @@ public class LegalProcess {
 
     public void setStatus(LegalProcessStatus status) {
         this.status = status;
+    }
+
+    public LegalProcessType getProcessType() {
+        return processType;
+    }
+
+    public void setProcessType(LegalProcessType processType) {
+        this.processType = processType != null ? processType : LegalProcessType.TERCEIROS;
     }
 
     @Override
