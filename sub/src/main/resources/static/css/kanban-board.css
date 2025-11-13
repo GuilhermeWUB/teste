@@ -692,7 +692,8 @@ html[data-theme="dark"] .kanban-wrapper {
 }
 
 .kanban-modal-actions .btn-primary,
-.kanban-modal-actions .btn-secondary {
+.kanban-modal-actions .btn-secondary,
+.kanban-modal-actions .btn-danger {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -717,6 +718,12 @@ html[data-theme="dark"] .kanban-wrapper {
     background: rgba(255, 255, 255, 0.08);
     color: var(--kanban-text);
     border: 1px solid var(--kanban-panel-border);
+}
+
+.kanban-modal-actions .btn-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #fff;
+    border: none;
 }
 
 .kanban-create-form {

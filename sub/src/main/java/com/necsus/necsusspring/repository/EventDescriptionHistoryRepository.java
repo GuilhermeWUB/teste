@@ -14,4 +14,6 @@ public interface EventDescriptionHistoryRepository extends JpaRepository<EventDe
      * ordenado da mais recente para a mais antiga
      */
     List<EventDescriptionHistory> findByEventIdOrderByModifiedAtDesc(Long eventId);
+
+    void deleteByEventId(Long eventId);
 }

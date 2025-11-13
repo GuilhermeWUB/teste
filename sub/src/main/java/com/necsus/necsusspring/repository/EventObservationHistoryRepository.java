@@ -10,4 +10,6 @@ import java.util.List;
 public interface EventObservationHistoryRepository extends JpaRepository<EventObservationHistory, Long> {
 
     List<EventObservationHistory> findByEventIdOrderByModifiedAtDesc(Long eventId);
+
+    void deleteByEventId(Long eventId);
 }

@@ -39,6 +39,12 @@ public class EventObservationHistoryService {
         return historyRepository.findByEventIdOrderByModifiedAtDesc(eventId);
     }
 
+    @Transactional
+    public void deleteByEventId(Long eventId) {
+        historyRepository.deleteByEventId(eventId);
+        logger.info("Histórico de observações removido para evento {}", eventId);
+    }
+
     private boolean isObservationChanged(String oldValue, String newValue) {
         // Trata null e string vazia como equivalentes
         String normalizedOld = (oldValue == null || oldValue.trim().isEmpty()) ? null : oldValue.trim();

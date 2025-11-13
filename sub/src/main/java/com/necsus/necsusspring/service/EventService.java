@@ -307,9 +307,16 @@ public class EventService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (eventRepository.existsById(id)) {
-            eventRepository.deleteById(id);
+    public boolean delete(Long id) {
+        Optional<Event> existing = eventRepository.findById(id);
+        if (existing.isEmpty()) {
+            return false;
         }
+
+        observationHistoryService.deleteByEventId(id);
+        descriptionHistoryService.deleteByEventId(id);
+
+        eventRepository.delete(existing.get());
+        return true;
     }
 }
