@@ -10,6 +10,7 @@ import com.necsus.necsusspring.model.Prioridade;
 import com.necsus.necsusspring.model.Motivo;
 import com.necsus.necsusspring.model.Envolvimento;
 import com.necsus.necsusspring.repository.EventRepository;
+import com.necsus.necsusspring.repository.LegalProcessRepository;
 import com.necsus.necsusspring.repository.PartnerRepository;
 import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
     private final PartnerRepository partnerRepository;
+    private final LegalProcessRepository legalProcessRepository;
     private final VehicleRepository vehicleRepository;
     private final EventObservationHistoryService observationHistoryService;
     private final EventDescriptionHistoryService descriptionHistoryService;
@@ -35,11 +40,13 @@ public class EventService {
     public EventService(EventRepository eventRepository,
                         PartnerRepository partnerRepository,
                         VehicleRepository vehicleRepository,
+                        LegalProcessRepository legalProcessRepository,
                         EventObservationHistoryService observationHistoryService,
                         EventDescriptionHistoryService descriptionHistoryService) {
         this.eventRepository = eventRepository;
         this.partnerRepository = partnerRepository;
         this.vehicleRepository = vehicleRepository;
+        this.legalProcessRepository = legalProcessRepository;
         this.observationHistoryService = observationHistoryService;
         this.descriptionHistoryService = descriptionHistoryService;
     }
@@ -72,6 +79,17 @@ public class EventService {
     @Transactional(readOnly = true)
     public EventBoardSnapshot getBoardSnapshot() {
         List<Event> events = listAllWithRelations();
+
+        Set<Long> linkedEventIds = legalProcessRepository.findAllSourceEventIds().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        if (!linkedEventIds.isEmpty()) {
+            events = events.stream()
+                    .filter(event -> event.getId() == null || !linkedEventIds.contains(event.getId()))
+                    .toList();
+        }
+
         List<EventBoardCardDto> cards = events.stream()
                 .map(EventBoardCardDto::from)
                 .toList();
