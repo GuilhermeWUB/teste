@@ -606,6 +606,10 @@
             '</div>'
         ];
 
+        html.push('<div class="kanban-modal-actions">');
+        html.push('<button type="button" class="btn-primary"><i class="bi bi-send"></i> Enviar para Jurídico</button>');
+        html.push('</div>');
+
         // Adicionar seção de documentos se houver algum documento anexado
         const documents = [
             { type: 'crlv', label: 'CRLV', has: card.hasCrlv },
