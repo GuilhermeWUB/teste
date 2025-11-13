@@ -21,6 +21,12 @@
         ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
     };
 
+    const typeLabels = {
+        RASTREADOR: 'Rastreador',
+        FIDELIDADE: 'Fidelidade',
+        TERCEIROS: 'Terceiros'
+    };
+
     const selectors = {
         board: () => document.querySelector('.kanban-board'),
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
@@ -29,7 +35,8 @@
         modalBody: () => document.querySelector('#kanban-modal .kanban-modal-body'),
         createModal: () => document.getElementById('create-processo-modal'),
         createForm: () => document.getElementById('create-processo-form'),
-        createError: () => document.getElementById('create-processo-error')
+        createError: () => document.getElementById('create-processo-error'),
+        createTypeSelect: () => document.getElementById('create-process-type')
     };
 
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
@@ -204,6 +211,18 @@
         title.textContent = card.numeroProcesso || 'Sem número';
         header.appendChild(title);
 
+        if (card.processType) {
+            const badges = document.createElement('div');
+            badges.className = 'task-card-badges';
+
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = typeLabels[card.processType] || card.processType;
+            badges.appendChild(badge);
+
+            header.appendChild(badges);
+        }
+
         article.appendChild(header);
 
         const body = document.createElement('div');
@@ -372,7 +391,7 @@
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function openCreateModal() {
+    function openCreateModal(defaultType = 'TERCEIROS') {
         console.log('[PROCESSOS-KANBAN] Abrindo modal de criação');
 
         const modal = selectors.createModal();
@@ -387,6 +406,12 @@
 
         if (form) {
             form.reset();
+            delete form.dataset.editingId;
+
+            const typeSelect = selectors.createTypeSelect();
+            if (typeSelect) {
+                typeSelect.value = defaultType || '';
+            }
         }
 
         modal.classList.add('active');
@@ -460,6 +485,7 @@
         const pedidos = data.get('pedidos')?.toString().trim();
         const valorCausaStr = data.get('valorCausa')?.toString().replace(',', '.');
         const valorCausa = parseFloat(valorCausaStr);
+        const processType = data.get('processType')?.toString();
 
         if (!autor || !reu || !materia || !numeroProcesso || !pedidos) {
             showCreateError('Todos os campos são obrigatórios.');
@@ -471,12 +497,9 @@
             return;
         }
 
-        let processType = 'TERCEIROS';
-        if (isEditing) {
-            const existing = state.cards.find(c => c.id === parseInt(editingId, 10));
-            if (existing && existing.processType) {
-                processType = existing.processType;
-            }
+        if (!processType) {
+            showCreateError('Selecione o tipo de cobrança.');
+            return;
         }
 
         const payload = {
@@ -572,6 +595,10 @@
         form.querySelector('#create-numero-processo').value = card.numeroProcesso || '';
         form.querySelector('#create-valor-causa').value = card.valorCausa || '';
         form.querySelector('#create-pedidos').value = card.pedidos || '';
+        const typeSelect = selectors.createTypeSelect();
+        if (typeSelect) {
+            typeSelect.value = card.processType || '';
+        }
 
         // Marca o formulário como edição
         form.dataset.editingId = processId;
