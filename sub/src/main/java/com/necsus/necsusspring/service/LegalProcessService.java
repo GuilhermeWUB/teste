@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -52,6 +54,19 @@ public class LegalProcessService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<LegalProcess> findByNumeroProcesso(String numeroProcesso) {
+        return legalProcessRepository.findByNumeroProcesso(numeroProcesso);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<LegalProcess> findBySourceEventId(Long sourceEventId) {
+        if (sourceEventId == null) {
+            return Optional.empty();
+        }
+        return legalProcessRepository.findBySourceEventId(sourceEventId);
+    }
+
+    @Transactional(readOnly = true)
     public LegalProcess findById(Long id) {
         return legalProcessRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Processo não encontrado"));
@@ -72,6 +87,38 @@ public class LegalProcessService {
         process.setSourceEventId(request.sourceEventId());
         process.setSourceEventSnapshot(request.sourceEventSnapshot());
         return legalProcessRepository.save(process);
+    }
+
+    public LegalProcess linkEventToProcess(LegalProcess process,
+                                           Long sourceEventId,
+                                           String sourceEventSnapshot,
+                                           LegalProcessType type) {
+        if (process == null) {
+            throw new EntityNotFoundException("Processo não encontrado");
+        }
+
+        boolean changed = false;
+
+        if (sourceEventId != null && !Objects.equals(process.getSourceEventId(), sourceEventId)) {
+            process.setSourceEventId(sourceEventId);
+            changed = true;
+        }
+
+        if (sourceEventSnapshot != null && !sourceEventSnapshot.isBlank()
+                && !Objects.equals(process.getSourceEventSnapshot(), sourceEventSnapshot)) {
+            process.setSourceEventSnapshot(sourceEventSnapshot);
+            changed = true;
+        }
+
+        if (type != null && process.getProcessType() != type) {
+            process.setProcessType(type);
+            if (!isStatusAllowedForType(process.getStatus(), type)) {
+                process.setStatus(defaultStatusFor(type));
+            }
+            changed = true;
+        }
+
+        return changed ? legalProcessRepository.save(process) : process;
     }
 
     public LegalProcess update(Long id, LegalProcessRequest request) {

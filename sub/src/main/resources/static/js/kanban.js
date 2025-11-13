@@ -684,7 +684,8 @@
 
             const numeroProcesso = typeof result === 'object' ? result.numeroProcesso : null;
             const message = typeof result === 'object' ? result.message : null;
-            alert(message || `Evento enviado com sucesso para Jurídico/Cobrança (${legalType})!\nNúmero do processo: ${numeroProcesso || 'N/A'}`);
+            const processTypeLabel = typeof result === 'object' ? (result.processTypeDisplay || result.processType || legalType) : legalType;
+            alert(message || `Evento enviado com sucesso para Jurídico/Cobrança (${processTypeLabel})!\nNúmero do processo: ${numeroProcesso || 'N/A'}`);
 
         } catch (error) {
             console.error('[KANBAN] Erro ao enviar para jurídico:', error);

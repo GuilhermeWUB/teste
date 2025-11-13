@@ -13,13 +13,21 @@
                 <h1><i class="bi bi-kanban"></i> Processos Jurídicos</h1>
                 <p>Gerencie processos jurídicos e acompanhe o andamento em tempo real.</p>
             </div>
-            <div class="kanban-controls">
-                <div class="kanban-controls-left">
-                    <div class="kanban-search">
-                        <i class="bi bi-search"></i>
-                        <input type="text" id="kanban-search" placeholder="Buscar por autor, réu ou número do processo..." autocomplete="off"/>
+                <div class="kanban-controls">
+                    <div class="kanban-controls-left">
+                        <div class="kanban-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="kanban-search" placeholder="Buscar por autor, réu ou número do processo..." autocomplete="off"/>
+                        </div>
+                        <div class="kanban-filter">
+                            <label for="process-type-filter">Pipeline</label>
+                            <select id="process-type-filter" name="processType">
+                                <option value="TERCEIROS">Terceiros</option>
+                                <option value="FIDELIDADE">Fidelidade</option>
+                                <option value="RASTREADOR">Rastreador</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
                 <div class="kanban-actions">
                     <button class="btn-novo-evento" type="button" onclick="window.processosBoard?.openCreateModal?.()">
                         <i class="bi bi-plus-circle"></i> Novo Processo
@@ -45,59 +53,7 @@
             </div>
         </div>
 
-        <div class="kanban-board">
-            <div class="kanban-column" data-status="EM_ABERTO_7_0">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Em Aberto</h3>
-                        <span class="column-count">0</span>
-                    </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
-                </div>
-                <div class="tasks-container"></div>
-            </div>
-
-            <div class="kanban-column" data-status="EM_CONTATO_7_1">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Em Contato</h3>
-                        <span class="column-count">0</span>
-                    </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
-                </div>
-                <div class="tasks-container"></div>
-            </div>
-
-            <div class="kanban-column" data-status="PROCESSO_JUDICIAL_7_2">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Processo Judicial</h3>
-                        <span class="column-count">0</span>
-                    </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
-                </div>
-                <div class="tasks-container"></div>
-            </div>
-
-            <div class="kanban-column" data-status="ACORDO_ASSINADO_7_3">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Acordo Assinado</h3>
-                        <span class="column-count">0</span>
-                    </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
-                </div>
-                <div class="tasks-container"></div>
-            </div>
-        </div>
+        <div class="kanban-board" data-dynamic="true"></div>
     </div>
 
     <div id="kanban-modal" class="kanban-modal">

@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface LegalProcessRepository extends JpaRepository<LegalProcess, Long> {
     Optional<LegalProcess> findByNumeroProcesso(String numeroProcesso);
 
+    Optional<LegalProcess> findBySourceEventId(Long sourceEventId);
+
     @Query("select lp.sourceEventId from LegalProcess lp where lp.sourceEventId is not null")
     List<Long> findAllSourceEventIds();
 }
