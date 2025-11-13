@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.dto;
 
+import com.necsus.necsusspring.model.LegalProcessType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -27,6 +28,9 @@ public record LegalProcessRequest(
         BigDecimal valorCausa,
 
         @NotBlank(message = "Pedidos são obrigatórios")
-        String pedidos
+        String pedidos,
+
+        @NotNull(message = "Tipo de cobrança é obrigatório")
+        LegalProcessType processType
 ) {
 }
