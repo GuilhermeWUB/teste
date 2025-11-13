@@ -33,26 +33,19 @@ Todas as migrations seguem o padrão Flyway:
 - `V6__migrate_event_status_to_new_flow.sql` - Migra status de eventos
 - `V7__add_status_to_legal_processes.sql` - Adiciona coluna status
 - `V8__add_process_type_to_legal_processes.sql` - Adiciona tipo de cobrança
-- `V10__fix_legal_process_status_constraint.sql` - Garante todos os status permitidos
+- `V9__update_legal_process_status_check.sql` - **Atualiza constraint com regex**
 
-## Migration V10: Correção da Constraint
+## Migration V9: Correção da Constraint
 
-A migration V10 resolve o erro de constraint ao criar processos RASTREADOR/FIDELIDADE:
+A migration V9 resolve o erro de constraint ao criar processos RASTREADOR/FIDELIDADE:
 
 ```sql
--- Permite qualquer status previsto nos enums do backend
+-- Permite qualquer status que comece com RASTREADOR_ ou FIDELIDADE_
 ALTER TABLE legal_processes
     ADD CONSTRAINT legal_processes_status_check CHECK (
-        status IN (
-            'RASTREADOR_EM_ABERTO',
-            'RASTREADOR_EM_CONTATO',
-            'RASTREADOR_ACORDO_ASSINADO',
-            'RASTREADOR_DEVOLVIDO',
-            'RASTREADOR_REATIVACAO',
-            'FIDELIDADE_EM_ABERTO',
-            'FIDELIDADE_EM_CONTATO',
-            'FIDELIDADE_ACORDO_ASSINADO',
-            'FIDELIDADE_REATIVACAO',
+        status ~ '^RASTREADOR_'
+        OR status ~ '^FIDELIDADE_'
+        OR status IN (
             'EM_ABERTO_7_0',
             'EM_CONTATO_7_1',
             'PROCESSO_JUDICIAL_7_2',
@@ -67,10 +60,10 @@ Se você precisar executar uma migration específica manualmente:
 
 ```bash
 # Via psql
-psql -h localhost -U admin -d ubsystem -f V10__fix_legal_process_status_constraint.sql
+psql -h localhost -U admin -d ubsystem -f V9__update_legal_process_status_check.sql
 
 # Via Docker
-docker exec -i <container_id> psql -U admin -d ubsystem < V10__fix_legal_process_status_constraint.sql
+docker exec -i <container_id> psql -U admin -d ubsystem < V9__update_legal_process_status_check.sql
 ```
 
 ## Scripts disponíveis
