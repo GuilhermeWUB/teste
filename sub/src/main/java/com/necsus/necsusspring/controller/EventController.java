@@ -351,7 +351,9 @@ public class EventController {
 
     @PostMapping("/api/{id}/send-to-legal")
     @ResponseBody
-    public ResponseEntity<?> sendEventToLegal(@PathVariable Long id) {
+    public ResponseEntity<?> sendEventToLegal(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "TERCEIROS") String processType) {
         try {
             Event event = eventService.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
@@ -362,13 +364,22 @@ public class EventController {
                         .body(Map.of("error", "Evento não possui associado vinculado."));
             }
 
+            // Validar e converter o tipo de processo
+            LegalProcessType legalProcessType;
+            try {
+                legalProcessType = LegalProcessType.valueOf(processType.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Tipo de processo inválido. Valores aceitos: RASTREADOR, FIDELIDADE, TERCEIROS"));
+            }
+
             String autor = partner.getName();
             String reu = Optional.ofNullable(event.getAnalistaResponsavel())
                     .filter(name -> !name.isBlank())
                     .orElse("Responsável não informado");
             String materia = Optional.ofNullable(event.getMotivo())
                     .map(Motivo::getDescricao)
-                    .orElse("Cobrança de Terceiros");
+                    .orElse("Cobrança de " + legalProcessType.name());
             String pedidos = Optional.ofNullable(event.getObservacoes())
                     .filter(obs -> !obs.isBlank())
                     .orElse(event.getDescricao());
@@ -389,7 +400,7 @@ public class EventController {
                     numeroProcesso,
                     BigDecimal.ZERO,
                     pedidos,
-                    LegalProcessType.TERCEIROS,
+                    legalProcessType,
                     event.getId(),
                     eventSnapshotJson
             );
@@ -400,9 +411,11 @@ public class EventController {
             response.put("success", true);
             response.put("message", "Evento enviado para o jurídico com sucesso.");
             response.put("processId", process.getId());
-            response.put("processNumber", process.getNumeroProcesso());
+            response.put("numeroProcesso", process.getNumeroProcesso());
+            response.put("processType", legalProcessType.name());
 
-            logger.info("Evento {} enviado para jurídico como processo {}", id, process.getNumeroProcesso());
+            logger.info("Evento {} enviado para jurídico como processo {} (tipo: {})",
+                       id, process.getNumeroProcesso(), legalProcessType);
             return ResponseEntity.ok(response);
         } catch (ResponseStatusException ex) {
             throw ex;

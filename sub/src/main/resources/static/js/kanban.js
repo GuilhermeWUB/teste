@@ -461,6 +461,15 @@
             return;
         }
 
+        // Interceptar quando mover para "3.2 Acordo em Andamento"
+        if (targetStatus === 'ACORDO_ANDAMENTO') {
+            dragState.pendingCardId = normalizedCardId;
+            dragState.pendingTargetStatus = targetStatus;
+            dragState.pendingPreviousStatus = previousStatus;
+            showLegalTypeModal();
+            return;
+        }
+
         const previousLabel = card.statusLabel;
         card.status = targetStatus;
         card.statusLabel = statusLabels[targetStatus] || card.statusLabel;
@@ -571,6 +580,76 @@
         }
         modal.classList.remove('active');
         document.body.style.overflow = '';
+    }
+
+    function showLegalTypeModal() {
+        const modal = document.getElementById('legal-type-modal');
+        if (!modal) {
+            console.error('[KANBAN] Modal de tipo jurídico não encontrado');
+            return;
+        }
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLegalTypeModal() {
+        const modal = document.getElementById('legal-type-modal');
+        if (!modal) {
+            return;
+        }
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+
+        // Limpar estado pendente
+        dragState.pendingCardId = null;
+        dragState.pendingTargetStatus = null;
+        dragState.pendingPreviousStatus = null;
+    }
+
+    async function selectLegalType(legalType) {
+        const cardId = dragState.pendingCardId;
+        const previousStatus = dragState.pendingPreviousStatus;
+
+        if (!cardId) {
+            console.error('[KANBAN] Nenhum card pendente para enviar ao jurídico');
+            closeLegalTypeModal();
+            return;
+        }
+
+        closeLegalTypeModal();
+
+        try {
+            // Enviar evento para o jurídico com o tipo selecionado
+            const response = await fetch(`/events/api/${cardId}/send-to-legal?processType=${legalType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro ao enviar para jurídico: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            // Remover o card da tela
+            state.cards = state.cards.filter(card => String(card.id) !== String(cardId));
+            render();
+
+            alert(`Evento enviado com sucesso para Jurídico/Cobrança (${legalType})!\nNúmero do processo: ${result.numeroProcesso || 'N/A'}`);
+
+        } catch (error) {
+            console.error('[KANBAN] Erro ao enviar para jurídico:', error);
+            alert('Não foi possível enviar o evento para o jurídico. Tente novamente.');
+        } finally {
+            // Limpar estado
+            dragState.pendingCardId = null;
+            dragState.pendingTargetStatus = null;
+            dragState.pendingPreviousStatus = null;
+            dragState.cardId = null;
+            dragState.originStatus = null;
+        }
     }
 
     function bindModalActions(card) {
@@ -1118,6 +1197,8 @@
         init,
         closeModal,
         closeFiltersModal,
+        closeLegalTypeModal,
+        selectLegalType,
         applyFilters: applyFiltersFromModal,
         resetFilters: resetFiltersInModal
     };

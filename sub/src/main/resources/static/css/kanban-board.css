@@ -1209,3 +1209,64 @@ html:not([data-theme="dark"]) .btn-filter-apply {
         padding: 1rem;
     }
 }
+
+/* Modal de seleção de tipo de processo jurídico */
+.legal-type-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.legal-type-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.legal-type-btn:hover {
+    border-color: #5e7ce2;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(94, 124, 226, 0.15);
+}
+
+.legal-type-btn i {
+    font-size: 24px;
+    color: #5e7ce2;
+}
+
+.legal-type-btn[data-type="RASTREADOR"] i {
+    color: #ff9800;
+}
+
+.legal-type-btn[data-type="FIDELIDADE"] i {
+    color: #ffd700;
+}
+
+.legal-type-btn[data-type="TERCEIROS"] i {
+    color: #5e7ce2;
+}
+
+.legal-type-btn:hover[data-type="RASTREADOR"] {
+    border-color: #ff9800;
+    background: #fff4e6;
+}
+
+.legal-type-btn:hover[data-type="FIDELIDADE"] {
+    border-color: #ffd700;
+    background: #fffbea;
+}
+
+.legal-type-btn:hover[data-type="TERCEIROS"] {
+    border-color: #5e7ce2;
+    background: #f0f4ff;
+}
