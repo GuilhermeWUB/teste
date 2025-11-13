@@ -307,9 +307,12 @@ public class EventService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        if (eventRepository.existsById(id)) {
-            eventRepository.deleteById(id);
+    public boolean delete(Long id) {
+        if (!eventRepository.existsById(id)) {
+            return false;
         }
+
+        eventRepository.deleteById(id);
+        return true;
     }
 }

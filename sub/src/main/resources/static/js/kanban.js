@@ -554,6 +554,7 @@
         }
 
         modalBody.innerHTML = buildModalContent(card);
+        bindModalActions(card);
 
         // Carrega históricos de forma assíncrona
         loadObservationHistory(card.id);
@@ -570,6 +571,68 @@
         }
         modal.classList.remove('active');
         document.body.style.overflow = '';
+    }
+
+    function bindModalActions(card) {
+        const modalBody = selectors.modalBody();
+        if (!modalBody) {
+            return;
+        }
+
+        const deleteButton = modalBody.querySelector('[data-action="delete-event"]');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', () => {
+                const confirmed = window.confirm('Tem certeza que deseja excluir este evento? Esta ação não poderá ser desfeita.');
+                if (!confirmed) {
+                    return;
+                }
+
+                deleteEvent(card.id, deleteButton);
+            });
+        }
+    }
+
+    async function deleteEvent(eventId, triggerButton) {
+        if (!eventId) {
+            return;
+        }
+
+        const button = triggerButton;
+        const originalLabel = button ? button.innerHTML : null;
+
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Removendo...';
+            }
+
+            const response = await fetch(`/events/api/${eventId}`, {
+                method: 'DELETE',
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (response.status === 404) {
+                alert('Evento não encontrado. Ele pode já ter sido removido.');
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Falha ao remover evento.');
+            }
+
+            state.cards = state.cards.filter(card => card.id !== eventId);
+            render();
+            closeModal();
+            alert('Evento removido com sucesso!');
+        } catch (error) {
+            console.error('[KANBAN] Erro ao remover evento:', error);
+            alert('Não foi possível remover o evento. Tente novamente mais tarde.');
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalLabel;
+            }
+        }
     }
 
     function buildModalContent(card) {
@@ -607,7 +670,8 @@
         ];
 
         html.push('<div class="kanban-modal-actions">');
-        html.push('<button type="button" class="btn-primary"><i class="bi bi-send"></i> Enviar para Jurídico</button>');
+        html.push(`<button type="button" class="btn-primary" data-action="send-legal" data-event-id="${card.id}"><i class="bi bi-send"></i> Enviar para Jurídico</button>`);
+        html.push(`<button type="button" class="btn-danger" data-action="delete-event" data-event-id="${card.id}"><i class="bi bi-trash"></i> Excluir Evento</button>`);
         html.push('</div>');
 
         // Adicionar seção de documentos se houver algum documento anexado

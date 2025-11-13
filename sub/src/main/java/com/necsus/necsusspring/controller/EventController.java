@@ -304,9 +304,36 @@ public class EventController {
 
     @PostMapping("/delete/{id}")
     public String deleteEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        eventService.delete(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Evento removido com sucesso!");
+        boolean deleted = eventService.delete(id);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "Evento removido com sucesso!");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Evento não encontrado para exclusão.");
+        }
         return "redirect:/events";
+    }
+
+    @DeleteMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteEventApi(@PathVariable Long id) {
+        try {
+            boolean deleted = eventService.delete(id);
+
+            if (!deleted) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Evento não encontrado"));
+            }
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Evento removido com sucesso"
+            ));
+        } catch (Exception e) {
+            logger.error("Erro ao remover evento {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erro ao remover evento"));
+        }
     }
 
     /**
