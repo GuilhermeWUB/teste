@@ -622,9 +622,10 @@
             // Enviar evento para o jurídico com o tipo selecionado
             const response = await fetch(`/events/api/${cardId}/send-to-legal?processType=${legalType}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: buildHeaders({
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                })
             });
 
             if (!response.ok) {
@@ -636,6 +637,9 @@
             // Remover o card da tela
             state.cards = state.cards.filter(card => String(card.id) !== String(cardId));
             render();
+
+            // Fechar o modal de detalhes se estiver aberto
+            closeModal();
 
             alert(`Evento enviado com sucesso para Jurídico/Cobrança (${legalType})!\nNúmero do processo: ${result.numeroProcesso || 'N/A'}`);
 
