@@ -45,57 +45,216 @@
             </div>
         </div>
 
-        <div class="kanban-board">
-            <div class="kanban-column" data-status="EM_ABERTO_7_0">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Em Aberto</h3>
-                        <span class="column-count">0</span>
+        <div class="kanban-groups">
+            <div class="kanban-section" data-group="RASTREADOR">
+                <div class="kanban-section-header">
+                    <div class="kanban-section-info">
+                        <h2 class="kanban-section-title">
+                            <i class="bi bi-geo-alt"></i>
+                            Rastreador
+                        </h2>
+                        <p class="kanban-section-subtitle">Fluxo de negociações relacionadas ao rastreador.</p>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
+                    <span class="kanban-section-count" data-group-count="RASTREADOR">0</span>
                 </div>
-                <div class="tasks-container"></div>
+                <div class="kanban-board" data-group="RASTREADOR">
+                    <div class="kanban-column" data-status="RASTREADOR_EM_ABERTO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Aberto</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="RASTREADOR_EM_CONTATO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Contato</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="RASTREADOR_ACORDO_ASSINADO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Acordo Assinado</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="RASTREADOR_DEVOLVIDO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Rastreador Devolvido</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="RASTREADOR_REATIVACAO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Reativação</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="kanban-column" data-status="EM_CONTATO_7_1">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Em Contato</h3>
-                        <span class="column-count">0</span>
+            <div class="kanban-section" data-group="FIDELIDADE">
+                <div class="kanban-section-header">
+                    <div class="kanban-section-info">
+                        <h2 class="kanban-section-title">
+                            <i class="bi bi-stars"></i>
+                            Fidelidade
+                        </h2>
+                        <p class="kanban-section-subtitle">Status das ações de fidelização dos clientes.</p>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
+                    <span class="kanban-section-count" data-group-count="FIDELIDADE">0</span>
                 </div>
-                <div class="tasks-container"></div>
+                <div class="kanban-board" data-group="FIDELIDADE">
+                    <div class="kanban-column" data-status="FIDELIDADE_EM_ABERTO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Aberto</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="FIDELIDADE_EM_CONTATO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Contato</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="FIDELIDADE_ACORDO_ASSINADO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Acordo Assinado</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="FIDELIDADE_REATIVACAO">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Reativação</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="kanban-column" data-status="PROCESSO_JUDICIAL_7_2">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Processo Judicial</h3>
-                        <span class="column-count">0</span>
+            <div class="kanban-section" data-group="TERCEIROS">
+                <div class="kanban-section-header">
+                    <div class="kanban-section-info">
+                        <h2 class="kanban-section-title">
+                            <i class="bi bi-people"></i>
+                            Terceiros
+                        </h2>
+                        <p class="kanban-section-subtitle">Acompanhamento dos processos conduzidos por parceiros.</p>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
+                    <span class="kanban-section-count" data-group-count="TERCEIROS">0</span>
                 </div>
-                <div class="tasks-container"></div>
-            </div>
+                <div class="kanban-board" data-group="TERCEIROS">
+                    <div class="kanban-column" data-status="EM_ABERTO_7_0">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Aberto</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
 
-            <div class="kanban-column" data-status="ACORDO_ASSINADO_7_3">
-                <div class="column-header">
-                    <div class="column-title">
-                        <h3>Acordo Assinado</h3>
-                        <span class="column-count">0</span>
+                    <div class="kanban-column" data-status="EM_CONTATO_7_1">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Em Contato</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
                     </div>
-                    <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus"></i> Nova
-                    </button>
+
+                    <div class="kanban-column" data-status="PROCESSO_JUDICIAL_7_2">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Processo Judicial</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
+
+                    <div class="kanban-column" data-status="ACORDO_ASSINADO_7_3">
+                        <div class="column-header">
+                            <div class="column-title">
+                                <h3>Acordo Assinado</h3>
+                                <span class="column-count">0</span>
+                            </div>
+                            <button class="column-add-btn" type="button" onclick="window.processosBoard?.openCreateModal?.()">
+                                <i class="bi bi-plus"></i> Nova
+                            </button>
+                        </div>
+                        <div class="tasks-container"></div>
+                    </div>
                 </div>
-                <div class="tasks-container"></div>
             </div>
         </div>
     </div>
