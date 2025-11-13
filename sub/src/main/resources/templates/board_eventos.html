@@ -599,6 +599,37 @@
         </div>
     </div>
 
+    <!-- Modal de seleção de tipo de processo jurídico -->
+    <div id="legal-type-modal" class="kanban-modal" style="display: none;">
+        <div class="kanban-modal-content" style="max-width: 500px;">
+            <div class="kanban-modal-header">
+                <h2>Enviar para Jurídico</h2>
+                <button class="kanban-modal-close" onclick="kanbanBoard.closeLegalTypeModal()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body">
+                <p style="margin-bottom: 20px; color: #666;">
+                    Selecione o tipo de cobrança para enviar este evento ao sistema jurídico:
+                </p>
+                <div class="legal-type-options">
+                    <button class="legal-type-btn" data-type="RASTREADOR" onclick="kanbanBoard.selectLegalType('RASTREADOR')">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>Rastreador</span>
+                    </button>
+                    <button class="legal-type-btn" data-type="FIDELIDADE" onclick="kanbanBoard.selectLegalType('FIDELIDADE')">
+                        <i class="bi bi-star-fill"></i>
+                        <span>Fidelidade</span>
+                    </button>
+                    <button class="legal-type-btn" data-type="TERCEIROS" onclick="kanbanBoard.selectLegalType('TERCEIROS')">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Terceiros</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const body = document.body;
