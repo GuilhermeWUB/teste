@@ -57,6 +57,12 @@
         ACORDO_ASSINADO_7_3: 'Terceiros - Acordo Assinado 7.3'
     };
 
+    const typeLabels = {
+        RASTREADOR: 'Rastreador',
+        FIDELIDADE: 'Fidelidade',
+        TERCEIROS: 'Terceiros'
+    };
+
     const selectors = {
         board: () => document.querySelector('.kanban-board'),
         columns: () => Array.from(document.querySelectorAll('.kanban-column')),
@@ -273,6 +279,10 @@
         materiaP.innerHTML = '<strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A');
         body.appendChild(materiaP);
 
+        const typeP = document.createElement('p');
+        typeP.innerHTML = '<strong>Tipo de Cobrança:</strong> ' + escapeHtml(typeLabels[card.processType] || card.processType || 'Não informado');
+        body.appendChild(typeP);
+
         if (card.valorCausa) {
             const valorP = document.createElement('p');
             valorP.innerHTML = '<strong>Valor:</strong> R$ ' + formatCurrency(card.valorCausa);
@@ -403,6 +413,7 @@
             '<p><strong>Réu:</strong> ' + escapeHtml(card.reu || 'N/A') + '</p>' +
             '<p><strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A') + '</p>' +
             '<p><strong>Valor da Causa:</strong> R$ ' + formatCurrency(card.valorCausa || 0) + '</p>' +
+            '<p><strong>Tipo de Cobrança:</strong> ' + escapeHtml(typeLabels[card.processType] || card.processType || 'N/A') + '</p>' +
             '<p><strong>Status:</strong> ' + (statusLabels[card.status] || card.status) + '</p>' +
             '</div><div class="detail-section"><h3>Pedidos</h3>' +
             '<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>' +
@@ -425,7 +436,7 @@
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function openCreateModal() {
+    function openCreateModal(defaultType = '') {
         console.log('[PROCESSOS-KANBAN] Abrindo modal de criação');
 
         const modal = selectors.createModal();
@@ -440,6 +451,10 @@
 
         if (form) {
             form.reset();
+            const typeSelect = form.querySelector('#create-process-type');
+            if (typeSelect) {
+                typeSelect.value = defaultType || '';
+            }
         }
 
         modal.classList.add('active');
@@ -513,6 +528,7 @@
         const pedidos = data.get('pedidos')?.toString().trim();
         const valorCausaStr = data.get('valorCausa')?.toString().replace(',', '.');
         const valorCausa = parseFloat(valorCausaStr);
+        const processType = data.get('processType')?.toString();
 
         if (!autor || !reu || !materia || !numeroProcesso || !pedidos) {
             showCreateError('Todos os campos são obrigatórios.');
@@ -524,13 +540,19 @@
             return;
         }
 
+        if (!processType) {
+            showCreateError('Selecione o tipo de cobrança.');
+            return;
+        }
+
         const payload = {
             autor: autor,
             reu: reu,
             materia: materia,
             numeroProcesso: numeroProcesso,
             valorCausa: valorCausa,
-            pedidos: pedidos
+            pedidos: pedidos,
+            processType: processType
         };
 
         console.log('[PROCESSOS-KANBAN] Enviando payload:', payload, 'Edição:', isEditing);
@@ -616,6 +638,10 @@
         form.querySelector('#create-numero-processo').value = card.numeroProcesso || '';
         form.querySelector('#create-valor-causa').value = card.valorCausa || '';
         form.querySelector('#create-pedidos').value = card.pedidos || '';
+        const typeSelect = form.querySelector('#create-process-type');
+        if (typeSelect) {
+            typeSelect.value = card.processType || '';
+        }
 
         // Marca o formulário como edição
         form.dataset.editingId = processId;
