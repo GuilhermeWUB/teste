@@ -307,6 +307,94 @@ html[data-theme="dark"] .kanban-wrapper {
     scroll-snap-type: x proximity;
 }
 
+.kanban-groups {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 3vw, 2.75rem);
+}
+
+.kanban-section {
+    --section-accent: var(--kanban-accent);
+    --section-accent-soft: color-mix(in srgb, var(--section-accent) 14%, transparent);
+    --section-accent-strong: var(--kanban-accent-strong);
+
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.kanban-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    background: color-mix(in srgb, var(--section-accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--section-accent) 28%, transparent);
+    border-radius: clamp(14px, 2vw, 18px);
+    padding: clamp(1rem, 2vw, 1.5rem) clamp(1.25rem, 2.2vw, 1.85rem);
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--section-accent) 16%, transparent);
+}
+
+.kanban-section-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.kanban-section-title {
+    margin: 0;
+    font-size: clamp(1.15rem, 2vw, 1.45rem);
+    font-weight: 700;
+    color: var(--kanban-text);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.kanban-section-title i {
+    font-size: 1.3rem;
+    color: var(--section-accent-strong);
+}
+
+.kanban-section-subtitle {
+    margin: 0;
+    color: color-mix(in srgb, var(--section-accent-strong) 45%, var(--kanban-muted) 55%);
+    font-size: 0.95rem;
+}
+
+.kanban-section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    height: 3rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--section-accent) 20%, transparent);
+    color: var(--section-accent-strong);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.kanban-section .kanban-board {
+    margin-top: 0.25rem;
+}
+
+.kanban-section[data-group="RASTREADOR"] {
+    --section-accent: #2563eb;
+    --section-accent-strong: #1d4ed8;
+}
+
+.kanban-section[data-group="FIDELIDADE"] {
+    --section-accent: #22c55e;
+    --section-accent-strong: #15803d;
+}
+
+.kanban-section[data-group="TERCEIROS"] {
+    --section-accent: #7c3aed;
+    --section-accent-strong: #5b21b6;
+}
+
 .kanban-board::-webkit-scrollbar {
     height: 10px;
 }
@@ -422,6 +510,74 @@ html[data-theme="dark"] .kanban-wrapper {
     font-size: 1rem;
     font-weight: 600;
     color: var(--kanban-text);
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_EM_ABERTO"],
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_EM_CONTATO"],
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_ACORDO_ASSINADO"],
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_DEVOLVIDO"],
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_REATIVACAO"],
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_EM_ABERTO"],
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_EM_CONTATO"],
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_ACORDO_ASSINADO"],
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_REATIVACAO"],
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="EM_ABERTO_7_0"],
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="EM_CONTATO_7_1"],
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="PROCESSO_JUDICIAL_7_2"],
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="ACORDO_ASSINADO_7_3"] {
+    border-top: 3px solid transparent;
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_EM_ABERTO"] {
+    border-top-color: #2563eb;
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_EM_CONTATO"] {
+    border-top-color: #1d4ed8;
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_ACORDO_ASSINADO"] {
+    border-top-color: #0ea5e9;
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_DEVOLVIDO"] {
+    border-top-color: #f97316;
+}
+
+.kanban-section[data-group="RASTREADOR"] .kanban-column[data-status="RASTREADOR_REATIVACAO"] {
+    border-top-color: #7c3aed;
+}
+
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_EM_ABERTO"] {
+    border-top-color: #22c55e;
+}
+
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_EM_CONTATO"] {
+    border-top-color: #16a34a;
+}
+
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_ACORDO_ASSINADO"] {
+    border-top-color: #0d9488;
+}
+
+.kanban-section[data-group="FIDELIDADE"] .kanban-column[data-status="FIDELIDADE_REATIVACAO"] {
+    border-top-color: #f59e0b;
+}
+
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="EM_ABERTO_7_0"] {
+    border-top-color: #6366f1;
+}
+
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="EM_CONTATO_7_1"] {
+    border-top-color: #34d399;
+}
+
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="PROCESSO_JUDICIAL_7_2"] {
+    border-top-color: #2563eb;
+}
+
+.kanban-section[data-group="TERCEIROS"] .kanban-column[data-status="ACORDO_ASSINADO_7_3"] {
+    border-top-color: #14b8a6;
 }
 
 .task-card-menu {

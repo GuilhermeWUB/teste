@@ -2,7 +2,34 @@
     console.log('[PROCESSOS-KANBAN] Script carregado com sucesso');
 
     const API_BASE = '/juridico/api/processos';
-    const ALL_STATUS = ['EM_ABERTO_7_0', 'EM_CONTATO_7_1', 'PROCESSO_JUDICIAL_7_2', 'ACORDO_ASSINADO_7_3'];
+    const BOARD_GROUPS = {
+        RASTREADOR: {
+            statuses: [
+                'RASTREADOR_EM_ABERTO',
+                'RASTREADOR_EM_CONTATO',
+                'RASTREADOR_ACORDO_ASSINADO',
+                'RASTREADOR_DEVOLVIDO',
+                'RASTREADOR_REATIVACAO'
+            ]
+        },
+        FIDELIDADE: {
+            statuses: [
+                'FIDELIDADE_EM_ABERTO',
+                'FIDELIDADE_EM_CONTATO',
+                'FIDELIDADE_ACORDO_ASSINADO',
+                'FIDELIDADE_REATIVACAO'
+            ]
+        },
+        TERCEIROS: {
+            statuses: [
+                'EM_ABERTO_7_0',
+                'EM_CONTATO_7_1',
+                'PROCESSO_JUDICIAL_7_2',
+                'ACORDO_ASSINADO_7_3'
+            ]
+        }
+    };
+    const ALL_STATUS = Object.values(BOARD_GROUPS).flatMap(group => group.statuses);
 
     const state = {
         cards: [],
@@ -15,10 +42,19 @@
     };
 
     const statusLabels = {
-        EM_ABERTO_7_0: 'Em Aberto 7.0',
-        EM_CONTATO_7_1: 'Em Contato 7.1',
-        PROCESSO_JUDICIAL_7_2: 'Processo Judicial 7.2',
-        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
+        RASTREADOR_EM_ABERTO: 'Rastreador - Em Aberto',
+        RASTREADOR_EM_CONTATO: 'Rastreador - Em Contato',
+        RASTREADOR_ACORDO_ASSINADO: 'Rastreador - Acordo Assinado',
+        RASTREADOR_DEVOLVIDO: 'Rastreador Devolvido',
+        RASTREADOR_REATIVACAO: 'Rastreador - Reativação',
+        FIDELIDADE_EM_ABERTO: 'Fidelidade - Em Aberto',
+        FIDELIDADE_EM_CONTATO: 'Fidelidade - Em Contato',
+        FIDELIDADE_ACORDO_ASSINADO: 'Fidelidade - Acordo Assinado',
+        FIDELIDADE_REATIVACAO: 'Fidelidade - Reativação',
+        EM_ABERTO_7_0: 'Terceiros - Em Aberto 7.0',
+        EM_CONTATO_7_1: 'Terceiros - Em Contato 7.1',
+        PROCESSO_JUDICIAL_7_2: 'Terceiros - Processo Judicial 7.2',
+        ACORDO_ASSINADO_7_3: 'Terceiros - Acordo Assinado 7.3'
     };
 
     const selectors = {
@@ -155,6 +191,7 @@
         });
 
         enableDragAndDrop();
+        updateGroupCounts(grouped);
     }
 
     function applyFilters(cards) {
@@ -184,12 +221,27 @@
 
         cards.forEach(card => {
             const status = card.status || 'EM_ABERTO_7_0';
-            if (grouped[status]) {
-                grouped[status].push(card);
+            if (!grouped[status]) {
+                grouped[status] = [];
             }
+            grouped[status].push(card);
         });
 
         return grouped;
+    }
+
+    function updateGroupCounts(grouped) {
+        Object.entries(BOARD_GROUPS).forEach(([groupKey, config]) => {
+            const total = config.statuses.reduce((sum, status) => {
+                const items = grouped[status];
+                return sum + (Array.isArray(items) ? items.length : 0);
+            }, 0);
+
+            const counter = document.querySelector(`[data-group-count="${groupKey}"]`);
+            if (counter) {
+                counter.textContent = total;
+            }
+        });
     }
 
     function createCard(card) {
