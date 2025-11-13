@@ -1,5 +1,8 @@
 package com.necsus.necsusspring.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.necsus.necsusspring.dto.EventBoardCardDto;
 import com.necsus.necsusspring.dto.EventBoardSnapshot;
 import com.necsus.necsusspring.dto.LegalProcessRequest;
 import com.necsus.necsusspring.model.*;
@@ -48,6 +51,7 @@ public class EventController {
     private final EventObservationHistoryService observationHistoryService;
     private final EventDescriptionHistoryService descriptionHistoryService;
     private final LegalProcessService legalProcessService;
+    private final ObjectMapper objectMapper;
 
     public EventController(EventService eventService,
                            PartnerService partnerService,
@@ -55,7 +59,8 @@ public class EventController {
                            FileStorageService fileStorageService,
                            EventObservationHistoryService observationHistoryService,
                            EventDescriptionHistoryService descriptionHistoryService,
-                           LegalProcessService legalProcessService) {
+                           LegalProcessService legalProcessService,
+                           ObjectMapper objectMapper) {
         this.eventService = eventService;
         this.partnerService = partnerService;
         this.vehicleService = vehicleService;
@@ -63,6 +68,7 @@ public class EventController {
         this.observationHistoryService = observationHistoryService;
         this.descriptionHistoryService = descriptionHistoryService;
         this.legalProcessService = legalProcessService;
+        this.objectMapper = objectMapper;
     }
 
     @ModelAttribute("motivoOptions")
@@ -368,6 +374,14 @@ public class EventController {
                     .orElse(event.getDescricao());
             String numeroProcesso = String.format("EVT-%05d", event.getId());
 
+            String eventSnapshotJson = null;
+            try {
+                EventBoardCardDto snapshot = EventBoardCardDto.from(event);
+                eventSnapshotJson = objectMapper.writeValueAsString(snapshot);
+            } catch (JsonProcessingException jsonException) {
+                logger.warn("Falha ao serializar snapshot do evento {} para o jurídico: {}", id, jsonException.getMessage());
+            }
+
             LegalProcessRequest request = new LegalProcessRequest(
                     autor,
                     reu,
@@ -375,7 +389,9 @@ public class EventController {
                     numeroProcesso,
                     BigDecimal.ZERO,
                     pedidos,
-                    LegalProcessType.TERCEIROS
+                    LegalProcessType.TERCEIROS,
+                    event.getId(),
+                    eventSnapshotJson
             );
 
             LegalProcess process = legalProcessService.create(request);

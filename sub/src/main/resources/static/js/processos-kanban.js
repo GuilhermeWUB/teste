@@ -345,21 +345,20 @@
             return;
         }
 
-        modalBody.innerHTML = '<div class="detail-section"><h3>Informações do Processo</h3>' +
-            '<p><strong>Número:</strong> ' + escapeHtml(card.numeroProcesso || 'N/A') + '</p>' +
-            '<p><strong>Autor:</strong> ' + escapeHtml(card.autor || 'N/A') + '</p>' +
-            '<p><strong>Réu:</strong> ' + escapeHtml(card.reu || 'N/A') + '</p>' +
-            '<p><strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A') + '</p>' +
-            '<p><strong>Valor da Causa:</strong> R$ ' + formatCurrency(card.valorCausa || 0) + '</p>' +
-            '<p><strong>Status:</strong> ' + (statusLabels[card.status] || card.status) + '</p>' +
-            '</div><div class="detail-section"><h3>Pedidos</h3>' +
-            '<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>' +
-            '<div class="modal-actions">' +
-            '<button type="button" class="btn btn-primary" onclick="window.processosBoard.openEditModal(' + card.id + ')">' +
-            '<i class="bi bi-pencil"></i> Editar</button>' +
-            '<button type="button" class="btn btn-danger" onclick="window.processosBoard.deleteProcess(' + card.id + ')">' +
-            '<i class="bi bi-trash"></i> Deletar</button>' +
-            '</div>';
+        const eventData = parseEventSnapshot(card);
+        const sections = [];
+
+        if (eventData) {
+            sections.push(buildEventDetailsSection(eventData, card.sourceEventId));
+        }
+
+        sections.push(buildProcessDetailsSection(card));
+
+        modalBody.innerHTML = sections.join('');
+
+        if (eventData && card.sourceEventId) {
+            loadEventHistories(card.sourceEventId);
+        }
 
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
@@ -472,13 +471,22 @@
             return;
         }
 
+        let processType = 'TERCEIROS';
+        if (isEditing) {
+            const existing = state.cards.find(c => c.id === parseInt(editingId, 10));
+            if (existing && existing.processType) {
+                processType = existing.processType;
+            }
+        }
+
         const payload = {
             autor: autor,
             reu: reu,
             materia: materia,
             numeroProcesso: numeroProcesso,
             valorCausa: valorCausa,
-            pedidos: pedidos
+            pedidos: pedidos,
+            processType: processType
         };
 
         console.log('[PROCESSOS-KANBAN] Enviando payload:', payload, 'Edição:', isEditing);
@@ -516,7 +524,7 @@
 
             if (isEditing) {
                 // Atualiza o processo no estado
-                const index = state.cards.findIndex(c => c.id === parseInt(editingId));
+                const index = state.cards.findIndex(c => c.id === parseInt(editingId, 10));
                 if (index !== -1) {
                     state.cards[index] = savedProcess;
                 }
@@ -628,6 +636,261 @@
             console.error('[PROCESSOS-KANBAN] Erro ao deletar processo:', error);
             alert('Não foi possível excluir o processo. Tente novamente.');
         }
+    }
+
+    function parseEventSnapshot(card) {
+        if (!card || !card.sourceEventSnapshot) {
+            return null;
+        }
+
+        if (typeof card.sourceEventSnapshot === 'object') {
+            return card.sourceEventSnapshot;
+        }
+
+        try {
+            return JSON.parse(card.sourceEventSnapshot);
+        } catch (error) {
+            console.warn('[PROCESSOS-KANBAN] Não foi possível interpretar o snapshot do evento:', error);
+            return null;
+        }
+    }
+
+    function buildEventDetailsSection(eventData, sourceEventId) {
+        const fields = [
+            { label: 'Título', value: eventData.titulo },
+            { label: 'Descrição', value: eventData.descricao },
+            { label: 'Status', value: eventData.statusLabel },
+            { label: 'Prioridade', value: eventData.prioridadeLabel },
+            { label: 'Associado', value: eventData.partnerName },
+            { label: 'Placa', value: eventData.vehiclePlate || eventData.placaManual },
+            { label: 'Motivo', value: eventData.motivoLabel },
+            { label: 'Envolvimento', value: eventData.envolvimentoLabel },
+            { label: 'Analista Responsável', value: eventData.analistaResponsavel },
+            { label: 'Data do Ocorrido', value: formatDate(eventData.dataAconteceu) },
+            { label: 'Hora do Ocorrido', value: formatTime(eventData.horaAconteceu) },
+            { label: 'Data da Comunicação', value: formatDate(eventData.dataComunicacao) },
+            { label: 'Hora da Comunicação', value: formatTime(eventData.horaComunicacao) },
+            { label: 'Data de Vencimento', value: formatDate(eventData.dataVencimento) },
+            { label: 'Observações', value: eventData.observacoes }
+        ];
+
+        const html = [];
+        html.push('<div class="kanban-modal-section">');
+        html.push('<h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">Dados do Evento enviado ao Jurídico</h3>');
+        html.push('<div class="kanban-modal-grid">');
+
+        fields
+            .filter(field => field.value)
+            .forEach(field => {
+                html.push(`<div class="kanban-modal-row"><span>${field.label}:</span><strong>${escapeHtml(String(field.value))}</strong></div>`);
+            });
+
+        html.push('</div>');
+
+        const documents = [
+            { type: 'crlv', label: 'CRLV', has: eventData.hasCrlv },
+            { type: 'cnh', label: 'CNH', has: eventData.hasCnh },
+            { type: 'bo', label: 'B.O.', has: eventData.hasBo },
+            { type: 'comprovante_residencia', label: 'Comprovante de Residência', has: eventData.hasComprovanteResidencia },
+            { type: 'termo_abertura', label: 'Termo de Abertura', has: eventData.hasTermoAbertura }
+        ];
+
+        const availableDocs = documents.filter(doc => doc.has && sourceEventId);
+        if (availableDocs.length > 0) {
+            html.push('<div class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6);">');
+            html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Documentos Anexados</h5>');
+            html.push('<div style="display: flex; flex-direction: column; gap: 8px;">');
+            availableDocs.forEach(doc => {
+                const downloadUrl = `/events/${sourceEventId}/download/${doc.type}`;
+                html.push(`<a href="${downloadUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); border-radius: 6px; color: var(--text-primary, #2c3e50); text-decoration: none; font-size: 13px;"><i class="bi bi-file-earmark-arrow-down" style="font-size: 16px;"></i><span>${escapeHtml(doc.label)}</span></a>`);
+            });
+            html.push('</div>');
+            html.push('</div>');
+        }
+
+        html.push('<div id="legal-description-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Histórico de Alterações da Descrição</h5>');
+        html.push('<div id="legal-description-history-content" style="display: flex; flex-direction: column; gap: 12px;"></div>');
+        html.push('</div>');
+
+        html.push('<div id="legal-observation-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600;">Histórico de Alterações das Observações</h5>');
+        html.push('<div id="legal-observation-history-content" style="display: flex; flex-direction: column; gap: 12px;"></div>');
+        html.push('</div>');
+
+        html.push('</div>');
+        return html.join('');
+    }
+
+    function buildProcessDetailsSection(card) {
+        const html = [];
+        html.push('<div class="detail-section">');
+        html.push('<h3>Informações do Processo</h3>');
+        html.push('<p><strong>Número:</strong> ' + escapeHtml(card.numeroProcesso || 'N/A') + '</p>');
+        html.push('<p><strong>Autor:</strong> ' + escapeHtml(card.autor || 'N/A') + '</p>');
+        html.push('<p><strong>Réu:</strong> ' + escapeHtml(card.reu || 'N/A') + '</p>');
+        html.push('<p><strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A') + '</p>');
+        html.push('<p><strong>Valor da Causa:</strong> R$ ' + formatCurrency(card.valorCausa || 0) + '</p>');
+        html.push('<p><strong>Status:</strong> ' + escapeHtml(statusLabels[card.status] || card.status || 'N/A') + '</p>');
+        html.push('</div>');
+
+        html.push('<div class="detail-section"><h3>Pedidos</h3>');
+        html.push('<p>' + escapeHtml(card.pedidos || 'Nenhum pedido registrado') + '</p></div>');
+
+        html.push('<div class="modal-actions">');
+        html.push('<button type="button" class="btn btn-primary" onclick="window.processosBoard.openEditModal(' + card.id + ')"><i class="bi bi-pencil"></i> Editar</button>');
+        html.push('<button type="button" class="btn btn-danger" onclick="window.processosBoard.deleteProcess(' + card.id + ')"><i class="bi bi-trash"></i> Deletar</button>');
+        html.push('</div>');
+
+        return html.join('');
+    }
+
+    async function loadEventHistories(eventId) {
+        await Promise.allSettled([
+            loadEventDescriptionHistory(eventId),
+            loadEventObservationHistory(eventId)
+        ]);
+    }
+
+    async function loadEventDescriptionHistory(eventId) {
+        const section = document.getElementById('legal-description-history-section');
+        const content = document.getElementById('legal-description-history-content');
+        if (!section || !content) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/events/${eventId}/description-history`, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const history = await response.json();
+            if (!Array.isArray(history) || history.length === 0) {
+                return;
+            }
+
+            content.innerHTML = '';
+            history.forEach(entry => {
+                content.appendChild(createHistoryEntry({
+                    previous: entry.previousDescription,
+                    current: entry.newDescription,
+                    modifiedBy: entry.modifiedBy,
+                    modifiedAt: entry.modifiedAt
+                }));
+            });
+
+            section.style.display = 'block';
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao carregar histórico de descrições do evento:', error);
+        }
+    }
+
+    async function loadEventObservationHistory(eventId) {
+        const section = document.getElementById('legal-observation-history-section');
+        const content = document.getElementById('legal-observation-history-content');
+        if (!section || !content) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/events/${eventId}/observation-history`, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const history = await response.json();
+            if (!Array.isArray(history) || history.length === 0) {
+                return;
+            }
+
+            content.innerHTML = '';
+            history.forEach(entry => {
+                content.appendChild(createHistoryEntry({
+                    previous: entry.previousObservation,
+                    current: entry.newObservation,
+                    modifiedBy: entry.modifiedBy,
+                    modifiedAt: entry.modifiedAt
+                }));
+            });
+
+            section.style.display = 'block';
+        } catch (error) {
+            console.error('[PROCESSOS-KANBAN] Erro ao carregar histórico de observações do evento:', error);
+        }
+    }
+
+    function createHistoryEntry(entry) {
+        const entryDiv = document.createElement('div');
+        entryDiv.style.cssText = 'padding: 12px; background: var(--bg-secondary, #f8f9fa); border-left: 3px solid var(--success-color, #198754); border-radius: 4px;';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary, #6c757d);';
+
+        const modifiedBySpan = document.createElement('span');
+        modifiedBySpan.innerHTML = `<i class="bi bi-person"></i> <strong>${escapeHtml(entry.modifiedBy || 'Sistema')}</strong>`;
+
+        const modifiedAtSpan = document.createElement('span');
+        const modifiedDate = entry.modifiedAt ? new Date(entry.modifiedAt) : null;
+        modifiedAtSpan.innerHTML = `<i class="bi bi-clock"></i> ${modifiedDate ? modifiedDate.toLocaleString('pt-BR') : 'Data não disponível'}`;
+
+        headerDiv.appendChild(modifiedBySpan);
+        headerDiv.appendChild(modifiedAtSpan);
+
+        const changesDiv = document.createElement('div');
+        changesDiv.style.cssText = 'display: grid; grid-template-columns: 1fr; gap: 8px; font-size: 13px;';
+
+        if (entry.previous) {
+            const previousDiv = document.createElement('div');
+            previousDiv.innerHTML = `<strong style="color: var(--danger-color, #dc3545);">Anterior:</strong> <span style="color: var(--text-secondary, #6c757d); font-style: italic;">${escapeHtml(entry.previous)}</span>`;
+            changesDiv.appendChild(previousDiv);
+        }
+
+        if (entry.current) {
+            const currentDiv = document.createElement('div');
+            currentDiv.innerHTML = `<strong style="color: var(--success-color, #198754);">Nova:</strong> <span style="color: var(--text-primary, #2c3e50);">${escapeHtml(entry.current)}</span>`;
+            changesDiv.appendChild(currentDiv);
+        }
+
+        entryDiv.appendChild(headerDiv);
+        entryDiv.appendChild(changesDiv);
+        return entryDiv;
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return '';
+        }
+
+        try {
+            const [year, month, day] = value.split('-').map(Number);
+            if (!year || !month || !day) {
+                return value;
+            }
+            return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+        } catch (error) {
+            return value;
+        }
+    }
+
+    function formatTime(value) {
+        if (!value && value !== 0) {
+            return '';
+        }
+
+        const numeric = Number(value);
+        if (Number.isNaN(numeric)) {
+            return '';
+        }
+
+        const padded = String(Math.trunc(numeric)).padStart(4, '0');
+        return `${padded.substring(0, 2)}:${padded.substring(2, 4)}`;
     }
 
     function formatCurrency(value) {
