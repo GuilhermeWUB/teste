@@ -31,6 +31,10 @@ public record LegalProcessRequest(
         String pedidos,
 
         @NotNull(message = "Tipo de cobrança é obrigatório")
-        LegalProcessType processType
+        LegalProcessType processType,
+
+        Long sourceEventId,
+
+        String sourceEventSnapshot
 ) {
 }

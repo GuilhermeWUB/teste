@@ -69,6 +69,8 @@ public class LegalProcessService {
                 processType,
                 defaultStatusFor(processType)
         );
+        process.setSourceEventId(request.sourceEventId());
+        process.setSourceEventSnapshot(request.sourceEventSnapshot());
         return legalProcessRepository.save(process);
     }
 
@@ -80,6 +82,12 @@ public class LegalProcessService {
         existing.setNumeroProcesso(request.numeroProcesso());
         existing.setValorCausa(request.valorCausa());
         existing.setPedidos(request.pedidos());
+        if (request.sourceEventId() != null) {
+            existing.setSourceEventId(request.sourceEventId());
+        }
+        if (request.sourceEventSnapshot() != null) {
+            existing.setSourceEventSnapshot(request.sourceEventSnapshot());
+        }
         LegalProcessType newType = resolveType(request.processType());
         existing.setProcessType(newType);
         if (!isStatusAllowedForType(existing.getStatus(), newType)) {

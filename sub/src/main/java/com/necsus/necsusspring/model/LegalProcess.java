@@ -41,6 +41,12 @@ public class LegalProcess {
     @Column(name = "process_type", nullable = false)
     private LegalProcessType processType = LegalProcessType.TERCEIROS;
 
+    @Column(name = "source_event_id")
+    private Long sourceEventId;
+
+    @Column(name = "source_event_snapshot", columnDefinition = "TEXT")
+    private String sourceEventSnapshot;
+
     public LegalProcess() {
     }
 
@@ -128,6 +134,22 @@ public class LegalProcess {
 
     public void setProcessType(LegalProcessType processType) {
         this.processType = processType != null ? processType : LegalProcessType.TERCEIROS;
+    }
+
+    public Long getSourceEventId() {
+        return sourceEventId;
+    }
+
+    public void setSourceEventId(Long sourceEventId) {
+        this.sourceEventId = sourceEventId;
+    }
+
+    public String getSourceEventSnapshot() {
+        return sourceEventSnapshot;
+    }
+
+    public void setSourceEventSnapshot(String sourceEventSnapshot) {
+        this.sourceEventSnapshot = sourceEventSnapshot;
     }
 
     @Override
