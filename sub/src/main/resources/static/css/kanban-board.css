@@ -549,7 +549,11 @@ html[data-theme="dark"] .kanban-wrapper {
 }
 
 .kanban-modal-actions .btn-primary {
-    background: linear-gradient(135deg, var(--kanban-accent) 0%, var(--kanban-accent-strong) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--kanban-accent, var(--color-primary)) 0%,
+        var(--kanban-accent-strong, var(--color-primary-dark)) 100%
+    );
     color: #fff;
 }
 
