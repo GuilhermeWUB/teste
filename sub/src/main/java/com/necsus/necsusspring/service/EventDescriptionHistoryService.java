@@ -39,6 +39,12 @@ public class EventDescriptionHistoryService {
         return historyRepository.findByEventIdOrderByModifiedAtDesc(eventId);
     }
 
+    @Transactional
+    public void deleteByEventId(Long eventId) {
+        historyRepository.deleteByEventId(eventId);
+        logger.info("Histórico de descrições removido para evento {}", eventId);
+    }
+
     private boolean isDescriptionChanged(String oldValue, String newValue) {
         // Trata null e string vazia como equivalentes
         String normalizedOld = (oldValue == null || oldValue.trim().isEmpty()) ? null : oldValue.trim();
