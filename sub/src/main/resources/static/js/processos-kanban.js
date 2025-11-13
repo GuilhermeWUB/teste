@@ -42,6 +42,12 @@
         TERCEIROS: 'Terceiros'
     };
 
+    const typeLabels = {
+        RASTREADOR: 'Rastreador',
+        FIDELIDADE: 'Fidelidade',
+        TERCEIROS: 'Terceiros'
+    };
+
     const selectors = {
         board: () => document.querySelector('.kanban-board'),
         searchInput: () => document.getElementById('kanban-search'),
