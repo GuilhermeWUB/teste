@@ -4,6 +4,7 @@ import com.necsus.necsusspring.model.Event;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.model.Status;
 import com.necsus.necsusspring.model.Vistoria;
+import com.necsus.necsusspring.model.VistoriaFoto;
 import com.necsus.necsusspring.service.EventService;
 import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PartnerService;
@@ -157,16 +158,7 @@ public class VistoriaController {
     public String saveVistoria(@RequestParam("eventId") Long eventId,
                                @RequestParam(value = "vistoriaId", required = false) Long vistoriaId,
                                @RequestParam(value = "observacoes", required = false) String observacoes,
-                               @RequestParam(value = "foto1", required = false) MultipartFile foto1,
-                               @RequestParam(value = "foto2", required = false) MultipartFile foto2,
-                               @RequestParam(value = "foto3", required = false) MultipartFile foto3,
-                               @RequestParam(value = "foto4", required = false) MultipartFile foto4,
-                               @RequestParam(value = "foto5", required = false) MultipartFile foto5,
-                               @RequestParam(value = "foto6", required = false) MultipartFile foto6,
-                               @RequestParam(value = "foto7", required = false) MultipartFile foto7,
-                               @RequestParam(value = "foto8", required = false) MultipartFile foto8,
-                               @RequestParam(value = "foto9", required = false) MultipartFile foto9,
-                               @RequestParam(value = "foto10", required = false) MultipartFile foto10,
+                               @RequestParam(value = "fotos", required = false) MultipartFile[] fotos,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
 
@@ -205,59 +197,33 @@ public class VistoriaController {
                 vistoria.setUsuarioCriacao(authentication.getName());
             }
 
-            // Faz upload das fotos e armazena os paths
-            if (foto1 != null && !foto1.isEmpty()) {
-                String path = fileStorageService.storeFile(foto1);
-                if (path != null) vistoria.setFoto1Path(path);
-            }
-            if (foto2 != null && !foto2.isEmpty()) {
-                String path = fileStorageService.storeFile(foto2);
-                if (path != null) vistoria.setFoto2Path(path);
-            }
-            if (foto3 != null && !foto3.isEmpty()) {
-                String path = fileStorageService.storeFile(foto3);
-                if (path != null) vistoria.setFoto3Path(path);
-            }
-            if (foto4 != null && !foto4.isEmpty()) {
-                String path = fileStorageService.storeFile(foto4);
-                if (path != null) vistoria.setFoto4Path(path);
-            }
-            if (foto5 != null && !foto5.isEmpty()) {
-                String path = fileStorageService.storeFile(foto5);
-                if (path != null) vistoria.setFoto5Path(path);
-            }
-            if (foto6 != null && !foto6.isEmpty()) {
-                String path = fileStorageService.storeFile(foto6);
-                if (path != null) vistoria.setFoto6Path(path);
-            }
-            if (foto7 != null && !foto7.isEmpty()) {
-                String path = fileStorageService.storeFile(foto7);
-                if (path != null) vistoria.setFoto7Path(path);
-            }
-            if (foto8 != null && !foto8.isEmpty()) {
-                String path = fileStorageService.storeFile(foto8);
-                if (path != null) vistoria.setFoto8Path(path);
-            }
-            if (foto9 != null && !foto9.isEmpty()) {
-                String path = fileStorageService.storeFile(foto9);
-                if (path != null) vistoria.setFoto9Path(path);
-            }
-            if (foto10 != null && !foto10.isEmpty()) {
-                String path = fileStorageService.storeFile(foto10);
-                if (path != null) vistoria.setFoto10Path(path);
-            }
-
             vistoria.setObservacoes(observacoes);
+
+            // Faz upload das fotos e cria as entidades VistoriaFoto
+            if (fotos != null && fotos.length > 0) {
+                int ordem = 1;
+                for (MultipartFile foto : fotos) {
+                    if (foto != null && !foto.isEmpty()) {
+                        String path = fileStorageService.storeFile(foto);
+                        if (path != null) {
+                            VistoriaFoto vistoriaFoto = new VistoriaFoto();
+                            vistoriaFoto.setFotoPath(path);
+                            vistoriaFoto.setOrdem(ordem++);
+                            vistoria.adicionarFoto(vistoriaFoto);
+                        }
+                    }
+                }
+            }
 
             // Salva a vistoria
             if (vistoriaId != null) {
                 vistoriaService.update(vistoriaId, vistoria);
-                logger.info("Vistoria atualizada com sucesso. ID: {}, Evento ID: {}, Usuário: {}",
-                           vistoriaId, eventId, authentication.getName());
+                logger.info("Vistoria atualizada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, {} fotos",
+                           vistoriaId, eventId, authentication.getName(), vistoria.getQuantidadeFotos());
             } else {
                 vistoriaService.create(vistoria);
-                logger.info("Vistoria criada com sucesso. Evento ID: {}, Usuário: {}",
-                           eventId, authentication.getName());
+                logger.info("Vistoria criada com sucesso. Evento ID: {}, Usuário: {}, {} fotos",
+                           eventId, authentication.getName(), vistoria.getQuantidadeFotos());
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Fotos da vistoria enviadas com sucesso!");
@@ -288,26 +254,23 @@ public class VistoriaController {
     /**
      * Download de foto da vistoria
      */
-    @GetMapping("/{vistoriaId}/download/{fotoNumero}")
+    @GetMapping("/{vistoriaId}/download/{fotoId}")
     public ResponseEntity<Resource> downloadFoto(@PathVariable Long vistoriaId,
-                                                  @PathVariable int fotoNumero) {
+                                                  @PathVariable Long fotoId) {
         try {
             Vistoria vistoria = vistoriaService.findById(vistoriaId)
                     .orElseThrow(() -> new RuntimeException("Vistoria não encontrada"));
 
-            String filePath = switch (fotoNumero) {
-                case 1 -> vistoria.getFoto1Path();
-                case 2 -> vistoria.getFoto2Path();
-                case 3 -> vistoria.getFoto3Path();
-                case 4 -> vistoria.getFoto4Path();
-                case 5 -> vistoria.getFoto5Path();
-                case 6 -> vistoria.getFoto6Path();
-                case 7 -> vistoria.getFoto7Path();
-                case 8 -> vistoria.getFoto8Path();
-                case 9 -> vistoria.getFoto9Path();
-                case 10 -> vistoria.getFoto10Path();
-                default -> null;
-            };
+            VistoriaFoto foto = vistoria.getFotos().stream()
+                    .filter(f -> f.getId().equals(fotoId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (foto == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String filePath = foto.getFotoPath();
 
             if (filePath == null || filePath.isEmpty()) {
                 return ResponseEntity.notFound().build();

@@ -128,7 +128,7 @@
                     <li>Fotografe diferentes ângulos do veículo</li>
                     <li>Inclua fotos da placa do veículo</li>
                     <li>Se houver outros veículos envolvidos, fotografe-os também</li>
-                    <li>Você pode enviar até 10 fotos</li>
+                    <li>Você pode enviar quantas fotos quiser</li>
                     <li>Formatos aceitos: JPG, JPEG, PNG</li>
                 </ul>
             </div>
@@ -139,67 +139,17 @@
                 <input type="hidden" name="vistoriaId" th:value="${vistoria.id}" />
 
                 <!-- Fotos já enviadas (se existirem) -->
-                <div th:if="${vistoria.id != null}" class="mb-4">
-                    <h6 class="fw-semibold mb-3">Fotos já enviadas:</h6>
+                <div th:if="${vistoria.id != null and vistoria.fotos != null and !vistoria.fotos.isEmpty()}" class="mb-4">
+                    <h6 class="fw-semibold mb-3">Fotos já enviadas (<span th:text="${vistoria.fotos.size()}">0</span>):</h6>
                     <div class="row g-3">
-                        <div th:if="${vistoria.foto1Path != null}" class="col-6 col-md-4 col-lg-3">
+                        <div th:each="foto : ${vistoria.fotos}" class="col-6 col-md-4 col-lg-3">
                             <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/1(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 1">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto2Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/2(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 2">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto3Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/3(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 3">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto4Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/4(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 4">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto5Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/5(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 5">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto6Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/6(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 6">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto7Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/7(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 7">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto8Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/8(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 8">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto9Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/9(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 9">
-                            </div>
-                        </div>
-                        <div th:if="${vistoria.foto10Path != null}" class="col-6 col-md-4 col-lg-3">
-                            <div class="foto-container">
-                                <img th:src="@{/vistorias/{id}/download/10(id=${vistoria.id})}"
-                                     class="foto-preview img-thumbnail" alt="Foto 10">
+                                <img th:src="@{/vistorias/{vistoriaId}/download/{fotoId}(vistoriaId=${vistoria.id},fotoId=${foto.id})}"
+                                     class="foto-preview img-thumbnail"
+                                     th:alt="'Foto ' + ${foto.ordem}">
+                                <div class="mt-1 text-center">
+                                    <small class="text-muted" th:text="'Foto ' + ${foto.ordem}">Foto</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -209,90 +159,21 @@
                 <!-- Upload de novas fotos -->
                 <h6 class="fw-semibold mb-3">
                     <span th:if="${vistoria.id == null}">Enviar fotos:</span>
-                    <span th:if="${vistoria.id != null}">Adicionar ou atualizar fotos:</span>
+                    <span th:if="${vistoria.id != null}">Adicionar novas fotos:</span>
                 </h6>
 
-                <div class="row g-3">
-                    <!-- Foto 1 -->
-                    <div class="col-md-6">
-                        <label for="foto1" class="form-label">Foto 1</label>
-                        <input type="file" class="form-control foto-input" id="foto1" name="foto1"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview1')">
-                        <div id="preview1" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 2 -->
-                    <div class="col-md-6">
-                        <label for="foto2" class="form-label">Foto 2</label>
-                        <input type="file" class="form-control foto-input" id="foto2" name="foto2"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview2')">
-                        <div id="preview2" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 3 -->
-                    <div class="col-md-6">
-                        <label for="foto3" class="form-label">Foto 3</label>
-                        <input type="file" class="form-control foto-input" id="foto3" name="foto3"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview3')">
-                        <div id="preview3" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 4 -->
-                    <div class="col-md-6">
-                        <label for="foto4" class="form-label">Foto 4</label>
-                        <input type="file" class="form-control foto-input" id="foto4" name="foto4"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview4')">
-                        <div id="preview4" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 5 -->
-                    <div class="col-md-6">
-                        <label for="foto5" class="form-label">Foto 5</label>
-                        <input type="file" class="form-control foto-input" id="foto5" name="foto5"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview5')">
-                        <div id="preview5" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 6 -->
-                    <div class="col-md-6">
-                        <label for="foto6" class="form-label">Foto 6</label>
-                        <input type="file" class="form-control foto-input" id="foto6" name="foto6"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview6')">
-                        <div id="preview6" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 7 -->
-                    <div class="col-md-6">
-                        <label for="foto7" class="form-label">Foto 7</label>
-                        <input type="file" class="form-control foto-input" id="foto7" name="foto7"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview7')">
-                        <div id="preview7" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 8 -->
-                    <div class="col-md-6">
-                        <label for="foto8" class="form-label">Foto 8</label>
-                        <input type="file" class="form-control foto-input" id="foto8" name="foto8"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview8')">
-                        <div id="preview8" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 9 -->
-                    <div class="col-md-6">
-                        <label for="foto9" class="form-label">Foto 9</label>
-                        <input type="file" class="form-control foto-input" id="foto9" name="foto9"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview9')">
-                        <div id="preview9" class="mt-2"></div>
-                    </div>
-
-                    <!-- Foto 10 -->
-                    <div class="col-md-6">
-                        <label for="foto10" class="form-label">Foto 10</label>
-                        <input type="file" class="form-control foto-input" id="foto10" name="foto10"
-                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview10')">
-                        <div id="preview10" class="mt-2"></div>
-                    </div>
+                <!-- Área de upload múltiplo -->
+                <div class="upload-area mb-3" id="uploadArea">
+                    <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+                    <p class="mb-2 mt-2"><strong>Clique para selecionar fotos</strong> ou arraste e solte aqui</p>
+                    <p class="text-muted small mb-0">Você pode selecionar múltiplas fotos de uma vez</p>
+                    <input type="file" class="d-none" id="fotosInput" name="fotos" multiple
+                           accept="image/jpeg,image/jpg,image/png">
                 </div>
+
+                <!-- Preview das fotos selecionadas -->
+                <div id="fotosPreview" class="row g-3 mb-3"></div>
+                <div id="fotoCount" class="text-muted small mb-3"></div>
 
                 <!-- Observações -->
                 <div class="mt-4">
@@ -319,54 +200,110 @@
 <!-- Script para preview das fotos -->
 <th:block layout:fragment="scripts">
     <script>
-        function previewFoto(input, previewId) {
-            const preview = document.getElementById(previewId);
-            preview.innerHTML = '';
+        const uploadArea = document.getElementById('uploadArea');
+        const fotosInput = document.getElementById('fotosInput');
+        const fotosPreview = document.getElementById('fotosPreview');
+        const fotoCount = document.getElementById('fotoCount');
 
-            if (input.files && input.files[0]) {
+        // Clique na área de upload
+        uploadArea.addEventListener('click', () => {
+            fotosInput.click();
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            fotosInput.files = files;
+            previewFotos(files);
+        });
+
+        // Seleção de arquivos
+        fotosInput.addEventListener('change', (e) => {
+            previewFotos(e.target.files);
+        });
+
+        function previewFotos(files) {
+            fotosPreview.innerHTML = '';
+
+            if (files.length === 0) {
+                fotoCount.textContent = '';
+                return;
+            }
+
+            fotoCount.textContent = `${files.length} foto(s) selecionada(s)`;
+
+            Array.from(files).forEach((file, index) => {
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4 col-lg-3';
+
                     const container = document.createElement('div');
-                    container.className = 'foto-container mt-2';
+                    container.className = 'foto-container';
 
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.className = 'foto-preview img-thumbnail';
-                    img.alt = 'Preview';
+                    img.alt = `Foto ${index + 1}`;
 
                     const btnRemove = document.createElement('button');
                     btnRemove.type = 'button';
                     btnRemove.className = 'btn-remove-foto';
                     btnRemove.innerHTML = '<i class="bi bi-x"></i>';
+                    btnRemove.title = 'Remover foto';
                     btnRemove.onclick = function() {
-                        input.value = '';
-                        preview.innerHTML = '';
+                        removeFile(index);
                     };
+
+                    const label = document.createElement('div');
+                    label.className = 'mt-1 text-center';
+                    label.innerHTML = `<small class="text-muted">Foto ${index + 1}</small>`;
 
                     container.appendChild(img);
                     container.appendChild(btnRemove);
-                    preview.appendChild(container);
+                    col.appendChild(container);
+                    col.appendChild(label);
+                    fotosPreview.appendChild(col);
                 };
 
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function removeFile(index) {
+            const dt = new DataTransfer();
+            const files = fotosInput.files;
+
+            for (let i = 0; i < files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(files[i]);
+                }
             }
+
+            fotosInput.files = dt.files;
+            previewFotos(fotosInput.files);
         }
 
         // Validação antes de enviar o formulário
         document.getElementById('formVistoria').addEventListener('submit', function(e) {
-            const inputs = document.querySelectorAll('.foto-input');
-            let temFoto = false;
-
-            inputs.forEach(input => {
-                if (input.files && input.files[0]) {
-                    temFoto = true;
-                }
-            });
+            const vistoriaId = document.querySelector('input[name="vistoriaId"]').value;
+            const hasFiles = fotosInput.files && fotosInput.files.length > 0;
 
             // Se não tem nenhuma foto nova e não é atualização, mostra alerta
-            const vistoriaId = document.querySelector('input[name="vistoriaId"]').value;
-            if (!temFoto && !vistoriaId) {
+            if (!hasFiles && !vistoriaId) {
                 e.preventDefault();
                 alert('Por favor, selecione pelo menos uma foto para enviar.');
                 return false;
