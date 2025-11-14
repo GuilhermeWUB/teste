@@ -14,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "vistoria")
+@NamedEntityGraph(
+    name = "Vistoria.fotos",
+    attributeNodes = @NamedAttributeNode("fotos")
+)
 public class Vistoria {
 
     @Id
@@ -25,7 +29,7 @@ public class Vistoria {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("ordem ASC")
     @JsonManagedReference
     private List<VistoriaFoto> fotos = new ArrayList<>();

@@ -285,7 +285,8 @@ public class EventController {
             return "redirect:/events/board";
         } catch (Exception ex) {
             logger.error("Erro ao criar evento: ", ex);
-            model.addAttribute("formError", ex.getMessage() != null ? ex.getMessage() : "Não foi possível salvar o evento. Verifique os campos e tente novamente.");
+            // Não expor detalhes técnicos da exceção ao usuário
+            model.addAttribute("formError", "Não foi possível salvar o evento. Verifique os campos e tente novamente.");
             return "cadastro_evento";
         }
     }

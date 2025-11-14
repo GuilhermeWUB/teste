@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     const zipcodeField = document.getElementById('zipcode');
 
+    if (!zipcodeField) {
+        return; // Campo de CEP não existe na página
+    }
+
     zipcodeField.addEventListener('blur', function () {
         const zipcode = this.value.replace(/\D/g, '');
 
@@ -14,10 +18,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(data => {
                     if (data) {
-                        document.getElementById('address').value = data.street || '';
-                        document.getElementById('neighborhood').value = data.neighborhood || '';
-                        document.getElementById('city').value = data.city || '';
-                        document.getElementById('states').value = data.state || '';
+                        const addressField = document.getElementById('address');
+                        const neighborhoodField = document.getElementById('neighborhood');
+                        const cityField = document.getElementById('city');
+                        const statesField = document.getElementById('states');
+
+                        if (addressField) addressField.value = data.street || '';
+                        if (neighborhoodField) neighborhoodField.value = data.neighborhood || '';
+                        if (cityField) cityField.value = data.city || '';
+                        if (statesField) statesField.value = data.state || '';
                         clearZipcodeError();
                     }
                 })
@@ -51,9 +60,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function clearAddressFields() {
-        document.getElementById('address').value = '';
-        document.getElementById('neighborhood').value = '';
-        document.getElementById('city').value = '';
-        document.getElementById('states').value = '';
+        const addressField = document.getElementById('address');
+        const neighborhoodField = document.getElementById('neighborhood');
+        const cityField = document.getElementById('city');
+        const statesField = document.getElementById('states');
+
+        if (addressField) addressField.value = '';
+        if (neighborhoodField) neighborhoodField.value = '';
+        if (cityField) cityField.value = '';
+        if (statesField) statesField.value = '';
     }
 });

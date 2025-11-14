@@ -32,8 +32,18 @@ public class VistoriaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Vistoria> listByEventIdWithFotos(Long eventId) {
+        return vistoriaRepository.findWithFotosByEventId(eventId);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Vistoria> findById(Long id) {
         return vistoriaRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Vistoria> findByIdWithFotos(Long id) {
+        return vistoriaRepository.findWithFotosById(id);
     }
 
     @Transactional(readOnly = true)

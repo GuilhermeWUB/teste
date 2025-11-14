@@ -243,7 +243,8 @@ public class VistoriaController {
     @ResponseBody
     public ResponseEntity<List<Vistoria>> getVistoriasByEventId(@PathVariable Long eventId) {
         try {
-            List<Vistoria> vistorias = vistoriaService.listByEventId(eventId);
+            // Usa método com entity graph para carregar fotos eficientemente
+            List<Vistoria> vistorias = vistoriaService.listByEventIdWithFotos(eventId);
             return ResponseEntity.ok(vistorias);
         } catch (Exception ex) {
             logger.error("Erro ao buscar vistorias do evento {}: ", eventId, ex);
@@ -258,7 +259,8 @@ public class VistoriaController {
     public ResponseEntity<Resource> downloadFoto(@PathVariable Long vistoriaId,
                                                   @PathVariable Long fotoId) {
         try {
-            Vistoria vistoria = vistoriaService.findById(vistoriaId)
+            // Usa método com entity graph para carregar fotos eficientemente
+            Vistoria vistoria = vistoriaService.findByIdWithFotos(vistoriaId)
                     .orElseThrow(() -> new RuntimeException("Vistoria não encontrada"));
 
             VistoriaFoto foto = vistoria.getFotos().stream()
@@ -277,18 +279,36 @@ public class VistoriaController {
             }
 
             Path path = Paths.get(filePath);
+            Path uploadsDir = Paths.get("uploads");
+
+            // Validação de segurança: garantir que o path está dentro do diretório de uploads
+            if (!path.normalize().startsWith(uploadsDir.normalize())) {
+                logger.warn("Tentativa de acesso a arquivo fora do diretório permitido: {}", filePath);
+                return ResponseEntity.notFound().build();
+            }
+
             Resource resource = new UrlResource(path.toUri());
 
             if (!resource.exists()) {
                 return ResponseEntity.notFound().build();
             }
 
-            String contentType = "application/octet-stream";
+            // Determinar content type correto baseado na extensão
+            String contentType = "image/jpeg";
             String filename = path.getFileName().toString();
+
+            // Sanitizar filename para evitar injeção de headers
+            String sanitizedFilename = filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+            if (filename.toLowerCase().endsWith(".png")) {
+                contentType = "image/png";
+            } else if (filename.toLowerCase().endsWith(".gif")) {
+                contentType = "image/gif";
+            }
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + sanitizedFilename + "\"")
                     .body(resource);
 
         } catch (Exception ex) {
