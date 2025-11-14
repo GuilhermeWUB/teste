@@ -169,15 +169,19 @@
         }
 
         const filteredCards = applyFilters(state.cards);
-        const grouped = groupByStatus(filteredCards);
+        const grouped = groupByStatusAndType(filteredCards);
 
         columns.forEach(column => {
             const status = column.dataset.status;
+            const groupType = column.closest('[data-group]')?.dataset.group;
             const container = column.querySelector('.tasks-container');
             const counter = column.querySelector('.column-count');
 
+            // Filtra os cards que pertencem a este status E a este grupo/tipo
+            const items = grouped[status]?.filter(card => card.processType === groupType) || [];
+
             if (counter) {
-                counter.textContent = grouped[status] ? grouped[status].length : 0;
+                counter.textContent = items.length;
             }
 
             if (!container) {
@@ -187,7 +191,6 @@
             bindColumnDropZone(column);
             container.innerHTML = '';
 
-            const items = grouped[status] || [];
             if (items.length === 0) {
                 container.appendChild(createEmptyState());
                 return;
@@ -219,7 +222,7 @@
         });
     }
 
-    function groupByStatus(cards) {
+    function groupByStatusAndType(cards) {
         const grouped = {};
         ALL_STATUS.forEach(status => {
             grouped[status] = [];
@@ -240,7 +243,12 @@
         Object.entries(BOARD_GROUPS).forEach(([groupKey, config]) => {
             const total = config.statuses.reduce((sum, status) => {
                 const items = grouped[status];
-                return sum + (Array.isArray(items) ? items.length : 0);
+                if (!Array.isArray(items)) {
+                    return sum;
+                }
+                // Conta apenas os processos que pertencem a este tipo
+                const filteredItems = items.filter(card => card.processType === groupKey);
+                return sum + filteredItems.length;
             }, 0);
 
             const counter = document.querySelector(`[data-group-count="${groupKey}"]`);
@@ -352,6 +360,7 @@
         const container = event.currentTarget;
         const column = container.closest('.kanban-column');
         const targetStatus = column?.dataset.status;
+        const targetGroup = column.closest('[data-group]')?.dataset.group;
         const cardId = dragState.cardId || event.dataTransfer?.getData('text/plain');
 
         if (!cardId || !targetStatus) {
@@ -365,6 +374,12 @@
 
         const previousStatus = card.status;
         if (previousStatus === targetStatus) {
+            return;
+        }
+
+        // Validar que o card pertence ao grupo da coluna de destino
+        if (card.processType !== targetGroup) {
+            alert(`Não é possível mover um processo de ${typeLabels[card.processType] || card.processType} para o grupo ${typeLabels[targetGroup] || targetGroup}.`);
             return;
         }
 
