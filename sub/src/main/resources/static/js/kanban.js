@@ -624,21 +624,21 @@
             return;
         }
 
-        closeLegalTypeModal({ resetState: false });
-
-        if (triggerButton) {
-            triggerButton.disabled = true;
-            triggerButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
-        }
+        console.log('[KANBAN] Enviando evento para jurídico - CardID:', cardId, 'ProcessType:', legalType);
+        closeLegalTypeModal();
 
         try {
+            const payload = { processType: legalType };
+            console.log('[KANBAN] Payload:', JSON.stringify(payload));
+
             // Enviar evento para o jurídico com o tipo selecionado
-            const response = await fetch(`/events/api/${cardId}/send-to-legal?processType=${legalType}`, {
+            const response = await fetch(`/events/api/${cardId}/send-to-legal`, {
                 method: 'POST',
                 headers: buildHeaders({
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
-                })
+                }),
+                body: JSON.stringify(payload)
             });
 
             const responseText = await response.text();
@@ -670,7 +670,9 @@
                 throw new Error(payload.error || `Erro ao enviar para jurídico: ${response.status}`);
             }
 
-            const result = payload || {};
+            const result = await response.json();
+            console.log('[KANBAN] Resposta do servidor:', result);
+            console.log('[KANBAN] Processo criado com tipo:', result.processType);
 
             // Remover o card da tela
             state.cards = state.cards.filter(card => String(card.id) !== String(cardId));
@@ -679,13 +681,7 @@
             // Fechar o modal de detalhes se estiver aberto
             closeModal();
 
-            // Recarregar o board para garantir que o evento não permaneça na aba
-            await loadBoard();
-
-            const numeroProcesso = typeof result === 'object' ? result.numeroProcesso : null;
-            const message = typeof result === 'object' ? result.message : null;
-            const processTypeLabel = typeof result === 'object' ? (result.processTypeDisplay || result.processType || legalType) : legalType;
-            alert(message || `Evento enviado com sucesso para Jurídico/Cobrança (${processTypeLabel})!\nNúmero do processo: ${numeroProcesso || 'N/A'}`);
+            alert(`Evento enviado com sucesso para Jurídico/Cobrança (${result.processType || legalType})!\nNúmero do processo: ${result.numeroProcesso || 'N/A'}`);
 
         } catch (error) {
             console.error('[KANBAN] Erro ao enviar para jurídico:', error);

@@ -150,6 +150,13 @@
 
             if (Array.isArray(data)) {
                 state.cards = data;
+                // Log dos tipos de processo carregados
+                const typeCount = data.reduce((acc, card) => {
+                    const type = card.processType || 'undefined';
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                }, {});
+                console.log('[PROCESSOS-KANBAN] Contagem por tipo:', typeCount);
             } else {
                 state.cards = [];
             }
@@ -178,7 +185,13 @@
             const counter = column.querySelector('.column-count');
 
             // Filtra os cards que pertencem a este status E a este grupo/tipo
-            const items = grouped[status]?.filter(card => card.processType === groupType) || [];
+            const items = grouped[status]?.filter(card => {
+                const matches = card.processType === groupType;
+                if (!matches && grouped[status]?.length > 0) {
+                    console.log(`[PROCESSOS-KANBAN] Card ${card.id} (${card.processType}) não exibido em ${groupType}/${status}`);
+                }
+                return matches;
+            }) || [];
 
             if (counter) {
                 counter.textContent = items.length;
