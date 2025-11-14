@@ -35,12 +35,11 @@ CREATE TABLE IF NOT EXISTS notifications (
         CHECK (priority IS NULL OR priority IN ('BAIXA', 'MEDIA', 'ALTA', 'URGENTE'))
 );
 
--- Índices para otimização de consultas
-CREATE INDEX idx_recipient_status ON notifications(recipient_id, status);
-CREATE INDEX idx_recipient_created ON notifications(recipient_id, created_at DESC);
-CREATE INDEX idx_type_status ON notifications(type, status);
-CREATE INDEX idx_related_entity ON notifications(related_entity_type, related_entity_id);
-CREATE INDEX idx_created_at ON notifications(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_recipient_status ON notifications(recipient_id, status);
+CREATE INDEX IF NOT EXISTS idx_recipient_created ON notifications(recipient_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_type_status ON notifications(type, status);
+CREATE INDEX IF NOT EXISTS idx_related_entity ON notifications(related_entity_type, related_entity_id);
+CREATE INDEX IF NOT EXISTS idx_created_at ON notifications(created_at DESC);
 
 -- Comentários nas colunas
 COMMENT ON TABLE notifications IS 'Tabela de notificações do sistema';
