@@ -690,8 +690,8 @@
         closeLegalTypeModal();
 
         try {
-            const payload = { processType: legalType };
-            console.log('[KANBAN] Payload:', JSON.stringify(payload));
+            const requestPayload = { processType: legalType };
+            console.log('[KANBAN] Payload:', JSON.stringify(requestPayload));
 
             // Enviar evento para o jurídico com o tipo selecionado
             const response = await fetch(`/events/api/${cardId}/send-to-legal`, {
@@ -700,41 +700,43 @@
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }),
-                body: JSON.stringify(payload)
+                body: JSON.stringify(requestPayload)
             });
 
             const responseText = await response.text();
-            let payload = {};
+            let responsePayload = null;
             if (responseText) {
                 try {
-                    payload = JSON.parse(responseText);
+                    responsePayload = JSON.parse(responseText);
                 } catch (jsonError) {
-                    payload = { raw: responseText };
+                    responsePayload = { raw: responseText };
                 }
             }
 
             if (response.status === 404) {
-                alert('Evento não encontrado. Ele pode ter sido removido.');
+                alert(responsePayload?.error || 'Evento não encontrado. Ele pode ter sido removido.');
                 return;
             }
 
             if (response.status === 409) {
-                alert(payload.error || 'Este evento já foi enviado para o jurídico.');
+                alert(responsePayload?.error || 'Este evento já foi enviado para o jurídico.');
                 return;
             }
 
             if (response.status === 400) {
-                alert(payload.error || 'Não foi possível enviar o evento. Verifique os dados.');
+                alert(responsePayload?.error || 'Não foi possível enviar o evento. Verifique os dados.');
                 return;
             }
 
             if (!response.ok) {
-                throw new Error(payload.error || `Erro ao enviar para jurídico: ${response.status}`);
+                throw new Error(responsePayload?.error || `Erro ao enviar para jurídico: ${response.status}`);
             }
 
-            const result = await response.json();
+            const result = responsePayload || {};
             console.log('[KANBAN] Resposta do servidor:', result);
-            console.log('[KANBAN] Processo criado com tipo:', result.processType);
+            if (result.processType) {
+                console.log('[KANBAN] Processo criado com tipo:', result.processType);
+            }
 
             // Remover o card da tela
             state.cards = state.cards.filter(card => String(card.id) !== String(cardId));
