@@ -1,23 +1,28 @@
 (function () {
+    const PRIORIDADE_VALUES = ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'];
+    const STATUS_VALUES = [
+        // Fase 1 - Comunicação
+        'COMUNICADO', 'ABERTO',
+        // Fase 2 - Análise
+        'VISTORIA', 'ANALISE', 'SINDICANCIA', 'DESISTENCIA',
+        // Fase 3 - Negociação
+        'ORCAMENTO', 'COTA_PARTICIPACAO', 'ACORDO_ANDAMENTO',
+        // Fase 4 - Execução
+        'COMPRA', 'AGENDADO', 'REPAROS_LIBERADOS', 'COMPLEMENTOS', 'ENTREGUES', 'PESQUISA_SATISFACAO',
+        // Fase 5 - Garantia
+        'ABERTURA_GARANTIA', 'VISTORIA_GARANTIA', 'GARANTIA_AUTORIZADA', 'GARANTIA_ENTREGUE'
+    ];
+    const ENVOLVIMENTO_VALUES = ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'];
+    const MOTIVO_VALUES = ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'];
+
     const state = {
         cards: [],
         search: "",
         advancedFilters: {
-            prioridade: ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'],
-            status: [
-                // Fase 1 - Comunicação
-                'COMUNICADO', 'ABERTO',
-                // Fase 2 - Análise
-                'VISTORIA', 'ANALISE', 'SINDICANCIA', 'DESISTENCIA',
-                // Fase 3 - Negociação
-                'ORCAMENTO', 'COTA_PARTICIPACAO', 'ACORDO_ANDAMENTO',
-                // Fase 4 - Execução
-                'COMPRA', 'AGENDADO', 'REPAROS_LIBERADOS', 'COMPLEMENTOS', 'ENTREGUES', 'PESQUISA_SATISFACAO',
-                // Fase 5 - Garantia
-                'ABERTURA_GARANTIA', 'VISTORIA_GARANTIA', 'GARANTIA_AUTORIZADA', 'GARANTIA_ENTREGUE'
-            ],
-            envolvimento: ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'],
-            motivo: ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'],
+            prioridade: [...PRIORIDADE_VALUES],
+            status: [...STATUS_VALUES],
+            envolvimento: [...ENVOLVIMENTO_VALUES],
+            motivo: [...MOTIVO_VALUES],
             dateFrom: null,
             dateTo: null,
             analista: ''
@@ -1139,10 +1144,10 @@
 
         // Resetar state
         state.advancedFilters = {
-            prioridade: ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'],
-            status: ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'],
-            envolvimento: ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'],
-            motivo: ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'],
+            prioridade: [...PRIORIDADE_VALUES],
+            status: [...STATUS_VALUES],
+            envolvimento: [...ENVOLVIMENTO_VALUES],
+            motivo: [...MOTIVO_VALUES],
             dateFrom: null,
             dateTo: null,
             analista: ''
@@ -1164,10 +1169,10 @@
         let activeFiltersCount = 0;
 
         // Contar filtros ativos
-        const allPrioridades = ['URGENTE', 'ALTA', 'MEDIA', 'BAIXA', 'NULL'];
-        const allStatus = ['A_FAZER', 'EM_ANDAMENTO', 'AGUARDANDO', 'CONCLUIDO'];
-        const allEnvolvimentos = ['CAUSADOR', 'VITIMA', 'NAO_INFORMADO'];
-        const allMotivos = ['COLISAO', 'ROUBO', 'FURTO', 'INCENDIO', 'VANDALISMO', 'FENOMENO_NATURAL', 'QUEBRA_PECA', 'OUTROS', 'NAO_INFORMADO_MOTIVO'];
+        const allPrioridades = PRIORIDADE_VALUES;
+        const allStatus = STATUS_VALUES;
+        const allEnvolvimentos = ENVOLVIMENTO_VALUES;
+        const allMotivos = MOTIVO_VALUES;
 
         if (state.advancedFilters.prioridade.length < allPrioridades.length) {
             activeFiltersCount++;
