@@ -527,6 +527,12 @@ html[data-theme="dark"] .kanban-wrapper {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+.task-card.task-card-highlight {
+    border-color: var(--kanban-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--kanban-accent) 35%, transparent), var(--kanban-card-hover-shadow);
+    animation: kanban-highlight-pulse 1.2s ease-in-out 0s 3;
+}
+
 .task-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--kanban-card-hover-shadow);
@@ -536,6 +542,18 @@ html[data-theme="dark"] .kanban-wrapper {
 .task-card.dragging {
     opacity: 0.6;
     transform: rotate(2deg);
+}
+
+@keyframes kanban-highlight-pulse {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }
 
 .task-card-header {

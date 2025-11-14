@@ -277,8 +277,11 @@ public class EventController {
                 logger.info("Termo de abertura anexado: {}", termoPath);
             }
 
-            eventService.create(event);
+            Event createdEvent = eventService.create(event);
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso!");
+            if (createdEvent != null && createdEvent.getId() != null) {
+                redirectAttributes.addAttribute("highlight", createdEvent.getId());
+            }
             return "redirect:/events/board";
         } catch (Exception ex) {
             logger.error("Erro ao criar evento: ", ex);

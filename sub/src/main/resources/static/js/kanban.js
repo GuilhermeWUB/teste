@@ -39,6 +39,11 @@
         pendingTriggerButtonLabel: null
     };
 
+    const highlightState = {
+        eventId: null,
+        hasOpened: false
+    };
+
     const statusLabels = {
         // Fase 1 - Comunicação
         COMUNICADO: '1.0 Comunicado',
@@ -96,8 +101,30 @@
         if (!document.querySelector('.kanban-board')) {
             return;
         }
+        highlightState.eventId = readHighlightParam();
         bindEvents();
         loadBoard();
+    }
+
+    function readHighlightParam() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const highlight = params.get('highlight');
+
+            if (!highlight) {
+                return null;
+            }
+
+            params.delete('highlight');
+            const newQuery = params.toString();
+            const newUrl = window.location.pathname + (newQuery ? `?${newQuery}` : '') + window.location.hash;
+            window.history.replaceState({}, '', newUrl);
+
+            return highlight;
+        } catch (error) {
+            console.warn('[KANBAN] Não foi possível ler o parâmetro de destaque:', error);
+            return null;
+        }
     }
 
     function bindEvents() {
@@ -168,10 +195,35 @@
             }
 
             render();
+            handleHighlight();
         } catch (error) {
             console.error('[KANBAN] Falha ao carregar eventos:', error);
             renderError();
         }
+    }
+
+    function handleHighlight() {
+        if (!highlightState.eventId || highlightState.hasOpened) {
+            return;
+        }
+
+        const targetId = highlightState.eventId;
+        const card = state.cards.find(item => String(item.id) === String(targetId));
+
+        if (!card) {
+            return;
+        }
+
+        highlightState.hasOpened = true;
+
+        const cardElement = document.querySelector(`.task-card[data-id="${card.id}"]`);
+        if (cardElement) {
+            cardElement.classList.add('task-card-highlight');
+            cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => cardElement.classList.remove('task-card-highlight'), 4000);
+        }
+
+        setTimeout(() => openModal(card), 250);
     }
 
     function render() {
@@ -317,6 +369,11 @@
         const article = document.createElement('article');
         article.className = 'task-card';
         article.dataset.id = card.id;
+
+        if (highlightState.eventId && String(card.id) === String(highlightState.eventId)) {
+            article.classList.add('task-card-highlight');
+            setTimeout(() => article.classList.remove('task-card-highlight'), 4000);
+        }
 
         const header = document.createElement('div');
         header.className = 'task-card-header';
