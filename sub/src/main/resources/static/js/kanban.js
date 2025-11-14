@@ -616,16 +616,21 @@
             return;
         }
 
+        console.log('[KANBAN] Enviando evento para jurídico - CardID:', cardId, 'ProcessType:', legalType);
         closeLegalTypeModal();
 
         try {
+            const payload = { processType: legalType };
+            console.log('[KANBAN] Payload:', JSON.stringify(payload));
+
             // Enviar evento para o jurídico com o tipo selecionado
-            const response = await fetch(`/events/api/${cardId}/send-to-legal?processType=${legalType}`, {
+            const response = await fetch(`/events/api/${cardId}/send-to-legal`, {
                 method: 'POST',
                 headers: buildHeaders({
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
-                })
+                }),
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
@@ -633,6 +638,8 @@
             }
 
             const result = await response.json();
+            console.log('[KANBAN] Resposta do servidor:', result);
+            console.log('[KANBAN] Processo criado com tipo:', result.processType);
 
             // Remover o card da tela
             state.cards = state.cards.filter(card => String(card.id) !== String(cardId));
@@ -641,7 +648,7 @@
             // Fechar o modal de detalhes se estiver aberto
             closeModal();
 
-            alert(`Evento enviado com sucesso para Jurídico/Cobrança (${legalType})!\nNúmero do processo: ${result.numeroProcesso || 'N/A'}`);
+            alert(`Evento enviado com sucesso para Jurídico/Cobrança (${result.processType || legalType})!\nNúmero do processo: ${result.numeroProcesso || 'N/A'}`);
 
         } catch (error) {
             console.error('[KANBAN] Erro ao enviar para jurídico:', error);

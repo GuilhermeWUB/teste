@@ -353,7 +353,7 @@ public class EventController {
     @ResponseBody
     public ResponseEntity<?> sendEventToLegal(
             @PathVariable Long id,
-            @RequestParam(required = false, defaultValue = "TERCEIROS") String processType) {
+            @RequestBody(required = false) Map<String, String> payload) {
         try {
             Event event = eventService.findById(id)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento não encontrado"));
@@ -362,6 +362,12 @@ public class EventController {
             if (partner == null || partner.getName() == null || partner.getName().isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Evento não possui associado vinculado."));
+            }
+
+            // Obter o tipo de processo do payload (default: TERCEIROS)
+            String processType = "TERCEIROS";
+            if (payload != null && payload.containsKey("processType")) {
+                processType = payload.get("processType");
             }
 
             // Validar e converter o tipo de processo
