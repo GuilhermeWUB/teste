@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Vistorias</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-0">Vistorias de Acidentes</h1>
+            <p class="text-muted mb-0">Envie fotos dos acidentes para análise</p>
+        </div>
+    </div>
+
+    <!-- Mensagens de sucesso/erro -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Informações -->
+    <div class="alert alert-info mb-4" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Instruções:</strong> Abaixo estão listados os seus comunicados que estão aguardando vistoria.
+        Clique no botão "Enviar Fotos" para adicionar ou atualizar as fotos do acidente.
+    </div>
+
+    <!-- Lista de eventos aguardando vistoria -->
+    <div th:if="${eventosVistoria.isEmpty()}" class="alert alert-secondary" role="alert">
+        <i class="bi bi-inbox me-2"></i>
+        Você não possui comunicados aguardando vistoria no momento.
+    </div>
+
+    <div th:if="${!eventosVistoria.isEmpty()}" class="row g-3">
+        <div th:each="event : ${eventosVistoria}" class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="bi bi-camera-fill me-2"></i>
+                        <span th:text="${event.titulo}">Título do Evento</span>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text small mb-2">
+                        <strong>Status:</strong>
+                        <span class="badge bg-warning text-dark" th:text="${event.statusFormatted}">Vistoria</span>
+                    </p>
+                    <p class="card-text small mb-2">
+                        <strong>Motivo:</strong>
+                        <span th:text="${event.motivo}">-</span>
+                    </p>
+                    <p class="card-text small mb-2">
+                        <strong>Data do Ocorrido:</strong>
+                        <span th:text="${event.dataAconteceu != null ? #temporals.format(event.dataAconteceu, 'dd/MM/yyyy') : '-'}">-</span>
+                    </p>
+                    <p class="card-text small mb-3">
+                        <strong>Veículo:</strong>
+                        <span th:if="${event.vehicle != null}" th:text="${event.vehicle.plaque}">-</span>
+                        <span th:if="${event.vehicle == null && event.placaManual != null}" th:text="${event.placaManual}">-</span>
+                        <span th:if="${event.vehicle == null && event.placaManual == null}">Não informado</span>
+                    </p>
+                    <div class="d-grid">
+                        <a th:href="@{/vistorias/{id}/form(id=${event.id})}"
+                           class="btn btn-primary">
+                            <i class="bi bi-camera me-1"></i>Enviar Fotos
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted small">
+                    <i class="bi bi-calendar-event me-1"></i>
+                    Comunicado em:
+                    <span th:text="${event.dataComunicacao != null ? #temporals.format(event.dataComunicacao, 'dd/MM/yyyy') : '-'}">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link para voltar aos comunicados -->
+    <div class="mt-4">
+        <a th:href="@{/comunicados}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Voltar para Comunicados
+        </a>
+    </div>
+</section>
+</body>
+</html>

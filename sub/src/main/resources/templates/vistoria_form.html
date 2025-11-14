@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Vistoria do Acidente</title>
+    <style>
+        .foto-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+        }
+        .foto-container {
+            position: relative;
+            display: inline-block;
+        }
+        .foto-container .btn-remove-foto {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .foto-container .btn-remove-foto:hover {
+            background-color: rgba(220, 53, 69, 1);
+        }
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .upload-area.drag-over {
+            border-color: #0d6efd;
+            background-color: #cfe2ff;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="mb-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/comunicados}">Comunicados</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/vistorias}">Vistorias</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Enviar Fotos</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="mb-0">Vistoria do Acidente</h1>
+            <p class="text-muted mb-0">Envie fotos do acidente para análise</p>
+        </div>
+    </div>
+
+    <!-- Mensagens de sucesso/erro -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Informações do Evento -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>Informações do Comunicado</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <strong>Título:</strong>
+                    <span th:text="${event.titulo}">-</span>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Status:</strong>
+                    <span class="badge bg-warning text-dark" th:text="${event.statusFormatted}">-</span>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Motivo:</strong>
+                    <span th:text="${event.motivo}">-</span>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <strong>Data do Ocorrido:</strong>
+                    <span th:text="${event.dataAconteceu != null ? #temporals.format(event.dataAconteceu, 'dd/MM/yyyy') : '-'}">-</span>
+                </div>
+                <div class="col-12 mb-2">
+                    <strong>Descrição:</strong>
+                    <p class="mb-0" th:text="${event.descricao}">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Upload de Fotos -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-camera-fill me-2"></i>Fotos da Vistoria</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Dicas para as fotos:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Tire fotos claras dos danos causados no acidente</li>
+                    <li>Fotografe diferentes ângulos do veículo</li>
+                    <li>Inclua fotos da placa do veículo</li>
+                    <li>Se houver outros veículos envolvidos, fotografe-os também</li>
+                    <li>Você pode enviar até 10 fotos</li>
+                    <li>Formatos aceitos: JPG, JPEG, PNG</li>
+                </ul>
+            </div>
+
+            <form th:action="@{/vistorias/salvar}" method="post" enctype="multipart/form-data" id="formVistoria">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="eventId" th:value="${event.id}" />
+                <input type="hidden" name="vistoriaId" th:value="${vistoria.id}" />
+
+                <!-- Fotos já enviadas (se existirem) -->
+                <div th:if="${vistoria.id != null}" class="mb-4">
+                    <h6 class="fw-semibold mb-3">Fotos já enviadas:</h6>
+                    <div class="row g-3">
+                        <div th:if="${vistoria.foto1Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/1(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 1">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto2Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/2(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 2">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto3Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/3(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 3">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto4Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/4(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 4">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto5Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/5(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 5">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto6Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/6(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 6">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto7Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/7(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 7">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto8Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/8(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 8">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto9Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/9(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 9">
+                            </div>
+                        </div>
+                        <div th:if="${vistoria.foto10Path != null}" class="col-6 col-md-4 col-lg-3">
+                            <div class="foto-container">
+                                <img th:src="@{/vistorias/{id}/download/10(id=${vistoria.id})}"
+                                     class="foto-preview img-thumbnail" alt="Foto 10">
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                </div>
+
+                <!-- Upload de novas fotos -->
+                <h6 class="fw-semibold mb-3">
+                    <span th:if="${vistoria.id == null}">Enviar fotos:</span>
+                    <span th:if="${vistoria.id != null}">Adicionar ou atualizar fotos:</span>
+                </h6>
+
+                <div class="row g-3">
+                    <!-- Foto 1 -->
+                    <div class="col-md-6">
+                        <label for="foto1" class="form-label">Foto 1</label>
+                        <input type="file" class="form-control foto-input" id="foto1" name="foto1"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview1')">
+                        <div id="preview1" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 2 -->
+                    <div class="col-md-6">
+                        <label for="foto2" class="form-label">Foto 2</label>
+                        <input type="file" class="form-control foto-input" id="foto2" name="foto2"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview2')">
+                        <div id="preview2" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 3 -->
+                    <div class="col-md-6">
+                        <label for="foto3" class="form-label">Foto 3</label>
+                        <input type="file" class="form-control foto-input" id="foto3" name="foto3"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview3')">
+                        <div id="preview3" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 4 -->
+                    <div class="col-md-6">
+                        <label for="foto4" class="form-label">Foto 4</label>
+                        <input type="file" class="form-control foto-input" id="foto4" name="foto4"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview4')">
+                        <div id="preview4" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 5 -->
+                    <div class="col-md-6">
+                        <label for="foto5" class="form-label">Foto 5</label>
+                        <input type="file" class="form-control foto-input" id="foto5" name="foto5"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview5')">
+                        <div id="preview5" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 6 -->
+                    <div class="col-md-6">
+                        <label for="foto6" class="form-label">Foto 6</label>
+                        <input type="file" class="form-control foto-input" id="foto6" name="foto6"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview6')">
+                        <div id="preview6" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 7 -->
+                    <div class="col-md-6">
+                        <label for="foto7" class="form-label">Foto 7</label>
+                        <input type="file" class="form-control foto-input" id="foto7" name="foto7"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview7')">
+                        <div id="preview7" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 8 -->
+                    <div class="col-md-6">
+                        <label for="foto8" class="form-label">Foto 8</label>
+                        <input type="file" class="form-control foto-input" id="foto8" name="foto8"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview8')">
+                        <div id="preview8" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 9 -->
+                    <div class="col-md-6">
+                        <label for="foto9" class="form-label">Foto 9</label>
+                        <input type="file" class="form-control foto-input" id="foto9" name="foto9"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview9')">
+                        <div id="preview9" class="mt-2"></div>
+                    </div>
+
+                    <!-- Foto 10 -->
+                    <div class="col-md-6">
+                        <label for="foto10" class="form-label">Foto 10</label>
+                        <input type="file" class="form-control foto-input" id="foto10" name="foto10"
+                               accept="image/jpeg,image/jpg,image/png" onchange="previewFoto(this, 'preview10')">
+                        <div id="preview10" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Observações -->
+                <div class="mt-4">
+                    <label for="observacoes" class="form-label">Observações (opcional)</label>
+                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3"
+                              th:text="${vistoria.observacoes}"
+                              placeholder="Adicione informações adicionais sobre as fotos..."></textarea>
+                </div>
+
+                <!-- Botões -->
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Salvar Fotos
+                    </button>
+                    <a th:href="@{/vistorias}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Script para preview das fotos -->
+<th:block layout:fragment="scripts">
+    <script>
+        function previewFoto(input, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const container = document.createElement('div');
+                    container.className = 'foto-container mt-2';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'foto-preview img-thumbnail';
+                    img.alt = 'Preview';
+
+                    const btnRemove = document.createElement('button');
+                    btnRemove.type = 'button';
+                    btnRemove.className = 'btn-remove-foto';
+                    btnRemove.innerHTML = '<i class="bi bi-x"></i>';
+                    btnRemove.onclick = function() {
+                        input.value = '';
+                        preview.innerHTML = '';
+                    };
+
+                    container.appendChild(img);
+                    container.appendChild(btnRemove);
+                    preview.appendChild(container);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Validação antes de enviar o formulário
+        document.getElementById('formVistoria').addEventListener('submit', function(e) {
+            const inputs = document.querySelectorAll('.foto-input');
+            let temFoto = false;
+
+            inputs.forEach(input => {
+                if (input.files && input.files[0]) {
+                    temFoto = true;
+                }
+            });
+
+            // Se não tem nenhuma foto nova e não é atualização, mostra alerta
+            const vistoriaId = document.querySelector('input[name="vistoriaId"]').value;
+            if (!temFoto && !vistoriaId) {
+                e.preventDefault();
+                alert('Por favor, selecione pelo menos uma foto para enviar.');
+                return false;
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

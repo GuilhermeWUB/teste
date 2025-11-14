@@ -632,9 +632,10 @@
         modalBody.innerHTML = buildModalContent(card);
         bindModalActions(card);
 
-        // Carrega históricos de forma assíncrona
+        // Carrega históricos e fotos de vistoria de forma assíncrona
         loadObservationHistory(card.id);
         loadDescriptionHistory(card.id);
+        loadVistoriaPhotos(card.id);
 
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -930,6 +931,12 @@
             html.push('</div>');
         }
 
+        // Adicionar seção de fotos da vistoria (será preenchida dinamicamente)
+        html.push('<div id="vistoria-photos-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
+        html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);"><i class="bi bi-camera-fill me-2"></i>Fotos da Vistoria</h5>');
+        html.push('<div id="vistoria-photos-content" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;"></div>');
+        html.push('</div>');
+
         // Adicionar seção de histórico de descrições (será preenchida dinamicamente)
         html.push('<div id="description-history-section" class="kanban-modal-section" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color, #dee2e6); display: none;">');
         html.push('<h5 style="margin-bottom: 12px; font-size: 14px; font-weight: 600; color: var(--text-primary, #2c3e50);">Histórico de Alterações da Descrição</h5>');
@@ -1088,6 +1095,92 @@
 
         } catch (error) {
             console.error('[KANBAN] Erro ao carregar histórico de observações:', error);
+        }
+    }
+
+    async function loadVistoriaPhotos(eventId) {
+        try {
+            const response = await fetch(`/vistorias/api/event/${eventId}`, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                console.warn('[KANBAN] Erro ao carregar fotos da vistoria:', response.status);
+                return;
+            }
+
+            const vistorias = await response.json();
+
+            if (!vistorias || vistorias.length === 0) {
+                return; // Não mostra a seção se não houver vistoria
+            }
+
+            const section = document.getElementById('vistoria-photos-section');
+            const content = document.getElementById('vistoria-photos-content');
+
+            if (!section || !content) {
+                return;
+            }
+
+            // Limpa conteúdo anterior
+            content.innerHTML = '';
+
+            // Pega a vistoria mais recente (última do array)
+            const vistoria = vistorias[vistorias.length - 1];
+
+            // Lista de fotos disponíveis
+            const fotos = [];
+            for (let i = 1; i <= 10; i++) {
+                const fotoPath = vistoria[`foto${i}Path`];
+                if (fotoPath) {
+                    fotos.push({ numero: i, path: fotoPath });
+                }
+            }
+
+            if (fotos.length === 0) {
+                return; // Não mostra a seção se não houver fotos
+            }
+
+            // Adiciona cada foto
+            fotos.forEach(foto => {
+                const photoDiv = document.createElement('div');
+                photoDiv.style.cssText = 'position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 1; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); cursor: pointer;';
+
+                const img = document.createElement('img');
+                img.src = `/vistorias/${vistoria.id}/download/${foto.numero}`;
+                img.alt = `Foto ${foto.numero}`;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;';
+
+                // Efeito de hover
+                photoDiv.addEventListener('mouseenter', () => {
+                    img.style.transform = 'scale(1.05)';
+                });
+                photoDiv.addEventListener('mouseleave', () => {
+                    img.style.transform = 'scale(1)';
+                });
+
+                // Abre a imagem em nova aba ao clicar
+                photoDiv.addEventListener('click', () => {
+                    window.open(`/vistorias/${vistoria.id}/download/${foto.numero}`, '_blank');
+                });
+
+                photoDiv.appendChild(img);
+                content.appendChild(photoDiv);
+            });
+
+            // Adiciona observações da vistoria se existirem
+            if (vistoria.observacoes) {
+                const obsDiv = document.createElement('div');
+                obsDiv.style.cssText = 'grid-column: 1 / -1; margin-top: 8px; padding: 12px; background: var(--bg-secondary, #f8f9fa); border-left: 3px solid var(--warning-color, #ffc107); border-radius: 4px; font-size: 13px;';
+                obsDiv.innerHTML = `<strong>Observações da Vistoria:</strong><br>${escapeHtml(vistoria.observacoes)}`;
+                content.appendChild(obsDiv);
+            }
+
+            // Mostra a seção
+            section.style.display = 'block';
+
+        } catch (error) {
+            console.error('[KANBAN] Erro ao carregar fotos da vistoria:', error);
         }
     }
 
