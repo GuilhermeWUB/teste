@@ -200,6 +200,7 @@
                         <th>Placa</th>
                         <th>Data Ocorrido</th>
                         <th>Data Vencimento</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -248,6 +249,22 @@
                                   th:classappend="${evt.dataVencimento.isBefore(T(java.time.LocalDate).now()) ? 'text-danger fw-bold' : ''}"></span>
                             <span th:if="${evt.dataVencimento == null}" class="text-muted">-</span>
                         </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-edit-description"
+                                        th:data-event-id="${evt.id}"
+                                        th:data-description="${evt.descricao}"
+                                        title="Editar Descrição">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-edit-observations"
+                                        th:data-event-id="${evt.id}"
+                                        th:data-observations="${evt.observacoes}"
+                                        title="Editar Observações">
+                                    <i class="bi bi-chat-left-text"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -288,6 +305,75 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Descrição -->
+    <div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-labelledby="editDescriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDescriptionModalLabel">
+                        <i class="bi bi-pencil-square"></i> Editar Descrição do Comunicado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editDescriptionForm" method="post" th:action="@{/comunicados/update-description}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" id="editEventId" name="eventId" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editDescricao" class="form-label">Descrição *</label>
+                            <textarea class="form-control" id="editDescricao" name="descricao" rows="8" required></textarea>
+                            <small class="form-text text-muted">Atualize a descrição do seu comunicado</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Observações -->
+    <div class="modal fade" id="editObservationsModal" tabindex="-1" aria-labelledby="editObservationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editObservationsModalLabel">
+                        <i class="bi bi-chat-left-text-fill"></i> Editar Observações do Comunicado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editObservationsForm" method="post" th:action="@{/comunicados/update-observations}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" id="editObsEventId" name="eventId" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editObservacoes" class="form-label">Observações</label>
+                            <textarea class="form-control" id="editObservacoes" name="observacoes" rows="8"
+                                      placeholder="Digite suas observações sobre o comunicado..."></textarea>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> As alterações neste campo serão registradas no histórico
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -342,6 +428,44 @@
                 console.log('Data da Comunicação preenchida automaticamente:', dataFormatada, horaFormatada);
             });
         }
+
+        // Adiciona event listeners aos botões de editar descrição
+        const editButtons = document.querySelectorAll('.btn-edit-description');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.getAttribute('data-event-id');
+                const currentDescription = this.getAttribute('data-description') || '';
+
+                console.log('[EDIT MODAL] Abrindo modal de descrição para evento:', eventId);
+
+                // Preenche os campos do modal
+                document.getElementById('editEventId').value = eventId;
+                document.getElementById('editDescricao').value = currentDescription;
+
+                // Abre o modal usando Bootstrap 5
+                const modal = new bootstrap.Modal(document.getElementById('editDescriptionModal'));
+                modal.show();
+            });
+        });
+
+        // Adiciona event listeners aos botões de editar observações
+        const editObsButtons = document.querySelectorAll('.btn-edit-observations');
+        editObsButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.getAttribute('data-event-id');
+                const currentObservations = this.getAttribute('data-observations') || '';
+
+                console.log('[EDIT MODAL] Abrindo modal de observações para evento:', eventId);
+
+                // Preenche os campos do modal
+                document.getElementById('editObsEventId').value = eventId;
+                document.getElementById('editObservacoes').value = currentObservations;
+
+                // Abre o modal usando Bootstrap 5
+                const modal = new bootstrap.Modal(document.getElementById('editObservationsModal'));
+                modal.show();
+            });
+        });
     });
 </script>
 

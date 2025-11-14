@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * @deprecated Este controller está obsoleto. Use /comunicados em vez de /me/comunicado
+ * @see ComunicadoController
+ */
+@Deprecated
 @Controller
 @RequestMapping("/me")
 public class UserCommunicationController {
@@ -50,10 +55,22 @@ public class UserCommunicationController {
     }
 
     /**
-     * Exibe o formulário de cadastro de comunicado e lista os comunicados do Associado
+     * Redireciona para o novo endpoint /comunicados
+     * @deprecated Use /comunicados em vez desta rota
      */
+    @Deprecated
     @GetMapping("/comunicado")
     public String showCommunicationForm(Authentication authentication, Model model) {
+        // Redireciona para o novo endpoint oficial
+        logger.info("Redirecionando de /me/comunicado para /comunicados (rota obsoleta)");
+        return "redirect:/comunicados";
+    }
+
+    /**
+     * @deprecated Método obsoleto - mantido apenas para referência
+     */
+    @Deprecated
+    private String showCommunicationFormOld(Authentication authentication, Model model) {
         if (authentication == null) {
             return "redirect:/login";
         }
@@ -94,8 +111,10 @@ public class UserCommunicationController {
     }
 
     /**
-     * Processa o cadastro de comunicado do Associado
+     * Redireciona para o novo endpoint
+     * @deprecated Use /comunicados/criar-evento em vez desta rota
      */
+    @Deprecated
     @PostMapping("/comunicado")
     public String createCommunication(@Valid @ModelAttribute("event") Event event,
                                       BindingResult result,
@@ -190,8 +209,9 @@ public class UserCommunicationController {
     }
 
     /**
-     * Atualiza a descrição de um comunicado do Associado
+     * @deprecated Use /comunicados/update-description em vez desta rota
      */
+    @Deprecated
     @PostMapping("/comunicado/update-description")
     public String updateDescription(@RequestParam Long eventId,
                                      @RequestParam String descricao,
@@ -253,9 +273,9 @@ public class UserCommunicationController {
     }
 
     /**
-     * Atualiza as observações de um comunicado do Associado
-     * As alterações são rastreadas no histórico
+     * @deprecated Use /comunicados/update-observations em vez desta rota
      */
+    @Deprecated
     @PostMapping("/comunicado/update-observations")
     public String updateObservations(@RequestParam Long eventId,
                                       @RequestParam(required = false) String observacoes,

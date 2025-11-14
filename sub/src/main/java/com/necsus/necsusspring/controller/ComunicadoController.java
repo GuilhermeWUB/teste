@@ -183,6 +183,126 @@ public class ComunicadoController {
         }
     }
 
+    /**
+     * Atualiza a descrição de um comunicado do Associado
+     */
+    @PostMapping("/update-description")
+    public String updateDescription(@RequestParam Long eventId,
+                                     @RequestParam String descricao,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
+
+        String userRole = getUserRole(authentication);
+        if (!"USER".equals(userRole)) {
+            logger.warn("Acesso negado para atualizar descrição. Apenas role USER/Associado tem acesso. Role atual: {}", userRole);
+            return "redirect:/";
+        }
+
+        try {
+            // Busca o associado do usuário logado
+            Partner partner = getPartnerForUser(authentication);
+            if (partner == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Associado não encontrado.");
+                return "redirect:/comunicados";
+            }
+
+            // Busca o evento
+            var eventOpt = eventService.findById(eventId);
+            if (eventOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Evento não encontrado.");
+                return "redirect:/comunicados";
+            }
+
+            Event event = eventOpt.get();
+
+            // Valida que o evento pertence ao associado logado (segurança)
+            if (event.getPartner() == null || !event.getPartner().getId().equals(partner.getId())) {
+                logger.warn("Tentativa de edição não autorizada - Associado {} tentou editar evento {} de outro associado",
+                        partner.getId(), eventId);
+                redirectAttributes.addFlashAttribute("errorMessage", "Você não tem permissão para editar este evento.");
+                return "redirect:/comunicados";
+            }
+
+            // Usa Map para atualização parcial, evitando problema de cache do JPA
+            String modifiedBy = partner.getName() + " (Associado)";
+            java.util.Map<String, Object> updates = new java.util.HashMap<>();
+            updates.put("descricao", descricao);
+
+            eventService.updatePartialWithHistory(eventId, updates, modifiedBy);
+
+            logger.info("Descrição do evento {} atualizada pelo associado {} (ID: {})", eventId, partner.getName(), partner.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Descrição atualizada com sucesso!");
+            return "redirect:/comunicados";
+
+        } catch (Exception ex) {
+            logger.error("Erro ao atualizar descrição do evento {}: ", eventId, ex);
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível atualizar a descrição. Tente novamente.");
+            return "redirect:/comunicados";
+        }
+    }
+
+    /**
+     * Atualiza as observações de um comunicado do Associado
+     */
+    @PostMapping("/update-observations")
+    public String updateObservations(@RequestParam Long eventId,
+                                      @RequestParam(required = false) String observacoes,
+                                      Authentication authentication,
+                                      RedirectAttributes redirectAttributes) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
+
+        String userRole = getUserRole(authentication);
+        if (!"USER".equals(userRole)) {
+            logger.warn("Acesso negado para atualizar observações. Apenas role USER/Associado tem acesso. Role atual: {}", userRole);
+            return "redirect:/";
+        }
+
+        try {
+            // Busca o associado do usuário logado
+            Partner partner = getPartnerForUser(authentication);
+            if (partner == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Associado não encontrado.");
+                return "redirect:/comunicados";
+            }
+
+            // Busca o evento
+            var eventOpt = eventService.findById(eventId);
+            if (eventOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Evento não encontrado.");
+                return "redirect:/comunicados";
+            }
+
+            Event event = eventOpt.get();
+
+            // Valida que o evento pertence ao associado logado (segurança)
+            if (event.getPartner() == null || !event.getPartner().getId().equals(partner.getId())) {
+                logger.warn("Tentativa de edição não autorizada - Associado {} tentou editar observações do evento {} de outro associado",
+                        partner.getId(), eventId);
+                redirectAttributes.addFlashAttribute("errorMessage", "Você não tem permissão para editar este evento.");
+                return "redirect:/comunicados";
+            }
+
+            // Atualiza as observações usando updateWithHistory para rastrear mudanças
+            event.setObservacoes(observacoes);
+            String modifiedBy = partner.getName() + " (Associado)";
+            eventService.updateWithHistory(eventId, event, modifiedBy);
+
+            logger.info("Observações do evento {} atualizadas pelo associado {} (ID: {})", eventId, partner.getName(), partner.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Observações atualizadas com sucesso!");
+            return "redirect:/comunicados";
+
+        } catch (Exception ex) {
+            logger.error("Erro ao atualizar observações do evento {}: ", eventId, ex);
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível atualizar as observações. Tente novamente.");
+            return "redirect:/comunicados";
+        }
+    }
+
     private String getUserRole(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

@@ -10,6 +10,17 @@
 
 <section layout:fragment="content">
     <div class="event-form py-4">
+        <!-- Botão para acessar Vistorias de Acidentes -->
+        <div class="mb-4">
+            <a th:href="@{/vistorias}" class="btn btn-warning btn-lg">
+                <i class="bi bi-camera-fill me-2"></i>Vistorias de Acidentes
+            </a>
+            <p class="text-muted small mt-2 mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                Se você possui comunicados aguardando vistoria, clique aqui para enviar as fotos do acidente.
+            </p>
+        </div>
+
         <!-- Lista de Comunicados Criados -->
         <div class="card shadow mb-4" th:if="${myEvents != null and !myEvents.isEmpty()}">
             <div class="card-header">
