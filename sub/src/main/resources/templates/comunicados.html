@@ -25,6 +25,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
+    <!-- Alerta caso o associado não seja encontrado -->
+    <div th:if="${userPartner == null}" class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Atenção!</strong> Não foi possível localizar seus dados de associado no sistema.
+        Isso pode acontecer porque:
+        <ul class="mb-2 mt-2">
+            <li>Você ainda não foi cadastrado como associado</li>
+            <li>O email da sua conta não corresponde ao email cadastrado no sistema</li>
+        </ul>
+        <strong>Entre em contato com o administrador para resolver este problema.</strong>
+        <br>
+        <small class="text-muted">Verifique também se está usando a conta de usuário correta (associado, não administrador).</small>
+    </div>
+
     <!-- Botão para vistorias (apenas para usuários logados) -->
     <div th:if="${userPartner != null}" class="mb-3">
         <a th:href="@{/vistorias}" class="btn btn-warning text-dark">

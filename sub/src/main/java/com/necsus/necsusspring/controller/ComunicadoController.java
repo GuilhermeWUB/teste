@@ -80,7 +80,21 @@ public class ComunicadoController {
         List<Comunicado> comunicados = comunicadoService.listVisiveis();
 
         // Busca o parceiro associado ao usuário logado
+        logger.info("Buscando associado para o usuário: {}", authentication.getName());
         Partner partner = getPartnerForUser(authentication);
+
+        if (partner != null) {
+            logger.info("Associado encontrado: ID={}, Nome={}, Email={}",
+                       partner.getId(), partner.getName(), partner.getEmail());
+        } else {
+            logger.warn("ATENÇÃO: Nenhum associado encontrado para o usuário: {}. Verificando dados...",
+                       authentication.getName());
+            // Log adicional para diagnóstico
+            userAccountService.findByUsername(authentication.getName()).ifPresentOrElse(
+                user -> logger.warn("Usuário encontrado com email: {}. Nenhum associado cadastrado com este email.", user.getEmail()),
+                () -> logger.error("Usuário {} não encontrado no sistema!", authentication.getName())
+            );
+        }
 
         // Busca os eventos criados pelo associado
         List<Event> userEvents = List.of();
