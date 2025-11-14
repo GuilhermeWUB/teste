@@ -34,18 +34,26 @@ Todas as migrations seguem o padrão Flyway:
 - `V7__add_status_to_legal_processes.sql` - Adiciona coluna status
 - `V8__add_process_type_to_legal_processes.sql` - Adiciona tipo de cobrança
 - `V9__update_legal_process_status_check.sql` - **Atualiza constraint com regex**
+- `V11__expand_legal_process_status_values.sql` - Garante suporte a todos os status mapeados na aplicação
 
 ## Migration V9: Correção da Constraint
 
 A migration V9 resolve o erro de constraint ao criar processos RASTREADOR/FIDELIDADE:
 
 ```sql
--- Permite qualquer status que comece com RASTREADOR_ ou FIDELIDADE_
+-- Permite qualquer status utilizado pela aplicação ao cadastrar processos
 ALTER TABLE legal_processes
     ADD CONSTRAINT legal_processes_status_check CHECK (
-        status ~ '^RASTREADOR_'
-        OR status ~ '^FIDELIDADE_'
-        OR status IN (
+        status IN (
+            'RASTREADOR_EM_ABERTO',
+            'RASTREADOR_EM_CONTATO',
+            'RASTREADOR_ACORDO_ASSINADO',
+            'RASTREADOR_DEVOLVIDO',
+            'RASTREADOR_REATIVACAO',
+            'FIDELIDADE_EM_ABERTO',
+            'FIDELIDADE_EM_CONTATO',
+            'FIDELIDADE_ACORDO_ASSINADO',
+            'FIDELIDADE_REATIVACAO',
             'EM_ABERTO_7_0',
             'EM_CONTATO_7_1',
             'PROCESSO_JUDICIAL_7_2',
