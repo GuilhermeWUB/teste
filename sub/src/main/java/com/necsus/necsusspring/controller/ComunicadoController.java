@@ -135,6 +135,16 @@ public class ComunicadoController {
         // Define o parceiro automaticamente como o usuário logado
         event.setPartner(partner);
 
+        // Preenche data e hora da comunicação automaticamente se não foram fornecidas
+        if (event.getDataComunicacao() == null) {
+            event.setDataComunicacao(java.time.LocalDate.now());
+        }
+        if (event.getHoraComunicacao() == null) {
+            java.time.LocalTime agora = java.time.LocalTime.now();
+            int horaFormatada = agora.getHour() * 100 + agora.getMinute();
+            event.setHoraComunicacao(horaFormatada);
+        }
+
         // Validações manuais
         if (event.getPartner() == null || event.getPartner().getId() == null) {
             result.rejectValue("partner", "NotNull", "Erro ao identificar o associado");
