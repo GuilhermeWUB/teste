@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,35 +24,9 @@ public class Vistoria {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @Column(name = "foto1_path")
-    private String foto1Path;
-
-    @Column(name = "foto2_path")
-    private String foto2Path;
-
-    @Column(name = "foto3_path")
-    private String foto3Path;
-
-    @Column(name = "foto4_path")
-    private String foto4Path;
-
-    @Column(name = "foto5_path")
-    private String foto5Path;
-
-    @Column(name = "foto6_path")
-    private String foto6Path;
-
-    @Column(name = "foto7_path")
-    private String foto7Path;
-
-    @Column(name = "foto8_path")
-    private String foto8Path;
-
-    @Column(name = "foto9_path")
-    private String foto9Path;
-
-    @Column(name = "foto10_path")
-    private String foto10Path;
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("ordem ASC")
+    private List<VistoriaFoto> fotos = new ArrayList<>();
 
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
@@ -68,17 +44,23 @@ public class Vistoria {
 
     // Método auxiliar para contar quantas fotos foram anexadas
     public int getQuantidadeFotos() {
-        int count = 0;
-        if (foto1Path != null && !foto1Path.isEmpty()) count++;
-        if (foto2Path != null && !foto2Path.isEmpty()) count++;
-        if (foto3Path != null && !foto3Path.isEmpty()) count++;
-        if (foto4Path != null && !foto4Path.isEmpty()) count++;
-        if (foto5Path != null && !foto5Path.isEmpty()) count++;
-        if (foto6Path != null && !foto6Path.isEmpty()) count++;
-        if (foto7Path != null && !foto7Path.isEmpty()) count++;
-        if (foto8Path != null && !foto8Path.isEmpty()) count++;
-        if (foto9Path != null && !foto9Path.isEmpty()) count++;
-        if (foto10Path != null && !foto10Path.isEmpty()) count++;
-        return count;
+        return fotos != null ? fotos.size() : 0;
+    }
+
+    // Método auxiliar para adicionar foto
+    public void adicionarFoto(VistoriaFoto foto) {
+        if (fotos == null) {
+            fotos = new ArrayList<>();
+        }
+        fotos.add(foto);
+        foto.setVistoria(this);
+    }
+
+    // Método auxiliar para remover foto
+    public void removerFoto(VistoriaFoto foto) {
+        if (fotos != null) {
+            fotos.remove(foto);
+            foto.setVistoria(null);
+        }
     }
 }

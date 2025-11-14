@@ -66,18 +66,14 @@ public class VistoriaService {
                 .orElseThrow(() -> new RuntimeException("Vistoria não encontrada com id " + id));
 
         // Atualiza os campos
-        existing.setFoto1Path(vistoriaPayload.getFoto1Path());
-        existing.setFoto2Path(vistoriaPayload.getFoto2Path());
-        existing.setFoto3Path(vistoriaPayload.getFoto3Path());
-        existing.setFoto4Path(vistoriaPayload.getFoto4Path());
-        existing.setFoto5Path(vistoriaPayload.getFoto5Path());
-        existing.setFoto6Path(vistoriaPayload.getFoto6Path());
-        existing.setFoto7Path(vistoriaPayload.getFoto7Path());
-        existing.setFoto8Path(vistoriaPayload.getFoto8Path());
-        existing.setFoto9Path(vistoriaPayload.getFoto9Path());
-        existing.setFoto10Path(vistoriaPayload.getFoto10Path());
         existing.setObservacoes(vistoriaPayload.getObservacoes());
         existing.setUsuarioCriacao(vistoriaPayload.getUsuarioCriacao());
+
+        // Atualiza as fotos - remove todas as antigas e adiciona as novas
+        if (vistoriaPayload.getFotos() != null && !vistoriaPayload.getFotos().isEmpty()) {
+            existing.getFotos().clear();
+            vistoriaPayload.getFotos().forEach(existing::adicionarFoto);
+        }
 
         return vistoriaRepository.save(existing);
     }
