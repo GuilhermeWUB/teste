@@ -2,11 +2,17 @@
     console.log('[PROCESSOS-KANBAN] Script carregado com sucesso');
 
     const API_BASE = '/juridico/api/processos';
-    const ALL_STATUS = ['EM_ABERTO_7_0', 'EM_CONTATO_7_1', 'PROCESSO_JUDICIAL_7_2', 'ACORDO_ASSINADO_7_3'];
+    const DEFAULT_TYPE = 'TERCEIROS';
+    const STATUS_BY_TYPE = {
+        TERCEIROS: ['EM_ABERTO_7_0', 'EM_CONTATO_7_1', 'PROCESSO_JUDICIAL_7_2', 'ACORDO_ASSINADO_7_3'],
+        FIDELIDADE: ['FIDELIDADE_EM_ABERTO', 'FIDELIDADE_EM_CONTATO', 'FIDELIDADE_ACORDO_ASSINADO', 'FIDELIDADE_REATIVACAO'],
+        RASTREADOR: ['RASTREADOR_EM_ABERTO', 'RASTREADOR_EM_CONTATO', 'RASTREADOR_ACORDO_ASSINADO', 'RASTREADOR_DEVOLVIDO', 'RASTREADOR_REATIVACAO']
+    };
 
     const state = {
         cards: [],
-        search: ''
+        search: '',
+        activeType: DEFAULT_TYPE
     };
 
     const dragState = {
@@ -18,22 +24,47 @@
         EM_ABERTO_7_0: 'Em Aberto 7.0',
         EM_CONTATO_7_1: 'Em Contato 7.1',
         PROCESSO_JUDICIAL_7_2: 'Processo Judicial 7.2',
-        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3'
+        ACORDO_ASSINADO_7_3: 'Acordo Assinado 7.3',
+        FIDELIDADE_EM_ABERTO: 'Fidelidade - Em Aberto',
+        FIDELIDADE_EM_CONTATO: 'Fidelidade - Em Contato',
+        FIDELIDADE_ACORDO_ASSINADO: 'Fidelidade - Acordo Assinado',
+        FIDELIDADE_REATIVACAO: 'Fidelidade - Reativação',
+        RASTREADOR_EM_ABERTO: 'Rastreador - Em Aberto',
+        RASTREADOR_EM_CONTATO: 'Rastreador - Em Contato',
+        RASTREADOR_ACORDO_ASSINADO: 'Rastreador - Acordo Assinado',
+        RASTREADOR_DEVOLVIDO: 'Rastreador - Devolvido',
+        RASTREADOR_REATIVACAO: 'Rastreador - Reativação'
+    };
+
+    const typeLabels = {
+        RASTREADOR: 'Rastreador',
+        FIDELIDADE: 'Fidelidade',
+        TERCEIROS: 'Terceiros'
+    };
+
+    const typeLabels = {
+        RASTREADOR: 'Rastreador',
+        FIDELIDADE: 'Fidelidade',
+        TERCEIROS: 'Terceiros'
     };
 
     const selectors = {
         board: () => document.querySelector('.kanban-board'),
-        columns: () => Array.from(document.querySelectorAll('.kanban-column')),
         searchInput: () => document.getElementById('kanban-search'),
+        typeFilter: () => document.getElementById('process-type-filter'),
         modal: () => document.getElementById('kanban-modal'),
         modalBody: () => document.querySelector('#kanban-modal .kanban-modal-body'),
         createModal: () => document.getElementById('create-processo-modal'),
         createForm: () => document.getElementById('create-processo-form'),
-        createError: () => document.getElementById('create-processo-error')
+        createError: () => document.getElementById('create-processo-error'),
+        createTypeSelect: () => document.getElementById('create-process-type')
     };
 
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+    const STORAGE_KEYS = {
+        activeType: 'processos-kanban.activeType'
+    };
 
     function buildHeaders(extra = {}) {
         const headers = {
@@ -48,6 +79,26 @@
         return headers;
     }
 
+    function loadStoredActiveType() {
+        try {
+            const saved = window.localStorage?.getItem(STORAGE_KEYS.activeType);
+            if (saved && STATUS_BY_TYPE[saved]) {
+                return saved;
+            }
+        } catch (error) {
+            console.warn('[PROCESSOS-KANBAN] Não foi possível carregar o tipo salvo:', error);
+        }
+        return DEFAULT_TYPE;
+    }
+
+    function persistActiveType(type) {
+        try {
+            window.localStorage?.setItem(STORAGE_KEYS.activeType, type);
+        } catch (error) {
+            console.warn('[PROCESSOS-KANBAN] Não foi possível salvar o tipo selecionado:', error);
+        }
+    }
+
     function init() {
         console.log('[PROCESSOS-KANBAN] Inicializando...');
 
@@ -57,7 +108,9 @@
         }
 
         console.log('[PROCESSOS-KANBAN] Board encontrado, carregando eventos...');
+        state.activeType = loadStoredActiveType();
         bindEvents();
+        render();
         loadBoard();
     }
 
@@ -66,6 +119,17 @@
         if (search) {
             search.addEventListener('input', () => {
                 state.search = search.value.toLowerCase();
+                render();
+            });
+        }
+
+        const typeFilter = selectors.typeFilter();
+        if (typeFilter) {
+            typeFilter.value = state.activeType;
+            typeFilter.addEventListener('change', () => {
+                const selected = typeFilter.value || DEFAULT_TYPE;
+                state.activeType = STATUS_BY_TYPE[selected] ? selected : DEFAULT_TYPE;
+                persistActiveType(state.activeType);
                 render();
             });
         }
@@ -121,37 +185,25 @@
     }
 
     function render() {
-        const columns = selectors.columns();
-        if (columns.length === 0) {
+        const board = selectors.board();
+        if (!board) {
             return;
         }
 
+        const statuses = STATUS_BY_TYPE[state.activeType] || [];
         const filteredCards = applyFilters(state.cards);
-        const grouped = groupByStatus(filteredCards);
+        const grouped = groupByStatus(filteredCards, statuses);
 
-        columns.forEach(column => {
-            const status = column.dataset.status;
-            const container = column.querySelector('.tasks-container');
-            const counter = column.querySelector('.column-count');
+        board.innerHTML = '';
 
-            if (counter) {
-                counter.textContent = grouped[status] ? grouped[status].length : 0;
-            }
+        if (statuses.length === 0) {
+            board.appendChild(createBoardEmptyState());
+            return;
+        }
 
-            if (!container) {
-                return;
-            }
-
-            bindColumnDropZone(column);
-            container.innerHTML = '';
-
-            const items = grouped[status] || [];
-            if (items.length === 0) {
-                container.appendChild(createEmptyState());
-                return;
-            }
-
-            items.forEach(card => container.appendChild(createCard(card)));
+        statuses.forEach(status => {
+            const column = createColumn(status, grouped[status] || []);
+            board.appendChild(column);
         });
 
         enableDragAndDrop();
@@ -159,6 +211,11 @@
 
     function applyFilters(cards) {
         return cards.filter(card => {
+            const processType = card.processType || DEFAULT_TYPE;
+            if (processType !== state.activeType) {
+                return false;
+            }
+
             if (state.search) {
                 const searchLower = state.search;
                 const autor = (card.autor || '').toLowerCase();
@@ -176,20 +233,79 @@
         });
     }
 
-    function groupByStatus(cards) {
+    function groupByStatus(cards, statuses) {
         const grouped = {};
-        ALL_STATUS.forEach(status => {
+        statuses.forEach(status => {
             grouped[status] = [];
         });
 
         cards.forEach(card => {
-            const status = card.status || 'EM_ABERTO_7_0';
-            if (grouped[status]) {
-                grouped[status].push(card);
+            const status = card.status || statuses[0];
+            if (!status) {
+                return;
             }
+            if (!grouped[status]) {
+                grouped[status] = [];
+            }
+            grouped[status].push(card);
         });
 
         return grouped;
+    }
+
+    function createBoardEmptyState() {
+        const container = document.createElement('div');
+        container.className = 'kanban-empty-board';
+        container.innerHTML = '<div class="empty-state"><i class="bi bi-kanban"></i> Nenhum fluxo configurado para exibir.</div>';
+        return container;
+    }
+
+    function createColumn(status, items) {
+        const column = document.createElement('div');
+        column.className = 'kanban-column';
+        column.dataset.status = status;
+        column.dataset.type = state.activeType;
+
+        const header = document.createElement('div');
+        header.className = 'column-header';
+
+        const title = document.createElement('div');
+        title.className = 'column-title';
+
+        const heading = document.createElement('h3');
+        heading.textContent = statusLabels[status] || status;
+
+        const counter = document.createElement('span');
+        counter.className = 'column-count';
+        counter.textContent = items.length;
+
+        title.appendChild(heading);
+        title.appendChild(counter);
+
+        const addButton = document.createElement('button');
+        addButton.className = 'column-add-btn';
+        addButton.type = 'button';
+        addButton.innerHTML = '<i class="bi bi-plus"></i> Nova';
+        addButton.addEventListener('click', () => openCreateModal(state.activeType));
+
+        header.appendChild(title);
+        header.appendChild(addButton);
+
+        const container = document.createElement('div');
+        container.className = 'tasks-container';
+
+        if (items.length === 0) {
+            container.appendChild(createEmptyState());
+        } else {
+            items.forEach(card => container.appendChild(createCard(card)));
+        }
+
+        column.appendChild(header);
+        column.appendChild(container);
+
+        bindColumnDropZone(column);
+
+        return column;
     }
 
     function createCard(card) {
@@ -203,6 +319,18 @@
         const title = document.createElement('h4');
         title.textContent = card.numeroProcesso || 'Sem número';
         header.appendChild(title);
+
+        if (card.processType) {
+            const badges = document.createElement('div');
+            badges.className = 'task-card-badges';
+
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = typeLabels[card.processType] || card.processType;
+            badges.appendChild(badge);
+
+            header.appendChild(badges);
+        }
 
         article.appendChild(header);
 
@@ -220,6 +348,10 @@
         const materiaP = document.createElement('p');
         materiaP.innerHTML = '<strong>Matéria:</strong> ' + escapeHtml(card.materia || 'N/A');
         body.appendChild(materiaP);
+
+        const statusP = document.createElement('p');
+        statusP.innerHTML = '<strong>Status:</strong> ' + escapeHtml(statusLabels[card.status] || card.status || 'N/A');
+        body.appendChild(statusP);
 
         if (card.valorCausa) {
             const valorP = document.createElement('p');
@@ -296,8 +428,17 @@
             return;
         }
 
+        const allowedStatuses = STATUS_BY_TYPE[state.activeType] || [];
+        if (!allowedStatuses.includes(targetStatus)) {
+            return;
+        }
+
         const card = state.cards.find(item => String(item.id) === String(cardId));
         if (!card) {
+            return;
+        }
+
+        if ((card.processType || DEFAULT_TYPE) !== state.activeType) {
             return;
         }
 
@@ -308,6 +449,7 @@
 
         // Atualização otimista
         card.status = targetStatus;
+        card.processType = state.activeType;
         render();
 
         try {
@@ -372,7 +514,7 @@
         document.body.classList.remove('kanban-modal-open');
     }
 
-    function openCreateModal() {
+    function openCreateModal(defaultType) {
         console.log('[PROCESSOS-KANBAN] Abrindo modal de criação');
 
         const modal = selectors.createModal();
@@ -385,8 +527,16 @@
 
         showCreateError('');
 
+        const initialType = STATUS_BY_TYPE[defaultType] ? defaultType : state.activeType || DEFAULT_TYPE;
+
         if (form) {
             form.reset();
+            delete form.dataset.editingId;
+
+            const typeSelect = selectors.createTypeSelect();
+            if (typeSelect) {
+                typeSelect.value = initialType;
+            }
         }
 
         modal.classList.add('active');
@@ -417,6 +567,11 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Registrar';
+            }
+
+            const typeSelect = selectors.createTypeSelect();
+            if (typeSelect) {
+                typeSelect.value = state.activeType || DEFAULT_TYPE;
             }
         }
 
@@ -460,6 +615,7 @@
         const pedidos = data.get('pedidos')?.toString().trim();
         const valorCausaStr = data.get('valorCausa')?.toString().replace(',', '.');
         const valorCausa = parseFloat(valorCausaStr);
+        const processType = data.get('processType')?.toString();
 
         if (!autor || !reu || !materia || !numeroProcesso || !pedidos) {
             showCreateError('Todos os campos são obrigatórios.');
@@ -471,12 +627,9 @@
             return;
         }
 
-        let processType = 'TERCEIROS';
-        if (isEditing) {
-            const existing = state.cards.find(c => c.id === parseInt(editingId, 10));
-            if (existing && existing.processType) {
-                processType = existing.processType;
-            }
+        if (!processType) {
+            showCreateError('Selecione o tipo de cobrança.');
+            return;
         }
 
         const payload = {
@@ -533,6 +686,16 @@
                 state.cards.unshift(savedProcess);
             }
 
+            const updatedType = savedProcess.processType || processType;
+            if (updatedType && state.activeType !== updatedType && STATUS_BY_TYPE[updatedType]) {
+                state.activeType = updatedType;
+                persistActiveType(state.activeType);
+                const typeFilter = selectors.typeFilter();
+                if (typeFilter) {
+                    typeFilter.value = state.activeType;
+                }
+            }
+
             render();
             closeCreateModal();
 
@@ -572,6 +735,10 @@
         form.querySelector('#create-numero-processo').value = card.numeroProcesso || '';
         form.querySelector('#create-valor-causa').value = card.valorCausa || '';
         form.querySelector('#create-pedidos').value = card.pedidos || '';
+        const typeSelect = selectors.createTypeSelect();
+        if (typeSelect) {
+            typeSelect.value = card.processType || '';
+        }
 
         // Marca o formulário como edição
         form.dataset.editingId = processId;
@@ -910,7 +1077,7 @@
         console.log('[PROCESSOS-KANBAN] DOM carregado, inicializando...');
 
         window.processosBoard = {
-            openCreateModal: openCreateModal,
+            openCreateModal: (type) => openCreateModal(type ?? state.activeType),
             closeCreateModal: closeCreateModal,
             closeModal: closeModal,
             openEditModal: openEditModal,

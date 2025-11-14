@@ -26,7 +26,12 @@
 
     const dragState = {
         cardId: null,
-        originStatus: null
+        originStatus: null,
+        pendingCardId: null,
+        pendingTargetStatus: null,
+        pendingPreviousStatus: null,
+        pendingTriggerButton: null,
+        pendingTriggerButtonLabel: null
     };
 
     const statusLabels = {
@@ -592,7 +597,8 @@
         document.body.style.overflow = 'hidden';
     }
 
-    function closeLegalTypeModal() {
+    function closeLegalTypeModal(options = {}) {
+        const { resetState = true } = options;
         const modal = document.getElementById('legal-type-modal');
         if (!modal) {
             return;
@@ -600,15 +606,17 @@
         modal.style.display = 'none';
         document.body.style.overflow = '';
 
-        // Limpar estado pendente
-        dragState.pendingCardId = null;
-        dragState.pendingTargetStatus = null;
-        dragState.pendingPreviousStatus = null;
+        if (!resetState) {
+            return;
+        }
+
+        resetLegalModalState();
     }
 
     async function selectLegalType(legalType) {
         const cardId = dragState.pendingCardId;
-        const previousStatus = dragState.pendingPreviousStatus;
+        const triggerButton = dragState.pendingTriggerButton;
+        const originalLabel = dragState.pendingTriggerButtonLabel;
 
         if (!cardId) {
             console.error('[KANBAN] Nenhum card pendente para enviar ao jurídico');
@@ -633,8 +641,33 @@
                 body: JSON.stringify(payload)
             });
 
+            const responseText = await response.text();
+            let payload = {};
+            if (responseText) {
+                try {
+                    payload = JSON.parse(responseText);
+                } catch (jsonError) {
+                    payload = { raw: responseText };
+                }
+            }
+
+            if (response.status === 404) {
+                alert('Evento não encontrado. Ele pode ter sido removido.');
+                return;
+            }
+
+            if (response.status === 409) {
+                alert(payload.error || 'Este evento já foi enviado para o jurídico.');
+                return;
+            }
+
+            if (response.status === 400) {
+                alert(payload.error || 'Não foi possível enviar o evento. Verifique os dados.');
+                return;
+            }
+
             if (!response.ok) {
-                throw new Error(`Erro ao enviar para jurídico: ${response.status}`);
+                throw new Error(payload.error || `Erro ao enviar para jurídico: ${response.status}`);
             }
 
             const result = await response.json();
@@ -654,10 +687,12 @@
             console.error('[KANBAN] Erro ao enviar para jurídico:', error);
             alert('Não foi possível enviar o evento para o jurídico. Tente novamente.');
         } finally {
-            // Limpar estado
-            dragState.pendingCardId = null;
-            dragState.pendingTargetStatus = null;
-            dragState.pendingPreviousStatus = null;
+            if (triggerButton) {
+                triggerButton.disabled = false;
+                triggerButton.innerHTML = originalLabel || triggerButton.innerHTML;
+            }
+
+            resetLegalModalState();
             dragState.cardId = null;
             dragState.originStatus = null;
         }
@@ -737,60 +772,34 @@
             return;
         }
 
-        const button = triggerButton;
-        const originalLabel = button ? button.innerHTML : null;
+        dragState.pendingCardId = String(eventId);
+        dragState.pendingPreviousStatus = null;
+        dragState.pendingTargetStatus = null;
 
-        try {
-            if (button) {
-                button.disabled = true;
-                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
-            }
+        if (triggerButton) {
+            dragState.pendingTriggerButton = triggerButton;
+            dragState.pendingTriggerButtonLabel = triggerButton.innerHTML;
+        } else {
+            dragState.pendingTriggerButton = null;
+            dragState.pendingTriggerButtonLabel = null;
+        }
 
-            const response = await fetch(`/events/api/${eventId}/send-to-legal`, {
-                method: 'POST',
-                headers: buildHeaders({ 'Accept': 'application/json' })
-            });
+        showLegalTypeModal();
+    }
 
-            const responseText = await response.text();
-            let payload = {};
-            if (responseText) {
-                try {
-                    payload = JSON.parse(responseText);
-                } catch (jsonError) {
-                    payload = { raw: responseText };
-                }
-            }
-
-            if (response.status === 404) {
-                alert('Evento não encontrado. Ele pode ter sido removido.');
-                return;
-            }
-
-            if (response.status === 409) {
-                alert(payload.error || 'Este evento já foi enviado para o jurídico.');
-                return;
-            }
-
-            if (response.status === 400) {
-                alert(payload.error || 'Não foi possível enviar o evento. Verifique os dados.');
-                return;
-            }
-
-            if (!response.ok) {
-                throw new Error(payload.error || 'Falha ao enviar para o jurídico');
-            }
-
-            alert(payload.message || 'Evento enviado para o jurídico com sucesso!');
-            closeModal();
-        } catch (error) {
-            console.error('[KANBAN] Erro ao enviar para jurídico:', error);
-            alert('Não foi possível enviar o evento para o jurídico. Tente novamente mais tarde.');
-        } finally {
-            if (button) {
-                button.disabled = false;
-                button.innerHTML = originalLabel;
+    function resetLegalModalState() {
+        if (dragState.pendingTriggerButton) {
+            dragState.pendingTriggerButton.disabled = false;
+            if (dragState.pendingTriggerButtonLabel !== null) {
+                dragState.pendingTriggerButton.innerHTML = dragState.pendingTriggerButtonLabel;
             }
         }
+
+        dragState.pendingTriggerButton = null;
+        dragState.pendingTriggerButtonLabel = null;
+        dragState.pendingCardId = null;
+        dragState.pendingTargetStatus = null;
+        dragState.pendingPreviousStatus = null;
     }
 
     function buildModalContent(card) {

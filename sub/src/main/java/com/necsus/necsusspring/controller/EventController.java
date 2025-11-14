@@ -399,6 +399,37 @@ public class EventController {
                 logger.warn("Falha ao serializar snapshot do evento {} para o jurídico: {}", id, jsonException.getMessage());
             }
 
+            Optional<LegalProcess> existingProcessOptional = legalProcessService.findBySourceEventId(event.getId());
+            if (existingProcessOptional.isEmpty()) {
+                existingProcessOptional = legalProcessService.findByNumeroProcesso(numeroProcesso);
+            }
+
+            if (existingProcessOptional.isPresent()) {
+                LegalProcess synced = legalProcessService.linkEventToProcess(
+                        existingProcessOptional.get(),
+                        event.getId(),
+                        eventSnapshotJson,
+                        legalProcessType
+                );
+
+                String typeDisplay = synced.getProcessType().getDisplayName();
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("message", String.format(
+                        "Evento já estava vinculado ao Jurídico/Cobrança (%s) e foi sincronizado.",
+                        typeDisplay));
+                response.put("processId", synced.getId());
+                response.put("numeroProcesso", synced.getNumeroProcesso());
+                response.put("processType", synced.getProcessType().name());
+                response.put("processTypeDisplay", typeDisplay);
+                response.put("alreadyExisted", true);
+
+                logger.info("Evento {} já possuía processo {} no jurídico. Dados sincronizados.",
+                        id, synced.getNumeroProcesso());
+                return ResponseEntity.ok(response);
+            }
+
             LegalProcessRequest request = new LegalProcessRequest(
                     autor,
                     reu,
@@ -413,12 +444,17 @@ public class EventController {
 
             LegalProcess process = legalProcessService.create(request);
 
+            String typeDisplay = process.getProcessType().getDisplayName();
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Evento enviado para o jurídico com sucesso.");
+            response.put("message", String.format(
+                    "Evento enviado para o Jurídico/Cobrança (%s) com sucesso.",
+                    typeDisplay));
             response.put("processId", process.getId());
             response.put("numeroProcesso", process.getNumeroProcesso());
             response.put("processType", legalProcessType.name());
+            response.put("processTypeDisplay", typeDisplay);
 
             logger.info("Evento {} enviado para jurídico como processo {} (tipo: {})",
                        id, process.getNumeroProcesso(), legalProcessType);
