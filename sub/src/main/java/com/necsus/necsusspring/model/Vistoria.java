@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -24,8 +25,9 @@ public class Vistoria {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("ordem ASC")
+    @JsonManagedReference
     private List<VistoriaFoto> fotos = new ArrayList<>();
 
     @Column(name = "data_criacao", nullable = false, updatable = false)

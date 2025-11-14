@@ -1128,14 +1128,8 @@
             // Pega a vistoria mais recente (última do array)
             const vistoria = vistorias[vistorias.length - 1];
 
-            // Lista de fotos disponíveis
-            const fotos = [];
-            for (let i = 1; i <= 10; i++) {
-                const fotoPath = vistoria[`foto${i}Path`];
-                if (fotoPath) {
-                    fotos.push({ numero: i, path: fotoPath });
-                }
-            }
+            // Verifica se há fotos na vistoria
+            const fotos = vistoria.fotos || [];
 
             if (fotos.length === 0) {
                 return; // Não mostra a seção se não houver fotos
@@ -1147,8 +1141,8 @@
                 photoDiv.style.cssText = 'position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 1; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); cursor: pointer;';
 
                 const img = document.createElement('img');
-                img.src = `/vistorias/${vistoria.id}/download/${foto.numero}`;
-                img.alt = `Foto ${foto.numero}`;
+                img.src = `/vistorias/${vistoria.id}/download/${foto.id}`;
+                img.alt = `Foto ${foto.ordem}`;
                 img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;';
 
                 // Efeito de hover
@@ -1161,7 +1155,7 @@
 
                 // Abre a imagem em nova aba ao clicar
                 photoDiv.addEventListener('click', () => {
-                    window.open(`/vistorias/${vistoria.id}/download/${foto.numero}`, '_blank');
+                    window.open(`/vistorias/${vistoria.id}/download/${foto.id}`, '_blank');
                 });
 
                 photoDiv.appendChild(img);

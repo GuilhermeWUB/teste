@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class VistoriaFoto {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vistoria_id", nullable = false)
+    @JsonBackReference
     private Vistoria vistoria;
 
     @Column(name = "foto_path", nullable = false, length = 500)
