@@ -1,7 +1,7 @@
 -- Tabela para armazenar as vistorias com fotos do acidente
 -- Uma vistoria está vinculada a um evento/comunicado
 CREATE TABLE vistoria (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     event_id BIGINT NOT NULL,
     foto1_path VARCHAR(500),
     foto2_path VARCHAR(500),
@@ -14,10 +14,13 @@ CREATE TABLE vistoria (
     foto9_path VARCHAR(500),
     foto10_path VARCHAR(500),
     observacoes TEXT,
-    data_criacao DATETIME NOT NULL,
+    data_criacao TIMESTAMP NOT NULL,
     usuario_criacao VARCHAR(255),
 
-    CONSTRAINT fk_vistoria_event FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE
+    CONSTRAINT fk_vistoria_event
+        FOREIGN KEY (event_id)
+        REFERENCES event(id)
+        ON DELETE CASCADE
 );
 
 -- Índice para melhorar performance nas consultas por evento
