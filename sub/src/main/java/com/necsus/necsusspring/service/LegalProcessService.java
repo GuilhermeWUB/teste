@@ -86,6 +86,7 @@ public class LegalProcessService {
         );
         process.setSourceEventId(request.sourceEventId());
         process.setSourceEventSnapshot(request.sourceEventSnapshot());
+        normalizeProcessTypeAndStatus(process, processType);
         return legalProcessRepository.save(process);
     }
 
@@ -110,11 +111,10 @@ public class LegalProcessService {
             changed = true;
         }
 
-        if (type != null && process.getProcessType() != type) {
-            process.setProcessType(type);
-            if (!isStatusAllowedForType(process.getStatus(), type)) {
-                process.setStatus(defaultStatusFor(type));
-            }
+        LegalProcessType previousType = process.getProcessType();
+        LegalProcessStatus previousStatus = process.getStatus();
+        normalizeProcessTypeAndStatus(process, type != null ? type : process.getProcessType());
+        if (process.getProcessType() != previousType || process.getStatus() != previousStatus) {
             changed = true;
         }
 
@@ -136,10 +136,7 @@ public class LegalProcessService {
             existing.setSourceEventSnapshot(request.sourceEventSnapshot());
         }
         LegalProcessType newType = resolveType(request.processType());
-        existing.setProcessType(newType);
-        if (!isStatusAllowedForType(existing.getStatus(), newType)) {
-            existing.setStatus(defaultStatusFor(newType));
-        }
+        normalizeProcessTypeAndStatus(existing, newType);
         return legalProcessRepository.save(existing);
     }
 
@@ -164,6 +161,19 @@ public class LegalProcessService {
 
     private LegalProcessType resolveType(LegalProcessType type) {
         return type != null ? type : LegalProcessType.TERCEIROS;
+    }
+
+    private void normalizeProcessTypeAndStatus(LegalProcess process, LegalProcessType requestedType) {
+        if (process == null) {
+            return;
+        }
+
+        LegalProcessType resolvedType = resolveType(requestedType != null ? requestedType : process.getProcessType());
+        process.setProcessType(resolvedType);
+
+        if (!isStatusAllowedForType(process.getStatus(), resolvedType)) {
+            process.setStatus(defaultStatusFor(resolvedType));
+        }
     }
 
     private LegalProcessStatus defaultStatusFor(LegalProcessType type) {
