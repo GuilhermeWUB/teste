@@ -26,44 +26,14 @@
             flex: 1;
             color: var(--color-text-primary);
         }
-        .detail-card .badge {
-            border-radius: 999px;
-            padding: 0.45rem 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-            border: none;
-        }
-
-        .badge-priority-BAIXA { background: linear-gradient(135deg, #34d399, #10b981); color: #052e16; }
-        .badge-priority-MEDIA { background: linear-gradient(135deg, #fcd34d, #f59e0b); color: #451a03; }
-        .badge-priority-ALTA { background: linear-gradient(135deg, #fb7185, #ef4444); color: #450a0a; }
-        .badge-priority-URGENTE { background: linear-gradient(135deg, #f43f5e, #be123c); color: #fff1f2; }
-        .badge-status-PENDENTE { background: linear-gradient(135deg, #cbd5f5, #818cf8); color: #1e1b4b; }
-        .badge-status-EM_ANDAMENTO { background: linear-gradient(135deg, #7dd3fc, #2563eb); color: #082f49; }
-        .badge-status-CONCLUIDA { background: linear-gradient(135deg, #86efac, #22c55e); color: #052e16; }
-        .badge-status-CANCELADA { background: linear-gradient(135deg, #fecdd3, #f87171); color: #4c0519; }
-
-        .badge-role {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.35rem 0.85rem;
-            border-radius: 999px;
-            border: 1px solid rgba(139, 92, 246, 0.35);
-            background: rgba(139, 92, 246, 0.12);
-            color: var(--color-primary);
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        html[data-theme="dark"] .badge-role {
-            background: rgba(124, 58, 237, 0.25);
-            border-color: rgba(196, 181, 253, 0.35);
-            color: #ede9fe;
-        }
+        .badge-priority-BAIXA { background: #10b981; }
+        .badge-priority-MEDIA { background: #f59e0b; }
+        .badge-priority-ALTA { background: #ef4444; }
+        .badge-priority-URGENTE { background: #dc2626; }
+        .badge-status-PENDENTE { background: #6b7280; }
+        .badge-status-EM_ANDAMENTO { background: #3b82f6; }
+        .badge-status-CONCLUIDA { background: #10b981; }
+        .badge-status-CANCELADA { background: #dc2626; }
         html[data-theme="dark"] .detail-card {
             background: rgba(36, 24, 63, 0.9);
             border-color: rgba(196, 181, 253, 0.35);
@@ -71,20 +41,6 @@
 
         html[data-theme="dark"] .detail-row {
             border-bottom-color: rgba(139, 92, 246, 0.35);
-        }
-
-        html:not([data-theme="dark"]) .theme-toggle {
-            border-color: rgba(139, 92, 246, 0.25);
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--color-primary-dark);
-            box-shadow: 0 10px 24px rgba(139, 92, 246, 0.18);
-        }
-
-        html:not([data-theme="dark"]) .theme-toggle:hover,
-        html:not([data-theme="dark"]) .theme-toggle:focus {
-            border-color: rgba(139, 92, 246, 0.45);
-            background: rgba(139, 92, 246, 0.12);
-            color: var(--color-primary);
         }
     </style>
 </head>
