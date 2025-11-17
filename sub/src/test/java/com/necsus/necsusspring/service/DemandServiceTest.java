@@ -301,6 +301,42 @@ public class DemandServiceTest {
     }
 
     @Test
+    public void testFindNextDemandsForUser_ShouldIncludePendingAndInProgressDemands() {
+        Demand completed = new Demand();
+        completed.setId(10L);
+        completed.setTitulo("Concluída");
+        completed.setStatus(DemandStatus.CONCLUIDA);
+        completed.setAssignedTo(testUser);
+
+        Demand canceled = new Demand();
+        canceled.setId(11L);
+        canceled.setTitulo("Cancelada");
+        canceled.setStatus(DemandStatus.CANCELADA);
+        canceled.setAssignedTo(testUser);
+
+        Demand pending = new Demand();
+        pending.setId(12L);
+        pending.setTitulo("Pendente");
+        pending.setStatus(DemandStatus.PENDENTE);
+        pending.setAssignedTo(testUser);
+
+        Demand inProgress = new Demand();
+        inProgress.setId(13L);
+        inProgress.setTitulo("Em andamento");
+        inProgress.setStatus(DemandStatus.EM_ANDAMENTO);
+        inProgress.setAssignedTo(testUser);
+
+        when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
+                .thenReturn(Arrays.asList(completed, canceled, pending, inProgress));
+
+        List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(pending.getId())));
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(inProgress.getId())));
+    }
+
+    @Test
     public void testFindNextDemandsForUser_WithInvalidParameters_ShouldReturnEmpty() {
         List<Demand> resultNullUser = demandService.findNextDemandsForUser(null, 3);
         assertTrue(resultNullUser.isEmpty());
