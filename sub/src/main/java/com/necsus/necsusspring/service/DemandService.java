@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class DemandService {
             DemandPriority.ALTA, 1,
             DemandPriority.MEDIA, 2,
             DemandPriority.BAIXA, 3
+    );
+    private static final EnumSet<DemandStatus> DASHBOARD_ALLOWED_STATUSES = EnumSet.of(
+            DemandStatus.PENDENTE,
+            DemandStatus.EM_ANDAMENTO
     );
 
     public DemandService(DemandRepository demandRepository, NotificationService notificationService) {
@@ -169,9 +174,7 @@ public class DemandService {
         return assignedDemands.stream()
                 .filter(demand -> {
                     DemandStatus status = demand.getStatus();
-                    return status == null
-                            || status == DemandStatus.PENDENTE
-                            || status == DemandStatus.EM_ANDAMENTO;
+                    return status != null && DASHBOARD_ALLOWED_STATUSES.contains(status);
                 })
                 .sorted(comparator)
                 .limit(limit)

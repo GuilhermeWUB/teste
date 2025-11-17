@@ -32,6 +32,9 @@ public class DemandServiceTest {
     @Mock
     private DemandRepository demandRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private Demand testDemand;
     private UserAccount testUser;
 
@@ -326,14 +329,20 @@ public class DemandServiceTest {
         inProgress.setStatus(DemandStatus.EM_ANDAMENTO);
         inProgress.setAssignedTo(testUser);
 
+        Demand withoutStatus = new Demand();
+        withoutStatus.setId(14L);
+        withoutStatus.setTitulo("Sem status");
+        withoutStatus.setAssignedTo(testUser);
+
         when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
-                .thenReturn(Arrays.asList(completed, canceled, pending, inProgress));
+                .thenReturn(Arrays.asList(completed, canceled, pending, inProgress, withoutStatus));
 
         List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
 
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(pending.getId())));
         assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(inProgress.getId())));
+        assertTrue(result.stream().noneMatch(demand -> demand.getId().equals(withoutStatus.getId())));
     }
 
     @Test
