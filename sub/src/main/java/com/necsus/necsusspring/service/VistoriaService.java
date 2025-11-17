@@ -4,6 +4,8 @@ import com.necsus.necsusspring.model.Event;
 import com.necsus.necsusspring.model.Vistoria;
 import com.necsus.necsusspring.repository.EventRepository;
 import com.necsus.necsusspring.repository.VistoriaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.util.Optional;
 
 @Service
 public class VistoriaService {
+
+    private static final Logger logger = LoggerFactory.getLogger(VistoriaService.class);
 
     private final VistoriaRepository vistoriaRepository;
     private final EventRepository eventRepository;
@@ -48,6 +52,9 @@ public class VistoriaService {
 
     @Transactional
     public Vistoria create(Vistoria vistoria) {
+        logger.info("=== CREATE VISTORIA SERVICE ===");
+        logger.info("Fotos antes de salvar: {}", vistoria.getQuantidadeFotos());
+
         // Valida se o evento existe
         if (vistoria.getEvent() != null && vistoria.getEvent().getId() != null) {
             Event event = eventRepository.findById(vistoria.getEvent().getId())
@@ -57,25 +64,42 @@ public class VistoriaService {
             throw new IllegalArgumentException("Evento é obrigatório para criar uma vistoria");
         }
 
-        return vistoriaRepository.save(vistoria);
+        Vistoria saved = vistoriaRepository.save(vistoria);
+        logger.info("Vistoria salva com ID: {}, Fotos: {}", saved.getId(), saved.getQuantidadeFotos());
+        return saved;
     }
 
     @Transactional
     public Vistoria update(Long id, Vistoria vistoriaPayload) {
+        logger.info("=== UPDATE VISTORIA SERVICE ===");
+        logger.info("Vistoria ID: {}", id);
+        logger.info("Fotos no payload: {}", vistoriaPayload.getQuantidadeFotos());
+
         Vistoria existing = vistoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vistoria não encontrada com id " + id));
+
+        logger.info("Fotos na vistoria existente (antes): {}", existing.getFotos().size());
 
         // Atualiza os campos
         existing.setObservacoes(vistoriaPayload.getObservacoes());
         existing.setUsuarioCriacao(vistoriaPayload.getUsuarioCriacao());
 
-        // Atualiza as fotos - remove todas as antigas e adiciona as novas
+        // Atualiza as fotos - adiciona as novas mantendo as antigas
         if (vistoriaPayload.getFotos() != null && !vistoriaPayload.getFotos().isEmpty()) {
-            existing.getFotos().clear();
-            vistoriaPayload.getFotos().forEach(existing::adicionarFoto);
+            logger.info("Adicionando {} novas fotos", vistoriaPayload.getFotos().size());
+            vistoriaPayload.getFotos().forEach(foto -> {
+                logger.info("Adicionando foto: path={}, ordem={}", foto.getFotoPath(), foto.getOrdem());
+                existing.adicionarFoto(foto);
+            });
+        } else {
+            logger.warn("Nenhuma foto nova para adicionar");
         }
 
-        return vistoriaRepository.save(existing);
+        logger.info("Fotos na vistoria existente (depois): {}", existing.getFotos().size());
+
+        Vistoria saved = vistoriaRepository.save(existing);
+        logger.info("Vistoria salva com ID: {}, Fotos: {}", saved.getId(), saved.getQuantidadeFotos());
+        return saved;
     }
 
     @Transactional

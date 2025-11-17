@@ -173,6 +173,10 @@ public class VistoriaController {
         }
 
         try {
+            logger.info("=== SALVANDO VISTORIA ===");
+            logger.info("Event ID: {}, Vistoria ID: {}, Usuario: {}", eventId, vistoriaId, authentication.getName());
+            logger.info("Fotos recebidas: {}", fotos != null ? fotos.length : 0);
+
             // Busca o evento
             Event event = eventService.findById(eventId)
                     .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
@@ -191,39 +195,62 @@ public class VistoriaController {
             if (vistoriaId != null) {
                 vistoria = vistoriaService.findById(vistoriaId)
                         .orElseThrow(() -> new IllegalArgumentException("Vistoria não encontrada"));
+                logger.info("Vistoria existente encontrada. ID: {}", vistoriaId);
+                // Força inicialização da lista de fotos
+                int fotosAnteriores = vistoria.getFotos().size();
+                logger.info("Fotos já existentes na vistoria: {}", fotosAnteriores);
             } else {
                 vistoria = new Vistoria();
                 vistoria.setEvent(event);
                 vistoria.setUsuarioCriacao(authentication.getName());
+                logger.info("Nova vistoria criada");
             }
 
             vistoria.setObservacoes(observacoes);
 
             // Faz upload das fotos e cria as entidades VistoriaFoto
+            int fotosAdicionadas = 0;
             if (fotos != null && fotos.length > 0) {
-                int ordem = 1;
+                logger.info("Processando {} arquivo(s) de foto", fotos.length);
+
+                // Calcula a ordem inicial baseada nas fotos existentes
+                int ordem = vistoria.getFotos().size() + 1;
+
                 for (MultipartFile foto : fotos) {
                     if (foto != null && !foto.isEmpty()) {
+                        logger.info("Processando foto: {} (tamanho: {} bytes)", foto.getOriginalFilename(), foto.getSize());
                         String path = fileStorageService.storeFile(foto);
                         if (path != null) {
                             VistoriaFoto vistoriaFoto = new VistoriaFoto();
                             vistoriaFoto.setFotoPath(path);
                             vistoriaFoto.setOrdem(ordem++);
                             vistoria.adicionarFoto(vistoriaFoto);
+                            fotosAdicionadas++;
+                            logger.info("Foto adicionada. Path: {}, Ordem: {}", path, vistoriaFoto.getOrdem());
+                        } else {
+                            logger.warn("Falha ao salvar arquivo: {}", foto.getOriginalFilename());
                         }
+                    } else {
+                        logger.warn("Foto nula ou vazia recebida");
                     }
                 }
+            } else {
+                logger.warn("Nenhuma foto recebida no request");
             }
 
+            logger.info("Total de fotos adicionadas: {}", fotosAdicionadas);
+            logger.info("Total de fotos na vistoria antes de salvar: {}", vistoria.getQuantidadeFotos());
+
             // Salva a vistoria
+            Vistoria vistoriaSalva;
             if (vistoriaId != null) {
-                vistoriaService.update(vistoriaId, vistoria);
-                logger.info("Vistoria atualizada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, {} fotos",
-                           vistoriaId, eventId, authentication.getName(), vistoria.getQuantidadeFotos());
+                vistoriaSalva = vistoriaService.update(vistoriaId, vistoria);
+                logger.info("Vistoria atualizada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, Total fotos: {}",
+                           vistoriaId, eventId, authentication.getName(), vistoriaSalva.getQuantidadeFotos());
             } else {
-                vistoriaService.create(vistoria);
-                logger.info("Vistoria criada com sucesso. Evento ID: {}, Usuário: {}, {} fotos",
-                           eventId, authentication.getName(), vistoria.getQuantidadeFotos());
+                vistoriaSalva = vistoriaService.create(vistoria);
+                logger.info("Vistoria criada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, Total fotos: {}",
+                           vistoriaSalva.getId(), eventId, authentication.getName(), vistoriaSalva.getQuantidadeFotos());
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Fotos da vistoria enviadas com sucesso!");
