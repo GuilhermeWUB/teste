@@ -145,7 +145,7 @@ public class DemandService {
      */
     public List<Demand> findByAssignedTo(UserAccount user) {
         return demandRepository.findByAssignedToOrderByCreatedAtDesc(user);
-    }
+    }https://github.com/GuilhermeWUB/teste/pull/350/conflict?name=sub%252Fsrc%252Ftest%252Fjava%252Fcom%252Fnecsus%252Fnecsusspring%252Fservice%252FDemandServiceTest.java&ancestor_oid=17f810abfef21d8152c5fd47553ec69d8f6bb639&base_oid=599208554a8f532e3c4c239dcf68efce168bbd0c&head_oid=f28478108e23997430ebee4c0b5f265a0ecb2454
 
     /**
      * Lista as próximas demandas atribuídas ao usuário, priorizando urgentes e com prazo mais próximo
