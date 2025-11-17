@@ -176,6 +176,7 @@ public class VistoriaController {
             logger.info("=== SALVANDO VISTORIA ===");
             logger.info("Event ID: {}, Vistoria ID: {}, Usuario: {}", eventId, vistoriaId, authentication.getName());
             logger.info("Fotos recebidas: {}", fotos != null ? fotos.length : 0);
+            logger.info("Observacoes recebidas: {}", observacoes != null ? "SIM" : "NAO");
 
             // Busca o evento
             Event event = eventService.findById(eventId)
@@ -257,8 +258,16 @@ public class VistoriaController {
             return "redirect:/vistorias";
 
         } catch (Exception ex) {
-            logger.error("Erro ao salvar vistoria: ", ex);
-            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar vistoria: " + ex.getMessage());
+            logger.error("=== ERRO AO SALVAR VISTORIA ===");
+            logger.error("Tipo da exceção: {}", ex.getClass().getName());
+            logger.error("Mensagem: {}", ex.getMessage());
+            logger.error("Stacktrace completo:", ex);
+
+            String errorMsg = ex.getMessage() != null
+                ? ex.getMessage()
+                : "Erro interno: " + ex.getClass().getSimpleName();
+
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar vistoria: " + errorMsg);
             return "redirect:/vistorias/" + eventId + "/form";
         }
     }
