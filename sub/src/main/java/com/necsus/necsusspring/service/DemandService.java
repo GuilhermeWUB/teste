@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class DemandService {
             DemandPriority.ALTA, 1,
             DemandPriority.MEDIA, 2,
             DemandPriority.BAIXA, 3
+    );
+    private static final EnumSet<DemandStatus> DASHBOARD_ALLOWED_STATUSES = EnumSet.of(
+            DemandStatus.PENDENTE,
+            DemandStatus.EM_ANDAMENTO
     );
 
     public DemandService(DemandRepository demandRepository, NotificationService notificationService) {
@@ -155,7 +160,8 @@ public class DemandService {
             return List.of();
         }
 
-        List<Demand> assignedDemands = findByAssignedTo(user);
+        List<Demand> assignedDemands = demandRepository
+                .findByAssignedToAndStatusInOrderByCreatedAtDesc(user, DASHBOARD_ALLOWED_STATUSES);
         if (assignedDemands.isEmpty()) {
             return List.of();
         }
@@ -248,11 +254,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                NotificationType.DEMAND,
-                "/demands/" + demand.getId(),
-                demand.getId(),
-                "DEMAND",
-                null
+                NotificationType.DEMAND
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal
@@ -314,11 +316,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                NotificationType.DEMAND,
-                "/demands/" + demand.getId(),
-                demand.getId(),
-                "DEMAND",
-                null
+                NotificationType.DEMAND
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal
