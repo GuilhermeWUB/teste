@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Meu Plano</title>
+    <link rel="stylesheet" th:href="@{/css/meu-plano.css}">
+</head>
+<body>
+<section layout:fragment="content" class="plan-page">
+    <div class="page-header">
+        <div>
+            <p class="page-subtitle">Área exclusiva do associado</p>
+            <h1 class="page-title">Meu Plano</h1>
+            <p class="text-muted" th:if="${partner != null}">
+                Informações vinculadas ao associado <strong th:text="${partner.name}">Associado</strong>
+            </p>
+        </div>
+        <div class="plan-status-card" th:if="${partner != null}">
+            <span class="label">Status do plano</span>
+            <span class="value" th:text="${planStatus}">Ativo</span>
+            <small class="renewal" th:text="${'Próxima renovação: ' + planRenewal}">Próxima renovação</small>
+        </div>
+    </div>
+
+    <div th:if="${missingUser}" class="alert alert-danger" role="alert">
+        Não encontramos um usuário associado ao seu login. Entre em contato com o administrador do sistema.
+    </div>
+
+    <div th:if="${missingPartner}" class="alert alert-info" role="alert">
+        Ainda não identificamos um associado vinculado ao seu perfil. Valide seus dados com a administração.
+    </div>
+
+    <div th:if="${partner != null}" class="plan-grid">
+        <article class="plan-card plan-card-summary">
+            <div class="plan-card__header">
+                <p class="label">Plano atual</p>
+                <h2 class="plan-name" th:text="${planName}">Proteção Veicular Completa</h2>
+                <span class="plan-chip" th:text="${planLevel}">Cobertura Integral</span>
+            </div>
+            <div class="plan-card__body">
+                <dl class="plan-details">
+                    <div>
+                        <dt>Código do contrato</dt>
+                        <dd th:text="${planCode}">ASSOC-PLANO-PADRAO</dd>
+                    </div>
+                    <div>
+                        <dt>Mensalidade</dt>
+                        <dd th:text="${planMonthlyValue}">R$ 0,00</dd>
+                    </div>
+                    <div>
+                        <dt>Status</dt>
+                        <dd th:text="${planStatus}">Ativo</dd>
+                    </div>
+                    <div>
+                        <dt>Próxima renovação</dt>
+                        <dd th:text="${planRenewal}">-</dd>
+                    </div>
+                </dl>
+            </div>
+        </article>
+
+        <article class="plan-card plan-card-coverage">
+            <div class="plan-card__header">
+                <p class="label">Coberturas incluídas</p>
+                <h2>O que seu plano oferece</h2>
+            </div>
+            <ul class="plan-list">
+                <li th:each="item : ${planCoverageItems}">
+                    <i class="bi bi-shield-check"></i>
+                    <span th:text="${item}">Cobertura</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="plan-card plan-card-benefits">
+            <div class="plan-card__header">
+                <p class="label">Benefícios exclusivos</p>
+                <h2>Vantagens do associado</h2>
+            </div>
+            <ul class="plan-list">
+                <li th:each="benefit : ${planBenefits}">
+                    <i class="bi bi-star"></i>
+                    <span th:text="${benefit}">Benefício</span>
+                </li>
+            </ul>
+        </article>
+
+        <article class="plan-card plan-card-assistance">
+            <div class="plan-card__header">
+                <p class="label">Canais de atendimento</p>
+                <h2>Estamos sempre com você</h2>
+            </div>
+            <ul class="plan-list">
+                <li th:each="channel : ${planAssistanceChannels}">
+                    <i class="bi bi-headset"></i>
+                    <span th:text="${channel}">Canal</span>
+                </li>
+            </ul>
+        </article>
+    </div>
+</section>
+</body>
+</html>

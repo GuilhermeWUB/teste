@@ -18,7 +18,7 @@
 <body>
 <header class="topbar">
     <div class="brand">
-        <a class="brand-link" th:href="${isLoggedIn} ? (${isAdmin} ? @{/dashboard} : @{/me/vehicles}) : @{/}">
+        <a class="brand-link" th:href="${isLoggedIn} ? (${isAdmin} ? @{/dashboard} : @{/me/plan}) : @{/}">
             <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Ir para a página inicial">
             <span class="brand-title">SUB</span>
         </a>
@@ -33,6 +33,9 @@
 
     <nav class="topbar-nav" aria-label="Navegação principal">
         <ul class="nav-links">
+            <li th:if="${!isAdmin and isLoggedIn}">
+                <a th:href="@{/me/plan}">Meu Plano</a>
+            </li>
             <li th:if="${isAdmin}">
                 <a th:href="@{/dashboard}">Dashboard</a>
             </li>
