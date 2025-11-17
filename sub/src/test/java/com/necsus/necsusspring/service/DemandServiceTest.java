@@ -1,6 +1,7 @@
 package com.necsus.necsusspring.service;
 
 import com.necsus.necsusspring.model.Demand;
+import com.necsus.necsusspring.model.DemandPriority;
 import com.necsus.necsusspring.model.DemandStatus;
 import com.necsus.necsusspring.model.RoleType;
 import com.necsus.necsusspring.model.UserAccount;
@@ -261,5 +262,51 @@ public class DemandServiceTest {
         assertTrue(exception.getMessage().contains("Demanda não encontrada"));
         verify(demandRepository, times(1)).findById(999L);
         verify(demandRepository, never()).save(any());
+    }
+
+    @Test
+    public void testFindNextDemandsForUser_ShouldPrioritizeUrgentAndDueDate() {
+        Demand urgent = new Demand();
+        urgent.setId(2L);
+        urgent.setTitulo("Urgente");
+        urgent.setPrioridade(DemandPriority.URGENTE);
+        urgent.setDueDate(LocalDateTime.now().plusDays(5));
+        urgent.setCreatedAt(LocalDateTime.now().minusDays(1));
+        urgent.setAssignedTo(testUser);
+
+        Demand dueSoon = new Demand();
+        dueSoon.setId(3L);
+        dueSoon.setTitulo("Prazo curto");
+        dueSoon.setPrioridade(DemandPriority.MEDIA);
+        dueSoon.setDueDate(LocalDateTime.now().plusDays(1));
+        dueSoon.setCreatedAt(LocalDateTime.now().minusDays(2));
+        dueSoon.setAssignedTo(testUser);
+
+        Demand other = new Demand();
+        other.setId(4L);
+        other.setTitulo("Outro");
+        other.setPrioridade(DemandPriority.BAIXA);
+        other.setDueDate(LocalDateTime.now().plusDays(10));
+        other.setCreatedAt(LocalDateTime.now());
+        other.setAssignedTo(testUser);
+
+        when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
+                .thenReturn(Arrays.asList(other, urgent, dueSoon));
+
+        List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
+
+        assertEquals(3, result.size());
+        assertEquals(urgent.getId(), result.get(0).getId());
+        assertEquals(dueSoon.getId(), result.get(1).getId());
+    }
+
+    @Test
+    public void testFindNextDemandsForUser_WithInvalidParameters_ShouldReturnEmpty() {
+        List<Demand> resultNullUser = demandService.findNextDemandsForUser(null, 3);
+        assertTrue(resultNullUser.isEmpty());
+
+        List<Demand> resultNegativeLimit = demandService.findNextDemandsForUser(testUser, 0);
+        assertTrue(resultNegativeLimit.isEmpty());
+        verify(demandRepository, never()).findByAssignedToOrderByCreatedAtDesc(testUser);
     }
 }
