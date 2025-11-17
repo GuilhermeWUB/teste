@@ -1,0 +1,25 @@
+<div th:fragment="completionObservationModal">
+    <div class="modal fade" id="completionObservationModal" tabindex="-1" aria-labelledby="completionObservationLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="completionObservationLabel">Descreva o que foi feito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Adicione uma observação para registrar como a demanda foi concluída.</p>
+                    <textarea id="completionObservationText" class="form-control" rows="4"
+                              placeholder="Ex.: Atividade executada, entregas realizadas, dependências resolvidas..."></textarea>
+                    <div id="completionObservationError" class="text-danger small mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmCompletionObservation">
+                        Salvar observação
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
