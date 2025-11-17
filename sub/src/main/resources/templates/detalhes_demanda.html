@@ -96,10 +96,10 @@
             <div class="detail-row">
                 <div class="detail-label">Cargos Destinatários:</div>
                 <div class="detail-value">
-                    <span th:each="role, iterStat : ${demand.targetRolesList}">
-                        <span class="badge bg-info" th:text="${role}">Role</span>
-                        <span th:unless="${iterStat.last}">, </span>
+                    <span class="d-flex flex-wrap gap-2" th:if="${#lists.size(demand.targetRolesList) > 0}">
+                        <span class="badge-role" th:each="role : ${demand.targetRolesList}" th:text="${role}">Role</span>
                     </span>
+                    <span class="text-muted" th:unless="${#lists.size(demand.targetRolesList) > 0}">Não informado</span>
                 </div>
             </div>
 
