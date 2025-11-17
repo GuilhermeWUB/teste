@@ -71,6 +71,9 @@ public class Demand {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    @Column(name = "completion_observation", columnDefinition = "TEXT")
+    private String completionObservation;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
