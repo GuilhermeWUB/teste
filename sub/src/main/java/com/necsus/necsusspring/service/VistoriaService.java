@@ -102,6 +102,39 @@ public class VistoriaService {
         return saved;
     }
 
+    /**
+     * Atualiza vistoria com novas fotos (método que evita ConcurrentModificationException)
+     */
+    @Transactional
+    public Vistoria updateWithNewPhotos(Long id, String observacoes, List<com.necsus.necsusspring.model.VistoriaFoto> novasFotos) {
+        logger.info("=== UPDATE VISTORIA WITH NEW PHOTOS ===");
+        logger.info("Vistoria ID: {}", id);
+        logger.info("Novas fotos recebidas: {}", novasFotos != null ? novasFotos.size() : 0);
+
+        Vistoria existing = vistoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vistoria não encontrada com id " + id));
+
+        logger.info("Fotos existentes antes: {}", existing.getFotos().size());
+
+        // Atualiza observações
+        existing.setObservacoes(observacoes);
+
+        // Adiciona as novas fotos
+        if (novasFotos != null && !novasFotos.isEmpty()) {
+            logger.info("Adicionando {} novas fotos", novasFotos.size());
+            novasFotos.forEach(foto -> {
+                logger.info("Adicionando foto: path={}, ordem={}", foto.getFotoPath(), foto.getOrdem());
+                existing.adicionarFoto(foto);
+            });
+        }
+
+        logger.info("Fotos totais depois: {}", existing.getFotos().size());
+
+        Vistoria saved = vistoriaRepository.save(existing);
+        logger.info("Vistoria salva com ID: {}, Fotos: {}", saved.getId(), saved.getQuantidadeFotos());
+        return saved;
+    }
+
     @Transactional
     public boolean delete(Long id) {
         Optional<Vistoria> existing = vistoriaRepository.findById(id);

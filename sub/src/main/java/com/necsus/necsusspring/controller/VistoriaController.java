@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -210,6 +211,8 @@ public class VistoriaController {
             vistoria.setObservacoes(observacoes);
 
             // Faz upload das fotos e cria as entidades VistoriaFoto
+            // Cria uma lista separada para as fotos NOVAS
+            List<VistoriaFoto> novasFotos = new ArrayList<>();
             int fotosAdicionadas = 0;
             if (fotos != null && fotos.length > 0) {
                 logger.info("Processando {} arquivo(s) de foto", fotos.length);
@@ -225,9 +228,9 @@ public class VistoriaController {
                             VistoriaFoto vistoriaFoto = new VistoriaFoto();
                             vistoriaFoto.setFotoPath(path);
                             vistoriaFoto.setOrdem(ordem++);
-                            vistoria.adicionarFoto(vistoriaFoto);
+                            novasFotos.add(vistoriaFoto);
                             fotosAdicionadas++;
-                            logger.info("Foto adicionada. Path: {}, Ordem: {}", path, vistoriaFoto.getOrdem());
+                            logger.info("Foto adicionada à lista temporária. Path: {}, Ordem: {}", path, vistoriaFoto.getOrdem());
                         } else {
                             logger.warn("Falha ao salvar arquivo: {}", foto.getOriginalFilename());
                         }
@@ -239,16 +242,19 @@ public class VistoriaController {
                 logger.warn("Nenhuma foto recebida no request");
             }
 
-            logger.info("Total de fotos adicionadas: {}", fotosAdicionadas);
-            logger.info("Total de fotos na vistoria antes de salvar: {}", vistoria.getQuantidadeFotos());
+            logger.info("Total de fotos processadas: {}", fotosAdicionadas);
 
             // Salva a vistoria
             Vistoria vistoriaSalva;
             if (vistoriaId != null) {
-                vistoriaSalva = vistoriaService.update(vistoriaId, vistoria);
+                // Para update, passa apenas as fotos NOVAS
+                vistoriaSalva = vistoriaService.updateWithNewPhotos(vistoriaId, vistoria.getObservacoes(), novasFotos);
                 logger.info("Vistoria atualizada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, Total fotos: {}",
                            vistoriaId, eventId, authentication.getName(), vistoriaSalva.getQuantidadeFotos());
             } else {
+                // Para create, adiciona as fotos na vistoria
+                novasFotos.forEach(vistoria::adicionarFoto);
+                logger.info("Total de fotos na vistoria antes de salvar: {}", vistoria.getQuantidadeFotos());
                 vistoriaSalva = vistoriaService.create(vistoria);
                 logger.info("Vistoria criada com sucesso. ID: {}, Evento ID: {}, Usuário: {}, Total fotos: {}",
                            vistoriaSalva.getId(), eventId, authentication.getName(), vistoriaSalva.getQuantidadeFotos());
