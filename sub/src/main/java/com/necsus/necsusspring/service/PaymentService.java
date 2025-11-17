@@ -31,7 +31,7 @@ public class PaymentService {
     private VehicleService vehicleService;
 
     @Transactional
-    public Partner generateMonthlyInvoices(Long vehicleId, int numberOfSlips) {
+    public BankShipment generateMonthlyInvoices(Long vehicleId, int numberOfSlips) {
         Vehicle vehicle = vehicleService.findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
@@ -67,7 +67,7 @@ public class PaymentService {
         }
         bankSlipRepository.saveAll(bankSlips);
 
-        return vehicle.getPartner();
+        return bankShipment;
     }
 
     /**
@@ -131,5 +131,13 @@ public class PaymentService {
     public BankSlip findById(Long id) {
         return bankSlipRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Fatura não encontrada"));
+    }
+
+    /**
+     * Busca faturas por BankShipment
+     */
+    @Transactional(readOnly = true)
+    public List<BankSlip> findInvoicesByBankShipment(Long bankShipmentId) {
+        return bankSlipRepository.findByBankShipmentId(bankShipmentId);
     }
 }
