@@ -88,18 +88,11 @@
                 <input type="hidden" id="horaComunicacao" name="horaComunicacao" />
 
                 <div class="row mb-3">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <label for="titulo" class="form-label fw-semibold">Título do Evento *</label>
                         <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
                                placeholder="Ex: Colisão no estacionamento" maxlength="200" required>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Status inicial</label>
-                        <div class="form-control bg-light">
-                            <span th:text="${event.status != null ? event.status.displayName : 'Comunicado'}">Comunicado</span>
-                        </div>
-                        <small class="text-muted">Definido automaticamente como "Comunicado".</small>
                     </div>
                 </div>
 
