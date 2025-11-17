@@ -112,8 +112,8 @@
     margin-top: 1.5rem;
 }
 
-.plan-chip {
-    display: inline-flex;
+.metric-card {
+    display: flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.35rem 0.9rem;
@@ -121,6 +121,12 @@
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.35);
     font-weight: 600;
+    margin: 0;
+}
+
+.plan-chip--outline {
+    background: transparent;
+    color: inherit;
 }
 
 .plan-chip--outline {
