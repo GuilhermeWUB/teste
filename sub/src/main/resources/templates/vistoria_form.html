@@ -50,24 +50,30 @@
             border-color: #0d6efd;
             background-color: #cfe2ff;
         }
-        .pneu-help {
+        .pneu-help-wrapper {
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.35rem;
+        }
+        .pneu-help {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             color: #0d6efd;
             cursor: pointer;
         }
         .pneu-help .bi {
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
         .pneu-help__preview {
             display: none;
             position: absolute;
             top: 50%;
-            right: 120%;
+            left: calc(100% + 0.75rem);
             transform: translateY(-50%);
             background-color: #fff;
             border: 1px solid #dee2e6;
@@ -83,13 +89,12 @@
             height: auto;
             border-radius: 0.35rem;
         }
+        .pneu-help-wrapper:focus-within .pneu-help__preview,
+        .pneu-help-wrapper:hover .pneu-help__preview {
+            display: block;
+        }
         .pneu-help:focus {
             outline: none;
-        }
-        .pneu-help:hover .pneu-help__preview,
-        .pneu-help:focus .pneu-help__preview,
-        .pneu-help:focus-within .pneu-help__preview {
-            display: block;
         }
     </style>
 </head>
@@ -204,71 +209,60 @@
 
                 <!-- Campos específicos para fotos dos pneus -->
                 <div class="mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h6 class="fw-semibold mb-0">Fotos dos pneus:</h6>
-                        <small class="text-muted">Passe o mouse sobre o <i class="bi bi-question-circle-fill"></i> para ver um exemplo</small>
-                    </div>
+                    <h6 class="fw-semibold mb-2">Fotos dos pneus:</h6>
                     <hr class="mt-2 mb-3">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pneu-help-wrapper" tabindex="0">
                                 <label for="pneuDianteiroDireito" class="form-label mb-0">Pneu dianteiro direito</label>
-                                <span class="pneu-help text-primary" tabindex="0"
-                                      aria-label="Ver exemplo do pneu dianteiro direito"
-                                      title="Exemplo do pneu dianteiro direito">
+                                <span class="pneu-help text-primary" aria-hidden="true">
                                     <i class="bi bi-question-circle-fill"></i>
-                                    <span class="pneu-help__preview">
-                                        <img th:src="@{/images/pneu-dianteiro-direito.svg}"
-                                             alt="Exemplo do pneu dianteiro direito">
-                                    </span>
+                                </span>
+                                <span class="pneu-help__preview" role="img" aria-label="Exemplo do pneu dianteiro direito">
+                                    <img th:src="@{/images/pneu-dianteiro-direito.svg}"
+                                         alt="Exemplo do pneu dianteiro direito">
                                 </span>
                             </div>
                             <input type="file" class="form-control" id="pneuDianteiroDireito" name="pneuDianteiroDireito"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pneu-help-wrapper" tabindex="0">
                                 <label for="pneuDianteiroEsquerdo" class="form-label mb-0">Pneu dianteiro esquerdo</label>
-                                <span class="pneu-help text-primary" tabindex="0"
-                                      aria-label="Ver exemplo do pneu dianteiro esquerdo"
-                                      title="Exemplo do pneu dianteiro esquerdo">
+                                <span class="pneu-help text-primary" aria-hidden="true">
                                     <i class="bi bi-question-circle-fill"></i>
-                                    <span class="pneu-help__preview">
-                                        <img th:src="@{/images/pneu-dianteiro-esquerdo.svg}"
-                                             alt="Exemplo do pneu dianteiro esquerdo">
-                                    </span>
+                                </span>
+                                <span class="pneu-help__preview" role="img" aria-label="Exemplo do pneu dianteiro esquerdo">
+                                    <img th:src="@{/images/pneu-dianteiro-esquerdo.svg}"
+                                         alt="Exemplo do pneu dianteiro esquerdo">
                                 </span>
                             </div>
                             <input type="file" class="form-control" id="pneuDianteiroEsquerdo" name="pneuDianteiroEsquerdo"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pneu-help-wrapper" tabindex="0">
                                 <label for="pneuTraseiroDireito" class="form-label mb-0">Pneu traseiro direito</label>
-                                <span class="pneu-help text-primary" tabindex="0"
-                                      aria-label="Ver exemplo do pneu traseiro direito"
-                                      title="Exemplo do pneu traseiro direito">
+                                <span class="pneu-help text-primary" aria-hidden="true">
                                     <i class="bi bi-question-circle-fill"></i>
-                                    <span class="pneu-help__preview">
-                                        <img th:src="@{/images/pneu-traseiro-direito.svg}"
-                                             alt="Exemplo do pneu traseiro direito">
-                                    </span>
+                                </span>
+                                <span class="pneu-help__preview" role="img" aria-label="Exemplo do pneu traseiro direito">
+                                    <img th:src="@{/images/pneu-traseiro-direito.svg}"
+                                         alt="Exemplo do pneu traseiro direito">
                                 </span>
                             </div>
                             <input type="file" class="form-control" id="pneuTraseiroDireito" name="pneuTraseiroDireito"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <div class="d-flex align-items-center justify-content-between mb-1">
+                            <div class="d-flex align-items-center justify-content-between mb-1 pneu-help-wrapper" tabindex="0">
                                 <label for="pneuTraseiroEsquerdo" class="form-label mb-0">Pneu traseiro esquerdo</label>
-                                <span class="pneu-help text-primary" tabindex="0"
-                                      aria-label="Ver exemplo do pneu traseiro esquerdo"
-                                      title="Exemplo do pneu traseiro esquerdo">
+                                <span class="pneu-help text-primary" aria-hidden="true">
                                     <i class="bi bi-question-circle-fill"></i>
-                                    <span class="pneu-help__preview">
-                                        <img th:src="@{/images/pneu-traseiro-esquerdo.svg}"
-                                             alt="Exemplo do pneu traseiro esquerdo">
-                                    </span>
+                                </span>
+                                <span class="pneu-help__preview" role="img" aria-label="Exemplo do pneu traseiro esquerdo">
+                                    <img th:src="@{/images/pneu-traseiro-esquerdo.svg}"
+                                         alt="Exemplo do pneu traseiro esquerdo">
                                 </span>
                             </div>
                             <input type="file" class="form-control" id="pneuTraseiroEsquerdo" name="pneuTraseiroEsquerdo"
