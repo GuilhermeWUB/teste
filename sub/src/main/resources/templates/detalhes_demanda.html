@@ -6,24 +6,25 @@
     <link rel="stylesheet" th:href="@{/css/listagem.css}">
     <style>
         .detail-card {
-            background: white;
+            background: var(--color-surface-elevated);
             border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--color-border);
         }
         .detail-row {
             display: flex;
             padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--color-border);
         }
         .detail-label {
             font-weight: 600;
             min-width: 150px;
-            color: #666;
+            color: var(--color-text-secondary);
         }
         .detail-value {
             flex: 1;
-            color: #333;
+            color: var(--color-text-primary);
         }
         .badge-priority-BAIXA { background: #10b981; }
         .badge-priority-MEDIA { background: #f59e0b; }
@@ -33,6 +34,14 @@
         .badge-status-EM_ANDAMENTO { background: #3b82f6; }
         .badge-status-CONCLUIDA { background: #10b981; }
         .badge-status-CANCELADA { background: #dc2626; }
+        html[data-theme="dark"] .detail-card {
+            background: rgba(36, 24, 63, 0.9);
+            border-color: rgba(196, 181, 253, 0.35);
+        }
+
+        html[data-theme="dark"] .detail-row {
+            border-bottom-color: rgba(139, 92, 246, 0.35);
+        }
     </style>
 </head>
 <body>
