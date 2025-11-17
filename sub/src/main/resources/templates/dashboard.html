@@ -84,27 +84,31 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title">Próximas ações</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li class="d-flex align-items-start mb-3">
-                            <i class="bi bi-calendar2-week me-3 fs-4 icon-primary"></i>
-                            <div>
-                                <h6 class="mb-1">Envio de boletos</h6>
-                                <small class="text-muted">Programar disparo do próximo lote automático.</small>
-                            </div>
-                        </li>
-                        <li class="d-flex align-items-start mb-3">
-                            <i class="bi bi-chat-dots me-3 fs-4 icon-primary"></i>
-                            <div>
-                                <h6 class="mb-1">Atendimento aos associados</h6>
-                                <small class="text-muted">Responder solicitações pendentes na central.</small>
-                            </div>
-                        </li>
-                        <li class="d-flex align-items-start">
-                            <i class="bi bi-graph-up-arrow me-3 fs-4 icon-primary"></i>
-                            <div>
-                                <h6 class="mb-1">Planejamento financeiro</h6>
-                                <small class="text-muted">Revisar projeções e ajustar metas do trimestre.</small>
-                            </div>
+                    <div th:if="${#lists.isEmpty(nextDemands)}">
+                        <p class="text-muted mb-0">Nenhuma demanda atribuída para você no momento.</p>
+                    </div>
+                    <ul class="list-unstyled mb-0" th:if="${!#lists.isEmpty(nextDemands)}">
+                        <li class="d-flex align-items-start" th:each="demand,iter : ${nextDemands}"
+                            th:classappend="${iter.last}? '' : ' mb-3'">
+                            <i class="bi bi-flag me-3 fs-4 icon-primary"
+                               th:classappend="${demand.prioridade != null && demand.prioridade.name() == 'URGENTE'} ? ' text-danger' : ''"></i>
+                            <a class="text-decoration-none flex-grow-1" th:href="@{'/demands/' + ${demand.id}}">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <h6 class="mb-1" th:text="${demand.titulo}">Título da demanda</h6>
+                                        <span class="badge bg-danger-subtle text-danger" th:if="${demand.prioridade != null && demand.prioridade.name() == 'URGENTE'}">Urgente</span>
+                                        <span class="badge bg-warning-subtle text-warning" th:if="${demand.prioridade != null && demand.prioridade.name() == 'ALTA'}">Alta</span>
+                                        <span class="badge bg-info-subtle text-info" th:if="${demand.prioridade != null && demand.prioridade.name() == 'MEDIA'}">Média</span>
+                                        <span class="badge bg-success-subtle text-success" th:if="${demand.prioridade != null && demand.prioridade.name() == 'BAIXA'}">Baixa</span>
+                                    </div>
+                                    <small class="text-muted d-block"
+                                           th:text="${demand.status != null ? demand.status.getDisplayName() : 'Sem status'}">Status</small>
+                                    <small class="text-muted"
+                                           th:text="${demand.dueDate != null ? 'Prazo: ' + #temporals.format(demand.dueDate, 'dd/MM/yyyy HH:mm') : 'Sem prazo definido'}">
+                                        Prazo estimado
+                                    </small>
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
