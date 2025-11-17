@@ -1,6 +1,7 @@
 package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.model.BankSlip;
+import com.necsus.necsusspring.model.BankShipment;
 import com.necsus.necsusspring.repository.BankSlipRepository;
 import com.necsus.necsusspring.service.BoletoService;
 import com.necsus.necsusspring.service.PaymentService;
@@ -20,6 +21,9 @@ import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/pagamentos")
@@ -49,15 +53,57 @@ public class PaymentController {
     public String generateMonthlyInvoices(
             @RequestParam("vehicle_id") Long vehicleId,
             @RequestParam("qtd_boletos") int numberOfSlips,
+            Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            Partner partner = paymentService.generateMonthlyInvoices(vehicleId, numberOfSlips);
-            redirectAttributes.addFlashAttribute("successMessage", "Faturas geradas com sucesso!");
-            return "redirect:/partners/" + partner.getId();
+            BankShipment bankShipment = paymentService.generateMonthlyInvoices(vehicleId, numberOfSlips);
+            // Redireciona para visualizar as faturas geradas
+            return "redirect:/pagamentos/faturas-geradas?bankShipmentId=" + bankShipment.getId();
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao gerar faturas: " + e.getMessage());
             return "redirect:/pagamentos/gerar-mensalidades?vehicle_id=" + vehicleId;
         }
+    }
+
+    @GetMapping("/faturas-geradas")
+    public String showGeneratedInvoices(@RequestParam("bankShipmentId") Long bankShipmentId, Model model) {
+        List<BankSlip> invoices = paymentService.findInvoicesByBankShipment(bankShipmentId);
+
+        if (invoices.isEmpty()) {
+            model.addAttribute("errorMessage", "Nenhuma fatura encontrada.");
+            return "redirect:/partners";
+        }
+
+        // Pega o primeiro boleto para obter informações do veículo e associado
+        BankSlip firstInvoice = invoices.get(0);
+        Vehicle vehicle = firstInvoice.getBankShipment().getVehicle();
+        Partner partner = firstInvoice.getPartner();
+
+        model.addAttribute("invoices", invoices);
+        model.addAttribute("vehicle", vehicle);
+        model.addAttribute("partner", partner);
+        model.addAttribute("bankShipmentId", bankShipmentId);
+
+        return "faturas_geradas";
+    }
+
+    @PostMapping("/marcar-paga/{bankSlipId}")
+    public String markInvoiceAsPaid(
+            @PathVariable Long bankSlipId,
+            @RequestParam(required = false) BigDecimal valorRecebido,
+            @RequestParam("bankShipmentId") Long bankShipmentId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            BankSlip bankSlip = paymentService.markAsPaid(bankSlipId, valorRecebido);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Fatura #" + bankSlip.getId() + " marcada como paga com sucesso!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao marcar fatura como paga: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/faturas-geradas?bankShipmentId=" + bankShipmentId;
     }
 
     @GetMapping("/visualizar-boleto/{boletoId}")
