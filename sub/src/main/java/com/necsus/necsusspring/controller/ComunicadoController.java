@@ -480,9 +480,6 @@ public class ComunicadoController {
         payload.put("motivoDescricao", event.getMotivo() != null ? event.getMotivo().getDescricao() : null);
         payload.put("envolvimento", event.getEnvolvimento() != null ? event.getEnvolvimento().name() : null);
         payload.put("envolvimentoDescricao", event.getEnvolvimento() != null ? event.getEnvolvimento().getDescricao() : null);
-        payload.put("prioridade", event.getPrioridade() != null ? event.getPrioridade().name() : null);
-        payload.put("prioridadeLabel", event.getPrioridade() != null ? event.getPrioridade().getDisplayName() : null);
-        payload.put("prioridadeBadgeClass", resolvePrioridadeBadgeClass(event.getPrioridadeColor()));
         payload.put("partnerName", event.getPartner() != null ? event.getPartner().getName() : null);
         payload.put("vehiclePlaque", event.getVehicle() != null && event.getVehicle().getPlaque() != null
                 ? event.getVehicle().getPlaque()
@@ -493,7 +490,6 @@ public class ComunicadoController {
         payload.put("horaAconteceu", formatHora(event.getHoraAconteceu()));
         payload.put("dataComunicacao", formatDate(event.getDataComunicacao()));
         payload.put("horaComunicacao", formatHora(event.getHoraComunicacao()));
-        payload.put("dataVencimento", formatDate(event.getDataVencimento()));
         payload.put("attachments", buildDocumentList(event));
 
         Optional<Vistoria> vistoriaOpt = vistoriaService.findLatestWithPhotosByEventId(event.getId());
@@ -629,16 +625,6 @@ public class ComunicadoController {
             case 5 -> "bg-success";
             default -> "bg-secondary";
         };
-    }
-
-    private String resolvePrioridadeBadgeClass(String prioridadeColor) {
-        if (prioridadeColor == null) {
-            return "bg-secondary";
-        }
-        if ("warning".equalsIgnoreCase(prioridadeColor)) {
-            return "bg-warning text-dark";
-        }
-        return "bg-" + prioridadeColor.toLowerCase();
     }
 
     private String getUserRole(Authentication authentication) {

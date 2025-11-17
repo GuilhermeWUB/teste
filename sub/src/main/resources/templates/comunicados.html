@@ -114,7 +114,7 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="motivo" class="form-label fw-semibold">Tipo de Ocorrência *</label>
                         <select class="form-select" id="motivo" th:field="*{motivo}" required>
                             <option value="">Selecione...</option>
@@ -123,22 +123,13 @@
                                     th:text="${motivo}">Motivo</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label for="envolvimento" class="form-label fw-semibold">Envolvimento *</label>
                         <select class="form-select" id="envolvimento" th:field="*{envolvimento}" required>
                             <option value="">Selecione...</option>
                             <option th:each="envolvimento : ${envolvimentoOptions}"
                                     th:value="${envolvimento}"
                                     th:text="${envolvimento}">Envolvimento</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="prioridade" class="form-label fw-semibold">Prioridade</label>
-                        <select class="form-select" id="prioridade" th:field="*{prioridade}">
-                            <option value="">Selecione...</option>
-                            <option th:each="prioridade : ${prioridadeOptions}"
-                                    th:value="${prioridade}"
-                                    th:text="${prioridade.displayName}">Prioridade</option>
                         </select>
                     </div>
                 </div>
@@ -238,10 +229,8 @@
                         <th>Título</th>
                         <th>Tipo</th>
                         <th>Status</th>
-                        <th>Prioridade</th>
                         <th>Placa</th>
                         <th>Data Ocorrido</th>
-                        <th>Data Vencimento</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -263,16 +252,6 @@
                                   th:text="${evt.statusFormatted}"></span>
                         </td>
                         <td>
-                            <span th:if="${evt.prioridade != null}"
-                                  class="badge"
-                                  th:classappend="${evt.prioridadeColor == 'success' ? 'bg-success' :
-                                                   evt.prioridadeColor == 'info' ? 'bg-info' :
-                                                   evt.prioridadeColor == 'warning' ? 'bg-warning text-dark' :
-                                                   evt.prioridadeColor == 'danger' ? 'bg-danger' : 'bg-secondary'}"
-                                  th:text="${evt.prioridadeFormatted}"></span>
-                            <span th:if="${evt.prioridade == null}" class="text-muted">-</span>
-                        </td>
-                        <td>
                             <span th:if="${evt.vehicle != null && evt.vehicle.plaque != null}"
                                   th:text="${evt.vehicle.plaque}"></span>
                             <span th:if="${evt.placaManual != null && !evt.placaManual.isEmpty()}"
@@ -284,12 +263,6 @@
                             <span th:if="${evt.dataAconteceu != null}"
                                   th:text="${#temporals.format(evt.dataAconteceu, 'dd/MM/yyyy')}"></span>
                             <span th:if="${evt.dataAconteceu == null}" class="text-muted">-</span>
-                        </td>
-                        <td>
-                            <span th:if="${evt.dataVencimento != null}"
-                                  th:text="${#temporals.format(evt.dataVencimento, 'dd/MM/yyyy')}"
-                                  th:classappend="${evt.dataVencimento.isBefore(T(java.time.LocalDate).now()) ? 'text-danger fw-bold' : ''}"></span>
-                            <span th:if="${evt.dataVencimento == null}" class="text-muted">-</span>
                         </td>
                         <td>
                             <div class="btn-group" role="group">
@@ -388,8 +361,6 @@
                                             <dd class="col-7" id="eventMotivoValue">-</dd>
                                             <dt class="col-5 text-muted">Envolvimento</dt>
                                             <dd class="col-7" id="eventEnvolvimentoValue">-</dd>
-                                            <dt class="col-5 text-muted">Prioridade</dt>
-                                            <dd class="col-7"><span id="eventPrioridadeBadge" class="badge bg-secondary">-</span></dd>
                                             <dt class="col-5 text-muted">Associado</dt>
                                             <dd class="col-7" id="eventPartnerValue">-</dd>
                                             <dt class="col-5 text-muted">Veículo</dt>
@@ -398,8 +369,6 @@
                                             <dd class="col-7" id="eventDataAconteceu">-</dd>
                                             <dt class="col-5 text-muted">Data da comunicação</dt>
                                             <dd class="col-7" id="eventDataComunicacao">-</dd>
-                                            <dt class="col-5 text-muted">Vencimento</dt>
-                                            <dd class="col-7" id="eventDataVencimento">-</dd>
                                         </dl>
                                         <div class="mt-4">
                                             <h6 class="fw-semibold mb-2"><i class="bi bi-paperclip me-2"></i>Documentos enviados</h6>
@@ -524,12 +493,10 @@
         const phaseLabel = document.getElementById('eventPhaseLabel');
         const motivoValue = document.getElementById('eventMotivoValue');
         const envolvimentoValue = document.getElementById('eventEnvolvimentoValue');
-        const prioridadeBadge = document.getElementById('eventPrioridadeBadge');
         const partnerValue = document.getElementById('eventPartnerValue');
         const vehicleValue = document.getElementById('eventVehicleValue');
         const dataAconteceu = document.getElementById('eventDataAconteceu');
         const dataComunicacao = document.getElementById('eventDataComunicacao');
-        const dataVencimento = document.getElementById('eventDataVencimento');
         const attachmentsList = document.getElementById('eventAttachmentsList');
         const photosGrid = document.getElementById('eventPhotosGrid');
         const photosBadge = document.getElementById('eventPhotosBadge');
@@ -582,13 +549,10 @@
             phaseLabel.textContent = data.statusPhaseName ? `Fase ${data.statusPhase}: ${data.statusPhaseName}` : '';
             motivoValue.textContent = data.motivoDescricao || '-';
             envolvimentoValue.textContent = data.envolvimentoDescricao || '-';
-            prioridadeBadge.textContent = data.prioridadeLabel || 'Sem prioridade';
-            prioridadeBadge.className = `badge ${data.prioridadeBadgeClass || 'bg-secondary'}`;
             partnerValue.textContent = data.partnerName || '-';
             vehicleValue.textContent = data.vehiclePlaque ? `${data.vehiclePlaque}${data.vehicleModel ? ' · ' + data.vehicleModel : ''}` : '-';
             dataAconteceu.textContent = formatDateWithFallback(data.dataAconteceu, data.horaAconteceu);
             dataComunicacao.textContent = formatDateWithFallback(data.dataComunicacao, data.horaComunicacao);
-            dataVencimento.textContent = data.dataVencimento || '-';
 
             renderAttachments(data.attachments);
             renderPhotos(data.photos, data.photoCount);
