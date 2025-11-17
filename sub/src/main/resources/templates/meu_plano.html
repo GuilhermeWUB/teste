@@ -56,45 +56,6 @@
             </div>
         </article>
 
-        <section class="plan-metrics">
-            <article class="metric-card">
-                <div class="metric-card__icon">
-                    <i class="bi bi-shield-lock"></i>
-                </div>
-                <div>
-                    <p class="label">Status do plano</p>
-                    <p class="value" th:text="${planStatus}">Ativo</p>
-                </div>
-            </article>
-            <article class="metric-card">
-                <div class="metric-card__icon">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <div>
-                    <p class="label">Renovação</p>
-                    <p class="value" th:text="${planRenewal}">-</p>
-                </div>
-            </article>
-            <article class="metric-card">
-                <div class="metric-card__icon">
-                    <i class="bi bi-list-check"></i>
-                </div>
-                <div>
-                    <p class="label">Coberturas</p>
-                    <p class="value" th:text="${planCoverageItems != null ? #lists.size(planCoverageItems) : 0}">0</p>
-                </div>
-            </article>
-            <article class="metric-card">
-                <div class="metric-card__icon">
-                    <i class="bi bi-gift"></i>
-                </div>
-                <div>
-                    <p class="label">Benefícios</p>
-                    <p class="value" th:text="${planBenefits != null ? #lists.size(planBenefits) : 0}">0</p>
-                </div>
-            </article>
-        </section>
-
         <div class="plan-content-grid">
             <article class="plan-card">
                 <div class="plan-card__header">
