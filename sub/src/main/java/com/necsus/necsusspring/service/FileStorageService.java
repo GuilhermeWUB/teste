@@ -1,5 +1,7 @@
 package com.necsus.necsusspring.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,12 +17,16 @@ import java.util.UUID;
 @Service
 public class FileStorageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
+
     private final Path uploadDir = Paths.get("uploads");
 
     public FileStorageService() {
         try {
             Files.createDirectories(uploadDir);
+            logger.info("Diretório de uploads criado/verificado: {}", uploadDir.toAbsolutePath());
         } catch (IOException e) {
+            logger.error("Erro ao criar diretório de uploads", e);
             throw new RuntimeException("Não foi possível criar o diretório de uploads", e);
         }
     }
@@ -32,11 +38,14 @@ public class FileStorageService {
      */
     public String storeFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
+            logger.warn("Arquivo nulo ou vazio recebido");
             return null;
         }
 
         try {
             String originalFilename = file.getOriginalFilename();
+            logger.info("Salvando arquivo: {}, tamanho: {} bytes", originalFilename, file.getSize());
+
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -45,9 +54,14 @@ public class FileStorageService {
             String filename = UUID.randomUUID().toString() + extension;
             Path targetLocation = uploadDir.resolve(filename);
 
+            logger.info("Path de destino: {}", targetLocation.toAbsolutePath());
+
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            logger.info("Arquivo salvo com sucesso: {}", targetLocation.toString());
             return targetLocation.toString();
         } catch (IOException e) {
+            logger.error("Erro ao salvar arquivo: {}", file.getOriginalFilename(), e);
             throw new RuntimeException("Erro ao salvar arquivo: " + file.getOriginalFilename(), e);
         }
     }
