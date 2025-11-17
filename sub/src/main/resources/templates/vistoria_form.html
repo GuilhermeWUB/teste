@@ -162,7 +162,35 @@
                     <span th:if="${vistoria.id != null}">Adicionar novas fotos:</span>
                 </h6>
 
+                <!-- Campos específicos para fotos dos pneus -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Fotos dos pneus</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="pneuDianteiroDireito" class="form-label">Pneu dianteiro direito</label>
+                            <input type="file" class="form-control" id="pneuDianteiroDireito" name="pneuDianteiroDireito"
+                                   accept="image/jpeg,image/jpg,image/png">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pneuDianteiroEsquerdo" class="form-label">Pneu dianteiro esquerdo</label>
+                            <input type="file" class="form-control" id="pneuDianteiroEsquerdo" name="pneuDianteiroEsquerdo"
+                                   accept="image/jpeg,image/jpg,image/png">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pneuTraseiroDireito" class="form-label">Pneu traseiro direito</label>
+                            <input type="file" class="form-control" id="pneuTraseiroDireito" name="pneuTraseiroDireito"
+                                   accept="image/jpeg,image/jpg,image/png">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pneuTraseiroEsquerdo" class="form-label">Pneu traseiro esquerdo</label>
+                            <input type="file" class="form-control" id="pneuTraseiroEsquerdo" name="pneuTraseiroEsquerdo"
+                                   accept="image/jpeg,image/jpg,image/png">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Área de upload múltiplo -->
+                <h6 class="fw-semibold mb-2">Fotos do acidente.</h6>
                 <div class="upload-area mb-3" id="uploadArea">
                     <i class="bi bi-cloud-upload fs-1 text-primary"></i>
                     <p class="mb-2 mt-2"><strong>Clique para selecionar fotos</strong> ou arraste e solte aqui</p>

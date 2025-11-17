@@ -159,6 +159,10 @@ public class VistoriaController {
     public String saveVistoria(@RequestParam("eventId") Long eventId,
                                @RequestParam(value = "vistoriaId", required = false) Long vistoriaId,
                                @RequestParam(value = "observacoes", required = false) String observacoes,
+                               @RequestParam(value = "pneuDianteiroDireito", required = false) MultipartFile pneuDianteiroDireito,
+                               @RequestParam(value = "pneuDianteiroEsquerdo", required = false) MultipartFile pneuDianteiroEsquerdo,
+                               @RequestParam(value = "pneuTraseiroDireito", required = false) MultipartFile pneuTraseiroDireito,
+                               @RequestParam(value = "pneuTraseiroEsquerdo", required = false) MultipartFile pneuTraseiroEsquerdo,
                                @RequestParam(value = "fotos", required = false) MultipartFile[] fotos,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
@@ -176,8 +180,24 @@ public class VistoriaController {
         try {
             logger.info("=== SALVANDO VISTORIA ===");
             logger.info("Event ID: {}, Vistoria ID: {}, Usuario: {}", eventId, vistoriaId, authentication.getName());
-            logger.info("Fotos recebidas: {}", fotos != null ? fotos.length : 0);
+            logger.info("Fotos recebidas do campo geral: {}", fotos != null ? fotos.length : 0);
             logger.info("Observacoes recebidas: {}", observacoes != null ? "SIM" : "NAO");
+
+            List<MultipartFile> arquivosRecebidos = new ArrayList<>();
+            adicionarFotoSePresente(pneuDianteiroDireito, arquivosRecebidos, "Pneu dianteiro direito");
+            adicionarFotoSePresente(pneuDianteiroEsquerdo, arquivosRecebidos, "Pneu dianteiro esquerdo");
+            adicionarFotoSePresente(pneuTraseiroDireito, arquivosRecebidos, "Pneu traseiro direito");
+            adicionarFotoSePresente(pneuTraseiroEsquerdo, arquivosRecebidos, "Pneu traseiro esquerdo");
+
+            if (fotos != null && fotos.length > 0) {
+                for (MultipartFile foto : fotos) {
+                    if (foto != null && !foto.isEmpty()) {
+                        arquivosRecebidos.add(foto);
+                    }
+                }
+            }
+
+            logger.info("Total de arquivos recebidos (pneus + gerais): {}", arquivosRecebidos.size());
 
             // Busca o evento
             Event event = eventService.findById(eventId)
@@ -214,13 +234,13 @@ public class VistoriaController {
             // Cria uma lista separada para as fotos NOVAS
             List<VistoriaFoto> novasFotos = new ArrayList<>();
             int fotosAdicionadas = 0;
-            if (fotos != null && fotos.length > 0) {
-                logger.info("Processando {} arquivo(s) de foto", fotos.length);
+            if (!arquivosRecebidos.isEmpty()) {
+                logger.info("Processando {} arquivo(s) de foto", arquivosRecebidos.size());
 
                 // Calcula a ordem inicial baseada nas fotos existentes
                 int ordem = vistoria.getFotos().size() + 1;
 
-                for (MultipartFile foto : fotos) {
+                for (MultipartFile foto : arquivosRecebidos) {
                     if (foto != null && !foto.isEmpty()) {
                         logger.info("Processando foto: {} (tamanho: {} bytes)", foto.getOriginalFilename(), foto.getSize());
                         String path = fileStorageService.storeFile(foto);
@@ -366,5 +386,14 @@ public class VistoriaController {
         return userAccountService.findByUsername(authentication.getName())
                 .flatMap(user -> partnerService.getPartnerByEmail(user.getEmail()))
                 .orElse(null);
+    }
+
+    private void adicionarFotoSePresente(MultipartFile arquivo, List<MultipartFile> destino, String origem) {
+        if (arquivo != null && !arquivo.isEmpty()) {
+            logger.info("Foto recebida do campo {}: {} ({} bytes)", origem, arquivo.getOriginalFilename(), arquivo.getSize());
+            destino.add(arquivo);
+        } else {
+            logger.info("Nenhum arquivo enviado para o campo {}", origem);
+        }
     }
 }
