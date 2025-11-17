@@ -260,6 +260,11 @@ public class VistoriaController {
                            vistoriaSalva.getId(), eventId, authentication.getName(), vistoriaSalva.getQuantidadeFotos());
             }
 
+            if (fotosAdicionadas > 0 && event.getStatus() != Status.ANALISE) {
+                logger.info("Atualizando evento {} para o status ANALISE após envio de fotos", eventId);
+                eventService.updateStatus(eventId, Status.ANALISE);
+            }
+
             redirectAttributes.addFlashAttribute("successMessage", "Fotos da vistoria enviadas com sucesso!");
             return "redirect:/vistorias";
 

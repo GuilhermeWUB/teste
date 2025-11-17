@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -205,14 +207,39 @@ public class DemandControllerTest {
         );
         when(userAccountService.findByUsername("admin")).thenReturn(Optional.of(testUser));
         when(demandService.findById(1L)).thenReturn(Optional.of(testDemand));
-        when(demandService.updateStatus(eq(1L), any(DemandStatus.class))).thenReturn(testDemand);
+        when(demandService.updateStatus(eq(1L), any(DemandStatus.class), any()))
+                .thenReturn(testDemand);
 
         mockMvc.perform(post("/demands/1/update-status")
                         .param("status", "CONCLUIDA")
                         .principal(authentication))
                 .andExpect(status().is3xxRedirection());
 
-        verify(demandService, times(1)).updateStatus(1L, DemandStatus.CONCLUIDA);
+        verify(demandService, times(1)).updateStatus(1L, DemandStatus.CONCLUIDA, null);
+    }
+
+    @Test
+    public void testUpdateStatus_ShouldBlockCancelForNonCreator() throws Exception {
+        UserAccount adminUser = new UserAccount();
+        adminUser.setId(99L);
+        adminUser.setUsername("admin");
+        adminUser.setRole(RoleType.ADMIN.getCode());
+
+        when(authentication.getName()).thenReturn("admin");
+        when(authentication.getAuthorities()).thenReturn(
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        );
+        when(userAccountService.findByUsername("admin")).thenReturn(Optional.of(adminUser));
+        when(demandService.findById(1L)).thenReturn(Optional.of(testDemand));
+
+        mockMvc.perform(post("/demands/1/update-status")
+                        .param("status", "CANCELADA")
+                        .principal(authentication))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/demands/director"))
+                .andExpect(flash().attribute("error", "Somente quem criou a demanda pode cancelá-la."));
+
+        verify(demandService, never()).updateStatus(anyLong(), any(), any());
     }
 
     @Test
@@ -258,5 +285,29 @@ public class DemandControllerTest {
                 .andExpect(redirectedUrl("/demands/my-demands"));
 
         verify(demandService, never()).deleteDemand(any());
+    }
+
+    @Test
+    public void testApiUpdateStatus_ShouldBlockCancelForNonCreator() throws Exception {
+        UserAccount adminUser = new UserAccount();
+        adminUser.setId(99L);
+        adminUser.setUsername("admin");
+        adminUser.setRole(RoleType.ADMIN.getCode());
+
+        when(authentication.getName()).thenReturn("admin");
+        when(authentication.getAuthorities()).thenReturn(
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        );
+        when(userAccountService.findByUsername("admin")).thenReturn(Optional.of(adminUser));
+        when(demandService.findById(1L)).thenReturn(Optional.of(testDemand));
+
+        mockMvc.perform(put("/demands/api/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"CANCELADA\"}")
+                        .principal(authentication))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value("Somente quem criou a demanda pode cancelá-la."));
+
+        verify(demandService, never()).updateStatus(anyLong(), any(), any());
     }
 }
