@@ -16,7 +16,7 @@ import java.util.Collection;
 public class RoleBasedAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private static final String ADMIN_TARGET_URL = "/dashboard";
-    private static final String USER_TARGET_URL = "/me/vehicles";
+    private static final String USER_TARGET_URL = "/me/plan";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
