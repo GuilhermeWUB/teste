@@ -144,6 +144,23 @@ public class DemandController {
 
             DemandStatus newStatus = DemandStatus.valueOf(statusValue);
             String observation = payload.getOrDefault("observation", null);
+
+            UserAccount currentUser = getCurrentUser(authentication);
+            Demand demand = demandService.findById(id)
+                    .orElse(null);
+
+            if (demand == null) {
+                logger.warn("Demanda {} não encontrada para atualização de status via API", id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Demanda não encontrada"));
+            }
+
+            if (newStatus == DemandStatus.CANCELADA && !isDemandCreator(demand, currentUser)) {
+                logger.warn("Usuário {} tentou cancelar a demanda {} mas não é o criador", currentUser.getUsername(), id);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Somente quem criou a demanda pode cancelá-la."));
+            }
+
             Demand updated = demandService.updateStatus(id, newStatus, observation);
 
             logger.info("Status da demanda {} atualizado para {}", id, newStatus);
@@ -380,6 +397,7 @@ public class DemandController {
         model.addAttribute("demand", demand);
         model.addAttribute("statusOptions", DemandStatus.values());
         model.addAttribute("isDirector", isDirectorOrAdmin(userRole));
+        model.addAttribute("currentUser", currentUser);
 
         return "detalhes_demanda";
     }
@@ -406,6 +424,8 @@ public class DemandController {
 
         UserAccount currentUser = getCurrentUser(authentication);
 
+        String returnUrl = isDirectorOrAdmin(userRole) ? "/demands/director" : "/demands/my-demands";
+
         try {
             Demand demand = demandService.findById(id)
                     .orElseThrow(() -> new RuntimeException("Demanda não encontrada"));
@@ -414,6 +434,11 @@ public class DemandController {
             if (!hasAccessToDemand(demand, currentUser, userRole)) {
                 redirectAttributes.addFlashAttribute("error", "Você não tem permissão para atualizar esta demanda.");
                 return "redirect:/demands/my-demands";
+            }
+
+            if (status == DemandStatus.CANCELADA && !isDemandCreator(demand, currentUser)) {
+                redirectAttributes.addFlashAttribute("error", "Somente quem criou a demanda pode cancelá-la.");
+                return "redirect:" + returnUrl;
             }
 
             demandService.updateStatus(id, status, completionObservation);
@@ -426,7 +451,6 @@ public class DemandController {
             redirectAttributes.addFlashAttribute("error", "Erro ao atualizar status: " + e.getMessage());
         }
 
-        String returnUrl = isDirectorOrAdmin(userRole) ? "/demands/director" : "/demands/my-demands";
         return "redirect:" + returnUrl;
     }
 
@@ -612,7 +636,7 @@ public class DemandController {
         }
 
         // Criador tem acesso
-        if (demand.getCreatedBy() != null && demand.getCreatedBy().getId().equals(user.getId())) {
+        if (isDemandCreator(demand, user)) {
             return true;
         }
 
@@ -631,6 +655,13 @@ public class DemandController {
      */
     private List<RoleType> getAvailableRolesForUser(String userRole) {
         return RoleType.getTargetRolesFor(userRole);
+    }
+
+    private boolean isDemandCreator(Demand demand, UserAccount user) {
+        if (demand == null || user == null || demand.getCreatedBy() == null) {
+            return false;
+        }
+        return demand.getCreatedBy().getId().equals(user.getId());
     }
 
     /**

@@ -142,12 +142,14 @@
                 </form>
 
                 <!-- Atualizar Status -->
-                <div class="btn-group" role="group">
+                <div class="btn-group" role="group"
+                     th:with="canCancel=${currentUser != null and demand.createdBy != null and demand.createdBy.id == currentUser.id}">
                     <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="bi bi-arrow-repeat"></i> Atualizar Status
                     </button>
                     <ul class="dropdown-menu">
-                        <li th:each="status : ${statusOptions}">
+                        <li th:each="status : ${statusOptions}"
+                            th:if="${status.name() != 'CANCELADA' or canCancel}">
                             <form th:action="@{/demands/{id}/update-status(id=${demand.id})}"
                                   method="post" style="margin: 0;" data-demand-status-form>
                                 <input type="hidden" name="status" th:value="${status}">
