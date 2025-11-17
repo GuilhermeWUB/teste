@@ -1,13 +1,44 @@
 :root {
     --plan-card-bg: var(--bs-body-bg, #ffffff);
-    --plan-card-border: rgba(0, 0, 0, 0.08);
+    --plan-card-border: rgba(15, 23, 42, 0.08);
+    --plan-card-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     --plan-chip-bg: rgba(13, 110, 253, 0.1);
+    --plan-chip-color: var(--bs-primary, #0d6efd);
+    --plan-list-bg: rgba(13, 110, 253, 0.06);
+    --plan-label-color: var(--bs-secondary-color, #6c757d);
+    --plan-text-color: var(--bs-body-color, #212529);
+    --plan-detail-border: rgba(0, 0, 0, 0.05);
+    --plan-icon-color: var(--bs-primary, #0d6efd);
+    --plan-page-bg: transparent;
+    --plan-page-border: transparent;
+    --plan-page-padding: 0;
+}
+
+html[data-theme="dark"] {
+    --plan-card-bg: rgba(31, 23, 53, 0.92);
+    --plan-card-border: rgba(196, 181, 253, 0.25);
+    --plan-card-shadow: 0 24px 60px rgba(3, 2, 9, 0.75);
+    --plan-chip-bg: rgba(168, 85, 247, 0.25);
+    --plan-chip-color: #f8f7ff;
+    --plan-list-bg: rgba(139, 92, 246, 0.18);
+    --plan-label-color: rgba(237, 233, 254, 0.8);
+    --plan-text-color: #f5f3ff;
+    --plan-detail-border: rgba(255, 255, 255, 0.12);
+    --plan-icon-color: #c084fc;
+    --plan-page-bg: radial-gradient(circle at top, rgba(90, 28, 189, 0.18), rgba(13, 8, 24, 0.55));
+    --plan-page-border: rgba(168, 85, 247, 0.3);
+    --plan-page-padding: clamp(1.25rem, 4vw, 3rem);
 }
 
 .plan-page {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    background: var(--plan-page-bg);
+    border: 1px solid var(--plan-page-border);
+    border-radius: 2rem;
+    padding: var(--plan-page-padding);
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .page-header {
@@ -42,25 +73,27 @@
     border-radius: 1rem;
     padding: 1.25rem 1.5rem;
     min-width: 240px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--plan-card-shadow);
+    color: var(--plan-text-color);
+    backdrop-filter: blur(6px);
 }
 
 .plan-status-card .label {
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--bs-secondary-color);
+    color: var(--plan-label-color);
 }
 
 .plan-status-card .value {
     display: block;
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--bs-primary);
+    color: var(--plan-chip-color);
 }
 
 .plan-status-card .renewal {
-    color: var(--bs-secondary-color);
+    color: var(--plan-label-color);
 }
 
 .plan-grid {
@@ -79,17 +112,19 @@
     border: 1px solid var(--plan-card-border);
     border-radius: 1.25rem;
     padding: 1.5rem;
-    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--plan-card-shadow);
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    color: var(--plan-text-color);
+    backdrop-filter: blur(6px);
 }
 
 .plan-card__header .label {
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 0.08em;
-    color: var(--bs-secondary-color);
+    color: var(--plan-label-color);
     margin-bottom: 0.3rem;
 }
 
@@ -104,7 +139,7 @@
     border-radius: 999px;
     padding: 0.35rem 0.9rem;
     background: var(--plan-chip-bg);
-    color: var(--bs-primary);
+    color: var(--plan-chip-color);
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -113,7 +148,7 @@
     display: flex;
     justify-content: space-between;
     padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--plan-detail-border);
 }
 
 .plan-details div:last-child {
@@ -123,12 +158,13 @@
 .plan-details dt {
     margin: 0;
     font-weight: 500;
-    color: var(--bs-secondary-color);
+    color: var(--plan-label-color);
 }
 
 .plan-details dd {
     margin: 0;
     font-weight: 600;
+    color: var(--plan-text-color);
 }
 
 .plan-list {
@@ -146,11 +182,26 @@
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     border-radius: 0.85rem;
-    background: rgba(13, 110, 253, 0.06);
-    color: var(--bs-body-color);
+    background: var(--plan-list-bg);
+    color: var(--plan-text-color);
+    border: 1px solid var(--plan-card-border);
 }
 
 .plan-list i {
-    color: var(--bs-primary);
+    color: var(--plan-icon-color);
     font-size: 1.2rem;
+}
+
+html[data-theme="dark"] .plan-status-card .value,
+html[data-theme="dark"] .plan-card h2,
+html[data-theme="dark"] .plan-card .plan-name {
+    text-shadow: 0 5px 30px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plan-card,
+    .plan-status-card,
+    .plan-page {
+        transition: none;
+    }
 }
