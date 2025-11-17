@@ -301,7 +301,7 @@ public class DemandServiceTest {
     }
 
     @Test
-    public void testFindNextDemandsForUser_ShouldIgnoreCompletedAndCanceledDemands() {
+    public void testFindNextDemandsForUser_ShouldIncludePendingAndInProgressDemands() {
         Demand completed = new Demand();
         completed.setId(10L);
         completed.setTitulo("Concluída");
@@ -320,13 +320,20 @@ public class DemandServiceTest {
         pending.setStatus(DemandStatus.PENDENTE);
         pending.setAssignedTo(testUser);
 
+        Demand inProgress = new Demand();
+        inProgress.setId(13L);
+        inProgress.setTitulo("Em andamento");
+        inProgress.setStatus(DemandStatus.EM_ANDAMENTO);
+        inProgress.setAssignedTo(testUser);
+
         when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
-                .thenReturn(Arrays.asList(completed, canceled, pending));
+                .thenReturn(Arrays.asList(completed, canceled, pending, inProgress));
 
         List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
 
-        assertEquals(1, result.size());
-        assertEquals(pending.getId(), result.get(0).getId());
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(pending.getId())));
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(inProgress.getId())));
     }
 
     @Test
