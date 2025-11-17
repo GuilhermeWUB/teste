@@ -301,6 +301,35 @@ public class DemandServiceTest {
     }
 
     @Test
+    public void testFindNextDemandsForUser_ShouldIgnoreCompletedAndCanceledDemands() {
+        Demand completed = new Demand();
+        completed.setId(10L);
+        completed.setTitulo("Concluída");
+        completed.setStatus(DemandStatus.CONCLUIDA);
+        completed.setAssignedTo(testUser);
+
+        Demand canceled = new Demand();
+        canceled.setId(11L);
+        canceled.setTitulo("Cancelada");
+        canceled.setStatus(DemandStatus.CANCELADA);
+        canceled.setAssignedTo(testUser);
+
+        Demand pending = new Demand();
+        pending.setId(12L);
+        pending.setTitulo("Pendente");
+        pending.setStatus(DemandStatus.PENDENTE);
+        pending.setAssignedTo(testUser);
+
+        when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
+                .thenReturn(Arrays.asList(completed, canceled, pending));
+
+        List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
+
+        assertEquals(1, result.size());
+        assertEquals(pending.getId(), result.get(0).getId());
+    }
+
+    @Test
     public void testFindNextDemandsForUser_WithInvalidParameters_ShouldReturnEmpty() {
         List<Demand> resultNullUser = demandService.findNextDemandsForUser(null, 3);
         assertTrue(resultNullUser.isEmpty());

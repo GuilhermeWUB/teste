@@ -167,6 +167,9 @@ public class DemandService {
                 .thenComparing(Demand::getCreatedAt, Comparator.nullsLast(LocalDateTime::compareTo));
 
         return assignedDemands.stream()
+                .filter(demand -> demand.getStatus() == null
+                        || (demand.getStatus() != DemandStatus.CONCLUIDA
+                        && demand.getStatus() != DemandStatus.CANCELADA))
                 .sorted(comparator)
                 .limit(limit)
                 .toList();
