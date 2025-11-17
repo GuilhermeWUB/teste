@@ -223,7 +223,7 @@ public class ComunicadoController {
 
         // Cria um novo evento para o formulário
         Event event = new Event();
-        event.setStatus(Status.ABERTO); // Status padrão
+        event.setStatus(Status.COMUNICADO); // Status padrão para associados
         if (partner != null) {
             event.setPartner(partner);
         } else {
@@ -269,8 +269,9 @@ public class ComunicadoController {
             return "redirect:/comunicados";
         }
 
-        // Define o parceiro automaticamente como o usuário logado
+        // Define o parceiro e o status automaticamente como o usuário logado
         event.setPartner(partner);
+        event.setStatus(Status.COMUNICADO);
 
         // Preenche data e hora da comunicação automaticamente se não foram fornecidas
         if (event.getDataComunicacao() == null) {
