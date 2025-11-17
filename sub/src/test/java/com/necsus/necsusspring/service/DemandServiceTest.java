@@ -32,6 +32,9 @@ public class DemandServiceTest {
     @Mock
     private DemandRepository demandRepository;
 
+    @Mock
+    private NotificationService notificationService;
+
     private Demand testDemand;
     private UserAccount testUser;
 
@@ -298,6 +301,48 @@ public class DemandServiceTest {
         assertEquals(3, result.size());
         assertEquals(urgent.getId(), result.get(0).getId());
         assertEquals(dueSoon.getId(), result.get(1).getId());
+    }
+
+    @Test
+    public void testFindNextDemandsForUser_ShouldIncludePendingAndInProgressDemands() {
+        Demand completed = new Demand();
+        completed.setId(10L);
+        completed.setTitulo("Concluída");
+        completed.setStatus(DemandStatus.CONCLUIDA);
+        completed.setAssignedTo(testUser);
+
+        Demand canceled = new Demand();
+        canceled.setId(11L);
+        canceled.setTitulo("Cancelada");
+        canceled.setStatus(DemandStatus.CANCELADA);
+        canceled.setAssignedTo(testUser);
+
+        Demand pending = new Demand();
+        pending.setId(12L);
+        pending.setTitulo("Pendente");
+        pending.setStatus(DemandStatus.PENDENTE);
+        pending.setAssignedTo(testUser);
+
+        Demand inProgress = new Demand();
+        inProgress.setId(13L);
+        inProgress.setTitulo("Em andamento");
+        inProgress.setStatus(DemandStatus.EM_ANDAMENTO);
+        inProgress.setAssignedTo(testUser);
+
+        Demand withoutStatus = new Demand();
+        withoutStatus.setId(14L);
+        withoutStatus.setTitulo("Sem status");
+        withoutStatus.setAssignedTo(testUser);
+
+        when(demandRepository.findByAssignedToOrderByCreatedAtDesc(testUser))
+                .thenReturn(Arrays.asList(completed, canceled, pending, inProgress, withoutStatus));
+
+        List<Demand> result = demandService.findNextDemandsForUser(testUser, 3);
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(pending.getId())));
+        assertTrue(result.stream().anyMatch(demand -> demand.getId().equals(inProgress.getId())));
+        assertTrue(result.stream().noneMatch(demand -> demand.getId().equals(withoutStatus.getId())));
     }
 
     @Test
