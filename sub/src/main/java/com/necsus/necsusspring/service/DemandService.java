@@ -160,7 +160,8 @@ public class DemandService {
             return List.of();
         }
 
-        List<Demand> assignedDemands = findByAssignedTo(user);
+        List<Demand> assignedDemands = demandRepository
+                .findByAssignedToAndStatusInOrderByCreatedAtDesc(user, DASHBOARD_ALLOWED_STATUSES);
         if (assignedDemands.isEmpty()) {
             return List.of();
         }
@@ -257,11 +258,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                NotificationType.DEMAND,
-                "/demands/" + demand.getId(),
-                demand.getId(),
-                "DEMAND",
-                null
+                NotificationType.DEMAND
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal
@@ -323,11 +320,7 @@ public class DemandService {
                 demand.getCreatedBy(),
                 title,
                 message,
-                NotificationType.DEMAND,
-                "/demands/" + demand.getId(),
-                demand.getId(),
-                "DEMAND",
-                null
+                NotificationType.DEMAND
             );
         } catch (Exception e) {
             // Log do erro mas não interrompe o fluxo principal

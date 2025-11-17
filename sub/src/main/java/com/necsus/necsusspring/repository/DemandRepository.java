@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,12 @@ public interface DemandRepository extends JpaRepository<Demand, Long> {
      * Busca demandas atribuídas a um usuário específico
      */
     List<Demand> findByAssignedToOrderByCreatedAtDesc(UserAccount assignedTo);
+
+    /**
+     * Busca demandas atribuídas a um usuário filtrando por um conjunto de status
+     */
+    List<Demand> findByAssignedToAndStatusInOrderByCreatedAtDesc(UserAccount assignedTo,
+                                                                 Collection<DemandStatus> statuses);
 
     /**
      * Busca demandas por status
