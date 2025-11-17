@@ -81,6 +81,7 @@
                   id="formCriarEvento">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" th:field="*{partner.id}" />
+                <input type="hidden" th:field="*{status}" />
 
                 <!-- Campos ocultos para Data da Comunicação (preenchidos automaticamente) -->
                 <input type="hidden" id="dataComunicacao" name="dataComunicacao" />
@@ -94,13 +95,11 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></div>
                     </div>
                     <div class="col-md-4">
-                        <label for="status" class="form-label fw-semibold">Status *</label>
-                        <select class="form-select" id="status" th:field="*{status}" required>
-                            <option value="">Selecione...</option>
-                            <option th:each="status : ${statusOptions}"
-                                    th:value="${status}"
-                                    th:text="${status.displayName}">Status</option>
-                        </select>
+                        <label class="form-label fw-semibold">Status inicial</label>
+                        <div class="form-control bg-light">
+                            <span th:text="${event.status != null ? event.status.displayName : 'Comunicado'}">Comunicado</span>
+                        </div>
+                        <small class="text-muted">Definido automaticamente como "Comunicado".</small>
                     </div>
                 </div>
 
