@@ -243,11 +243,16 @@ public class VistoriaController {
     @ResponseBody
     public ResponseEntity<List<Vistoria>> getVistoriasByEventId(@PathVariable Long eventId) {
         try {
+            logger.info("Buscando vistorias para o evento ID: {}", eventId);
             List<Vistoria> vistorias = vistoriaService.listByEventId(eventId);
+            logger.info("Encontradas {} vistorias para o evento {}", vistorias.size(), eventId);
+
             // Força o carregamento das fotos (que têm FetchType.LAZY) para que sejam serializadas
             vistorias.forEach(vistoria -> {
-                vistoria.getFotos().size(); // Força inicialização da coleção lazy
+                int fotosCount = vistoria.getFotos().size(); // Força inicialização da coleção lazy
+                logger.info("Vistoria ID {} tem {} fotos", vistoria.getId(), fotosCount);
             });
+
             return ResponseEntity.ok(vistorias);
         } catch (Exception ex) {
             logger.error("Erro ao buscar vistorias do evento {}: ", eventId, ex);
