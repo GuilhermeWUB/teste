@@ -19,7 +19,6 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
            "LEFT JOIN FETCH p.adhesion " +
            "LEFT JOIN FETCH p.vehicles v " +
            "LEFT JOIN FETCH v.payment " +
-           "LEFT JOIN FETCH p.bankSlips " +
            "WHERE p.id = :id")
     Optional<Partner> findByIdWithAllRelationships(@Param("id") Long id);
 
