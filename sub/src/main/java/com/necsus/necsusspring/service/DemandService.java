@@ -3,6 +3,7 @@ package com.necsus.necsusspring.service;
 import com.necsus.necsusspring.dto.DemandBoardCardDto;
 import com.necsus.necsusspring.dto.DemandBoardSnapshot;
 import com.necsus.necsusspring.model.Demand;
+import com.necsus.necsusspring.model.DemandPriority;
 import com.necsus.necsusspring.model.DemandStatus;
 import com.necsus.necsusspring.model.NotificationType;
 import com.necsus.necsusspring.model.RoleType;
@@ -11,6 +12,7 @@ import com.necsus.necsusspring.repository.DemandRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +26,12 @@ public class DemandService {
 
     private final DemandRepository demandRepository;
     private final NotificationService notificationService;
+    private static final Map<DemandPriority, Integer> PRIORITY_ORDER = Map.of(
+            DemandPriority.URGENTE, 0,
+            DemandPriority.ALTA, 1,
+            DemandPriority.MEDIA, 2,
+            DemandPriority.BAIXA, 3
+    );
 
     public DemandService(DemandRepository demandRepository, NotificationService notificationService) {
         this.demandRepository = demandRepository;
@@ -137,6 +145,31 @@ public class DemandService {
      */
     public List<Demand> findByAssignedTo(UserAccount user) {
         return demandRepository.findByAssignedToOrderByCreatedAtDesc(user);
+    }
+
+    /**
+     * Lista as próximas demandas atribuídas ao usuário, priorizando urgentes e com prazo mais próximo
+     */
+    public List<Demand> findNextDemandsForUser(UserAccount user, int limit) {
+        if (user == null || limit <= 0) {
+            return List.of();
+        }
+
+        List<Demand> assignedDemands = findByAssignedTo(user);
+        if (assignedDemands.isEmpty()) {
+            return List.of();
+        }
+
+        Comparator<Demand> comparator = Comparator
+                .comparing((Demand demand) -> isUrgent(demand) ? 0 : 1)
+                .thenComparing(Demand::getDueDate, Comparator.nullsLast(LocalDateTime::compareTo))
+                .thenComparing(this::priorityRank)
+                .thenComparing(Demand::getCreatedAt, Comparator.nullsLast(LocalDateTime::compareTo));
+
+        return assignedDemands.stream()
+                .sorted(comparator)
+                .limit(limit)
+                .toList();
     }
 
     /**
@@ -291,5 +324,14 @@ public class DemandService {
             // Log do erro mas não interrompe o fluxo principal
             System.err.println("Erro ao enviar notificação de atribuição da demanda: " + e.getMessage());
         }
+    }
+
+    private boolean isUrgent(Demand demand) {
+        return Optional.ofNullable(demand.getPrioridade()).orElse(DemandPriority.MEDIA) == DemandPriority.URGENTE;
+    }
+
+    private int priorityRank(Demand demand) {
+        DemandPriority priority = Optional.ofNullable(demand.getPrioridade()).orElse(DemandPriority.MEDIA);
+        return PRIORITY_ORDER.getOrDefault(priority, Integer.MAX_VALUE);
     }
 }
