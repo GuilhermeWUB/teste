@@ -46,6 +46,17 @@ public class VistoriaService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Vistoria> findLatestWithPhotosByEventId(Long eventId) {
+        return vistoriaRepository.findFirstByEventIdOrderByDataCriacaoDesc(eventId)
+                .map(v -> {
+                    if (v.getFotos() != null) {
+                        v.getFotos().size();
+                    }
+                    return v;
+                });
+    }
+
+    @Transactional(readOnly = true)
     public boolean existsByEventId(Long eventId) {
         return vistoriaRepository.existsByEventId(eventId);
     }

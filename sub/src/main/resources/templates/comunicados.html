@@ -73,7 +73,12 @@
                 Não foi possível localizar seus dados de associado. Entre em contato com o administrador para resolver este problema.
             </div>
 
-            <form th:if="${userPartner != null}" th:action="@{/comunicados/criar-evento}" th:object="${event}" method="post" id="formCriarEvento">
+            <form th:if="${userPartner != null}"
+                  th:action="@{/comunicados/criar-evento}"
+                  th:object="${event}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  id="formCriarEvento">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" th:field="*{partner.id}" />
 
@@ -159,6 +164,43 @@
                     </div>
                 </div>
 
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-paperclip text-primary fs-5"></i>
+                        <div>
+                            <h6 class="mb-0">Documentos do Evento</h6>
+                            <p class="text-muted small mb-0">Envie os arquivos de apoio em seus respectivos campos. Aceitamos PDF, JPG ou PNG.</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docCrlv" class="form-label fw-semibold">CRLV do veículo</label>
+                            <input type="file" class="form-control" id="docCrlv" name="docCrlv" accept="application/pdf,image/*">
+                            <small class="text-muted">Documento obrigatório apenas quando solicitado.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docCnh" class="form-label fw-semibold">CNH do condutor</label>
+                            <input type="file" class="form-control" id="docCnh" name="docCnh" accept="application/pdf,image/*">
+                            <small class="text-muted">Envie a habilitação atualizada do motorista.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docBo" class="form-label fw-semibold">Boletim de Ocorrência</label>
+                            <input type="file" class="form-control" id="docBo" name="docBo" accept="application/pdf,image/*">
+                            <small class="text-muted">Caso o B.O. esteja disponível, anexe aqui.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docComprovanteResidencia" class="form-label fw-semibold">Comprovante de residência</label>
+                            <input type="file" class="form-control" id="docComprovanteResidencia" name="docComprovanteResidencia" accept="application/pdf,image/*">
+                            <small class="text-muted">Último comprovante em nome do associado.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docTermoAbertura" class="form-label fw-semibold">Termo de abertura</label>
+                            <input type="file" class="form-control" id="docTermoAbertura" name="docTermoAbertura" accept="application/pdf,image/*">
+                            <small class="text-muted">Use este campo para anexar o termo de abertura do sinistro.</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2 justify-content-end">
                     <button type="reset" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
@@ -204,7 +246,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="evt : ${userEvents}">
+                    <tr th:each="evt : ${userEvents}" th:attr="data-event-row=${evt.id}">
                         <td>
                             <div class="fw-semibold" th:text="${evt.titulo}"></div>
                             <small class="text-muted" th:text="${evt.descricao != null && evt.descricao.length() > 80 ? evt.descricao.substring(0, 80) + '...' : evt.descricao}"></small>
@@ -251,16 +293,16 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-sm btn-outline-primary btn-edit-description"
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-open-event-details"
                                         th:data-event-id="${evt.id}"
-                                        th:data-description="${evt.descricao}"
-                                        title="Editar Descrição">
+                                        data-focus="descricao"
+                                        title="Editar Comunicado">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary btn-edit-observations"
+                                <button type="button" class="btn btn-sm btn-outline-secondary btn-open-event-details"
                                         th:data-event-id="${evt.id}"
-                                        th:data-observations="${evt.observacoes}"
-                                        title="Editar Observações">
+                                        data-focus="observacoes"
+                                        title="Editar Observações e Fotos">
                                     <i class="bi bi-chat-left-text"></i>
                                 </button>
                             </div>
@@ -309,71 +351,107 @@
         </div>
     </div>
 
-    <!-- Modal de Edição de Descrição -->
-    <div class="modal fade" id="editDescriptionModal" tabindex="-1" aria-labelledby="editDescriptionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal completo com informações e edição -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editDescriptionModalLabel">
-                        <i class="bi bi-pencil-square"></i> Editar Descrição do Comunicado
-                    </h5>
+                    <div>
+                        <h5 class="modal-title mb-0" id="eventDetailsModalLabel">
+                            <i class="bi bi-pencil-square me-2"></i>Meu Comunicado
+                        </h5>
+                        <small class="text-muted" id="eventDetailsSubtitle"></small>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="editDescriptionForm" method="post" th:action="@{/comunicados/update-description}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <input type="hidden" id="editEventId" name="eventId" />
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="editDescricao" class="form-label">Descrição *</label>
-                            <textarea class="form-control" id="editDescricao" name="descricao" rows="8" required></textarea>
-                            <small class="form-text text-muted">Atualize a descrição do seu comunicado</small>
+                <div class="modal-body">
+                    <div id="eventDetailsLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Carregando informações do comunicado...</p>
+                    </div>
+                    <div id="eventDetailsContent" class="d-none">
+                        <div id="eventDetailsFeedback" class="alert d-none" role="alert"></div>
+                        <div class="row g-4">
+                            <div class="col-12 col-lg-5">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-uppercase text-muted fw-semibold mb-3">Resumo do Comunicado</h6>
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="text-muted small">Status atual</span>
+                                                <span id="eventStatusBadge" class="badge bg-secondary">-</span>
+                                            </div>
+                                            <small class="text-muted" id="eventPhaseLabel"></small>
+                                        </div>
+                                        <dl class="row mb-0 small">
+                                            <dt class="col-5 text-muted">Motivo</dt>
+                                            <dd class="col-7" id="eventMotivoValue">-</dd>
+                                            <dt class="col-5 text-muted">Envolvimento</dt>
+                                            <dd class="col-7" id="eventEnvolvimentoValue">-</dd>
+                                            <dt class="col-5 text-muted">Prioridade</dt>
+                                            <dd class="col-7"><span id="eventPrioridadeBadge" class="badge bg-secondary">-</span></dd>
+                                            <dt class="col-5 text-muted">Associado</dt>
+                                            <dd class="col-7" id="eventPartnerValue">-</dd>
+                                            <dt class="col-5 text-muted">Veículo</dt>
+                                            <dd class="col-7" id="eventVehicleValue">-</dd>
+                                            <dt class="col-5 text-muted">Data do ocorrido</dt>
+                                            <dd class="col-7" id="eventDataAconteceu">-</dd>
+                                            <dt class="col-5 text-muted">Data da comunicação</dt>
+                                            <dd class="col-7" id="eventDataComunicacao">-</dd>
+                                            <dt class="col-5 text-muted">Vencimento</dt>
+                                            <dd class="col-7" id="eventDataVencimento">-</dd>
+                                        </dl>
+                                        <div class="mt-4">
+                                            <h6 class="fw-semibold mb-2"><i class="bi bi-paperclip me-2"></i>Documentos enviados</h6>
+                                            <div id="eventAttachmentsList" class="d-flex flex-column gap-2 small text-break">
+                                                <span class="text-muted">Nenhum documento foi anexado.</span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="fw-semibold mb-0"><i class="bi bi-images me-2"></i>Fotos da vistoria</h6>
+                                                <span class="badge bg-dark-subtle text-dark" id="eventPhotosBadge">0</span>
+                                            </div>
+                                            <div id="eventPhotosGrid" class="row g-2 mt-3"></div>
+                                            <p class="text-muted small mb-0" id="eventPhotosEmpty">Nenhuma foto enviada até o momento.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-7">
+                                <form id="eventDetailsForm" class="card shadow-sm h-100" novalidate>
+                                    <div class="card-body">
+                                        <input type="hidden" id="eventDetailsId" />
+                                        <div class="mb-4">
+                                            <label for="eventDescricao" class="form-label fw-semibold">Descrição do Comunicado *</label>
+                                            <textarea id="eventDescricao" class="form-control" name="descricao" rows="6" required></textarea>
+                                            <div class="invalid-feedback">Informe a descrição do comunicado.</div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="eventObservacoes" class="form-label fw-semibold">Observações</label>
+                                            <textarea id="eventObservacoes" class="form-control" name="observacoes" rows="5"
+                                                      placeholder="Registre observações importantes"></textarea>
+                                        </div>
+                                        <div>
+                                            <label for="eventNovasFotos" class="form-label fw-semibold">Enviar novas fotos</label>
+                                            <input type="file" id="eventNovasFotos" name="novasFotos" class="form-control" accept="image/*" multiple>
+                                            <small class="text-muted">Você pode selecionar múltiplas imagens para complementar o comunicado.</small>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer d-flex justify-content-between align-items-center">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                            <i class="bi bi-x-circle"></i> Fechar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="eventDetailsSubmit">
+                                            <span class="spinner-border spinner-border-sm me-2 d-none" id="eventDetailsSavingSpinner" role="status"></span>
+                                            <i class="bi bi-check-circle"></i> Salvar alterações
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle"></i> Salvar Alterações
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição de Observações -->
-    <div class="modal fade" id="editObservationsModal" tabindex="-1" aria-labelledby="editObservationsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editObservationsModalLabel">
-                        <i class="bi bi-chat-left-text-fill"></i> Editar Observações do Comunicado
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="editObservationsForm" method="post" th:action="@{/comunicados/update-observations}">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                    <input type="hidden" id="editObsEventId" name="eventId" />
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="editObservacoes" class="form-label">Observações</label>
-                            <textarea class="form-control" id="editObservacoes" name="observacoes" rows="8"
-                                      placeholder="Digite suas observações sobre o comunicado..."></textarea>
-                            <small class="form-text text-muted">
-                                <i class="bi bi-info-circle"></i> As alterações neste campo serão registradas no histórico
-                            </small>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x-circle"></i> Cancelar
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle"></i> Salvar Alterações
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
@@ -429,43 +507,233 @@
             });
         }
 
-        // Adiciona event listeners aos botões de editar descrição
-        const editButtons = document.querySelectorAll('.btn-edit-description');
-        editButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const eventId = this.getAttribute('data-event-id');
-                const currentDescription = this.getAttribute('data-description') || '';
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+        const modalElement = document.getElementById('eventDetailsModal');
+        const modalInstance = modalElement ? new bootstrap.Modal(modalElement) : null;
+        const loadingWrapper = document.getElementById('eventDetailsLoading');
+        const contentWrapper = document.getElementById('eventDetailsContent');
+        const feedbackAlert = document.getElementById('eventDetailsFeedback');
+        const formElement = document.getElementById('eventDetailsForm');
+        const descricaoField = document.getElementById('eventDescricao');
+        const observacoesField = document.getElementById('eventObservacoes');
+        const fotosField = document.getElementById('eventNovasFotos');
+        const submitButton = document.getElementById('eventDetailsSubmit');
+        const savingSpinner = document.getElementById('eventDetailsSavingSpinner');
+        const statusBadge = document.getElementById('eventStatusBadge');
+        const phaseLabel = document.getElementById('eventPhaseLabel');
+        const motivoValue = document.getElementById('eventMotivoValue');
+        const envolvimentoValue = document.getElementById('eventEnvolvimentoValue');
+        const prioridadeBadge = document.getElementById('eventPrioridadeBadge');
+        const partnerValue = document.getElementById('eventPartnerValue');
+        const vehicleValue = document.getElementById('eventVehicleValue');
+        const dataAconteceu = document.getElementById('eventDataAconteceu');
+        const dataComunicacao = document.getElementById('eventDataComunicacao');
+        const dataVencimento = document.getElementById('eventDataVencimento');
+        const attachmentsList = document.getElementById('eventAttachmentsList');
+        const photosGrid = document.getElementById('eventPhotosGrid');
+        const photosBadge = document.getElementById('eventPhotosBadge');
+        const photosEmpty = document.getElementById('eventPhotosEmpty');
+        const modalTitle = document.getElementById('eventDetailsModalLabel');
+        const modalSubtitle = document.getElementById('eventDetailsSubtitle');
+        const eventIdInput = document.getElementById('eventDetailsId');
+        let currentEventId = null;
 
-                console.log('[EDIT MODAL] Abrindo modal de descrição para evento:', eventId);
-
-                // Preenche os campos do modal
-                document.getElementById('editEventId').value = eventId;
-                document.getElementById('editDescricao').value = currentDescription;
-
-                // Abre o modal usando Bootstrap 5
-                const modal = new bootstrap.Modal(document.getElementById('editDescriptionModal'));
-                modal.show();
+        const openButtons = document.querySelectorAll('.btn-open-event-details');
+        openButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!modalInstance) return;
+                currentEventId = button.getAttribute('data-event-id');
+                const focusField = button.getAttribute('data-focus') || 'descricao';
+                resetModalState();
+                modalInstance.show();
+                loadEventDetails(currentEventId, focusField);
             });
         });
 
-        // Adiciona event listeners aos botões de editar observações
-        const editObsButtons = document.querySelectorAll('.btn-edit-observations');
-        editObsButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const eventId = this.getAttribute('data-event-id');
-                const currentObservations = this.getAttribute('data-observations') || '';
+        async function loadEventDetails(eventId, focusField) {
+            if (!eventId) {
+                showFeedback('Comunicado inválido.', 'danger');
+                return;
+            }
+            try {
+                const response = await fetch(`/comunicados/api/events/${eventId}`);
+                const data = await response.json();
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Não foi possível carregar o comunicado.');
+                }
+                populateModal(data, focusField);
+            } catch (error) {
+                showFeedback(error.message, 'danger');
+            }
+        }
 
-                console.log('[EDIT MODAL] Abrindo modal de observações para evento:', eventId);
+        function populateModal(data, focusField) {
+            loadingWrapper.classList.add('d-none');
+            contentWrapper.classList.remove('d-none');
+            formElement.classList.remove('was-validated');
 
-                // Preenche os campos do modal
-                document.getElementById('editObsEventId').value = eventId;
-                document.getElementById('editObservacoes').value = currentObservations;
+            modalTitle.textContent = data.titulo || 'Meu Comunicado';
+            modalSubtitle.textContent = data.statusFormatted
+                ? `${data.statusFormatted}${data.statusPhaseName ? ' · ' + data.statusPhaseName : ''}`
+                : '';
+            statusBadge.textContent = data.statusFormatted || '-';
+            statusBadge.className = `badge ${data.statusBadgeClass || 'bg-secondary'}`;
+            phaseLabel.textContent = data.statusPhaseName ? `Fase ${data.statusPhase}: ${data.statusPhaseName}` : '';
+            motivoValue.textContent = data.motivoDescricao || '-';
+            envolvimentoValue.textContent = data.envolvimentoDescricao || '-';
+            prioridadeBadge.textContent = data.prioridadeLabel || 'Sem prioridade';
+            prioridadeBadge.className = `badge ${data.prioridadeBadgeClass || 'bg-secondary'}`;
+            partnerValue.textContent = data.partnerName || '-';
+            vehicleValue.textContent = data.vehiclePlaque ? `${data.vehiclePlaque}${data.vehicleModel ? ' · ' + data.vehicleModel : ''}` : '-';
+            dataAconteceu.textContent = formatDateWithFallback(data.dataAconteceu, data.horaAconteceu);
+            dataComunicacao.textContent = formatDateWithFallback(data.dataComunicacao, data.horaComunicacao);
+            dataVencimento.textContent = data.dataVencimento || '-';
 
-                // Abre o modal usando Bootstrap 5
-                const modal = new bootstrap.Modal(document.getElementById('editObservationsModal'));
-                modal.show();
+            renderAttachments(data.attachments);
+            renderPhotos(data.photos, data.photoCount);
+
+            descricaoField.value = data.descricao || '';
+            observacoesField.value = data.observacoes || '';
+            fotosField.value = '';
+            eventIdInput.value = data.id || '';
+            currentEventId = data.id;
+
+            setTimeout(() => {
+                if (focusField === 'observacoes') {
+                    observacoesField.focus();
+                } else {
+                    descricaoField.focus();
+                }
+            }, 200);
+        }
+
+        function renderAttachments(attachments) {
+            attachmentsList.innerHTML = '';
+            if (!attachments || attachments.length === 0) {
+                attachmentsList.innerHTML = '<span class="text-muted">Nenhum documento foi anexado.</span>';
+                return;
+            }
+            attachments.forEach(doc => {
+                const link = document.createElement('a');
+                link.href = doc.url;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.className = 'd-flex align-items-center gap-2';
+                link.innerHTML = `<i class="bi bi-file-earmark-text"></i><span>${doc.label} (${doc.filename})</span>`;
+                attachmentsList.appendChild(link);
             });
+        }
+
+        function renderPhotos(photos, count) {
+            photosGrid.innerHTML = '';
+            const total = count ?? (photos ? photos.length : 0);
+            photosBadge.textContent = total;
+            if (!photos || photos.length === 0) {
+                photosEmpty.classList.remove('d-none');
+                return;
+            }
+            photosEmpty.classList.add('d-none');
+            photos.forEach(photo => {
+                if (!photo.url) {
+                    return;
+                }
+                const col = document.createElement('div');
+                col.className = 'col-4';
+                const anchor = document.createElement('a');
+                anchor.href = photo.url;
+                anchor.target = '_blank';
+                anchor.rel = 'noopener';
+                anchor.className = 'd-block rounded border overflow-hidden';
+                const img = document.createElement('img');
+                img.src = photo.url;
+                img.alt = 'Foto da vistoria';
+                img.className = 'img-fluid';
+                anchor.appendChild(img);
+                col.appendChild(anchor);
+                photosGrid.appendChild(col);
+            });
+        }
+
+        function showFeedback(message, type) {
+            feedbackAlert.textContent = message;
+            feedbackAlert.className = `alert alert-${type}`;
+            feedbackAlert.classList.remove('d-none');
+            loadingWrapper.classList.add('d-none');
+        }
+
+        function resetModalState() {
+            feedbackAlert.classList.add('d-none');
+            feedbackAlert.textContent = '';
+            loadingWrapper.classList.remove('d-none');
+            contentWrapper.classList.add('d-none');
+            formElement.classList.remove('was-validated');
+            fotosField.value = '';
+        }
+
+        function toggleSaving(isSaving) {
+            submitButton.disabled = isSaving;
+            savingSpinner.classList.toggle('d-none', !isSaving);
+        }
+
+        function formatDateWithFallback(date, time) {
+            if (!date) {
+                return '-';
+            }
+            return time ? `${date} ${time}` : date;
+        }
+
+        formElement.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            if (!currentEventId) {
+                showFeedback('Selecione um comunicado válido.', 'danger');
+                return;
+            }
+            if (!formElement.checkValidity()) {
+                formElement.classList.add('was-validated');
+                return;
+            }
+            try {
+                toggleSaving(true);
+                const formData = new FormData();
+                formData.append('descricao', descricaoField.value || '');
+                formData.append('observacoes', observacoesField.value || '');
+                if (fotosField.files && fotosField.files.length > 0) {
+                    Array.from(fotosField.files).forEach(file => formData.append('novasFotos', file));
+                }
+                const response = await fetch(`/comunicados/api/events/${currentEventId}/update`, {
+                    method: 'POST',
+                    headers: csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : undefined,
+                    body: formData
+                });
+                const data = await response.json();
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || 'Não foi possível salvar as alterações.');
+                }
+                showFeedback(data.message || 'Alterações salvas com sucesso!', 'success');
+                populateModal(data, 'descricao');
+                atualizarLinhaDaTabela(data);
+            } catch (error) {
+                showFeedback(error.message, 'danger');
+            } finally {
+                toggleSaving(false);
+            }
         });
+
+        function atualizarLinhaDaTabela(data) {
+            if (!data || !data.id) {
+                return;
+            }
+            const row = document.querySelector(`[data-event-row="${data.id}"]`);
+            if (!row) {
+                return;
+            }
+            const resumo = data.descricaoResumo || '';
+            const snippet = row.querySelector('small.text-muted');
+            if (snippet) {
+                snippet.textContent = resumo;
+            }
+        }
     });
 </script>
 

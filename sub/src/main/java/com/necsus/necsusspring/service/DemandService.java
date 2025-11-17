@@ -223,12 +223,13 @@ public class DemandService {
      * Atualiza o status de uma demanda
      */
     @Transactional
-    public Demand updateStatus(Long id, DemandStatus newStatus) {
+    public Demand updateStatus(Long id, DemandStatus newStatus, String completionObservation) {
         Optional<Demand> optionalDemand = findById(id);
         if (optionalDemand.isPresent()) {
             Demand demand = optionalDemand.get();
             DemandStatus oldStatus = demand.getStatus();
             demand.setStatus(newStatus);
+            handleCompletionObservation(demand, newStatus, completionObservation);
             Demand savedDemand = demandRepository.save(demand);
 
             // Notifica o criador da demanda sobre a mudança de status
@@ -239,6 +240,22 @@ public class DemandService {
             return savedDemand;
         }
         throw new RuntimeException("Demanda não encontrada com ID: " + id);
+    }
+
+    private void handleCompletionObservation(Demand demand, DemandStatus newStatus, String completionObservation) {
+        if (newStatus == DemandStatus.CONCLUIDA) {
+            String normalized = completionObservation != null ? completionObservation.trim() : null;
+            if (normalized != null && normalized.isEmpty()) {
+                normalized = null;
+            }
+            demand.setCompletionObservation(normalized);
+            if (demand.getCompletedAt() == null) {
+                demand.setCompletedAt(LocalDateTime.now());
+            }
+        } else {
+            demand.setCompletionObservation(null);
+            demand.setCompletedAt(null);
+        }
     }
 
     /**
