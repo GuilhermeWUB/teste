@@ -112,8 +112,29 @@
     margin-top: 1.5rem;
 }
 
-.plan-chip {
-    display: inline-flex;
+.status-card small {
+    color: var(--color-text-secondary, #475569);
+}
+
+.plan-metrics {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 576px) {
+    .plan-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 992px) {
+    .plan-metrics {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.metric-card {
+    display: flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.35rem 0.9rem;
@@ -121,6 +142,7 @@
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.35);
     font-weight: 600;
+    margin: 0;
 }
 
 .plan-chip--outline {
