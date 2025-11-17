@@ -1166,9 +1166,9 @@
                     img.style.transform = 'scale(1)';
                 });
 
-                // Abre a imagem em nova aba ao clicar
+                // Abre a imagem em uma nova aba utilizando AJAX para evitar download automático
                 photoDiv.addEventListener('click', () => {
-                    window.open(`/vistorias/${vistoria.id}/download/${foto.id}`, '_blank');
+                    openVistoriaPhotoPreview(vistoria.id, foto.id);
                 });
 
                 photoDiv.appendChild(img);
@@ -1189,6 +1189,69 @@
 
         } catch (error) {
             console.error('[KANBAN] Erro ao carregar fotos da vistoria:', error);
+        }
+    }
+
+    async function openVistoriaPhotoPreview(vistoriaId, fotoId) {
+        const photoUrl = `/vistorias/${vistoriaId}/download/${fotoId}`;
+
+        try {
+            const response = await fetch(photoUrl, {
+                headers: buildHeaders({ 'Accept': 'image/*' })
+            });
+
+            if (!response.ok) {
+                console.warn('[KANBAN] Não foi possível pré-visualizar a foto:', response.status);
+                window.open(photoUrl, '_blank');
+                return;
+            }
+
+            const blob = await response.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            const previewWindow = window.open('', '_blank');
+
+            if (!previewWindow) {
+                console.warn('[KANBAN] Navegador bloqueou a abertura da nova aba. Fazendo download padrão.');
+                window.open(photoUrl, '_blank');
+                URL.revokeObjectURL(objectUrl);
+                return;
+            }
+
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Foto da Vistoria</title>
+                    <style>
+                        body {
+                            margin: 0;
+                            background: #111;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 100vh;
+                        }
+                        img {
+                            max-width: 100vw;
+                            max-height: 100vh;
+                            object-fit: contain;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <img src="${objectUrl}" alt="Foto da Vistoria" />
+                </body>
+                </html>
+            `);
+            previewWindow.document.close();
+
+            previewWindow.addEventListener('beforeunload', () => {
+                URL.revokeObjectURL(objectUrl);
+            });
+        } catch (error) {
+            console.error('[KANBAN] Erro ao pré-visualizar foto da vistoria:', error);
+            window.open(photoUrl, '_blank');
         }
     }
 
