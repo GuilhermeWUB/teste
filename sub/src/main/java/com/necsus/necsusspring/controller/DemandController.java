@@ -143,7 +143,8 @@ public class DemandController {
             }
 
             DemandStatus newStatus = DemandStatus.valueOf(statusValue);
-            Demand updated = demandService.updateStatus(id, newStatus);
+            String observation = payload.getOrDefault("observation", null);
+            Demand updated = demandService.updateStatus(id, newStatus, observation);
 
             logger.info("Status da demanda {} atualizado para {}", id, newStatus);
 
@@ -390,6 +391,7 @@ public class DemandController {
     public String updateStatus(
             @PathVariable Long id,
             @RequestParam DemandStatus status,
+            @RequestParam(value = "completionObservation", required = false) String completionObservation,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
@@ -414,7 +416,7 @@ public class DemandController {
                 return "redirect:/demands/my-demands";
             }
 
-            demandService.updateStatus(id, status);
+            demandService.updateStatus(id, status, completionObservation);
 
             logger.info("Status da demanda {} atualizado para {} por {}", id, status, currentUser.getUsername());
             redirectAttributes.addFlashAttribute("success", "Status atualizado com sucesso!");

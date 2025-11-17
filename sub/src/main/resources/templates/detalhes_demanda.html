@@ -125,6 +125,11 @@
                 <div class="detail-value" th:text="${#temporals.format(demand.completedAt, 'dd/MM/yyyy HH:mm')}">Data</div>
             </div>
 
+            <div class="detail-row" th:if="${demand.completionObservation != null}">
+                <div class="detail-label">Observação:</div>
+                <div class="detail-value" th:text="${demand.completionObservation}">Detalhes da conclusão</div>
+            </div>
+
             <!-- Ações -->
             <div class="mt-4 d-flex gap-2">
                 <!-- Atribuir a Mim -->
@@ -144,8 +149,9 @@
                     <ul class="dropdown-menu">
                         <li th:each="status : ${statusOptions}">
                             <form th:action="@{/demands/{id}/update-status(id=${demand.id})}"
-                                  method="post" style="margin: 0;">
+                                  method="post" style="margin: 0;" data-demand-status-form>
                                 <input type="hidden" name="status" th:value="${status}">
+                                <input type="hidden" name="completionObservation" value="">
                                 <button type="submit" class="dropdown-item"
                                         th:text="${status.displayName}">Status</button>
                             </form>
@@ -171,7 +177,10 @@
             </div>
         </div>
     </div>
+
+    <div th:replace="~{fragments/demand-status-modal :: completionObservationModal}"></div>
 </section>
 
+<script th:src="@{/js/demand-status.js}"></script>
 </body>
 </html>

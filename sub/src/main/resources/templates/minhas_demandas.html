@@ -116,6 +116,10 @@
                     <span>Destinatários</span>
                     <strong th:text="${demand.targetRoles}">Cargos</strong>
                 </div>
+                <div class="demand-meta-item" th:if="${demand.completionObservation != null}">
+                    <span>Observação</span>
+                    <strong th:text="${demand.completionObservation}">O que foi feito</strong>
+                </div>
             </div>
 
             <div class="demand-actions">
@@ -137,8 +141,10 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li th:each="status : ${statusOptions}">
-                            <form th:action="@{/demands/{id}/update-status(id=${demand.id})}" method="post" style="margin: 0;">
+                            <form th:action="@{/demands/{id}/update-status(id=${demand.id})}" method="post"
+                                  style="margin: 0;" data-demand-status-form>
                                 <input type="hidden" name="status" th:value="${status}">
+                                <input type="hidden" name="completionObservation" value="">
                                 <button type="submit" class="dropdown-item" th:text="${status.displayName}">Status</button>
                             </form>
                         </li>
@@ -153,7 +159,10 @@
         <h3 class="mb-3">Nenhuma demanda encontrada</h3>
         <p>As demandas destinadas a você ou ao seu cargo serão exibidas aqui assim que forem criadas.</p>
     </div>
+
+    <div th:replace="~{fragments/demand-status-modal :: completionObservationModal}"></div>
 </section>
 
+<script th:src="@{/js/demand-status.js}"></script>
 </body>
 </html>
