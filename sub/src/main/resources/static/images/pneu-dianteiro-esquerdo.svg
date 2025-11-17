@@ -1,0 +1,20 @@
+<svg width="400" height="250" viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="gradientEsquerdo" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4895ef"/>
+            <stop offset="100%" stop-color="#4361ee"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="250" rx="24" fill="url(#gradientEsquerdo)"/>
+    <g transform="translate(200 120)">
+        <circle r="90" fill="#0b7285" stroke="#d0ebff" stroke-width="6"/>
+        <circle r="60" fill="#0c8599" stroke="#99e9f2" stroke-width="4"/>
+        <path d="M-65 -15 L65 -15" stroke="#e3fafc" stroke-width="6" stroke-linecap="round"/>
+        <path d="M-65 15 L65 15" stroke="#e3fafc" stroke-width="6" stroke-linecap="round"/>
+        <path d="M-45 -45 L45 45" stroke="#c5f6fa" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+        <path d="M-45 45 L45 -45" stroke="#c5f6fa" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+    </g>
+    <text x="200" y="215" font-family="'Poppins', 'Segoe UI', sans-serif" font-size="26" fill="#fff" text-anchor="middle">
+        Pneu dianteiro esquerdo
+    </text>
+</svg>
