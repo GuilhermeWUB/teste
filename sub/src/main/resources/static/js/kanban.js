@@ -1100,18 +1100,21 @@
 
     async function loadVistoriaPhotos(eventId) {
         try {
+            console.log('[KANBAN] Carregando fotos da vistoria para evento ID:', eventId);
             const response = await fetch(`/vistorias/api/event/${eventId}`, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
-                console.warn('[KANBAN] Erro ao carregar fotos da vistoria:', response.status);
+                console.warn('[KANBAN] Erro ao carregar fotos da vistoria. Status:', response.status);
                 return;
             }
 
             const vistorias = await response.json();
+            console.log('[KANBAN] Vistorias recebidas:', vistorias);
 
             if (!vistorias || vistorias.length === 0) {
+                console.log('[KANBAN] Nenhuma vistoria encontrada para o evento');
                 return; // Não mostra a seção se não houver vistoria
             }
 
@@ -1119,6 +1122,7 @@
             const content = document.getElementById('vistoria-photos-content');
 
             if (!section || !content) {
+                console.warn('[KANBAN] Elementos vistoria-photos-section ou vistoria-photos-content não encontrados');
                 return;
             }
 
@@ -1127,11 +1131,14 @@
 
             // Pega a vistoria mais recente (última do array)
             const vistoria = vistorias[vistorias.length - 1];
+            console.log('[KANBAN] Vistoria selecionada:', vistoria);
 
             // Verifica se há fotos na vistoria
             const fotos = vistoria.fotos || [];
+            console.log('[KANBAN] Número de fotos encontradas:', fotos.length);
 
             if (fotos.length === 0) {
+                console.log('[KANBAN] Nenhuma foto encontrada na vistoria');
                 return; // Não mostra a seção se não houver fotos
             }
 
@@ -1140,6 +1147,7 @@
 
             // Adiciona cada foto
             fotos.forEach(foto => {
+                console.log('[KANBAN] Renderizando foto:', foto);
                 const photoDiv = document.createElement('div');
                 photoDiv.style.cssText = 'position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 1; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); cursor: pointer;';
 
@@ -1147,6 +1155,8 @@
                 img.src = `/vistorias/${vistoria.id}/download/${foto.id}`;
                 img.alt = `Foto ${foto.ordem || ''}`;
                 img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;';
+
+                console.log('[KANBAN] URL da foto:', img.src);
 
                 // Efeito de hover
                 photoDiv.addEventListener('mouseenter', () => {
@@ -1175,6 +1185,7 @@
 
             // Mostra a seção
             section.style.display = 'block';
+            console.log('[KANBAN] Seção de fotos da vistoria exibida com sucesso');
 
         } catch (error) {
             console.error('[KANBAN] Erro ao carregar fotos da vistoria:', error);
