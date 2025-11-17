@@ -220,11 +220,12 @@ public class DemandServiceTest {
         when(demandRepository.findById(1L)).thenReturn(Optional.of(testDemand));
         when(demandRepository.save(any(Demand.class))).thenReturn(testDemand);
 
-        Demand result = demandService.updateStatus(1L, DemandStatus.CONCLUIDA);
+        Demand result = demandService.updateStatus(1L, DemandStatus.CONCLUIDA, "Entrega finalizada");
 
         assertNotNull(result);
         assertEquals(DemandStatus.CONCLUIDA, result.getStatus());
         verify(demandRepository, times(1)).findById(1L);
+        assertEquals("Entrega finalizada", result.getCompletionObservation());
         verify(demandRepository, times(1)).save(testDemand);
     }
 
@@ -233,7 +234,7 @@ public class DemandServiceTest {
         when(demandRepository.findById(999L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            demandService.updateStatus(999L, DemandStatus.CONCLUIDA);
+            demandService.updateStatus(999L, DemandStatus.CONCLUIDA, null);
         });
 
         assertTrue(exception.getMessage().contains("Demanda não encontrada"));

@@ -205,14 +205,15 @@ public class DemandControllerTest {
         );
         when(userAccountService.findByUsername("admin")).thenReturn(Optional.of(testUser));
         when(demandService.findById(1L)).thenReturn(Optional.of(testDemand));
-        when(demandService.updateStatus(eq(1L), any(DemandStatus.class))).thenReturn(testDemand);
+        when(demandService.updateStatus(eq(1L), any(DemandStatus.class), any()))
+                .thenReturn(testDemand);
 
         mockMvc.perform(post("/demands/1/update-status")
                         .param("status", "CONCLUIDA")
                         .principal(authentication))
                 .andExpect(status().is3xxRedirection());
 
-        verify(demandService, times(1)).updateStatus(1L, DemandStatus.CONCLUIDA);
+        verify(demandService, times(1)).updateStatus(1L, DemandStatus.CONCLUIDA, null);
     }
 
     @Test
