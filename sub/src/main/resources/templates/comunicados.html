@@ -73,7 +73,12 @@
                 Não foi possível localizar seus dados de associado. Entre em contato com o administrador para resolver este problema.
             </div>
 
-            <form th:if="${userPartner != null}" th:action="@{/comunicados/criar-evento}" th:object="${event}" method="post" id="formCriarEvento">
+            <form th:if="${userPartner != null}"
+                  th:action="@{/comunicados/criar-evento}"
+                  th:object="${event}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  id="formCriarEvento">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="hidden" th:field="*{partner.id}" />
 
@@ -156,6 +161,43 @@
                         <label for="observacoes" class="form-label fw-semibold">Observações Adicionais</label>
                         <textarea class="form-control" id="observacoes" th:field="*{observacoes}"
                                   rows="2" placeholder="Informações complementares..."></textarea>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-paperclip text-primary fs-5"></i>
+                        <div>
+                            <h6 class="mb-0">Documentos do Evento</h6>
+                            <p class="text-muted small mb-0">Envie os arquivos de apoio em seus respectivos campos. Aceitamos PDF, JPG ou PNG.</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docCrlv" class="form-label fw-semibold">CRLV do veículo</label>
+                            <input type="file" class="form-control" id="docCrlv" name="docCrlv" accept="application/pdf,image/*">
+                            <small class="text-muted">Documento obrigatório apenas quando solicitado.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docCnh" class="form-label fw-semibold">CNH do condutor</label>
+                            <input type="file" class="form-control" id="docCnh" name="docCnh" accept="application/pdf,image/*">
+                            <small class="text-muted">Envie a habilitação atualizada do motorista.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docBo" class="form-label fw-semibold">Boletim de Ocorrência</label>
+                            <input type="file" class="form-control" id="docBo" name="docBo" accept="application/pdf,image/*">
+                            <small class="text-muted">Caso o B.O. esteja disponível, anexe aqui.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docComprovanteResidencia" class="form-label fw-semibold">Comprovante de residência</label>
+                            <input type="file" class="form-control" id="docComprovanteResidencia" name="docComprovanteResidencia" accept="application/pdf,image/*">
+                            <small class="text-muted">Último comprovante em nome do associado.</small>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <label for="docTermoAbertura" class="form-label fw-semibold">Termo de abertura</label>
+                            <input type="file" class="form-control" id="docTermoAbertura" name="docTermoAbertura" accept="application/pdf,image/*">
+                            <small class="text-muted">Use este campo para anexar o termo de abertura do sinistro.</small>
+                        </div>
                     </div>
                 </div>
 

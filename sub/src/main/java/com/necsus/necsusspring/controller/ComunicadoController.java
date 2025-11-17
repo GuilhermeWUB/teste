@@ -244,7 +244,12 @@ public class ComunicadoController {
                               BindingResult result,
                               Authentication authentication,
                               RedirectAttributes redirectAttributes,
-                              Model model) {
+                              Model model,
+                              @RequestParam(value = "docCrlv", required = false) MultipartFile docCrlv,
+                              @RequestParam(value = "docCnh", required = false) MultipartFile docCnh,
+                              @RequestParam(value = "docBo", required = false) MultipartFile docBo,
+                              @RequestParam(value = "docComprovanteResidencia", required = false) MultipartFile docComprovanteResidencia,
+                              @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura) {
 
         if (authentication == null) {
             return "redirect:/login";
@@ -290,6 +295,7 @@ public class ComunicadoController {
         }
 
         try {
+            anexarDocumentos(event, docCrlv, docCnh, docBo, docComprovanteResidencia, docTermoAbertura);
             eventService.create(event);
             logger.info("Evento criado com sucesso pelo usuário Associado: {}", authentication.getName());
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso! Nossa equipe entrará em contato em breve.");
@@ -298,6 +304,43 @@ public class ComunicadoController {
             logger.error("Erro ao criar evento pelo usuário Associado: ", ex);
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage() != null ? ex.getMessage() : "Não foi possível salvar o evento. Tente novamente.");
             return "redirect:/comunicados";
+        }
+    }
+
+    private void anexarDocumentos(Event event,
+                                   MultipartFile docCrlv,
+                                   MultipartFile docCnh,
+                                   MultipartFile docBo,
+                                   MultipartFile docComprovanteResidencia,
+                                   MultipartFile docTermoAbertura) {
+        if (docCrlv != null && !docCrlv.isEmpty()) {
+            String path = fileStorageService.storeFile(docCrlv);
+            event.setDocCrlvPath(path);
+            logger.info("[COMUNICADOS] CRLV anexado: {}", path);
+        }
+
+        if (docCnh != null && !docCnh.isEmpty()) {
+            String path = fileStorageService.storeFile(docCnh);
+            event.setDocCnhPath(path);
+            logger.info("[COMUNICADOS] CNH anexada: {}", path);
+        }
+
+        if (docBo != null && !docBo.isEmpty()) {
+            String path = fileStorageService.storeFile(docBo);
+            event.setDocBoPath(path);
+            logger.info("[COMUNICADOS] B.O. anexado: {}", path);
+        }
+
+        if (docComprovanteResidencia != null && !docComprovanteResidencia.isEmpty()) {
+            String path = fileStorageService.storeFile(docComprovanteResidencia);
+            event.setDocComprovanteResidenciaPath(path);
+            logger.info("[COMUNICADOS] Comprovante de residência anexado: {}", path);
+        }
+
+        if (docTermoAbertura != null && !docTermoAbertura.isEmpty()) {
+            String path = fileStorageService.storeFile(docTermoAbertura);
+            event.setDocTermoAberturaPath(path);
+            logger.info("[COMUNICADOS] Termo de abertura anexado: {}", path);
         }
     }
 
