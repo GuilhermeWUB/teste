@@ -163,25 +163,69 @@
 
                 <!-- Campos específicos para fotos dos pneus -->
                 <div class="mb-4">
-                    <h6 class="fw-semibold mb-3">Fotos dos pneus:</h6>
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="fw-semibold mb-0">Fotos dos pneus:</h6>
+                        <small class="text-muted">Clique no <i class="bi bi-question-circle-fill"></i> para ver um exemplo</small>
+                    </div>
+                    <hr class="mt-2 mb-3">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="pneuDianteiroDireito" class="form-label">Pneu dianteiro direito</label>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label for="pneuDianteiroDireito" class="form-label mb-0">Pneu dianteiro direito</label>
+                                <button type="button"
+                                        class="btn btn-link p-0 text-decoration-none text-primary"
+                                        aria-label="Ver exemplo do pneu dianteiro direito"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#pneuExampleModal"
+                                        th:attr="data-pneu-title='Pneu dianteiro direito', data-pneu-img=@{/images/pneu-dianteiro-direito.svg}">
+                                    <i class="bi bi-question-circle-fill fs-5"></i>
+                                </button>
+                            </div>
                             <input type="file" class="form-control" id="pneuDianteiroDireito" name="pneuDianteiroDireito"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <label for="pneuDianteiroEsquerdo" class="form-label">Pneu dianteiro esquerdo</label>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label for="pneuDianteiroEsquerdo" class="form-label mb-0">Pneu dianteiro esquerdo</label>
+                                <button type="button"
+                                        class="btn btn-link p-0 text-decoration-none text-primary"
+                                        aria-label="Ver exemplo do pneu dianteiro esquerdo"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#pneuExampleModal"
+                                        th:attr="data-pneu-title='Pneu dianteiro esquerdo', data-pneu-img=@{/images/pneu-dianteiro-esquerdo.svg}">
+                                    <i class="bi bi-question-circle-fill fs-5"></i>
+                                </button>
+                            </div>
                             <input type="file" class="form-control" id="pneuDianteiroEsquerdo" name="pneuDianteiroEsquerdo"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <label for="pneuTraseiroDireito" class="form-label">Pneu traseiro direito</label>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label for="pneuTraseiroDireito" class="form-label mb-0">Pneu traseiro direito</label>
+                                <button type="button"
+                                        class="btn btn-link p-0 text-decoration-none text-primary"
+                                        aria-label="Ver exemplo do pneu traseiro direito"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#pneuExampleModal"
+                                        th:attr="data-pneu-title='Pneu traseiro direito', data-pneu-img=@{/images/pneu-traseiro-direito.svg}">
+                                    <i class="bi bi-question-circle-fill fs-5"></i>
+                                </button>
+                            </div>
                             <input type="file" class="form-control" id="pneuTraseiroDireito" name="pneuTraseiroDireito"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
                         <div class="col-md-6">
-                            <label for="pneuTraseiroEsquerdo" class="form-label">Pneu traseiro esquerdo</label>
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <label for="pneuTraseiroEsquerdo" class="form-label mb-0">Pneu traseiro esquerdo</label>
+                                <button type="button"
+                                        class="btn btn-link p-0 text-decoration-none text-primary"
+                                        aria-label="Ver exemplo do pneu traseiro esquerdo"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#pneuExampleModal"
+                                        th:attr="data-pneu-title='Pneu traseiro esquerdo', data-pneu-img=@{/images/pneu-traseiro-esquerdo.svg}">
+                                    <i class="bi bi-question-circle-fill fs-5"></i>
+                                </button>
+                            </div>
                             <input type="file" class="form-control" id="pneuTraseiroEsquerdo" name="pneuTraseiroEsquerdo"
                                    accept="image/jpeg,image/jpg,image/png">
                         </div>
@@ -223,6 +267,25 @@
         </div>
     </div>
 </section>
+
+<!-- Modal com exemplos de fotos dos pneus -->
+<div class="modal fade" id="pneuExampleModal" tabindex="-1" aria-labelledby="pneuExampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="pneuExampleModalLabel">Exemplo de foto do pneu</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="pneuExampleImage" th:src="@{/images/pneu-dianteiro-direito.svg}" alt="Exemplo de foto do pneu"
+                     class="img-fluid rounded shadow-sm">
+                <p class="text-muted small mt-3 mb-0" id="pneuExampleDescription">
+                    Use o exemplo para enquadrar corretamente o pneu solicitado.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Script para preview das fotos -->
 <th:block layout:fragment="scripts">
@@ -336,6 +399,35 @@
                 return false;
             }
         });
+
+        const pneuExampleModal = document.getElementById('pneuExampleModal');
+        if (pneuExampleModal) {
+            pneuExampleModal.addEventListener('show.bs.modal', (event) => {
+                const button = event.relatedTarget;
+                if (!button) {
+                    return;
+                }
+
+                const pneuTitle = button.getAttribute('data-pneu-title') || 'Pneu';
+                const pneuImage = button.getAttribute('data-pneu-img');
+                const modalTitle = document.getElementById('pneuExampleModalLabel');
+                const modalDescription = document.getElementById('pneuExampleDescription');
+                const modalImage = document.getElementById('pneuExampleImage');
+
+                if (modalTitle) {
+                    modalTitle.textContent = `Exemplo - ${pneuTitle}`;
+                }
+
+                if (modalDescription) {
+                    modalDescription.textContent = `Observe como enquadrar o ${pneuTitle.toLowerCase()}.`;
+                }
+
+                if (modalImage && pneuImage) {
+                    modalImage.src = pneuImage;
+                    modalImage.alt = `Exemplo de ${pneuTitle}`;
+                }
+            });
+        }
     </script>
 </th:block>
 </body>
