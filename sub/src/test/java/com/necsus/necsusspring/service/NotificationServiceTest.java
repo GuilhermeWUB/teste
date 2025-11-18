@@ -156,6 +156,41 @@ public class NotificationServiceTest {
     }
 
     @Test
+    public void testFindArchivedByRecipient_ShouldReturnArchivedNotifications() {
+        testNotification.setStatus(NotificationStatus.ARCHIVED);
+        List<Notification> notifications = Arrays.asList(testNotification);
+        when(notificationRepository.findByRecipientAndStatusOrderByCreatedAtDesc(
+                testUser, NotificationStatus.ARCHIVED))
+                .thenReturn(notifications);
+
+        List<Notification> result = notificationService.findArchivedByRecipient(testUser);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(NotificationStatus.ARCHIVED, result.get(0).getStatus());
+        verify(notificationRepository, times(1))
+                .findByRecipientAndStatusOrderByCreatedAtDesc(testUser, NotificationStatus.ARCHIVED);
+    }
+
+    @Test
+    public void testFindArchivedByRecipientWithPagination_ShouldReturnPage() {
+        testNotification.setStatus(NotificationStatus.ARCHIVED);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Notification> page = new PageImpl<>(Arrays.asList(testNotification));
+        when(notificationRepository.findByRecipientAndStatusOrderByCreatedAtDesc(
+                testUser, NotificationStatus.ARCHIVED, pageable))
+                .thenReturn(page);
+
+        Page<Notification> result = notificationService.findArchivedByRecipient(testUser, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getContent().size());
+        assertEquals(NotificationStatus.ARCHIVED, result.getContent().get(0).getStatus());
+        verify(notificationRepository, times(1))
+                .findByRecipientAndStatusOrderByCreatedAtDesc(testUser, NotificationStatus.ARCHIVED, pageable);
+    }
+
+    @Test
     public void testCountUnread_ShouldReturnCount() {
         when(notificationRepository.countUnreadByRecipient(testUser)).thenReturn(5L);
 

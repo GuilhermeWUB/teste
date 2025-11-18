@@ -109,6 +109,24 @@ public class NotificationService {
     }
 
     /**
+     * Busca notificações arquivadas de um usuário
+     */
+    @Transactional(readOnly = true)
+    public List<Notification> findArchivedByRecipient(UserAccount recipient) {
+        return notificationRepository.findByRecipientAndStatusOrderByCreatedAtDesc(
+                recipient, NotificationStatus.ARCHIVED);
+    }
+
+    /**
+     * Busca notificações arquivadas de um usuário com paginação
+     */
+    @Transactional(readOnly = true)
+    public Page<Notification> findArchivedByRecipient(UserAccount recipient, Pageable pageable) {
+        return notificationRepository.findByRecipientAndStatusOrderByCreatedAtDesc(
+                recipient, NotificationStatus.ARCHIVED, pageable);
+    }
+
+    /**
      * Busca notificações não arquivadas de um usuário
      */
     @Transactional(readOnly = true)
