@@ -215,6 +215,70 @@
             border-radius: 8px;
             margin-bottom: 2rem;
         }
+        /* ---------- Dark mode adjustments ---------- */
+        html[data-theme="dark"] .invoice-card,
+        html[data-theme="dark"] .financial-box,
+        html[data-theme="dark"] .add-bill-form,
+        html[data-theme="dark"] .stat-box {
+            background: var(--color-surface-elevated);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 30px rgba(3, 0, 20, 0.45);
+        }
+        html[data-theme="dark"] .invoice-card {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        html[data-theme="dark"] .invoice-header {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+        html[data-theme="dark"] .info-label,
+        html[data-theme="dark"] .tab-btn,
+        html[data-theme="dark"] .financial-box h6,
+        html[data-theme="dark"] .stat-label,
+        html[data-theme="dark"] .alert-test p {
+            color: var(--color-muted);
+        }
+        html[data-theme="dark"] .info-value,
+        html[data-theme="dark"] .financial-box .value,
+        html[data-theme="dark"] .financial-box .count,
+        html[data-theme="dark"] .tab-btn.active {
+            color: var(--color-text-primary);
+        }
+        html[data-theme="dark"] .section-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.55) 100%);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.35);
+        }
+        html[data-theme="dark"] .tab-navigation {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+        html[data-theme="dark"] .tab-btn {
+            color: var(--color-muted);
+        }
+        html[data-theme="dark"] .tab-btn.active {
+            border-bottom-color: var(--color-primary);
+        }
+        html[data-theme="dark"] .alert-test {
+            background: rgba(102, 126, 234, 0.2);
+            border-left-color: var(--color-primary);
+            color: var(--color-text-primary);
+        }
+        html[data-theme="dark"] .financial-box.pending .value {
+            color: #f2c94c;
+        }
+        html[data-theme="dark"] .financial-box.paid .value {
+            color: #4ade80;
+        }
+        html[data-theme="dark"] .financial-box.expense .value {
+            color: #f87171;
+        }
+        html[data-theme="dark"] .financial-box.expense-paid .value {
+            color: var(--color-muted);
+        }
+        html[data-theme="dark"] .section-divider {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+        html[data-theme="dark"] .empty-state {
+            color: var(--color-muted);
+        }
     </style>
 </head>
 <body>
