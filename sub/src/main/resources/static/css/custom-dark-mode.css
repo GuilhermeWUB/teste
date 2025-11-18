@@ -482,12 +482,38 @@ html[data-theme="dark"] .theme-toggle__icon--light {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
     font-weight: 600;
     letter-spacing: 0.01em;
+    color: var(--color-nav-link);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-financeiro-link:hover,
+.nav-financeiro-link:focus {
+    background: var(--color-nav-link-hover-bg);
+    color: var(--color-nav-link-hover);
+}
+
+.nav-financeiro-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-input-focus-ring);
 }
 
 .nav-financeiro-link .bi {
     font-size: 1.05rem;
+    color: currentColor;
+}
+
+html[data-theme="dark"] .nav-financeiro-link,
+html[data-theme="dark"] .nav-financeiro-link .bi {
+    color: var(--color-nav-link) !important;
+}
+
+html[data-theme="dark"] .nav-financeiro-link:hover,
+html[data-theme="dark"] .nav-financeiro-link:focus {
+    color: var(--color-nav-link-hover) !important;
 }
 
 .nav-item-dropdown {
