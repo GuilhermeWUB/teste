@@ -36,37 +36,31 @@
             <!-- Navegação específica do módulo Financeiro -->
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro}" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
-                    <i class="bi bi-speedometer2 me-1"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/lancamentos}" th:classappend="${currentPage == 'lancamentos'} ? 'active' : ''">
-                    <i class="bi bi-journal-text me-1"></i>
                     <span>Lançamentos</span>
                 </a>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/movimento-caixa}" th:classappend="${currentPage == 'movimento-caixa'} ? 'active' : ''">
-                    <i class="bi bi-cash-stack me-1"></i>
                     <span>Movimento de Caixa</span>
                 </a>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/cadastros}" th:classappend="${currentPage == 'cadastros'} ? 'active' : ''">
-                    <i class="bi bi-grid me-1"></i>
                     <span>Cadastros</span>
                 </a>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/ferramentas}" th:classappend="${currentPage == 'ferramentas'} ? 'active' : ''">
-                    <i class="bi bi-tools me-1"></i>
                     <span>Ferramentas</span>
                 </a>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/relatorios}" th:classappend="${currentPage == 'relatorios'} ? 'active' : ''">
-                    <i class="bi bi-file-earmark-bar-graph me-1"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
@@ -74,13 +68,11 @@
             <!-- Ações mobile -->
             <li class="nav-item-mobile-action">
                 <a th:href="@{/dashboard}" class="btn btn-outline">
-                    <i class="bi bi-arrow-left me-1"></i>
                     <span>Voltar ao Sistema</span>
                 </a>
             </li>
             <li class="nav-item-mobile-action" th:if="${isLoggedIn}">
                 <a th:href="@{/notifications}">
-                    <i class="bi bi-bell-fill me-1"></i>
                     <span>Notificações</span>
                     <span class="badge bg-primary ms-2" id="mobileNotificationBadge" style="display: none;">0</span>
                 </a>
@@ -183,7 +175,7 @@
             toggles.forEach(toggle => {
                 const label = toggle.querySelector('.theme-toggle__label');
                 if (label) {
-                    label.textContent = theme === 'dark' ? 'Modo claro' : 'Modo escuro';
+                    label.textContent = theme === 'dark' ? '' : '';
                 }
             });
         }
