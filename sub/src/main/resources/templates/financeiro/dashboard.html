@@ -93,14 +93,13 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div>
-                            <h5 class="mb-1">Resumo do dia</h5>
-                            <p class="text-muted mb-0">Indicadores financeiros principais.</p>
+                            <h5 class="mb-1">Distribuicao por Categorias</h5>
+                            <p class="text-muted mb-0">Detalhamento completo do mes</p>
                         </div>
+                        <span class="badge bg-primary-subtle text-primary">Completo</span>
                     </div>
-                    <p class="mb-0 text-muted">
-                        Este painel e o ponto de partida do time financeiro. Utilize os atalhos da nova barra
-                        para navegar entre lancamentos, movimento de caixa, cadastros, ferramentas e relatorios.
-                    </p>
+                    <!-- Grafico de categorias renderizado pelo Jinjava -->
+                    <div th:utext="${chartCategorias}"></div>
                 </div>
             </div>
         </div>

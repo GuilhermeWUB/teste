@@ -1,0 +1,66 @@
+<div class="chart-container" style="position: relative; height: 350px; width: 100%;">
+    <canvas id="{{ chartId }}"></canvas>
+</div>
+
+<script>
+(function() {
+    const ctx = document.getElementById('{{ chartId }}').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [{% for item in categorias %}'{{ item.nome }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for item in categorias %}{{ item.valor }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: [
+                    {% for item in categorias %}'{{ item.cor }}'{% if not loop.last %}, {% endif %}{% endfor %}
+                ],
+                borderColor: [
+                    {% for item in categorias %}'{{ item.borderCor }}'{% if not loop.last %}, {% endif %}{% endfor %}
+                ],
+                borderWidth: 2,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: '{{ titulo }}',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return context.label + ': R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}) + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+})();
+</script>

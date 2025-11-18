@@ -6,7 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -42,6 +44,69 @@ public class FinanceiroController {
         model.addAttribute("totalEntradas", totalEntradas);
         model.addAttribute("totalSaidas", totalSaidas);
         model.addAttribute("saldo", totalEntradas - totalSaidas);
+
+        // Grafico completo de categorias financeiras
+        List<Map<String, Object>> categorias = new ArrayList<>();
+
+        // Categorias de Entradas
+        Map<String, Object> vendas = new HashMap<>();
+        vendas.put("nome", "Vendas");
+        vendas.put("valor", 8500.00);
+        vendas.put("cor", "rgba(40, 167, 69, 0.8)");
+        vendas.put("borderCor", "rgba(40, 167, 69, 1)");
+        categorias.add(vendas);
+
+        Map<String, Object> servicos = new HashMap<>();
+        servicos.put("nome", "Servicos");
+        servicos.put("valor", 4250.50);
+        servicos.put("cor", "rgba(32, 201, 151, 0.8)");
+        servicos.put("borderCor", "rgba(32, 201, 151, 1)");
+        categorias.add(servicos);
+
+        Map<String, Object> outrasEntradas = new HashMap<>();
+        outrasEntradas.put("nome", "Outras Entradas");
+        outrasEntradas.put("valor", 3000.00);
+        outrasEntradas.put("cor", "rgba(13, 202, 240, 0.8)");
+        outrasEntradas.put("borderCor", "rgba(13, 202, 240, 1)");
+        categorias.add(outrasEntradas);
+
+        // Categorias de Saidas
+        Map<String, Object> fornecedores = new HashMap<>();
+        fornecedores.put("nome", "Fornecedores");
+        fornecedores.put("valor", 3500.00);
+        fornecedores.put("cor", "rgba(220, 53, 69, 0.8)");
+        fornecedores.put("borderCor", "rgba(220, 53, 69, 1)");
+        categorias.add(fornecedores);
+
+        Map<String, Object> salarios = new HashMap<>();
+        salarios.put("nome", "Salarios");
+        salarios.put("valor", 2800.00);
+        salarios.put("cor", "rgba(255, 193, 7, 0.8)");
+        salarios.put("borderCor", "rgba(255, 193, 7, 1)");
+        categorias.add(salarios);
+
+        Map<String, Object> despesasFixas = new HashMap<>();
+        despesasFixas.put("nome", "Despesas Fixas");
+        despesasFixas.put("valor", 1200.75);
+        despesasFixas.put("cor", "rgba(108, 117, 125, 0.8)");
+        despesasFixas.put("borderCor", "rgba(108, 117, 125, 1)");
+        categorias.add(despesasFixas);
+
+        Map<String, Object> impostos = new HashMap<>();
+        impostos.put("nome", "Impostos");
+        impostos.put("valor", 820.00);
+        impostos.put("cor", "rgba(111, 66, 193, 0.8)");
+        impostos.put("borderCor", "rgba(111, 66, 193, 1)");
+        categorias.add(impostos);
+
+        // Contexto para o grafico de categorias
+        Map<String, Object> categoriasContext = new HashMap<>();
+        categoriasContext.put("chartId", "chartCategorias");
+        categoriasContext.put("titulo", "Distribuicao por Categorias - Mes Atual");
+        categoriasContext.put("categorias", categorias);
+
+        String chartCategoriasHtml = jinjavaService.render("chart-pizza-categorias.html", categoriasContext);
+        model.addAttribute("chartCategorias", chartCategoriasHtml);
 
         return "financeiro/dashboard";
     }
