@@ -81,6 +81,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+                <dependency>
+                        <groupId>com.hubspot.jinjava</groupId>
+                        <artifactId>jinjava</artifactId>
+                        <version>2.7.2</version>
+                </dependency>
 	</dependencies>
 
 	<build>
