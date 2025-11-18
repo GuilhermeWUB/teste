@@ -478,24 +478,6 @@ html[data-theme="dark"] .theme-toggle__icon--light {
     color: var(--color-nav-link-hover);
 }
 
-.nav-financeiro-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: 500;
-    letter-spacing: normal;
-}
-
-.nav-financeiro-link:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--color-input-focus-ring);
-}
-
-.nav-financeiro-link .bi {
-    font-size: 1.05rem;
-    color: currentColor;
-}
-
 .nav-item-dropdown {
     position: relative;
 }
