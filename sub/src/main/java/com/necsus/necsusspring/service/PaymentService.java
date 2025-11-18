@@ -140,4 +140,29 @@ public class PaymentService {
     public List<BankSlip> findInvoicesByBankShipment(Long bankShipmentId) {
         return bankSlipRepository.findByBankShipmentId(bankShipmentId);
     }
+
+    /**
+     * Lista todas as faturas (pendentes e pagas)
+     */
+    @Transactional(readOnly = true)
+    public List<BankSlip> listAllInvoices() {
+        return bankSlipRepository.findAll();
+    }
+
+    /**
+     * Cancela/apaga um boleto
+     * @param bankSlipId ID do boleto a ser cancelado
+     */
+    @Transactional
+    public void cancelInvoice(Long bankSlipId) {
+        BankSlip bankSlip = bankSlipRepository.findById(bankSlipId)
+                .orElseThrow(() -> new RuntimeException("Boleto não encontrado"));
+
+        // Verifica se o boleto já foi pago - não permite cancelar boletos pagos
+        if (bankSlip.getStatus() != null && bankSlip.getStatus() == 1) {
+            throw new IllegalStateException("Não é possível cancelar um boleto que já foi pago");
+        }
+
+        bankSlipRepository.delete(bankSlip);
+    }
 }
