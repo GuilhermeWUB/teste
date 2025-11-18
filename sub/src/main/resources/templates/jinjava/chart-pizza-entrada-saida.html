@@ -4,12 +4,18 @@
 
 <script>
 (function() {
-    const ctx = document.getElementById('{{ chartId }}').getContext('2d');
+    function renderChart() {
+        const canvas = document.getElementById('{{ chartId }}');
+        if (!canvas || !window.Chart) {
+            return;
+        }
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Entradas', 'Saidas'],
+        const ctx = canvas.getContext('2d');
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Entradas', 'Saidas'],
             datasets: [{
                 data: [{{ entradas }}, {{ saidas }}],
                 backgroundColor: [
@@ -61,7 +67,13 @@
                     }
                 }
             }
-        }
-    });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderChart);
+    } else {
+        renderChart();
+    }
 })();
 </script>
