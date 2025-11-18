@@ -69,7 +69,7 @@ public class NotificationController {
             model.addAttribute("filter", "unread");
             model.addAttribute("pageTitle", "SUB - Notificações Não Lidas");
         } else if ("archived".equals(filter)) {
-            notificationsPage = notificationService.findByRecipient(currentUser, pageable);
+            notificationsPage = notificationService.findArchivedByRecipient(currentUser, pageable);
             model.addAttribute("filter", "archived");
             model.addAttribute("pageTitle", "SUB - Notificações Arquivadas");
         } else {
