@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-financeiro}">
+<head>
+    <title>SUB - Financeiro | Dashboard</title>
+</head>
+<body>
+<section layout:fragment="content" class="financeiro-section">
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <p class="text-uppercase text-muted small mb-1">Módulo Financeiro</p>
+            <h1 class="mb-1" th:text="${financeiroHeroTitle}">Visão geral</h1>
+            <p class="text-muted mb-0" th:text="${financeiroHeroSubtitle}">
+                Acompanhe tudo o que está acontecendo nas finanças da SUB em um único lugar.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Resumo do dia</h5>
+                            <p class="text-muted mb-0">Indicadores financeiros principais.</p>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">Em breve</span>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        Este painel será o ponto de partida do time financeiro. Utilize os atalhos da nova barra
+                        para navegar entre lançamentos, movimento de caixa, cadastros, ferramentas e relatórios.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
