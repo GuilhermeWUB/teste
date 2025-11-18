@@ -491,7 +491,7 @@ html[data-theme="dark"] .theme-toggle__icon--light {
 }
 
 .nav-financeiro-link:hover,
-.nav-financeiro-link:focus {
+.nav-financeiro-link.active {
     background: var(--color-nav-link-hover-bg);
     color: var(--color-nav-link-hover);
 }
@@ -512,7 +512,7 @@ html[data-theme="dark"] .nav-financeiro-link .bi {
 }
 
 html[data-theme="dark"] .nav-financeiro-link:hover,
-html[data-theme="dark"] .nav-financeiro-link:focus {
+html[data-theme="dark"] .nav-financeiro-link.active {
     color: var(--color-nav-link-hover) !important;
 }
 
