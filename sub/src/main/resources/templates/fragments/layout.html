@@ -118,6 +118,15 @@
                 </ul>
             </li>
 
+            <li th:if="${isAdmin}" class="nav-item nav-item-financeiro">
+                <a class="btn btn-outline nav-financeiro-link"
+                   data-nav-highlight="true"
+                   th:href="@{/financeiro}">
+                    <i class="bi bi-cash-stack" aria-hidden="true"></i>
+                    <span>Financeiro</span>
+                </a>
+            </li>
+
             <li th:if="${isAdmin}">
                 <a th:href="@{/admin/users}">Usuários</a>
             </li>
@@ -1011,7 +1020,7 @@
             const currentPath = window.location.pathname;
 
             // Seleciona todos os links da navbar (exceto botões)
-            const navLinks = document.querySelectorAll('.nav-links a:not(.btn)');
+            const navLinks = document.querySelectorAll('.nav-links a:not(.btn), .nav-links a[data-nav-highlight="true"]');
             const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
             const dropdownLinks = document.querySelectorAll('.nav-dropdown-link');
 
