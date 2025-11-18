@@ -2,8 +2,10 @@ package com.necsus.necsusspring.controller;
 
 import com.necsus.necsusspring.model.BankSlip;
 import com.necsus.necsusspring.model.BankShipment;
+import com.necsus.necsusspring.model.BillToPay;
 import com.necsus.necsusspring.repository.BankSlipRepository;
 import com.necsus.necsusspring.service.BoletoService;
+import com.necsus.necsusspring.service.BillToPayService;
 import com.necsus.necsusspring.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.format.annotation.DateTimeFormat;
 import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -40,6 +44,9 @@ public class PaymentController {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private BillToPayService billToPayService;
 
     @GetMapping("/gerar-mensalidades")
     public String showGenerateInvoicesForm(@RequestParam("vehicle_id") Long vehicleId, Model model) {
@@ -128,10 +135,15 @@ public class PaymentController {
      */
     @GetMapping("/boletos")
     public String listAllInvoices(Model model) {
+        // Boletos a receber (entradas)
         List<BankSlip> pendingInvoices = paymentService.listPendingInvoices();
         List<BankSlip> paidInvoices = paymentService.listPaidInvoices();
 
-        // Calcula totais financeiros para indicadores
+        // Boletos a pagar (saídas)
+        List<BillToPay> pendingBills = billToPayService.listPendingBills();
+        List<BillToPay> paidBills = billToPayService.listPaidBills();
+
+        // Calcula totais financeiros para indicadores - ENTRADAS
         BigDecimal totalValuePending = pendingInvoices.stream()
                 .map(BankSlip::getValor)
                 .filter(v -> v != null)
@@ -142,12 +154,32 @@ public class PaymentController {
                 .filter(v -> v != null)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // Calcula totais financeiros para indicadores - SAÍDAS
+        BigDecimal totalBillsPending = pendingBills.stream()
+                .map(BillToPay::getValor)
+                .filter(v -> v != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalBillsPaid = paidBills.stream()
+                .map(b -> b.getValorPago() != null ? b.getValorPago() : b.getValor())
+                .filter(v -> v != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Boletos a receber
         model.addAttribute("pendingInvoices", pendingInvoices);
         model.addAttribute("paidInvoices", paidInvoices);
         model.addAttribute("totalPending", pendingInvoices.size());
         model.addAttribute("totalPaid", paidInvoices.size());
         model.addAttribute("totalValuePending", totalValuePending);
         model.addAttribute("totalValuePaid", totalValuePaid);
+
+        // Boletos a pagar
+        model.addAttribute("pendingBills", pendingBills);
+        model.addAttribute("paidBills", paidBills);
+        model.addAttribute("totalBillsPendingCount", pendingBills.size());
+        model.addAttribute("totalBillsPaidCount", paidBills.size());
+        model.addAttribute("totalBillsPending", totalBillsPending);
+        model.addAttribute("totalBillsPaid", totalBillsPaid);
 
         return "boletos";
     }
@@ -189,6 +221,82 @@ public class PaymentController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Erro ao cancelar boleto: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    // ========== ENDPOINTS PARA BOLETOS A PAGAR (SAÍDAS) ==========
+
+    /**
+     * Criar um novo boleto a pagar
+     */
+    @PostMapping("/boletos/criar-conta")
+    public String createBillToPay(
+            @RequestParam String descricao,
+            @RequestParam BigDecimal valor,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date dataVencimento,
+            @RequestParam(required = false) String fornecedor,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String observacao,
+            @RequestParam(required = false) String numeroDocumento,
+            RedirectAttributes redirectAttributes) {
+        try {
+            BillToPay bill = new BillToPay();
+            bill.setDescricao(descricao);
+            bill.setValor(valor);
+            bill.setDataVencimento(dataVencimento);
+            bill.setFornecedor(fornecedor);
+            bill.setCategoria(categoria);
+            bill.setObservacao(observacao);
+            bill.setNumeroDocumento(numeroDocumento);
+
+            billToPayService.create(bill);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Conta a pagar criada com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao criar conta a pagar: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    /**
+     * Marcar boleto a pagar como pago
+     */
+    @PostMapping("/boletos/pagar-conta/{billId}")
+    public String markBillAsPaid(
+            @PathVariable Long billId,
+            @RequestParam(required = false) BigDecimal valorPago,
+            RedirectAttributes redirectAttributes) {
+        try {
+            BillToPay bill = billToPayService.markAsPaid(billId, valorPago);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Conta #" + bill.getId() + " marcada como paga com sucesso!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao marcar conta como paga: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    /**
+     * Cancelar/apagar um boleto a pagar
+     */
+    @PostMapping("/boletos/cancelar-conta/{billId}")
+    public String cancelBill(
+            @PathVariable Long billId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            billToPayService.cancel(billId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Conta #" + billId + " cancelada com sucesso!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao cancelar conta: " + e.getMessage());
         }
         return "redirect:/pagamentos/boletos";
     }
