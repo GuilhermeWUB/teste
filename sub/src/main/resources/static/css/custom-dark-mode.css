@@ -3423,3 +3423,34 @@ html[data-theme="dark"] .form-select.is-invalid:focus {
     border-color: var(--color-danger);
     box-shadow: 0 0 0 0.25rem rgba(253, 164, 175, 0.25);
 }
+/* Correção para o botão Financeiro no modo escuro */
+[data-theme="dark"] .nav-financeiro-link {
+    color: var(--color-nav-link) !important;
+    background-color: transparent !important;
+}
+
+[data-theme="dark"] .nav-financeiro-link:hover {
+    color: var(--color-nav-link-hover) !important;
+    background-color: var(--color-nav-link-hover-bg) !important;
+}
+
+[data-theme="dark"] .nav-financeiro-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    font-weight: 600 !important;
+}
+
+/* Garantir que o span dentro também tenha a cor correta */
+[data-theme="dark"] .nav-financeiro-link span {
+    color: inherit !important;
+}
+
+/* Modo claro - garantir consistência */
+[data-theme="light"] .nav-financeiro-link {
+    color: var(--color-nav-link);
+}
+
+[data-theme="light"] .nav-financeiro-link:hover {
+    color: var(--color-nav-link-hover);
+    background-color: var(--color-nav-link-hover-bg);
+}
