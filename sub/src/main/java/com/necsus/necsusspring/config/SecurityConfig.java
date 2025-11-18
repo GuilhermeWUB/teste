@@ -37,12 +37,14 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
+                        // Recursos estáticos e páginas públicas
                         .requestMatchers(
                                 new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/h2-console/**"),
                                 new AntPathRequestMatcher("/css/**"),
                                 new AntPathRequestMatcher("/js/**"),
                                 new AntPathRequestMatcher("/images/**"),
+                                new AntPathRequestMatcher("/uploads/**"), // Adicionei uploads caso precise ver imagens
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/register"),
                                 new AntPathRequestMatcher("/logout"),
@@ -50,10 +52,13 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/error"),
                                 new AntPathRequestMatcher("/favicon.ico")
                         ).permitAll()
+
+                        // Acesso Gerenciamento de Usuários
                         .requestMatchers(
-                                new AntPathRequestMatcher("/admin/users"),
                                 new AntPathRequestMatcher("/admin/users/**")
                         ).hasAnyRole(USER_MANAGEMENT_ROLES)
+
+                        // Acesso Áreas Administrativas (Incluindo Financeiro agora explícito)
                         .requestMatchers(
                                 new AntPathRequestMatcher("/dashboard/**"),
                                 new AntPathRequestMatcher("/partners/**"),
@@ -61,14 +66,21 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/events/**"),
                                 new AntPathRequestMatcher("/pagamentos/**"),
                                 new AntPathRequestMatcher("/reports/**"),
+                                new AntPathRequestMatcher("/juridico/**"), // Adicionado por consistência
+                                new AntPathRequestMatcher("/financeiro/**"), // ADICIONADO AQUI
                                 new AntPathRequestMatcher("/admin/**")
                         ).hasAnyRole(ADMIN_ROLES)
+
+                        // Áreas de usuário logado comum
                         .requestMatchers(
                                 new AntPathRequestMatcher("/me/**")
                         ).hasAnyRole(AUTHENTICATED_ROLES)
+
+                        // Comunicados (usuário comum)
                         .requestMatchers(
                                 new AntPathRequestMatcher("/comunicados/**")
                         ).hasRole("USER")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

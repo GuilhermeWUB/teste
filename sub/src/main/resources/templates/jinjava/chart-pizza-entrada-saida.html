@@ -3,77 +3,90 @@
 </div>
 
 <script>
-(function() {
-    function renderChart() {
-        const canvas = document.getElementById('{{ chartId }}');
-        if (!canvas || !window.Chart) {
-            return;
-        }
+    (function() {
+        // Função para desenhar o gráfico
+        function renderChart() {
+            // Verifica se a biblioteca Chart.js carregou. Se não, tenta de novo em 100ms.
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js ainda não carregou. Tentando novamente em 100ms...');
+                setTimeout(renderChart, 100);
+                return;
+            }
 
-        const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('{{ chartId }}');
+            if (!canvas) {
+                console.error('Canvas com ID {{ chartId }} não encontrado!');
+                return;
+            }
 
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Entradas', 'Saidas'],
-            datasets: [{
-                data: [{{ entradas }}, {{ saidas }}],
-                backgroundColor: [
-                    'rgba(40, 167, 69, 0.8)',
-                    'rgba(220, 53, 69, 0.8)'
-                ],
-                borderColor: [
-                    'rgba(40, 167, 69, 1)',
-                    'rgba(220, 53, 69, 1)'
-                ],
-                borderWidth: 2,
-                hoverOffset: 10
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        font: {
-                            size: 14
-                        }
-                    }
+            const ctx = canvas.getContext('2d');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Entradas', 'Saídas'],
+                    datasets: [{
+                        // Usamos 'no-quote' para números, garantindo que o Jinjava injete o valor raw
+                        data: [{{ entradas }}, {{ saidas }}],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
                 },
-                title: {
-                    display: true,
-                    text: '{{ titulo }}',
-                    font: {
-                        size: 16,
-                        weight: 'bold'
-                    },
-                    padding: {
-                        top: 10,
-                        bottom: 20
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const value = context.parsed;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return context.label + ': R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}) + ' (' + percentage + '%)';
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            // Adicionado escapejs para evitar quebra se o titulo tiver aspas
+                            text: '{{ titulo|escapejs }}',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return context.label + ': R$ ' + value.toLocaleString('pt-BR', {minimumFractionDigits: 2}) + ' (' + percentage + '%)';
+                                }
+                            }
                         }
                     }
                 }
-            }
-        });
-    }
+            });
+        }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', renderChart);
-    } else {
-        renderChart();
-    }
-})();
+        // Tenta iniciar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderChart);
+        } else {
+            renderChart();
+        }
+    })();
 </script>

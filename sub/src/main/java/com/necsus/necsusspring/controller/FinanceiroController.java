@@ -1,108 +1,117 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.model.BankSlip;
+import com.necsus.necsusspring.model.BillToPay;
+import com.necsus.necsusspring.service.BillToPayService;
 import com.necsus.necsusspring.service.JinjavaService;
+import com.necsus.necsusspring.service.PaymentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/financeiro")
 public class FinanceiroController {
 
     private final JinjavaService jinjavaService;
+    private final PaymentService paymentService; // INJETADO
+    private final BillToPayService billToPayService; // INJETADO
 
-    public FinanceiroController(JinjavaService jinjavaService) {
+    public FinanceiroController(JinjavaService jinjavaService, PaymentService paymentService, BillToPayService billToPayService) {
         this.jinjavaService = jinjavaService;
+        this.paymentService = paymentService; // INJETADO
+        this.billToPayService = billToPayService; // INJETADO
     }
 
     @GetMapping
     public String dashboard(Model model) {
         configurePage(model, "dashboard", "Visão geral", "Acompanhe os principais indicadores financeiros do sistema.");
 
-        // Dados de exemplo para o gráfico de pizza (substituir por dados reais do banco)
-        double totalEntradas = 15750.50;
-        double totalSaidas = 8320.75;
+        // 1. CARREGAR DADOS REAIS DO MÓDULO DE PAGAMENTOS
+        List<BankSlip> paidInvoices = paymentService.listPaidInvoices(); // Entradas Recebidas
+        List<BillToPay> paidBills = billToPayService.listPaidBills(); // Saídas Pagas
 
-        // Preparar contexto para o template Jinjava
+        // 2. CALCULAR TOTAIS
+
+        // Total Entradas (Recebido) - Soma o valor recebido (ou o valor nominal, se não houver valor recebido)
+        BigDecimal totalEntradasBD = paidInvoices.stream()
+                .map(b -> b.getValorRecebido() != null ? b.getValorRecebido() : b.getValor())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Total Saídas (Pago) - Soma o valor pago (ou o valor nominal, se não houver valor pago)
+        BigDecimal totalSaidasBD = paidBills.stream()
+                .map(b -> b.getValorPago() != null ? b.getValorPago() : b.getValor())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        double totalEntradas = totalEntradasBD.doubleValue();
+        double totalSaidas = totalSaidasBD.doubleValue();
+
+        // 3. PREPARAR CONTEXTO PARA O GRÁFICO 1: ENTRADAS VS SAÍDAS
         Map<String, Object> chartContext = new HashMap<>();
         chartContext.put("chartId", "chartEntradaSaida");
-        chartContext.put("titulo", "Entradas vs Saidas - Mes Atual");
+        chartContext.put("titulo", "Entradas vs Saídas (Real) - Recebidas/Pagas");
         chartContext.put("entradas", totalEntradas);
         chartContext.put("saidas", totalSaidas);
 
-        // Renderizar o gráfico usando Jinjava
         String chartHtml = jinjavaService.render("chart-pizza-entrada-saida.html", chartContext);
 
-        // Passar dados para o template Thymeleaf
+        // 4. PASSAR DADOS REAIS PARA O TEMPLATE THYMELEAF
         model.addAttribute("chartEntradaSaida", chartHtml);
         model.addAttribute("totalEntradas", totalEntradas);
         model.addAttribute("totalSaidas", totalSaidas);
         model.addAttribute("saldo", totalEntradas - totalSaidas);
 
-        // Grafico completo de categorias financeiras
+        // 5. PREPARAR CONTEXTO PARA O GRÁFICO 2: CATEGORIAS (Entradas agrupadas + Saídas por Categoria)
         List<Map<String, Object>> categorias = new ArrayList<>();
 
-        // Categorias de Entradas
-        Map<String, Object> vendas = new HashMap<>();
-        vendas.put("nome", "Vendas");
-        vendas.put("valor", 8500.00);
-        vendas.put("cor", "rgba(40, 167, 69, 0.8)");
-        vendas.put("borderCor", "rgba(40, 167, 69, 1)");
-        categorias.add(vendas);
+        // --- CATEGORIAS DE ENTRADAS: Agrupadas em uma só (Adaptado pela falta de categoria em BankSlip) ---
+        Map<String, Object> totalEntradasMap = new HashMap<>();
+        totalEntradasMap.put("nome", "Entradas Recebidas (Total)");
+        totalEntradasMap.put("valor", totalEntradas);
+        totalEntradasMap.put("cor", "rgba(40, 167, 69, 0.8)"); // Verde
+        totalEntradasMap.put("borderCor", "rgba(40, 167, 69, 1)");
+        categorias.add(totalEntradasMap);
 
-        Map<String, Object> servicos = new HashMap<>();
-        servicos.put("nome", "Servicos");
-        servicos.put("valor", 4250.50);
-        servicos.put("cor", "rgba(32, 201, 151, 0.8)");
-        servicos.put("borderCor", "rgba(32, 201, 151, 1)");
-        categorias.add(servicos);
+        // --- CATEGORIAS DE SAÍDAS (BillToPay): Agrupadas pelo campo 'categoria' ---
+        Map<String, BigDecimal> groupedPaidBills = paidBills.stream()
+                .collect(Collectors.groupingBy(
+                        b -> b.getCategoria() != null && !b.getCategoria().isBlank() ? b.getCategoria() : "Outras Despesas",
+                        Collectors.mapping(
+                                b -> b.getValorPago() != null ? b.getValorPago() : b.getValor(),
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                        )
+                ));
 
-        Map<String, Object> outrasEntradas = new HashMap<>();
-        outrasEntradas.put("nome", "Outras Entradas");
-        outrasEntradas.put("valor", 3000.00);
-        outrasEntradas.put("cor", "rgba(13, 202, 240, 0.8)");
-        outrasEntradas.put("borderCor", "rgba(13, 202, 240, 1)");
-        categorias.add(outrasEntradas);
+        // Mapeamento simples de cores para as categorias de Saída mais comuns (para manter a consistência do visual)
+        Map<String, String[]> corMap = Map.of(
+                "Fornecedores", new String[]{"rgba(220, 53, 69, 0.8)", "rgba(220, 53, 69, 1)"}, // Vermelho
+                "Salarios", new String[]{"rgba(255, 193, 7, 0.8)", "rgba(255, 193, 7, 1)"}, // Amarelo
+                "Despesas Fixas", new String[]{"rgba(108, 117, 125, 0.8)", "rgba(108, 117, 125, 1)"}, // Cinza
+                "Impostos", new String[]{"rgba(111, 66, 193, 0.8)", "rgba(111, 66, 193, 1)"} // Roxo
+        );
 
-        // Categorias de Saidas
-        Map<String, Object> fornecedores = new HashMap<>();
-        fornecedores.put("nome", "Fornecedores");
-        fornecedores.put("valor", 3500.00);
-        fornecedores.put("cor", "rgba(220, 53, 69, 0.8)");
-        fornecedores.put("borderCor", "rgba(220, 53, 69, 1)");
-        categorias.add(fornecedores);
-
-        Map<String, Object> salarios = new HashMap<>();
-        salarios.put("nome", "Salarios");
-        salarios.put("valor", 2800.00);
-        salarios.put("cor", "rgba(255, 193, 7, 0.8)");
-        salarios.put("borderCor", "rgba(255, 193, 7, 1)");
-        categorias.add(salarios);
-
-        Map<String, Object> despesasFixas = new HashMap<>();
-        despesasFixas.put("nome", "Despesas Fixas");
-        despesasFixas.put("valor", 1200.75);
-        despesasFixas.put("cor", "rgba(108, 117, 125, 0.8)");
-        despesasFixas.put("borderCor", "rgba(108, 117, 125, 1)");
-        categorias.add(despesasFixas);
-
-        Map<String, Object> impostos = new HashMap<>();
-        impostos.put("nome", "Impostos");
-        impostos.put("valor", 820.00);
-        impostos.put("cor", "rgba(111, 66, 193, 0.8)");
-        impostos.put("borderCor", "rgba(111, 66, 193, 1)");
-        categorias.add(impostos);
+        groupedPaidBills.forEach((categoriaNome, valor) -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("nome", categoriaNome);
+            item.put("valor", valor.doubleValue());
+            String[] cores = corMap.getOrDefault(categoriaNome, new String[]{"rgba(33, 37, 41, 0.8)", "rgba(33, 37, 41, 1)"}); // Default cinza escuro
+            item.put("cor", cores[0]);
+            item.put("borderCor", cores[1]);
+            categorias.add(item);
+        });
 
         // Contexto para o grafico de categorias
         Map<String, Object> categoriasContext = new HashMap<>();
         categoriasContext.put("chartId", "chartCategorias");
-        categoriasContext.put("titulo", "Distribuicao por Categorias - Mes Atual");
+        categoriasContext.put("titulo", "Distribuição por Categorias (Entradas e Saídas Pagas)");
         categoriasContext.put("categorias", categorias);
 
         String chartCategoriasHtml = jinjavaService.render("chart-pizza-categorias.html", categoriasContext);
