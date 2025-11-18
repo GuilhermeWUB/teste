@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-financeiro}">
+<head>
+    <title>SUB - Financeiro | Movimento de Caixa</title>
+</head>
+<body>
+<section layout:fragment="content" class="financeiro-section">
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <p class="text-uppercase text-muted small mb-1">Saúde financeira</p>
+            <h1 class="mb-1" th:text="${financeiroHeroTitle}">Movimento de Caixa</h1>
+            <p class="text-muted mb-0" th:text="${financeiroHeroSubtitle}">
+                Acompanhe a evolução do caixa e identifique rapidamente desvios.
+            </p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-2">Visualizações em construção</h5>
+            <p class="mb-0 text-muted">
+                Os gráficos e tabelas de fluxo diário/semana poderão ser adicionados aqui.
+            </p>
+        </div>
+    </div>
+</section>
+</body>
+</html>
