@@ -1,0 +1,530 @@
+/*
+ * Estilos aprimorados para o módulo Financeiro
+ */
+.financeiro-body {
+    --fin-body-bg: radial-gradient(circle at top, #eef2ff 0%, #f5f3ff 35%, #fdf2f8 100%);
+    --fin-text: #0f172a;
+    --fin-text-subtle: #64748b;
+    --fin-card-bg: rgba(255, 255, 255, 0.92);
+    --fin-card-border: rgba(148, 163, 184, 0.35);
+    --fin-card-shadow: 0 35px 70px rgba(15, 23, 42, 0.15);
+    --fin-topbar-bg: rgba(15, 23, 42, 0.75);
+    --fin-topbar-border: rgba(148, 163, 184, 0.25);
+    --fin-nav-chip: rgba(255, 255, 255, 0.08);
+    --fin-nav-chip-active: linear-gradient(120deg, #2563eb, #14b8a6);
+    --fin-nav-chip-text: #0f172a;
+    --fin-accent: #2563eb;
+    --fin-accent-soft: rgba(37, 99, 235, 0.15);
+    --fin-outline: rgba(37, 99, 235, 0.35);
+    --fin-footer-bg: linear-gradient(120deg, #0f172a, #0f766e);
+    --fin-footer-text: #e2e8f0;
+    --fin-scroll-thumb: rgba(37, 99, 235, 0.35);
+    --fin-scroll-track: rgba(226, 232, 240, 0.9);
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--fin-body-bg);
+    color: var(--fin-text);
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+html[data-theme="dark"] .financeiro-body {
+    --fin-body-bg: radial-gradient(circle at 20% 20%, #1f2a37 0%, #0f172a 45%, #020617 100%);
+    --fin-text: #f8fafc;
+    --fin-text-subtle: #cbd5f5;
+    --fin-card-bg: rgba(15, 23, 42, 0.85);
+    --fin-card-border: rgba(148, 163, 184, 0.25);
+    --fin-card-shadow: 0 35px 70px rgba(2, 6, 23, 0.85);
+    --fin-topbar-bg: rgba(2, 6, 23, 0.85);
+    --fin-topbar-border: rgba(59, 130, 246, 0.35);
+    --fin-nav-chip: rgba(148, 163, 184, 0.12);
+    --fin-nav-chip-active: linear-gradient(120deg, #38bdf8, #10b981);
+    --fin-nav-chip-text: #e2e8f0;
+    --fin-accent: #38bdf8;
+    --fin-accent-soft: rgba(56, 189, 248, 0.15);
+    --fin-outline: rgba(56, 189, 248, 0.45);
+    --fin-footer-bg: linear-gradient(120deg, #020617, #0f172a);
+    --fin-footer-text: #94a3b8;
+    --fin-scroll-thumb: rgba(56, 189, 248, 0.55);
+    --fin-scroll-track: rgba(15, 23, 42, 0.6);
+}
+
+.financeiro-body ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.financeiro-body ::-webkit-scrollbar-thumb {
+    background: var(--fin-scroll-thumb);
+    border-radius: 999px;
+}
+
+.financeiro-body ::-webkit-scrollbar-track {
+    background: var(--fin-scroll-track);
+    border-radius: 999px;
+}
+
+/* Topbar */
+.topbar-financeiro {
+    background: var(--fin-topbar-bg);
+    border-bottom: 1px solid var(--fin-topbar-border);
+    backdrop-filter: blur(18px);
+    padding: 1rem 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+}
+
+.topbar-financeiro .brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    color: #f8fafc;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.topbar-financeiro .brand-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 25px 45px rgba(15, 23, 42, 0.45);
+    object-fit: cover;
+}
+
+.topbar-financeiro .brand-link::after {
+    content: 'Financeiro';
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #0ea5e9, #06b6d4);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+}
+
+.nav-toggle {
+    display: none;
+}
+
+.nav-toggle-label {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.nav-toggle-label span {
+    width: 26px;
+    height: 2px;
+    background: #fff;
+    border-radius: 999px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.topbar-nav {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.5rem;
+    margin: 0;
+    list-style: none;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item-financeiro a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.9);
+    transition: all 0.2s ease;
+}
+
+.nav-item-financeiro a:hover,
+.nav-item-financeiro a:focus {
+    background: var(--fin-nav-chip);
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-item-financeiro a.active {
+    background: var(--fin-nav-chip-active);
+    color: #fff;
+    box-shadow: 0 15px 35px rgba(15, 118, 110, 0.35);
+}
+
+.nav-item-mobile-action {
+    display: none;
+}
+
+.topbar-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.topbar-action-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.theme-toggle,
+.notification-bell-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible,
+.notification-bell-button:hover,
+.notification-bell-button:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 15px 40px rgba(15, 23, 42, 0.4);
+    outline: none;
+}
+
+.notification-bell-wrapper {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    padding: 0 0.4rem;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 0.85rem);
+    right: 0;
+    width: min(380px, 85vw);
+    background: var(--fin-card-bg);
+    border: 1px solid var(--fin-card-border);
+    border-radius: 1.5rem;
+    box-shadow: var(--fin-card-shadow);
+    overflow: hidden;
+    color: var(--fin-text);
+}
+
+.notification-dropdown-header,
+.notification-dropdown-footer {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.notification-dropdown-footer {
+    border-bottom: 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.notification-dropdown-body {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    gap: 0.85rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    color: inherit;
+    text-decoration: none;
+}
+
+.notification-item:last-child {
+    border-bottom: 0;
+}
+
+.notification-item:hover {
+    background: var(--fin-accent-soft);
+}
+
+.notification-item.unread {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.notification-item-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--fin-accent);
+}
+
+.notification-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-item-title {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.notification-item-message {
+    font-size: 0.9rem;
+    color: var(--fin-text-subtle);
+}
+
+.notification-item-time {
+    font-size: 0.75rem;
+    color: var(--fin-text-subtle);
+    margin-top: 0.35rem;
+}
+
+.topbar-action-buttons .btn.btn-outline {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+    padding: 0.45rem 1.4rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, background 0.2s ease, border 0.2s ease;
+}
+
+.topbar-action-buttons .btn.btn-outline:hover,
+.topbar-action-buttons .btn.btn-outline:focus-visible {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff;
+}
+
+/* Página */
+.page-financeiro {
+    flex: 1;
+    width: 100%;
+    padding: 2.5rem 0 3.5rem;
+}
+
+.finance-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.financeiro-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.page-header {
+    background: var(--fin-card-bg);
+    border: 1px solid var(--fin-card-border);
+    border-radius: 1.75rem;
+    padding: 2rem;
+    box-shadow: var(--fin-card-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.15), transparent 55%);
+    pointer-events: none;
+}
+
+.page-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-header h1 {
+    font-weight: 700;
+    font-size: clamp(1.8rem, 2vw, 2.3rem);
+}
+
+.page-header p.text-muted {
+    color: var(--fin-text-subtle) !important;
+    max-width: 60ch;
+    margin-bottom: 0;
+}
+
+.financeiro-section .card {
+    background: var(--fin-card-bg);
+    border: 1px solid var(--fin-card-border);
+    border-radius: 1.5rem;
+    box-shadow: var(--fin-card-shadow);
+    overflow: hidden;
+}
+
+.financeiro-section .card-body {
+    padding: 2rem;
+    color: var(--fin-text);
+}
+
+.financeiro-section .card h5 {
+    font-weight: 600;
+}
+
+.financeiro-section .card .text-muted {
+    color: var(--fin-text-subtle) !important;
+}
+
+.financeiro-section .badge {
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-weight: 600;
+}
+
+/* Rodapé e utilidades */
+.financeiro-footer {
+    background: var(--fin-footer-bg);
+    color: var(--fin-footer-text);
+    text-align: center;
+    padding: 1.75rem 0;
+    margin-top: auto;
+}
+
+.financeiro-footer p {
+    margin: 0;
+    letter-spacing: 0.04em;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.85rem 1.25rem;
+    background: linear-gradient(120deg, #0ea5e9, #2563eb);
+    color: #fff;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 25px 50px rgba(14, 165, 233, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-4px);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid var(--fin-outline);
+    outline-offset: 4px;
+}
+
+/* Responsivo */
+@media (max-width: 1200px) {
+    .topbar-financeiro {
+        padding: 1rem 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .topbar-financeiro {
+        grid-template-columns: 1fr auto;
+    }
+
+    .nav-toggle-label {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .topbar-nav {
+        grid-column: 1 / -1;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+    }
+
+    .topbar.nav-open .topbar-nav {
+        max-height: 80vh;
+        margin-top: 0.75rem;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        border-radius: 1.5rem;
+        width: 100%;
+    }
+
+    .nav-item-financeiro a {
+        width: 100%;
+        justify-content: center;
+        border-radius: 1rem;
+    }
+
+    .nav-item-mobile-action {
+        display: block;
+        width: 100%;
+    }
+
+    .nav-item-mobile-action a,
+    .nav-item-mobile-action button {
+        width: 100%;
+        justify-content: center;
+        border-radius: 1rem;
+    }
+
+    .topbar-actions {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header,
+    .financeiro-section .card {
+        border-radius: 1.1rem;
+        padding: 1.5rem;
+    }
+
+    .back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+    }
+}
