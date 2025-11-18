@@ -14,8 +14,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/custom-dark-mode.css}">
+    <link rel="stylesheet" th:href="@{/css/financeiro.css}">
 </head>
-<body>
+<body class="financeiro-body">
 <header th:fragment="header" class="topbar topbar-financeiro">
     <div class="brand">
         <a class="brand-link" th:href="@{/dashboard}" title="Voltar ao Dashboard">
@@ -103,12 +104,6 @@
     </nav>
 
     <div class="topbar-actions">
-        <!-- Botão voltar ao sistema principal -->
-        <a th:href="@{/dashboard}" class="btn-back-to-system" title="Voltar ao Dashboard">
-            <i class="bi bi-arrow-left"></i>
-            <span>Voltar</span>
-        </a>
-
         <div class="topbar-action-buttons">
             <div class="notification-bell-wrapper" th:if="${isLoggedIn}">
                 <button type="button"
@@ -157,15 +152,15 @@
     </div>
 </header>
 
-<main class="page">
-    <div class="container">
+<main class="page page-financeiro">
+    <div class="container finance-container">
         <div class="page-content">
             <section layout:fragment="content"></section>
         </div>
     </div>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer financeiro-footer">
     <div class="container">
         <p>&copy; <span th:text="${T(java.time.Year).now()}"></span> SUB - Módulo Financeiro. Todos os direitos reservados.</p>
     </div>
@@ -483,346 +478,5 @@
     })();
 </script>
 
-<!-- Estilos específicos do módulo Financeiro -->
-<style>
-    .topbar-action-buttons {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    /* Botão de voltar ao sistema */
-    .btn-back-to-system {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--bs-primary);
-        color: white;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .btn-back-to-system:hover {
-        background: var(--bs-primary);
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-        color: white;
-    }
-
-    [data-theme="dark"] .btn-back-to-system {
-        background: rgba(59, 130, 246, 0.8);
-    }
-
-    /* Links de navegação do financeiro */
-    .nav-item-financeiro a {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s ease;
-    }
-
-    .nav-item-financeiro a:hover {
-        background: rgba(59, 130, 246, 0.1);
-    }
-
-    .nav-item-financeiro a.active {
-        background: rgba(59, 130, 246, 0.15);
-        color: var(--bs-primary);
-        font-weight: 600;
-    }
-
-    [data-theme="dark"] .nav-item-financeiro a:hover {
-        background: rgba(59, 130, 246, 0.2);
-    }
-
-    [data-theme="dark"] .nav-item-financeiro a.active {
-        background: rgba(59, 130, 246, 0.25);
-    }
-
-    /* Badge do módulo na brand */
-    .topbar-financeiro .brand-link::after {
-        content: 'Financeiro';
-        display: inline-flex;
-        align-items: center;
-        margin-left: 0.75rem;
-        padding: 0.25rem 0.625rem;
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        border-radius: 9999px;
-        font-size: 0.6875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    @media (max-width: 768px) {
-        .btn-back-to-system span {
-            display: none;
-        }
-
-        .topbar-financeiro .brand-link::after {
-            display: none;
-        }
-    }
-
-    /* Botão de sino */
-    .notification-bell-wrapper {
-        position: relative;
-        display: inline-flex;
-        align-items: stretch;
-    }
-
-    .theme-toggle,
-    .notification-bell-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.45rem 0.9rem;
-        border-radius: var(--radius-sm, 8px);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(255, 255, 255, 0.12);
-        color: var(--color-topbar-text, #f5f3ff);
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease, background 0.2s ease;
-    }
-
-    .topbar-actions .theme-toggle,
-    .topbar-actions .notification-bell-button {
-        width: 2.75rem;
-        height: 2.75rem;
-        min-width: 2.75rem;
-        min-height: 2.75rem;
-        padding: 0;
-        gap: 0;
-    }
-
-    .topbar-actions .theme-toggle .theme-toggle__icon,
-    .topbar-actions .notification-bell-button .bi {
-        font-size: 1.1rem;
-    }
-
-    .theme-toggle:hover,
-    .theme-toggle:focus,
-    .notification-bell-button:hover,
-    .notification-bell-button:focus {
-        transform: translateY(-1px);
-        box-shadow: 0 12px 25px rgba(59, 130, 246, 0.25);
-        border-color: rgba(255, 255, 255, 0.45);
-        background: rgba(255, 255, 255, 0.16);
-    }
-
-    .theme-toggle:focus-visible,
-    .notification-bell-button:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 3px var(--color-input-focus-ring, rgba(59, 130, 246, 0.35)), 0 12px 25px rgba(59, 130, 246, 0.25);
-    }
-
-    [data-theme="dark"] .notification-bell-button {
-        border-color: rgba(255, 255, 255, 0.15);
-        background: rgba(255, 255, 255, 0.08);
-        color: #f8fafc;
-    }
-
-    [data-theme="dark"] .notification-bell-button:hover,
-    [data-theme="dark"] .notification-bell-button:focus {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 12px 25px rgba(15, 118, 110, 0.35);
-    }
-
-    .notification-bell-button {
-        position: relative;
-        border-color: rgba(15, 118, 110, 0.35);
-        background: rgba(15, 118, 110, 0.12);
-        color: var(--color-topbar-text, #0f766e);
-    }
-
-    .notification-bell-button .bi {
-        font-size: 1.15rem;
-    }
-
-    .notification-bell-button.has-notifications {
-        animation: pulse 1.5s infinite;
-    }
-
-    .notification-bell-button.is-open {
-        background: var(--bs-primary);
-        color: #fff;
-        border-color: var(--bs-primary);
-    }
-
-    [data-theme="dark"] .notification-bell-button.is-open {
-        background: rgba(59, 130, 246, 0.85);
-        border-color: rgba(59, 130, 246, 0.95);
-    }
-
-    .notification-badge {
-        position: absolute;
-        top: -6px;
-        right: -2px;
-        min-width: 1.3rem;
-        height: 1.3rem;
-        border-radius: 999px;
-        background: #ef4444;
-        color: white;
-        font-size: 0.65rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .notification-dropdown {
-        position: absolute;
-        top: calc(100% + 0.5rem);
-        right: 0;
-        width: 380px;
-        background: var(--color-card-bg, #fff);
-        border-radius: 1rem;
-        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-        z-index: 999;
-    }
-
-    [data-theme="dark"] .notification-dropdown {
-        background: rgba(15, 23, 42, 0.95);
-        border-color: rgba(148, 163, 184, 0.2);
-        box-shadow: 0 20px 45px rgba(2, 6, 23, 0.6);
-    }
-
-    .notification-dropdown-header {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    [data-theme="dark"] .notification-dropdown-header {
-        border-color: rgba(148, 163, 184, 0.15);
-    }
-
-    .notification-dropdown-body {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-
-    .notification-dropdown-body::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .notification-dropdown-body::-webkit-scrollbar-thumb {
-        background: rgba(15, 23, 42, 0.2);
-        border-radius: 999px;
-    }
-
-    .notification-item {
-        display: flex;
-        gap: 0.75rem;
-        padding: 0.9rem 1.25rem;
-        text-decoration: none;
-        color: inherit;
-        border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-        transition: background 0.2s ease;
-    }
-
-    [data-theme="dark"] .notification-item {
-        border-color: rgba(148, 163, 184, 0.12);
-    }
-
-    .notification-item:hover {
-        background: rgba(59, 130, 246, 0.08);
-    }
-
-    [data-theme="dark"] .notification-item:hover {
-        background: rgba(59, 130, 246, 0.18);
-    }
-
-    .notification-item.unread {
-        background: rgba(59, 130, 246, 0.04);
-    }
-
-    [data-theme="dark"] .notification-item.unread {
-        background: rgba(59, 130, 246, 0.12);
-    }
-
-    .notification-item-icon {
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: 0.85rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-    }
-
-    .notification-item-content {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .notification-item-title {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .notification-item-message {
-        font-size: 0.9rem;
-        color: var(--bs-body-color, #4b5563);
-    }
-
-    .notification-item-time {
-        font-size: 0.75rem;
-        color: #94a3b8;
-        margin-top: 0.25rem;
-    }
-
-    .notification-dropdown-footer {
-        padding: 0.75rem 1.25rem;
-        border-top: 1px solid rgba(15, 23, 42, 0.08);
-        text-align: center;
-    }
-
-    [data-theme="dark"] .notification-dropdown-footer {
-        border-color: rgba(148, 163, 184, 0.15);
-    }
-
-    .notification-empty {
-        padding: 3rem 1.5rem;
-        text-align: center;
-        color: #94a3b8;
-    }
-
-    .notification-empty i {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        display: block;
-    }
-
-    .notification-icon-EVENT { background-color: #0d6efd; color: white; }
-    .notification-icon-DEMAND { background-color: #ffc107; color: black; }
-    .notification-icon-PAYMENT { background-color: #198754; color: white; }
-    .notification-icon-BANK_SLIP { background-color: #0dcaf0; color: black; }
-    .notification-icon-ALERT { background-color: #dc3545; color: white; }
-    .notification-icon-SYSTEM { background-color: #6c757d; color: white; }
-    .notification-icon-COMUNICADO { background-color: #6f42c1; color: white; }
-    .notification-icon-INFO { background-color: #0dcaf0; color: black; }
-
-    @media (max-width: 768px) {
-        .notification-dropdown {
-            width: 320px;
-            right: -60px;
-        }
-    }
-</style>
 </body>
 </html>
