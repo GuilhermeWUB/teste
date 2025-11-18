@@ -131,10 +131,23 @@ public class PaymentController {
         List<BankSlip> pendingInvoices = paymentService.listPendingInvoices();
         List<BankSlip> paidInvoices = paymentService.listPaidInvoices();
 
+        // Calcula totais financeiros para indicadores
+        BigDecimal totalValuePending = pendingInvoices.stream()
+                .map(BankSlip::getValor)
+                .filter(v -> v != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalValuePaid = paidInvoices.stream()
+                .map(b -> b.getValorRecebido() != null ? b.getValorRecebido() : b.getValor())
+                .filter(v -> v != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         model.addAttribute("pendingInvoices", pendingInvoices);
         model.addAttribute("paidInvoices", paidInvoices);
         model.addAttribute("totalPending", pendingInvoices.size());
         model.addAttribute("totalPaid", paidInvoices.size());
+        model.addAttribute("totalValuePending", totalValuePending);
+        model.addAttribute("totalValuePaid", totalValuePaid);
 
         return "boletos";
     }

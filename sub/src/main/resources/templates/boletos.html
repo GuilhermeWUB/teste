@@ -147,6 +147,46 @@
             background: #dc3545;
             color: white;
         }
+        .financial-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .financial-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            border-left: 4px solid;
+        }
+        .financial-box.pending {
+            border-left-color: #ffc107;
+        }
+        .financial-box.paid {
+            border-left-color: #28a745;
+        }
+        .financial-box h6 {
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .financial-box .value {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .financial-box.pending .value {
+            color: #856404;
+        }
+        .financial-box.paid .value {
+            color: #155724;
+        }
+        .financial-box .count {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -176,7 +216,29 @@
         <p class="mb-0 small">As opções "Marcar como Pago" e "Cancelar" são temporárias e serão removidas futuramente.</p>
     </div>
 
-    <!-- Resumo -->
+    <!-- Indicadores Financeiros -->
+    <div class="financial-summary">
+        <div class="financial-box pending">
+            <h6><i class="bi bi-clock-history"></i> A Receber</h6>
+            <div class="value">
+                R$ <span th:text="${#numbers.formatDecimal(totalValuePending, 1, 2)}">0,00</span>
+            </div>
+            <div class="count">
+                <span th:text="${totalPending}">0</span> boleto(s) pendente(s)
+            </div>
+        </div>
+        <div class="financial-box paid">
+            <h6><i class="bi bi-check-circle"></i> Recebido</h6>
+            <div class="value">
+                R$ <span th:text="${#numbers.formatDecimal(totalValuePaid, 1, 2)}">0,00</span>
+            </div>
+            <div class="count">
+                <span th:text="${totalPaid}">0</span> boleto(s) pago(s)
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumo de Quantidades -->
     <div class="summary-stats">
         <div class="stat-box">
             <div class="stat-number" th:text="${totalPending}">0</div>
