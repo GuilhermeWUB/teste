@@ -8,16 +8,87 @@
 <section layout:fragment="content" class="financeiro-section">
     <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
-            <p class="text-uppercase text-muted small mb-1">Módulo Financeiro</p>
-            <h1 class="mb-1" th:text="${financeiroHeroTitle}">Visão geral</h1>
+            <p class="text-uppercase text-muted small mb-1">Modulo Financeiro</p>
+            <h1 class="mb-1" th:text="${financeiroHeroTitle}">Visao geral</h1>
             <p class="text-muted mb-0" th:text="${financeiroHeroSubtitle}">
-                Acompanhe tudo o que está acontecendo nas finanças da SUB em um único lugar.
+                Acompanhe tudo o que esta acontecendo nas financas da SUB em um unico lugar.
             </p>
         </div>
     </div>
 
+    <!-- Cards de Resumo -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-arrow-up-circle text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 small">Total Entradas</p>
+                            <h4 class="mb-0 text-success" th:text="'R$ ' + ${#numbers.formatDecimal(totalEntradas, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-danger bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-arrow-down-circle text-danger fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 small">Total Saidas</p>
+                            <h4 class="mb-0 text-danger" th:text="'R$ ' + ${#numbers.formatDecimal(totalSaidas, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                                <i class="bi bi-wallet2 text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 small">Saldo</p>
+                            <h4 class="mb-0 text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(saldo, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafico de Pizza -->
     <div class="row g-4">
-        <div class="col-12">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Entradas vs Saidas</h5>
+                            <p class="text-muted mb-0">Distribuicao do mes atual</p>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Ativo</span>
+                    </div>
+                    <!-- Grafico renderizado pelo Jinjava -->
+                    <div th:utext="${chartEntradaSaida}"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -25,16 +96,20 @@
                             <h5 class="mb-1">Resumo do dia</h5>
                             <p class="text-muted mb-0">Indicadores financeiros principais.</p>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary">Em breve</span>
                     </div>
                     <p class="mb-0 text-muted">
-                        Este painel será o ponto de partida do time financeiro. Utilize os atalhos da nova barra
-                        para navegar entre lançamentos, movimento de caixa, cadastros, ferramentas e relatórios.
+                        Este painel e o ponto de partida do time financeiro. Utilize os atalhos da nova barra
+                        para navegar entre lancamentos, movimento de caixa, cadastros, ferramentas e relatorios.
                     </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Chart.js CDN -->
+<th:block layout:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</th:block>
 </body>
 </html>
