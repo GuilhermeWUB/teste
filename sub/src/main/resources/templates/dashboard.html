@@ -47,18 +47,20 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="card-title text-uppercase text-muted mb-0">Boletos pendentes</h5>
-                        <span class="metric-icon">
-                            <i class="bi bi-receipt"></i>
-                        </span>
+            <a href="/pagamentos/boletos" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm card-clickable">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="card-title text-uppercase text-muted mb-0">Boletos pendentes</h5>
+                            <span class="metric-icon">
+                                <i class="bi bi-receipt"></i>
+                            </span>
+                        </div>
+                        <h2 class="fw-bold" th:text="${pendingInvoices}">0</h2>
+                        <p class="text-muted mb-0">Boletos aguardando pagamento.</p>
                     </div>
-                    <h2 class="fw-bold" th:text="${pendingInvoices}">0</h2>
-                    <p class="text-muted mb-0">Boletos aguardando pagamento.</p>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 

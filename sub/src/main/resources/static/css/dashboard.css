@@ -300,3 +300,28 @@ html[data-theme="dark"] .list-unstyled li:hover {
     background-size: 1000px 100%;
     animation: shimmer 1.5s infinite;
 }
+
+/* Card clicável */
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:hover {
+    border: 2px solid var(--color-primary) !important;
+}
+
+.card-clickable::after {
+    content: '\F133';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 0.8rem;
+    color: var(--color-primary);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.card-clickable:hover::after {
+    opacity: 1;
+}

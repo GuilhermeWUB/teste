@@ -122,4 +122,61 @@ public class PaymentController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Página que lista todos os boletos gerados
+     */
+    @GetMapping("/boletos")
+    public String listAllInvoices(Model model) {
+        List<BankSlip> pendingInvoices = paymentService.listPendingInvoices();
+        List<BankSlip> paidInvoices = paymentService.listPaidInvoices();
+
+        model.addAttribute("pendingInvoices", pendingInvoices);
+        model.addAttribute("paidInvoices", paidInvoices);
+        model.addAttribute("totalPending", pendingInvoices.size());
+        model.addAttribute("totalPaid", paidInvoices.size());
+
+        return "boletos";
+    }
+
+    /**
+     * Marcar boleto como pago na página de todos os boletos
+     */
+    @PostMapping("/boletos/marcar-paga/{bankSlipId}")
+    public String markInvoiceAsPaidFromList(
+            @PathVariable Long bankSlipId,
+            @RequestParam(required = false) BigDecimal valorRecebido,
+            RedirectAttributes redirectAttributes) {
+        try {
+            BankSlip bankSlip = paymentService.markAsPaid(bankSlipId, valorRecebido);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Boleto #" + bankSlip.getId() + " marcado como pago com sucesso!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao marcar boleto como pago: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    /**
+     * Cancelar/apagar um boleto
+     */
+    @PostMapping("/boletos/cancelar/{bankSlipId}")
+    public String cancelInvoice(
+            @PathVariable Long bankSlipId,
+            RedirectAttributes redirectAttributes) {
+        try {
+            paymentService.cancelInvoice(bankSlipId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Boleto #" + bankSlipId + " cancelado com sucesso!");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Erro ao cancelar boleto: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
 }
