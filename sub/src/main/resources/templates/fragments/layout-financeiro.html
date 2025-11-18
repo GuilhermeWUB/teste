@@ -103,12 +103,6 @@
     </nav>
 
     <div class="topbar-actions">
-        <!-- Botão voltar ao sistema principal -->
-        <a th:href="@{/dashboard}" class="btn-back-to-system" title="Voltar ao Dashboard">
-            <i class="bi bi-arrow-left"></i>
-            <span>Voltar</span>
-        </a>
-
         <div class="topbar-action-buttons">
             <div class="notification-bell-wrapper" th:if="${isLoggedIn}">
                 <button type="button"
