@@ -1,4 +1,4 @@
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     'use strict';
 
     const fileInput = document.getElementById('notaFiscalPdf');
@@ -216,4 +216,4 @@
 
         return filled;
     }
-})();
+});
