@@ -90,14 +90,16 @@ public class GeminiExtractionService {
                     "{\"numeroNota\": \"12345\", \"dataEmissao\": \"2023-10-27\", \"valor\": \"150.75\", \"placa\": \"ABC1234\"}";
 
             Content.Builder contentBuilder = Content.newBuilder()
-                    .addParts(Part.newBuilder().setText(prompt));
+                    .addParts(Part.newBuilder().setText(prompt).build());
 
             for (String base64Image : base64Images) {
-                contentBuilder.addParts(Part.newBuilder()
+                Part imagePart = Part.newBuilder()
                         .setInlineData(Blob.newBuilder()
                                 .setMimeType("image/jpeg")
                                 .setData(ByteString.copyFrom(Base64.getDecoder().decode(base64Image)))
-                                .build()));
+                                .build())
+                        .build();
+                contentBuilder.addParts(imagePart);
             }
 
             Content content = contentBuilder.build();
