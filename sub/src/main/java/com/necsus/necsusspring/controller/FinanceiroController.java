@@ -1,5 +1,6 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.dto.FinancialMovementView;
 import com.necsus.necsusspring.model.BankSlip;
 import com.necsus.necsusspring.model.BillToPay;
 import com.necsus.necsusspring.service.BillToPayService;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 @RequestMapping("/financeiro")
@@ -123,6 +127,78 @@ public class FinanceiroController {
     @GetMapping("/lancamentos")
     public String lancamentos(Model model) {
         configurePage(model, "lancamentos", "Lançamentos", "Registre entradas, saídas e mantenha o fluxo diário organizado.");
+
+        List<BankSlip> pendingReceivables = paymentService.listPendingInvoices();
+        List<BankSlip> paidReceivables = paymentService.listPaidInvoices();
+        List<BillToPay> pendingBills = billToPayService.listPendingBills();
+        List<BillToPay> paidBills = billToPayService.listPaidBills();
+
+        BigDecimal totalReceber = pendingReceivables.stream()
+                .map(BankSlip::getValor)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalRecebido = paidReceivables.stream()
+                .map(b -> b.getValorRecebido() != null ? b.getValorRecebido() : b.getValor())
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalPagar = pendingBills.stream()
+                .map(BillToPay::getValor)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalPago = paidBills.stream()
+                .map(b -> b.getValorPago() != null ? b.getValorPago() : b.getValor())
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<BankSlip> upcomingReceivables = pendingReceivables.stream()
+                .sorted(Comparator.comparing(BankSlip::getVencimento, Comparator.nullsLast(Comparator.naturalOrder())))
+                .limit(5)
+                .collect(Collectors.toList());
+
+        List<BillToPay> upcomingPayables = pendingBills.stream()
+                .sorted(Comparator.comparing(BillToPay::getDataVencimento, Comparator.nullsLast(Comparator.naturalOrder())))
+                .limit(5)
+                .collect(Collectors.toList());
+
+        List<FinancialMovementView> recentMovements = Stream.concat(
+                        paidReceivables.stream()
+                                .filter(b -> b.getDataPagamento() != null)
+                                .map(b -> new FinancialMovementView(
+                                        "Entrada",
+                                        b.getPartner() != null ? b.getPartner().getName() : "Recebimento",
+                                        b.getNumeroDocumento() != null ? b.getNumeroDocumento() : "Boleto #" + b.getId(),
+                                        b.getDataPagamento(),
+                                        b.getValorRecebido() != null ? b.getValorRecebido() : b.getValor(),
+                                        true
+                                )),
+                        paidBills.stream()
+                                .filter(b -> b.getDataPagamento() != null)
+                                .map(b -> new FinancialMovementView(
+                                        "Saída",
+                                        b.getDescricao(),
+                                        b.getFornecedor() != null ? b.getFornecedor() : b.getCategoria(),
+                                        b.getDataPagamento(),
+                                        b.getValorPago() != null ? b.getValorPago() : b.getValor(),
+                                        false
+                                ))
+                )
+                .sorted(Comparator.comparing(FinancialMovementView::getData, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .limit(6)
+                .collect(Collectors.toList());
+
+        model.addAttribute("totalReceber", totalReceber);
+        model.addAttribute("totalRecebido", totalRecebido);
+        model.addAttribute("totalPagar", totalPagar);
+        model.addAttribute("totalPago", totalPago);
+        model.addAttribute("quantidadeReceber", pendingReceivables.size());
+        model.addAttribute("quantidadePagar", pendingBills.size());
+        model.addAttribute("upcomingReceivables", upcomingReceivables);
+        model.addAttribute("upcomingPayables", upcomingPayables);
+        model.addAttribute("recentMovements", recentMovements);
+
         return "financeiro/lancamentos";
     }
 
