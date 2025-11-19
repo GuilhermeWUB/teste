@@ -5,10 +5,8 @@ import com.necsus.necsusspring.model.BankSlip;
 import com.necsus.necsusspring.model.BillToPay;
 import com.necsus.necsusspring.model.FiscalDocument;
 import com.necsus.necsusspring.service.BillToPayService;
-import com.necsus.necsusspring.dto.ExtractedDataDto;
 import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.FiscalDocumentService;
-import com.necsus.necsusspring.service.GeminiExtractionService;
 import com.necsus.necsusspring.service.JinjavaService;
 import com.necsus.necsusspring.service.PaymentService;
 import org.springframework.stereotype.Controller;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -46,20 +43,17 @@ public class FinanceiroController {
     private final BillToPayService billToPayService; // INJETADO
     private final FileStorageService fileStorageService;
     private final FiscalDocumentService fiscalDocumentService;
-    private final GeminiExtractionService geminiExtractionService;
 
     public FinanceiroController(JinjavaService jinjavaService,
                                 PaymentService paymentService,
                                 BillToPayService billToPayService,
                                 FileStorageService fileStorageService,
-                                FiscalDocumentService fiscalDocumentService,
-                                GeminiExtractionService geminiExtractionService) {
+                                FiscalDocumentService fiscalDocumentService) {
         this.jinjavaService = jinjavaService;
         this.paymentService = paymentService; // INJETADO
         this.billToPayService = billToPayService; // INJETADO
         this.fileStorageService = fileStorageService;
         this.fiscalDocumentService = fiscalDocumentService;
-        this.geminiExtractionService = geminiExtractionService;
     }
 
     @GetMapping
@@ -168,20 +162,6 @@ public class FinanceiroController {
     public String lancamentosNotasFiscais(Model model) {
         configurePage(model, "lancamentos", "Notas fiscais", "Centralize os documentos emitidos e acompanhe a evolução da integração fiscal.");
         return "financeiro/lancamentos-notas";
-    }
-
-    @PostMapping("/lancamentos/contas/extrair-dados-nota")
-    @ResponseBody
-    public ResponseEntity<?> extrairDadosNota(@RequestParam("notaFiscalPdf") MultipartFile notaFiscalPdf) {
-        if (notaFiscalPdf == null || notaFiscalPdf.isEmpty() || !isPdfFile(notaFiscalPdf)) {
-            return ResponseEntity.badRequest().body("Arquivo inválido. Por favor, envie um PDF.");
-        }
-        try {
-            ExtractedDataDto extractedData = geminiExtractionService.extractDataFromPdf(notaFiscalPdf);
-            return ResponseEntity.ok(extractedData);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao extrair dados da nota fiscal: " + e.getMessage());
-        }
     }
 
     @PostMapping(value = "/lancamentos/contas/upload-nota", consumes = "multipart/form-data")
