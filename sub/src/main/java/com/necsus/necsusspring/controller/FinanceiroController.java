@@ -3,15 +3,28 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.FinancialMovementView;
 import com.necsus.necsusspring.model.BankSlip;
 import com.necsus.necsusspring.model.BillToPay;
+import com.necsus.necsusspring.model.FiscalDocument;
 import com.necsus.necsusspring.service.BillToPayService;
+import com.necsus.necsusspring.service.FileStorageService;
+import com.necsus.necsusspring.service.FiscalDocumentService;
 import com.necsus.necsusspring.service.JinjavaService;
 import com.necsus.necsusspring.service.PaymentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,11 +41,19 @@ public class FinanceiroController {
     private final JinjavaService jinjavaService;
     private final PaymentService paymentService; // INJETADO
     private final BillToPayService billToPayService; // INJETADO
+    private final FileStorageService fileStorageService;
+    private final FiscalDocumentService fiscalDocumentService;
 
-    public FinanceiroController(JinjavaService jinjavaService, PaymentService paymentService, BillToPayService billToPayService) {
+    public FinanceiroController(JinjavaService jinjavaService,
+                                PaymentService paymentService,
+                                BillToPayService billToPayService,
+                                FileStorageService fileStorageService,
+                                FiscalDocumentService fiscalDocumentService) {
         this.jinjavaService = jinjavaService;
         this.paymentService = paymentService; // INJETADO
         this.billToPayService = billToPayService; // INJETADO
+        this.fileStorageService = fileStorageService;
+        this.fiscalDocumentService = fiscalDocumentService;
     }
 
     @GetMapping
@@ -133,6 +154,7 @@ public class FinanceiroController {
     public String lancamentosContas(Model model) {
         configurePage(model, "lancamentos", "Contas a pagar e receber", "Registre entradas, saídas e mantenha o fluxo diário organizado.");
         populateLancamentosModel(model);
+        model.addAttribute("recentFiscalDocuments", fiscalDocumentService.listRecentDocuments());
         return "financeiro/lancamentos-contas";
     }
 
@@ -140,6 +162,52 @@ public class FinanceiroController {
     public String lancamentosNotasFiscais(Model model) {
         configurePage(model, "lancamentos", "Notas fiscais", "Centralize os documentos emitidos e acompanhe a evolução da integração fiscal.");
         return "financeiro/lancamentos-notas";
+    }
+
+    @PostMapping(value = "/lancamentos/contas/upload-nota", consumes = "multipart/form-data")
+    public String uploadNotaFiscal(@RequestParam String descricao,
+                                   @RequestParam(value = "numeroNota", required = false) String numeroNota,
+                                   @RequestParam(value = "placa", required = false) String placa,
+                                   @RequestParam(value = "dataEmissao", required = false)
+                                   @DateTimeFormat(pattern = "yyyy-MM-dd") Date dataEmissao,
+                                   @RequestParam(value = "valor", required = false) BigDecimal valor,
+                                   @RequestParam("notaFiscalPdf") MultipartFile notaFiscalPdf,
+                                   RedirectAttributes redirectAttributes) {
+        if (notaFiscalPdf == null || notaFiscalPdf.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Selecione um PDF para enviar.");
+            return "redirect:/financeiro/lancamentos/contas";
+        }
+        if (!isPdfFile(notaFiscalPdf)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Envie apenas arquivos em PDF.");
+            return "redirect:/financeiro/lancamentos/contas";
+        }
+
+        try {
+            String pdfPath = fileStorageService.storeFile(notaFiscalPdf);
+            FiscalDocument document = new FiscalDocument();
+            document.setDescricao(descricao);
+            document.setNumeroNota(numeroNota);
+            document.setPlaca(placa);
+            document.setDataEmissao(dataEmissao);
+            document.setValor(valor);
+            document.setPdfPath(pdfPath);
+            fiscalDocumentService.save(document);
+            redirectAttributes.addFlashAttribute("successMessage", "Nota fiscal enviada com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao enviar nota fiscal: " + e.getMessage());
+        }
+        return "redirect:/financeiro/lancamentos/contas";
+    }
+
+    @GetMapping("/lancamentos/contas/notas/{documentId}/download")
+    public ResponseEntity<byte[]> downloadNotaFiscal(@PathVariable Long documentId) {
+        FiscalDocument document = fiscalDocumentService.findById(documentId);
+        byte[] fileBytes = fileStorageService.loadFile(document.getPdfPath());
+        String fileName = fileStorageService.extractFileName(document.getPdfPath());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                .body(fileBytes);
     }
 
     @GetMapping("/movimento-caixa")
@@ -171,6 +239,18 @@ public class FinanceiroController {
         model.addAttribute("pageTitle", "SUB - Financeiro | " + heroTitle);
         model.addAttribute("financeiroHeroTitle", heroTitle);
         model.addAttribute("financeiroHeroSubtitle", heroSubtitle);
+    }
+
+    private boolean isPdfFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        String contentType = file.getContentType();
+        if (contentType != null && MediaType.APPLICATION_PDF_VALUE.equalsIgnoreCase(contentType)) {
+            return true;
+        }
+        String originalFilename = file.getOriginalFilename();
+        return originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf");
     }
 
     private void populateLancamentosModel(Model model) {
