@@ -97,6 +97,10 @@
 
         return {
             numeroNota: findFirstMatch(sanitizedText, [
+                /n[úu]mero\s+da\s+NFS-?e?\s*[:\-]?\s*(\d+)/i,
+                /NFS-?e?\s*n[°º]?\s*[:\-]?\s*(\d+)/i,
+                /N[°º]\s*(\d{3}[\.\s]?\d{3}[\.\s]?\d{3})/i,
+                /\bNF-?e?\s*N[°º]?\s*(\d{3}[\.\s]?\d{3}[\.\s]?\d{3})/i,
                 /(?:n[úu]mero\s+da\s+nota|nota\s+fiscal|n[úu]mero)\s*[:\-]?\s*([A-Za-z0-9\-\.\/]+)/i,
                 /\bNF[-\s:.]?\s*([A-Za-z0-9\-\.\/]+)\b/i,
                 /\bNFS-?e?\s*[:\-]?\s*([A-Za-z0-9\-\.\/]+)/i,
@@ -105,12 +109,16 @@
             ]),
             dataEmissao: formatDate(findFirstMatch(sanitizedText, [
                 /data\s+de\s+emiss[aã]o\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i,
+                /data[\s\/]hora\s+emiss[aã]o\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i,
+                /data\s+fator\s+gerador\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i,
                 /emiss[aã]o\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i,
                 /emitida?\s+em\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i,
                 /data\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i
             ])),
             valor: normalizeCurrency(findFirstMatch(sanitizedText, [
-                /valor\s+(?:total\s+da\s+nota|total|l[íi]quido)\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
+                /valor\s+total\s+da\s+nota\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
+                /valor\s+l[íi]quido\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
+                /valor\s+total\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
                 /total\s+(?:da\s+)?nota\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
                 /total\s+geral\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
                 /total\s*[:\-]?\s*R?\$?\s*([\d\.\s]+,\d{2})/i,
@@ -118,6 +126,8 @@
                 /R\$\s*([\d\.\s]+,\d{2})/i
             ])),
             placa: findFirstMatch(sanitizedText, [
+                /placa\s*[:\-]?\s*([A-Z]{3}-?[0-9][A-Z0-9][0-9]{2})/i, // placa explícita Mercosul
+                /placa\s*[:\-]?\s*([A-Z]{3}-?[0-9]{4})/i, // placa explícita antiga
                 /\b([A-Z]{3}-?[0-9][A-Z0-9][0-9]{2})\b/i, // padrão Mercosul
                 /\b([A-Z]{3}-?[0-9]{4})\b/i // padrão antigo
             ])
