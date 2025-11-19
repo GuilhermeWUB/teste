@@ -1,34 +1,169 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head th:replace="~{fragments/layout :: head}"></head>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Acordos a Pagar</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+</head>
 <body>
-<header th:replace="~{fragments/layout :: header}"></header>
-
-<section class="page">
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">
-                <i class="bi bi-clipboard-check"></i>
-                Acordos a pagar
-            </h1>
-            <p class="page-subtitle">Gerenciamento de acordos financeiros</p>
+<section layout:fragment="content">
+    <div class="kanban-wrapper">
+        <div class="kanban-header">
+            <div class="kanban-header-info">
+                <h1><i class="bi bi-clipboard-check"></i> Acordos a Pagar</h1>
+                <p>Gerencie acordos financeiros e acompanhe pagamentos em tempo real.</p>
+            </div>
+                <div class="kanban-controls">
+                    <div class="kanban-controls-left">
+                        <div class="kanban-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="kanban-search" placeholder="Buscar por titulo, parte envolvida ou processo..." autocomplete="off"/>
+                        </div>
+                    </div>
+                <div class="kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.acordosBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Novo Acordo
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i>
-                    <strong>Em desenvolvimento:</strong> Página de Acordos a pagar em construção.
-                </div>
+        <div class="kanban-alerts">
+            <div th:if="${success}" class="kanban-alert success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div th:if="${error}" class="kanban-alert danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
 
-                <p class="text-muted">
-                    Esta página será utilizada para gerenciar acordos de pagamento.
-                </p>
+        <div class="kanban-board" data-dynamic="true"></div>
+    </div>
+
+    <div id="kanban-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2>Detalhes do Acordo</h2>
+                <button class="kanban-modal-close" onclick="window.acordosBoard?.closeModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body"></div>
+        </div>
+    </div>
+
+    <div id="create-acordo-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-plus-circle"></i> Novo Acordo</h2>
+                <button class="kanban-modal-close" onclick="window.acordosBoard?.closeCreateModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body">
+                <form id="create-acordo-form" class="kanban-create-form">
+                    <div id="create-acordo-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-titulo">Titulo *</label>
+                            <input type="text" id="create-titulo" name="titulo" placeholder="Titulo do acordo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-parte-envolvida">Parte Envolvida *</label>
+                            <input type="text" id="create-parte-envolvida" name="parteEnvolvida" placeholder="Nome da parte" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create-descricao">Descricao *</label>
+                        <textarea id="create-descricao" name="descricao" rows="3" placeholder="Descreva o acordo" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-valor">Valor (R$) *</label>
+                            <input type="number" id="create-valor" name="valor" step="0.01" min="0" placeholder="0,00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-data-vencimento">Data de Vencimento</label>
+                            <input type="date" id="create-data-vencimento" name="dataVencimento">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-numero-parcelas">Numero de Parcelas</label>
+                            <input type="number" id="create-numero-parcelas" name="numeroParcelas" min="1" placeholder="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-parcela-atual">Parcela Atual</label>
+                            <input type="number" id="create-parcela-atual" name="parcelaAtual" min="1" placeholder="1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-numero-processo">Numero do Processo</label>
+                            <input type="text" id="create-numero-processo" name="numeroProcesso" placeholder="0000000-00.0000.0.00.0000">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-data-pagamento">Data de Pagamento</label>
+                            <input type="date" id="create-data-pagamento" name="dataPagamento">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create-observacoes">Observacoes</label>
+                        <textarea id="create-observacoes" name="observacoes" rows="3" placeholder="Observacoes adicionais"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.acordosBoard?.closeCreateModal?.()">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill"></i> Registrar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</section>
 
-<script th:src="@{/js/notification-dropdown.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            if (body) {
+                body.classList.remove('no-dark-blur');
+            }
+
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
+    <script th:src="@{/js/acordos-kanban.js}"></script>
+</section>
 </body>
 </html>
