@@ -2,15 +2,17 @@ package com.necsus.necsusspring.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.vertexai.VertexAI;
+import com.google.cloud.vertexai.api.Blob;
+import com.google.cloud.vertexai.api.Content;
 import com.google.cloud.vertexai.api.GenerateContentResponse;
 import com.google.cloud.vertexai.api.GenerationConfig;
 import com.google.cloud.vertexai.api.HarmCategory;
+import com.google.cloud.vertexai.api.Part;
 import com.google.cloud.vertexai.api.SafetySetting;
-import com.google.cloud.vertexai.generativeai.ContentMaker;
 import com.google.cloud.vertexai.generativeai.GenerativeModel;
-import com.google.cloud.vertexai.generativeai.PartMaker;
 import com.google.cloud.vertexai.generativeai.ResponseHandler;
 import com.necsus.necsusspring.dto.ExtractedDataDto;
+import com.google.protobuf.ByteString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
@@ -87,11 +89,20 @@ public class GeminiExtractionService {
                     "Retorne a resposta EXCLUSIVAMENTE em formato JSON, como no exemplo: " +
                     "{\"numeroNota\": \"12345\", \"dataEmissao\": \"2023-10-27\", \"valor\": \"150.75\", \"placa\": \"ABC1234\"}";
 
-            List<com.google.cloud.vertexai.api.Part> parts = new ArrayList<>();
-            parts.add(PartMaker.fromMimeTypeAndData("text/plain", prompt));
+            Content.Builder contentBuilder = Content.newBuilder()
+                    .addParts(Part.newBuilder().setText(prompt).build());
+
             for (String base64Image : base64Images) {
-                parts.add(PartMaker.fromMimeTypeAndData("image/jpeg", Base64.getDecoder().decode(base64Image)));
+                Part imagePart = Part.newBuilder()
+                        .setInlineData(Blob.newBuilder()
+                                .setMimeType("image/jpeg")
+                                .setData(ByteString.copyFrom(Base64.getDecoder().decode(base64Image)))
+                                .build())
+                        .build();
+                contentBuilder.addParts(imagePart);
             }
+
+            Content content = contentBuilder.build();
 
             // Configurações de segurança para evitar bloqueios
             GenerationConfig generationConfig = GenerationConfig.newBuilder()
@@ -106,7 +117,7 @@ public class GeminiExtractionService {
 
 
             logger.info("Enviando requisição para a API do Gemini...");
-            GenerateContentResponse response = model.generateContent(ContentMaker.fromMultiModalData(parts), generationConfig, safetySettings, null);
+            GenerateContentResponse response = model.generateContent(content, generationConfig, safetySettings);
 
             String jsonText = ResponseHandler.getText(response).trim();
             // Limpa a resposta para garantir que seja apenas o JSON
