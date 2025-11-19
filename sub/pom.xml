@@ -88,7 +88,7 @@
                 </dependency>
                 <dependency>
                         <groupId>com.google.cloud</groupId>
-                        <artifactId>google-cloud-vertexai</artifactId>
+                        <artifactId>google-cloud-vertex-ai</artifactId>
                         <version>1.36.0</version>
                 </dependency>
                 <dependency>
