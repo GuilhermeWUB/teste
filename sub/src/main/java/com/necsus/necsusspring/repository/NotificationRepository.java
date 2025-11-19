@@ -59,7 +59,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * Conta o número de notificações não lidas de um usuário
      */
-    @Query("SELECT COUNT(n) FROM Notification n WHERE n.recipient = :recipient AND n.status = 'UNREAD'")
+    @Query("SELECT COUNT(n) FROM Notification n WHERE n.recipient = :recipient AND n.status = com.necsus.necsusspring.model.NotificationStatus.UNREAD")
     long countUnreadByRecipient(@Param("recipient") UserAccount recipient);
 
     /**
@@ -76,13 +76,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * Busca notificações não arquivadas de um usuário
      */
-    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status != 'ARCHIVED' ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status <> com.necsus.necsusspring.model.NotificationStatus.ARCHIVED ORDER BY n.createdAt DESC")
     List<Notification> findNonArchivedByRecipient(@Param("recipient") UserAccount recipient);
 
     /**
      * Busca notificações não arquivadas de um usuário com paginação
      */
-    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status != 'ARCHIVED' ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status <> com.necsus.necsusspring.model.NotificationStatus.ARCHIVED ORDER BY n.createdAt DESC")
     Page<Notification> findNonArchivedByRecipient(@Param("recipient") UserAccount recipient, Pageable pageable);
 
     /**
@@ -93,29 +93,29 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     /**
      * Busca notificações de alta prioridade não lidas de um usuário
      */
-    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status = 'UNREAD' " +
-           "AND (n.priority = 'ALTA' OR n.priority = 'URGENTE') ORDER BY n.createdAt DESC")
+    @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.status = com.necsus.necsusspring.model.NotificationStatus.UNREAD " +
+           "AND (n.priority = com.necsus.necsusspring.model.Prioridade.ALTA OR n.priority = com.necsus.necsusspring.model.Prioridade.URGENTE) ORDER BY n.createdAt DESC")
     List<Notification> findHighPriorityUnreadByRecipient(@Param("recipient") UserAccount recipient);
 
     /**
      * Marca todas as notificações não lidas de um usuário como lidas
      */
     @Modifying
-    @Query("UPDATE Notification n SET n.status = 'READ', n.readAt = :readAt WHERE n.recipient = :recipient AND n.status = 'UNREAD'")
+    @Query("UPDATE Notification n SET n.status = com.necsus.necsusspring.model.NotificationStatus.READ, n.readAt = :readAt WHERE n.recipient = :recipient AND n.status = com.necsus.necsusspring.model.NotificationStatus.UNREAD")
     int markAllAsReadForRecipient(@Param("recipient") UserAccount recipient, @Param("readAt") LocalDateTime readAt);
 
     /**
      * Arquiva notificações lidas antigas (mais de X dias)
      */
     @Modifying
-    @Query("UPDATE Notification n SET n.status = 'ARCHIVED' WHERE n.status = 'READ' AND n.readAt < :cutoffDate")
+    @Query("UPDATE Notification n SET n.status = com.necsus.necsusspring.model.NotificationStatus.ARCHIVED WHERE n.status = com.necsus.necsusspring.model.NotificationStatus.READ AND n.readAt < :cutoffDate")
     int archiveOldReadNotifications(@Param("cutoffDate") LocalDateTime cutoffDate);
 
     /**
      * Deleta notificações arquivadas antigas (mais de X dias)
      */
     @Modifying
-    @Query("DELETE FROM Notification n WHERE n.status = 'ARCHIVED' AND n.createdAt < :cutoffDate")
+    @Query("DELETE FROM Notification n WHERE n.status = com.necsus.necsusspring.model.NotificationStatus.ARCHIVED AND n.createdAt < :cutoffDate")
     int deleteOldArchivedNotifications(@Param("cutoffDate") LocalDateTime cutoffDate);
 
     /**
