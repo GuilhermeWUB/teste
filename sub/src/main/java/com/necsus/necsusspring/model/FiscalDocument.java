@@ -28,6 +28,9 @@ public class FiscalDocument {
     @Column(precision = 19, scale = 2)
     private BigDecimal valor;
 
+    @Column(length = 20)
+    private String placa;
+
     @Column(name = "data_emissao")
     @Temporal(TemporalType.DATE)
     private Date dataEmissao;

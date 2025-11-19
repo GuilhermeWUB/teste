@@ -147,6 +147,11 @@
                             <input type="number" step="0.01" min="0" id="valorNota" name="valor"
                                    class="form-control" placeholder="0,00">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="placa">Placa</label>
+                            <input type="text" id="placa" name="placa" class="form-control"
+                                   placeholder="ABC1D23" maxlength="8">
+                        </div>
                         <div class="col-12">
                             <label class="form-label" for="notaFiscalPdf">Nota fiscal (PDF) <span class="text-danger">*</span></label>
                             <input type="file" id="notaFiscalPdf" name="notaFiscalPdf" class="form-control" accept="application/pdf" required>
@@ -186,6 +191,9 @@
                                         <span th:text="${doc.numeroNota != null ? 'NF ' + doc.numeroNota : 'Sem número'}"></span>
                                         ·
                                         <span th:text="${doc.dataEmissao != null ? #dates.format(doc.dataEmissao, 'dd/MM/yyyy') : 'Data não informada'}"></span>
+                                        <span th:if="${doc.placa != null}">
+                                            · Placa <span th:text="${doc.placa}"></span>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="text-end">

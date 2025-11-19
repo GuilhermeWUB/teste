@@ -167,6 +167,7 @@ public class FinanceiroController {
     @PostMapping(value = "/lancamentos/contas/upload-nota", consumes = "multipart/form-data")
     public String uploadNotaFiscal(@RequestParam String descricao,
                                    @RequestParam(value = "numeroNota", required = false) String numeroNota,
+                                   @RequestParam(value = "placa", required = false) String placa,
                                    @RequestParam(value = "dataEmissao", required = false)
                                    @DateTimeFormat(pattern = "yyyy-MM-dd") Date dataEmissao,
                                    @RequestParam(value = "valor", required = false) BigDecimal valor,
@@ -186,6 +187,7 @@ public class FinanceiroController {
             FiscalDocument document = new FiscalDocument();
             document.setDescricao(descricao);
             document.setNumeroNota(numeroNota);
+            document.setPlaca(placa);
             document.setDataEmissao(dataEmissao);
             document.setValor(valor);
             document.setPdfPath(pdfPath);
