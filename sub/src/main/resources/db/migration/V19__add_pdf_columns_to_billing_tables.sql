@@ -1,0 +1,5 @@
+ALTER TABLE bank_slips
+    ADD COLUMN IF NOT EXISTS pdf_path VARCHAR(255);
+
+ALTER TABLE bill_to_pay
+    ADD COLUMN IF NOT EXISTS pdf_path VARCHAR(255);

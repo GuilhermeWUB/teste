@@ -52,6 +52,9 @@ public class BillToPay {
     @Column(name = "numero_documento")
     private String numeroDocumento;
 
+    @Column(name = "pdf_path")
+    private String pdfPath;
+
     @Column(name = "data_criacao")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataCriacao;
