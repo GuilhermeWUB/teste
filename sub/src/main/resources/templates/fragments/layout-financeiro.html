@@ -40,10 +40,34 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item-financeiro">
-                <a th:href="@{/financeiro/lancamentos}" th:classappend="${currentPage == 'lancamentos'} ? 'active' : ''">
+            <li class="nav-item-financeiro nav-item-dropdown">
+                <button type="button"
+                        class="nav-dropdown-toggle"
+                        data-nav-dropdown
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        th:classappend="${currentPage == 'lancamentos'} ? 'active' : ''">
                     <span>Lançamentos</span>
-                </a>
+                    <i class="bi bi-chevron-down nav-dropdown-icon" aria-hidden="true"></i>
+                </button>
+                <ul class="nav-dropdown-menu" role="menu">
+                    <li role="none">
+                        <a role="menuitem"
+                           th:href="@{/financeiro/lancamentos#cadastro-contas}"
+                           class="nav-dropdown-link">
+                            <i class="bi bi-journal-plus" aria-hidden="true"></i>
+                            <span>2.1) Cadastrar Contas a Pagar e Receber</span>
+                        </a>
+                    </li>
+                    <li role="none">
+                        <a role="menuitem"
+                           th:href="@{/financeiro/lancamentos#notas-fiscais}"
+                           class="nav-dropdown-link">
+                            <i class="bi bi-receipt" aria-hidden="true"></i>
+                            <span>2.2) Notas Fiscais</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li class="nav-item-financeiro">
                 <a th:href="@{/financeiro/movimento-caixa}" th:classappend="${currentPage == 'movimento-caixa'} ? 'active' : ''">
@@ -221,6 +245,73 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
+    })();
+</script>
+
+<script>
+    (function () {
+        const navDropdownItems = document.querySelectorAll('.nav-item-dropdown');
+        const navDropdownToggles = document.querySelectorAll('[data-nav-dropdown]');
+        const navToggle = document.getElementById('navToggle');
+
+        if (!navDropdownToggles.length) {
+            return;
+        }
+
+        function closeAllDropdowns(exception) {
+            navDropdownItems.forEach(item => {
+                if (item !== exception) {
+                    item.classList.remove('is-open');
+                    const toggle = item.querySelector('[data-nav-dropdown]');
+                    if (toggle) {
+                        toggle.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+        }
+
+        navDropdownToggles.forEach(toggle => {
+            const dropdownItem = toggle.closest('.nav-item-dropdown');
+            if (!dropdownItem) {
+                return;
+            }
+
+            toggle.addEventListener('click', event => {
+                event.preventDefault();
+                const isOpen = dropdownItem.classList.contains('is-open');
+
+                if (isOpen) {
+                    dropdownItem.classList.remove('is-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                } else {
+                    closeAllDropdowns(dropdownItem);
+                    dropdownItem.classList.add('is-open');
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.nav-item-dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                closeAllDropdowns();
+                navDropdownToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+            }
+        });
+
+        const dropdownLinks = document.querySelectorAll('.nav-dropdown-link');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!navToggle || !navToggle.checked) {
+                    closeAllDropdowns();
+                }
+            });
+        });
     })();
 </script>
 
