@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-financeiro}">
+<head>
+    <title>SUB - Financeiro | Notas Fiscais</title>
+</head>
+<body>
+<section layout:fragment="content" class="financeiro-section">
+    <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <div>
+            <p class="text-uppercase text-muted small mb-1">Fluxo fiscal</p>
+            <h1 class="mb-1" th:text="${financeiroHeroTitle}">Notas fiscais</h1>
+            <p class="text-muted mb-0" th:text="${financeiroHeroSubtitle}">
+                Centralize os documentos emitidos e acompanhe a evolução da integração fiscal.
+            </p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-warning-subtle text-warning fw-semibold">Integração em desenvolvimento</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                        <div>
+                            <p class="text-uppercase text-muted small mb-1">2.2)</p>
+                            <h2 class="h4 mb-2">Notas fiscais</h2>
+                            <p class="mb-0 text-muted">
+                                Em breve você poderá consultar, emitir e anexar notas diretamente no módulo financeiro.
+                                Enquanto a integração com o módulo fiscal é finalizada utilize os cadastros de contas e boletos
+                                para guardar anexos importantes e manter o histórico organizado.
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <a class="btn btn-outline-primary" th:href="@{/pagamentos/boletos}">
+                                <i class="bi bi-link-45deg me-2"></i>Ver lançamentos relacionados
+                            </a>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <div class="d-flex flex-column flex-lg-row gap-4">
+                        <div class="flex-fill">
+                            <h5 class="mb-3">O que está pronto?</h5>
+                            <ul class="list-unstyled text-muted small mb-0">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Upload de anexos junto aos boletos e contas.</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Controle de recebíveis e pagáveis com histórico completo.</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Exportação de dados para conferência manual.</li>
+                            </ul>
+                        </div>
+                        <div class="flex-fill">
+                            <h5 class="mb-3">Próximos passos</h5>
+                            <ul class="list-unstyled text-muted small mb-0">
+                                <li class="mb-2"><i class="bi bi-hourglass-split text-warning me-2"></i>Importação automática de notas emitidas.</li>
+                                <li class="mb-2"><i class="bi bi-hourglass-split text-warning me-2"></i>Vinculação automática entre notas e boletos.</li>
+                                <li class="mb-2"><i class="bi bi-hourglass-split text-warning me-2"></i>Alertas de inconsistências fiscais.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
