@@ -155,7 +155,10 @@
                         <div class="col-12">
                             <label class="form-label" for="notaFiscalPdf">Nota fiscal (PDF) <span class="text-danger">*</span></label>
                             <input type="file" id="notaFiscalPdf" name="notaFiscalPdf" class="form-control" accept="application/pdf" required>
-                            <small class="text-muted">Tamanho máximo de 10MB.</small>
+                            <small class="text-muted d-block">Tamanho máximo de 10MB.</small>
+                            <div id="notaFiscalAutoFillFeedback" class="alert alert-info d-none mt-3" role="status">
+                                Após o upload tentaremos preencher os campos automaticamente com os dados da nota.
+                            </div>
                         </div>
                         <div class="col-12">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -331,5 +334,10 @@
     </div>
 
 </section>
+
+<th:block layout:fragment="scripts">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/nota-fiscal-reader.js"></script>
+</th:block>
 </body>
 </html>
