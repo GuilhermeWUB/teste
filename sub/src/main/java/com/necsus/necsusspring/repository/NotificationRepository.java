@@ -68,6 +68,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByRecipientAndStatus(UserAccount recipient, NotificationStatus status);
 
     /**
+     * Conta todas as notificações de um usuário
+     */
+    long countByRecipient(UserAccount recipient);
+
+    /**
      * Busca notificações recentes de um usuário (últimas 24 horas)
      */
     @Query("SELECT n FROM Notification n WHERE n.recipient = :recipient AND n.createdAt >= :since ORDER BY n.createdAt DESC")

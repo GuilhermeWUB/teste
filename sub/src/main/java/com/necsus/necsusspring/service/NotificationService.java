@@ -83,6 +83,14 @@ public class NotificationService {
     }
 
     /**
+     * Conta todas as notificações de um usuário (incluindo arquivadas)
+     */
+    @Transactional(readOnly = true)
+    public long countAll(UserAccount recipient) {
+        return notificationRepository.countByRecipient(recipient);
+    }
+
+    /**
      * Busca notificações de um usuário com paginação
      */
     @Transactional(readOnly = true)
