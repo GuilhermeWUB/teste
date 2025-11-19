@@ -6,6 +6,7 @@ import com.necsus.necsusspring.model.BillToPay;
 import com.necsus.necsusspring.repository.BankSlipRepository;
 import com.necsus.necsusspring.service.BoletoService;
 import com.necsus.necsusspring.service.BillToPayService;
+import com.necsus.necsusspring.service.FileStorageService;
 import com.necsus.necsusspring.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import com.necsus.necsusspring.model.Vehicle;
 import com.necsus.necsusspring.model.Partner;
 import com.necsus.necsusspring.repository.VehicleRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -47,6 +49,9 @@ public class PaymentController {
 
     @Autowired
     private BillToPayService billToPayService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping("/gerar-mensalidades")
     public String showGenerateInvoicesForm(@RequestParam("vehicle_id") Long vehicleId, Model model) {
@@ -239,6 +244,7 @@ public class PaymentController {
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String observacao,
             @RequestParam(required = false) String numeroDocumento,
+            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile,
             RedirectAttributes redirectAttributes) {
         try {
             BillToPay bill = new BillToPay();
@@ -249,6 +255,15 @@ public class PaymentController {
             bill.setCategoria(categoria);
             bill.setObservacao(observacao);
             bill.setNumeroDocumento(numeroDocumento);
+
+            if (pdfFile != null && !pdfFile.isEmpty()) {
+                if (!isPdfFile(pdfFile)) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Envie apenas arquivos em PDF.");
+                    return "redirect:/pagamentos/boletos";
+                }
+                String pdfPath = fileStorageService.storeFile(pdfFile);
+                bill.setPdfPath(pdfPath);
+            }
 
             billToPayService.create(bill);
             redirectAttributes.addFlashAttribute("successMessage",
@@ -299,5 +314,99 @@ public class PaymentController {
                     "Erro ao cancelar conta: " + e.getMessage());
         }
         return "redirect:/pagamentos/boletos";
+    }
+
+    @PostMapping("/boletos/upload-conta/{billId}")
+    public String uploadBillPdf(@PathVariable Long billId,
+                                @RequestParam("pdfFile") MultipartFile pdfFile,
+                                RedirectAttributes redirectAttributes) {
+        if (pdfFile == null || pdfFile.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Selecione um arquivo PDF para enviar.");
+            return "redirect:/pagamentos/boletos";
+        }
+        if (!isPdfFile(pdfFile)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Envie apenas arquivos em PDF.");
+            return "redirect:/pagamentos/boletos";
+        }
+
+        try {
+            BillToPay bill = billToPayService.findById(billId);
+            if (bill.getPdfPath() != null) {
+                fileStorageService.deleteFile(bill.getPdfPath());
+            }
+            String pdfPath = fileStorageService.storeFile(pdfFile);
+            billToPayService.attachPdf(billId, pdfPath);
+            redirectAttributes.addFlashAttribute("successMessage", "PDF anexado à conta com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao enviar PDF: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    @GetMapping("/boletos/download-conta/{billId}")
+    public ResponseEntity<byte[]> downloadBillPdf(@PathVariable Long billId) {
+        BillToPay bill = billToPayService.findById(billId);
+        if (bill.getPdfPath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] fileBytes = fileStorageService.loadFile(bill.getPdfPath());
+        String fileName = fileStorageService.extractFileName(bill.getPdfPath());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                .body(fileBytes);
+    }
+
+    @PostMapping("/boletos/upload-boleto/{invoiceId}")
+    public String uploadInvoicePdf(@PathVariable Long invoiceId,
+                                   @RequestParam("pdfFile") MultipartFile pdfFile,
+                                   RedirectAttributes redirectAttributes) {
+        if (pdfFile == null || pdfFile.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Selecione um arquivo PDF para enviar.");
+            return "redirect:/pagamentos/boletos";
+        }
+        if (!isPdfFile(pdfFile)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Envie apenas arquivos em PDF.");
+            return "redirect:/pagamentos/boletos";
+        }
+
+        try {
+            BankSlip invoice = paymentService.findById(invoiceId);
+            if (invoice.getPdfPath() != null) {
+                fileStorageService.deleteFile(invoice.getPdfPath());
+            }
+            String pdfPath = fileStorageService.storeFile(pdfFile);
+            paymentService.attachPdf(invoiceId, pdfPath);
+            redirectAttributes.addFlashAttribute("successMessage", "PDF anexado ao boleto com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao enviar PDF: " + e.getMessage());
+        }
+        return "redirect:/pagamentos/boletos";
+    }
+
+    @GetMapping("/boletos/download-boleto/{invoiceId}")
+    public ResponseEntity<byte[]> downloadInvoicePdf(@PathVariable Long invoiceId) {
+        BankSlip invoice = paymentService.findById(invoiceId);
+        if (invoice.getPdfPath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        byte[] fileBytes = fileStorageService.loadFile(invoice.getPdfPath());
+        String fileName = fileStorageService.extractFileName(invoice.getPdfPath());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                .body(fileBytes);
+    }
+
+    private boolean isPdfFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        String contentType = file.getContentType();
+        if (contentType != null && MediaType.APPLICATION_PDF_VALUE.equalsIgnoreCase(contentType)) {
+            return true;
+        }
+        String originalFilename = file.getOriginalFilename();
+        return originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf");
     }
 }

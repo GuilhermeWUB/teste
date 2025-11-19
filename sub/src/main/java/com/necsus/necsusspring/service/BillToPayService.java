@@ -102,7 +102,18 @@ public class BillToPayService {
         existing.setCategoria(billToPay.getCategoria());
         existing.setObservacao(billToPay.getObservacao());
         existing.setNumeroDocumento(billToPay.getNumeroDocumento());
+        existing.setPdfPath(billToPay.getPdfPath());
 
         return billToPayRepository.save(existing);
+    }
+
+    /**
+     * Atualiza o caminho do PDF anexado a uma conta
+     */
+    @Transactional
+    public BillToPay attachPdf(Long id, String pdfPath) {
+        BillToPay bill = findById(id);
+        bill.setPdfPath(pdfPath);
+        return billToPayRepository.save(bill);
     }
 }

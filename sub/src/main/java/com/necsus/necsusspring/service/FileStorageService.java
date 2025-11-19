@@ -93,4 +93,23 @@ public class FileStorageService {
             throw new RuntimeException("Erro ao deletar arquivo: " + filePath, e);
         }
     }
+
+    public byte[] loadFile(String filePath) {
+        if (filePath == null) {
+            throw new IllegalArgumentException("Caminho do arquivo não pode ser nulo");
+        }
+        try {
+            Path path = Paths.get(filePath);
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao ler arquivo: " + filePath, e);
+        }
+    }
+
+    public String extractFileName(String filePath) {
+        if (filePath == null) {
+            return null;
+        }
+        return Paths.get(filePath).getFileName().toString();
+    }
 }

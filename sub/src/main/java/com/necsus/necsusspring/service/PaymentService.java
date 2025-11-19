@@ -165,4 +165,14 @@ public class PaymentService {
 
         bankSlipRepository.delete(bankSlip);
     }
+
+    /**
+     * Salva o caminho de um PDF anexado a um boleto
+     */
+    @Transactional
+    public BankSlip attachPdf(Long bankSlipId, String pdfPath) {
+        BankSlip bankSlip = findById(bankSlipId);
+        bankSlip.setPdfPath(pdfPath);
+        return bankSlipRepository.save(bankSlip);
+    }
 }
