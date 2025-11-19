@@ -1,1231 +1,548 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" data-theme="light">
-<head th:replace="~{fragments/layout :: head}"></head>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Notificacoes</title>
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+</head>
 <body>
-<header th:replace="~{fragments/layout :: header}"></header>
-
-<main class="notif-page">
-    <div class="container">
-        <section class="notif-hero">
-            <div class="notif-hero__halo"></div>
-            <div class="notif-hero__breadcrumb">
-                <span class="notif-hero__dot"></span>
-                <span>Central de notificações</span>
-            </div>
-            <div class="notif-hero__header">
-                <div>
-                    <h1>
-                        <span class="notif-hero__icon">
-                            <i class="bi bi-bell-fill"></i>
-                        </span>
-                        Notificações
-                    </h1>
-                    <p>Acompanhe atualizações, alertas e mensagens importantes em tempo real.</p>
+<section layout:fragment="content">
+    <main class="notif-page">
+        <div class="container">
+            <section class="notif-hero">
+                <div class="notif-hero__halo"></div>
+                <div class="notif-hero__breadcrumb">
+                    <span class="notif-hero__dot"></span>
+                    <span>Central de notificacoes</span>
                 </div>
-                <button type="button"
-                        class="notif-button notif-button--primary"
-                        id="markAllReadBtn"
-                        th:if="${unreadCount > 0}">
-                    <i class="bi bi-check-all"></i>
-                    <span>Marcar tudo como lido</span>
+                <div class="notif-hero__header">
+                    <div>
+                        <h1>
+                            <span class="notif-hero__icon">
+                                <i class="bi bi-bell-fill"></i>
+                            </span>
+                            Notificacoes
+                        </h1>
+                        <p>Acompanhe atualizacoes, alertas e mensagens importantes em tempo real.</p>
+                    </div>
+                    <button type="button"
+                            class="notif-button notif-button--primary"
+                            id="markAllReadBtn"
+                            th:if="${unreadCount > 0}">
+                        <i class="bi bi-check-all"></i>
+                        <span>Marcar tudo como lido</span>
+                    </button>
+                </div>
+                <div class="notif-stats" role="status" aria-live="polite">
+                    <article class="notif-stat notif-stat--accent">
+                        <div class="notif-stat__icon">
+                            <i class="bi bi-envelope-open"></i>
+                        </div>
+                        <div>
+                            <p>Nao lidas</p>
+                            <strong th:text="${unreadCount}">0</strong>
+                        </div>
+                    </article>
+                    <article class="notif-stat">
+                        <div class="notif-stat__icon">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <div>
+                            <p>Total</p>
+                            <strong th:text="${totalCount}">0</strong>
+                        </div>
+                    </article>
+                    <article class="notif-stat">
+                        <div class="notif-stat__icon">
+                            <i class="bi bi-funnel"></i>
+                        </div>
+                        <div>
+                            <p>Filtro ativo</p>
+                            <strong th:text="${filter == 'all'} ? 'Todas' : (${filter == 'unread'} ? 'Nao lidas' : 'Arquivadas')">Todas</strong>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <div id="toastContainer" class="notif-toast__container"></div>
+
+            <div th:if="${successMessage}" class="notif-alert notif-alert--success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <p th:text="${successMessage}"></p>
+                <button type="button" class="notif-alert__close" aria-label="Fechar">
+                    <i class="bi bi-x"></i>
                 </button>
             </div>
-            <div class="notif-stats" role="status" aria-live="polite">
-                <article class="notif-stat notif-stat--accent">
-                    <div class="notif-stat__icon">
-                        <i class="bi bi-envelope-open"></i>
-                    </div>
-                    <div>
-                        <p>Não lidas</p>
-                        <strong th:text="${unreadCount}">0</strong>
-                    </div>
-                </article>
-                <article class="notif-stat">
-                    <div class="notif-stat__icon">
-                        <i class="bi bi-inbox"></i>
-                    </div>
-                    <div>
-                        <p>Total</p>
-                        <strong th:text="${totalCount}">0</strong>
-                    </div>
-                </article>
-                <article class="notif-stat">
-                    <div class="notif-stat__icon">
-                        <i class="bi bi-funnel"></i>
-                    </div>
-                    <div>
-                        <p>Filtro ativo</p>
-                        <strong th:text="${filter == 'all'} ? 'Todas' : (${filter == 'unread'} ? 'Não lidas' : 'Arquivadas')">Todas</strong>
-                    </div>
-                </article>
+            <div th:if="${errorMessage}" class="notif-alert notif-alert--error" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <p th:text="${errorMessage}"></p>
+                <button type="button" class="notif-alert__close" aria-label="Fechar">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
-        </section>
 
-        <div id="toastContainer" class="notif-toast__container"></div>
+            <section class="notif-toolbar">
+                <div class="notif-tabs" aria-label="Filtrar notificacoes">
+                    <a th:href="@{/notifications}"
+                       class="notif-tab"
+                       th:classappend="${filter == 'all'} ? ' is-active'"
+                       aria-current="${filter == 'all'} ? 'page'">
+                        <span> Todas </span>
+                        <span class="notif-tab__badge" th:text="${totalCount}">0</span>
+                    </a>
+                    <a th:href="@{/notifications(filter='unread')}"
+                       class="notif-tab"
+                       th:classappend="${filter == 'unread'} ? ' is-active'"
+                       aria-current="${filter == 'unread'} ? 'page'">
+                        <span>Nao lidas</span>
+                        <span class="notif-tab__badge notif-tab__badge--danger"
+                              th:if="${unreadCount > 0}"
+                              th:text="${unreadCount}">0</span>
+                    </a>
+                    <a th:href="@{/notifications(filter='archived')}"
+                       class="notif-tab"
+                       th:classappend="${filter == 'archived'} ? ' is-active'"
+                       aria-current="${filter == 'archived'} ? 'page'">
+                        <span>Arquivadas</span>
+                    </a>
+                </div>
+                <label class="notif-search">
+                    <i class="bi bi-search"></i>
+                    <input id="notificationSearch"
+                           type="search"
+                           placeholder="Buscar notificacoes..."
+                           autocomplete="off"
+                           aria-label="Buscar notificacoes">
+                    <kbd>Cmd+K</kbd>
+                </label>
+            </section>
 
-        <div th:if="${successMessage}" class="notif-alert notif-alert--success" role="alert">
-            <i class="bi bi-check-circle-fill"></i>
-            <p th:text="${successMessage}"></p>
-            <button type="button" class="notif-alert__close" aria-label="Fechar">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-        <div th:if="${errorMessage}" class="notif-alert notif-alert--error" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <p th:text="${errorMessage}"></p>
-            <button type="button" class="notif-alert__close" aria-label="Fechar">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-
-        <section class="notif-toolbar">
-            <div class="notif-tabs" aria-label="Filtrar notificações">
-                <a th:href="@{/notifications}"
-                   class="notif-tab"
-                   th:classappend="${filter == 'all'} ? ' is-active'"
-                   aria-current="${filter == 'all'} ? 'page'">
-                    <span> Todas </span>
-                    <span class="notif-tab__badge" th:text="${totalCount}">0</span>
+            <section th:if="${notifications.isEmpty()}" class="notif-empty">
+                <div class="notif-empty__glow"></div>
+                <div class="notif-empty__icon">
+                    <i class="bi bi-bell-slash"></i>
+                </div>
+                <h2>
+                    <span th:if="${filter == 'unread'}">Tudo em dia!</span>
+                    <span th:if="${filter == 'archived'}">Nenhuma arquivada</span>
+                    <span th:if="${filter == 'all'}">Sem notificacoes</span>
+                </h2>
+                <p>
+                    <span th:if="${filter == 'unread'}">Voce nao tem notificacoes nao lidas no momento.</span>
+                    <span th:if="${filter == 'archived'}">Voce ainda nao arquivou nenhuma notificacao.</span>
+                    <span th:if="${filter == 'all'}">Assim que receber notificacoes elas aparecerao aqui.</span>
+                </p>
+                <a th:if="${filter != 'all'}" th:href="@{/notifications}" class="notif-button notif-button--ghost">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Voltar para todas</span>
                 </a>
-                <a th:href="@{/notifications(filter='unread')}"
-                   class="notif-tab"
-                   th:classappend="${filter == 'unread'} ? ' is-active'"
-                   aria-current="${filter == 'unread'} ? 'page'">
-                    <span>Não lidas</span>
-                    <span class="notif-tab__badge notif-tab__badge--danger"
-                          th:if="${unreadCount > 0}"
-                          th:text="${unreadCount}">0</span>
-                </a>
-                <a th:href="@{/notifications(filter='archived')}"
-                   class="notif-tab"
-                   th:classappend="${filter == 'archived'} ? ' is-active'"
-                   aria-current="${filter == 'archived'} ? 'page'">
-                    <span>Arquivadas</span>
-                </a>
-            </div>
-            <label class="notif-search">
-                <i class="bi bi-search"></i>
-                <input id="notificationSearch"
-                       type="search"
-                       placeholder="Buscar notificações..."
-                       autocomplete="off"
-                       aria-label="Buscar notificações">
-                <kbd>⌘K</kbd>
-            </label>
-        </section>
+            </section>
 
-        <section th:if="${notifications.isEmpty()}" class="notif-empty">
-            <div class="notif-empty__glow"></div>
-            <div class="notif-empty__icon">
-                <i class="bi bi-bell-slash"></i>
-            </div>
-            <h2>
-                <span th:if="${filter == 'unread'}">Tudo em dia!</span>
-                <span th:if="${filter == 'archived'}">Nenhuma arquivada</span>
-                <span th:if="${filter == 'all'}">Sem notificações</span>
-            </h2>
-            <p>
-                <span th:if="${filter == 'unread'}">Você não tem notificações não lidas no momento.</span>
-                <span th:if="${filter == 'archived'}">Você ainda não arquivou nenhuma notificação.</span>
-                <span th:if="${filter == 'all'}">Assim que receber notificações elas aparecerão aqui.</span>
-            </p>
-            <a th:if="${filter != 'all'}" th:href="@{/notifications}" class="notif-button notif-button--ghost">
-                <i class="bi bi-arrow-left"></i>
-                <span>Voltar para todas</span>
-            </a>
-        </section>
-
-        <section th:if="${!notifications.isEmpty()}" class="notif-panel">
-            <ul class="notif-list">
-                <li th:each="notification, iterStat : ${notifications}"
-                    th:data-notification-id="${notification.id}"
-                    th:class="'notif-card ' + (${notification.status.name() == 'UNREAD'} ? 'notif-card--unread' : (${notification.status.name() == 'ARCHIVED'} ? 'notif-card--archived' : ''))"
-                    th:style="'--delay:' + ${iterStat.index * 0.04} + 's'"
-                    th:attr="data-title=${notification.title}, data-message=${notification.message}, data-type=${notification.type.displayName}, data-priority=${notification.priority != null ? notification.priority.name() : ''}">
-                    <div class="notif-card__indicator" th:if="${notification.status.name() == 'UNREAD'}"></div>
-                    <div class="notif-card__icon"
-                         th:classappend="${notification.type.name() == 'EVENT'} ? ' is-event' :
-                                        ${notification.type.name() == 'DEMAND'} ? ' is-demand' :
-                                        ${notification.type.name() == 'PAYMENT'} ? ' is-payment' :
-                                        ${notification.type.name() == 'BANK_SLIP'} ? ' is-bankslip' :
-                                        ${notification.type.name() == 'ALERT'} ? ' is-alert' :
-                                        ${notification.type.name() == 'SYSTEM'} ? ' is-system' :
-                                        ${notification.type.name() == 'COMUNICADO'} ? ' is-comunicado' :
-                                        ' is-info'">
-                        <i th:class="${notification.type.name() == 'EVENT'} ? 'bi bi-calendar-event' :
-                                     ${notification.type.name() == 'DEMAND'} ? 'bi bi-list-task' :
-                                     ${notification.type.name() == 'PAYMENT'} ? 'bi bi-credit-card' :
-                                     ${notification.type.name() == 'BANK_SLIP'} ? 'bi bi-file-earmark-text' :
-                                     ${notification.type.name() == 'ALERT'} ? 'bi bi-exclamation-octagon' :
-                                     ${notification.type.name() == 'SYSTEM'} ? 'bi bi-cpu' :
-                                     ${notification.type.name() == 'COMUNICADO'} ? 'bi bi-megaphone' :
-                                     'bi bi-info-circle'"></i>
-                    </div>
-                    <div class="notif-card__body">
-                        <header class="notif-card__header">
-                            <div>
-                                <h3 th:text="${notification.title}">Título</h3>
-                                <div class="notif-card__tags">
-                                    <span class="notif-tag"
-                                          th:classappend="${notification.type.name() == 'EVENT'} ? ' tag-event' :
-                                                          ${notification.type.name() == 'DEMAND'} ? ' tag-demand' :
-                                                          ${notification.type.name() == 'PAYMENT'} ? ' tag-payment' :
-                                                          ${notification.type.name() == 'BANK_SLIP'} ? ' tag-bankslip' :
-                                                          ${notification.type.name() == 'ALERT'} ? ' tag-alert' :
-                                                          ${notification.type.name() == 'SYSTEM'} ? ' tag-system' :
-                                                          ${notification.type.name() == 'COMUNICADO'} ? ' tag-comunicado' :
-                                                          ' tag-info'"
-                                          th:text="${notification.type.displayName}">Tipo</span>
-                                    <span th:if="${notification.priority != null}"
-                                          class="notif-tag notif-tag--pill"
-                                          th:classappend="' priority-' + ${notification.priority.name().toLowerCase()}">
-                                        <i th:class="${notification.priority.name() == 'URGENTE'} ? 'bi bi-lightning-fill' :
-                                                     ${notification.priority.name() == 'ALTA'} ? 'bi bi-arrow-up' :
-                                                     ${notification.priority.name() == 'MEDIA'} ? 'bi bi-dash' :
-                                                     'bi bi-arrow-down'"></i>
-                                        <span th:text="${notification.priority.name()}">Prioridade</span>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="notif-card__time">
-                                <strong th:text="${#temporals.format(notification.createdAt, 'dd MMM')}">12 Mai</strong>
-                                <small th:text="${#temporals.format(notification.createdAt, 'HH:mm')}">09:20</small>
-                            </div>
-                        </header>
-                        <div class="notif-card__message">
-                            <p th:id="'message-' + ${notification.id}"
-                               th:text="${notification.message}">
-                                Mensagem da notificação
-                            </p>
-                            <button type="button"
-                                    class="notif-link notif-message-toggle"
-                                    th:attr="data-target='message-' + ${notification.id}">
-                                <span>Ver mais</span>
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
+            <section th:if="${!notifications.isEmpty()}" class="notif-panel">
+                <ul class="notif-list">
+                    <li th:each="notification, iterStat : ${notifications}"
+                        th:data-notification-id="${notification.id}"
+                        th:class="'notif-card ' + (${notification.status.name() == 'UNREAD'} ? 'notif-card--unread' : (${notification.status.name() == 'ARCHIVED'} ? 'notif-card--archived' : ''))"
+                        th:style="'--delay:' + ${iterStat.index * 0.04} + 's'"
+                        th:attr="data-title=${notification.title}, data-message=${notification.message}, data-type=${notification.type.displayName}, data-priority=${notification.priority != null ? notification.priority.name() : ''}">
+                        <div class="notif-card__indicator" th:if="${notification.status.name() == 'UNREAD'}"></div>
+                        <div class="notif-card__icon"
+                             th:classappend="${notification.type.name() == 'EVENT'} ? ' is-event' :
+                                            ${notification.type.name() == 'DEMAND'} ? ' is-demand' :
+                                            ${notification.type.name() == 'PAYMENT'} ? ' is-payment' :
+                                            ${notification.type.name() == 'BANK_SLIP'} ? ' is-bankslip' :
+                                            ${notification.type.name() == 'ALERT'} ? ' is-alert' :
+                                            ${notification.type.name() == 'SYSTEM'} ? ' is-system' :
+                                            ${notification.type.name() == 'COMUNICADO'} ? ' is-comunicado' :
+                                            ' is-info'">
+                            <i th:class="${notification.type.name() == 'EVENT'} ? 'bi bi-calendar-event' :
+                                         ${notification.type.name() == 'DEMAND'} ? 'bi bi-list-task' :
+                                         ${notification.type.name() == 'PAYMENT'} ? 'bi bi-credit-card' :
+                                         ${notification.type.name() == 'BANK_SLIP'} ? 'bi bi-file-earmark-text' :
+                                         ${notification.type.name() == 'ALERT'} ? 'bi bi-exclamation-octagon' :
+                                         ${notification.type.name() == 'SYSTEM'} ? 'bi bi-cpu' :
+                                         ${notification.type.name() == 'COMUNICADO'} ? 'bi bi-megaphone' :
+                                         'bi bi-info-circle'"></i>
                         </div>
-                        <footer class="notif-card__footer">
-                            <span class="notif-card__meta">
-                                <i class="bi bi-clock"></i>
-                                <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy')} + ' às ' + ${#temporals.format(notification.createdAt, 'HH:mm')}">12/05/2024 às 09:20</span>
-                            </span>
-                            <div class="notif-card__actions">
-                                <a th:if="${notification.actionUrl != null}"
-                                   th:href="@{${notification.actionUrl}}"
-                                   class="notif-button notif-button--ghost"
-                                   title="Abrir">
-                                    <i class="bi bi-arrow-up-right"></i>
-                                </a>
+                        <div class="notif-card__body">
+                            <header class="notif-card__header">
+                                <div>
+                                    <h3 th:text="${notification.title}">Titulo</h3>
+                                    <div class="notif-card__tags">
+                                        <span class="notif-tag"
+                                              th:classappend="${notification.type.name() == 'EVENT'} ? ' tag-event' :
+                                                              ${notification.type.name() == 'DEMAND'} ? ' tag-demand' :
+                                                              ${notification.type.name() == 'PAYMENT'} ? ' tag-payment' :
+                                                              ${notification.type.name() == 'BANK_SLIP'} ? ' tag-bankslip' :
+                                                              ${notification.type.name() == 'ALERT'} ? ' tag-alert' :
+                                                              ${notification.type.name() == 'SYSTEM'} ? ' tag-system' :
+                                                              ${notification.type.name() == 'COMUNICADO'} ? ' tag-comunicado' :
+                                                              ' tag-info'"
+                                              th:text="${notification.type.displayName}">Tipo</span>
+                                        <span th:if="${notification.priority != null}"
+                                              class="notif-tag notif-tag--pill"
+                                              th:classappend="' priority-' + ${notification.priority.name().toLowerCase()}">
+                                            <i th:class="${notification.priority.name() == 'URGENTE'} ? 'bi bi-lightning-fill' :
+                                                         ${notification.priority.name() == 'ALTA'} ? 'bi bi-arrow-up' :
+                                                         ${notification.priority.name() == 'MEDIA'} ? 'bi bi-dash' :
+                                                         'bi bi-arrow-down'"></i>
+                                            <span th:text="${notification.priority.name()}">Prioridade</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="notif-card__time">
+                                    <strong th:text="${#temporals.format(notification.createdAt, 'dd MMM')}">12 Mai</strong>
+                                    <small th:text="${#temporals.format(notification.createdAt, 'HH:mm')}">09:20</small>
+                                </div>
+                            </header>
+                            <div class="notif-card__message">
+                                <p th:id="'message-' + ${notification.id}"
+                                   th:text="${notification.message}">
+                                    Mensagem da notificacao
+                                </p>
                                 <button type="button"
-                                        class="notif-button notif-button--ghost mark-read-btn"
-                                        th:if="${notification.status.name() == 'UNREAD'}"
-                                        th:data-id="${notification.id}"
-                                        title="Marcar como lida">
-                                    <i class="bi bi-check2"></i>
-                                </button>
-                                <button type="button"
-                                        class="notif-button notif-button--ghost mark-unread-btn"
-                                        th:if="${notification.status.name() == 'READ'}"
-                                        th:data-id="${notification.id}"
-                                        title="Marcar como não lida">
-                                    <i class="bi bi-envelope"></i>
-                                </button>
-                                <button type="button"
-                                        class="notif-button notif-button--ghost archive-btn"
-                                        th:if="${notification.status.name() != 'ARCHIVED'}"
-                                        th:data-id="${notification.id}"
-                                        title="Arquivar">
-                                    <i class="bi bi-archive"></i>
-                                </button>
-                                <button type="button"
-                                        class="notif-button notif-button--ghost delete-btn"
-                                        th:data-id="${notification.id}"
-                                        title="Excluir">
-                                    <i class="bi bi-trash"></i>
+                                        class="notif-link notif-message-toggle"
+                                        th:attr="data-target='message-' + ${notification.id}">
+                                    <span>Ver mais</span>
+                                    <i class="bi bi-chevron-down"></i>
                                 </button>
                             </div>
-                        </footer>
-                    </div>
-                </li>
-            </ul>
-            <div class="notif-search-empty d-none" id="emptySearchState">
-                <i class="bi bi-search"></i>
-                <p>Nenhuma notificação corresponde à sua busca.</p>
-            </div>
-        </section>
-
-        <nav th:if="${totalPages > 1}" class="notif-pagination" aria-label="Paginação de notificações">
-            <a th:href="@{/notifications(page=${currentPage - 1}, filter=${filter})}"
-               class="notif-pagination__btn"
-               th:classappend="${currentPage == 0} ? ' is-disabled'"
-               th:tabindex="${currentPage == 0} ? '-1' : '0'"
-               aria-label="Página anterior">
-                <i class="bi bi-chevron-left"></i>
-            </a>
-            <div class="notif-pagination__pages">
-                <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
-                   th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
-                   th:href="@{/notifications(page=${pageNum}, filter=${filter})}"
-                   class="notif-pagination__page"
-                   th:classappend="${pageNum == currentPage} ? ' is-active'"
-                   th:text="${pageNum + 1}"
-                   th:aria-current="${pageNum == currentPage} ? 'page'">1</a>
-            </div>
-            <a th:href="@{/notifications(page=${currentPage + 1}, filter=${filter})}"
-               class="notif-pagination__btn"
-               th:classappend="${currentPage == totalPages - 1} ? ' is-disabled'"
-               th:tabindex="${currentPage == totalPages - 1} ? '-1' : '0'"
-               aria-label="Próxima página">
-                <i class="bi bi-chevron-right"></i>
-            </a>
-            <span class="notif-pagination__summary">
-                Página <strong th:text="${currentPage + 1}">1</strong> de <strong th:text="${totalPages}">1</strong>
-            </span>
-        </nav>
-    </div>
-</main>
-
-<style>
-    :root {
-        --notif-bg: #f5f6fb;
-        --notif-surface: #ffffff;
-        --notif-surface-alt: #f2f5ff;
-        --notif-border: #e4e7f2;
-        --notif-text: #111321;
-        --notif-muted: #6b7280;
-        --notif-primary: #2563eb;
-        --notif-primary-dark: #1d4fd7;
-        --notif-success: #0ea5e9;
-        --notif-danger: #ef4444;
-        --notif-warning: #f97316;
-        --notif-green: #10b981;
-        --notif-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-        --notif-radius: 22px;
-    }
-
-    [data-theme="dark"] {
-        --notif-bg: #0f172a;
-        --notif-surface: #172245;
-        --notif-surface-alt: #1e2c55;
-        --notif-border: #25345f;
-        --notif-text: #f1f5ff;
-        --notif-muted: #a1b2d9;
-        --notif-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    .notif-page {
-        background: var(--notif-bg);
-        min-height: calc(100vh - 80px);
-        padding: 2rem 0 4rem;
-    }
-
-    .notif-hero {
-        position: relative;
-        background: var(--notif-surface);
-        border-radius: var(--notif-radius);
-        padding: 2.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: var(--notif-shadow);
-        overflow: hidden;
-        isolation: isolate;
-    }
-
-    .notif-hero__halo {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.2), transparent 55%);
-        z-index: -1;
-    }
-
-    .notif-hero__breadcrumb {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(37, 99, 235, 0.12);
-        color: var(--notif-primary);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 600;
-    }
-
-    .notif-hero__dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--notif-primary);
-        animation: notifPulse 2s ease infinite;
-    }
-
-    .notif-hero__header {
-        margin-top: 1.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .notif-hero__header h1 {
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin: 0;
-        color: var(--notif-text);
-    }
-
-    .notif-hero__header p {
-        margin: 0.35rem 0 0;
-        color: var(--notif-muted);
-        max-width: 600px;
-    }
-
-    .notif-hero__icon {
-        display: inline-flex;
-        width: 56px;
-        height: 56px;
-        border-radius: 18px;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(120deg, #3b82f6, #60a5fa);
-        color: #fff;
-        font-size: 1.4rem;
-    }
-
-    .notif-stats {
-        margin-top: 2rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1rem;
-    }
-
-    .notif-stat {
-        background: var(--notif-surface-alt);
-        border-radius: 18px;
-        padding: 1.25rem 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        border: 1px solid rgba(37, 99, 235, 0.08);
-    }
-
-    .notif-stat--accent {
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
-        border: 1px solid rgba(37, 99, 235, 0.3);
-    }
-
-    .notif-stat__icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 16px;
-        background: #fff;
-        display: grid;
-        place-items: center;
-        font-size: 1.1rem;
-        color: var(--notif-primary);
-        box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.08);
-    }
-
-    .notif-stat p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--notif-muted);
-    }
-
-    .notif-stat strong {
-        font-size: 1.65rem;
-        color: var(--notif-text);
-        font-weight: 700;
-    }
-
-    .notif-toolbar {
-        background: var(--notif-surface);
-        border-radius: var(--notif-radius);
-        padding: 1rem 1.5rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-        justify-content: space-between;
-        border: 1px solid var(--notif-border);
-        margin-bottom: 1.5rem;
-    }
-
-    .notif-tabs {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-
-    .notif-tab {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.55rem 1rem;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--notif-muted);
-        font-weight: 600;
-        border: 1px solid transparent;
-        text-decoration: none;
-        transition: 0.2s;
-    }
-
-    .notif-tab.is-active {
-        background: rgba(37, 99, 235, 0.12);
-        color: var(--notif-primary);
-        border-color: rgba(37, 99, 235, 0.2);
-    }
-
-    .notif-tab__badge {
-        padding: 0.2rem 0.65rem;
-        border-radius: 999px;
-        background: rgba(17, 24, 39, 0.06);
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .notif-tab__badge--danger {
-        background: rgba(239, 68, 68, 0.12);
-        color: var(--notif-danger);
-    }
-
-    .notif-search {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: var(--notif-surface-alt);
-        padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-        border-radius: 999px;
-        flex: 1;
-        max-width: 320px;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-    }
-
-    .notif-search i {
-        position: absolute;
-        left: 0.9rem;
-        color: var(--notif-muted);
-    }
-
-    .notif-search input {
-        border: none;
-        background: transparent;
-        width: 100%;
-        outline: none;
-        color: var(--notif-text);
-    }
-
-    .notif-search kbd {
-        background: rgba(148, 163, 184, 0.15);
-        border-radius: 6px;
-        padding: 0.1rem 0.4rem;
-        font-size: 0.7rem;
-        color: var(--notif-muted);
-    }
-
-    .notif-panel {
-        background: var(--notif-surface);
-        border-radius: var(--notif-radius);
-        padding: 1rem;
-        border: 1px solid var(--notif-border);
-        box-shadow: var(--notif-shadow);
-    }
-
-    .notif-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .notif-card {
-        position: relative;
-        display: flex;
-        gap: 1.25rem;
-        padding: 1.25rem;
-        border-radius: 20px;
-        border: 1px solid var(--notif-border);
-        background: var(--notif-surface-alt);
-        animation: notifCardIntro 0.4s ease both;
-        animation-delay: var(--delay, 0s);
-    }
-
-    .notif-card--unread {
-        border-color: rgba(37, 99, 235, 0.3);
-        background: rgba(37, 99, 235, 0.08);
-    }
-
-    .notif-card--archived {
-        opacity: 0.8;
-    }
-
-    .notif-card__indicator {
-        position: absolute;
-        left: 0;
-        top: 1.2rem;
-        width: 6px;
-        height: 22px;
-        border-radius: 0 8px 8px 0;
-        background: var(--notif-primary);
-    }
-
-    .notif-card__icon {
-        width: 54px;
-        height: 54px;
-        border-radius: 18px;
-        display: grid;
-        place-items: center;
-        font-size: 1.2rem;
-        color: var(--notif-primary);
-        background: #fff;
-    }
-
-    .notif-card__icon.is-event { color: #2563eb; background: rgba(37, 99, 235, 0.15); }
-    .notif-card__icon.is-demand { color: #f97316; background: rgba(249, 115, 22, 0.15); }
-    .notif-card__icon.is-payment { color: #10b981; background: rgba(16, 185, 129, 0.15); }
-    .notif-card__icon.is-bankslip { color: #0ea5e9; background: rgba(14, 165, 233, 0.15); }
-    .notif-card__icon.is-alert { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
-    .notif-card__icon.is-system { color: #a855f7; background: rgba(168, 85, 247, 0.15); }
-    .notif-card__icon.is-comunicado { color: #d946ef; background: rgba(217, 70, 239, 0.15); }
-    .notif-card__icon.is-info { color: #06b6d4; background: rgba(6, 182, 212, 0.15); }
-
-    .notif-card__body {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .notif-card__header {
-        display: flex;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    .notif-card__header h3 {
-        margin: 0 0 0.3rem;
-        font-size: 1.05rem;
-        color: var(--notif-text);
-    }
-
-    .notif-card__tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-    }
-
-    .notif-tag {
-        padding: 0.2rem 0.65rem;
-        border-radius: 999px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-    }
-
-    .tag-event { background: rgba(37, 99, 235, 0.15); color: #1e3a8a; }
-    .tag-demand { background: rgba(249, 115, 22, 0.15); color: #b45309; }
-    .tag-payment { background: rgba(16, 185, 129, 0.15); color: #047857; }
-    .tag-bankslip { background: rgba(14, 165, 233, 0.15); color: #0c4a6e; }
-    .tag-alert { background: rgba(239, 68, 68, 0.15); color: #991b1b; }
-    .tag-system { background: rgba(148, 163, 184, 0.3); color: #475569; }
-    .tag-comunicado { background: rgba(217, 70, 239, 0.15); color: #86198f; }
-    .tag-info { background: rgba(6, 182, 212, 0.2); color: #0f172a; }
-
-    .notif-tag--pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        text-transform: uppercase;
-    }
-
-    .notif-tag.priority-urgente { background: rgba(239, 68, 68, 0.2); color: #b91c1c; }
-    .notif-tag.priority-alta { background: rgba(249, 115, 22, 0.2); color: #9a3412; }
-    .notif-tag.priority-media { background: rgba(249, 196, 74, 0.25); color: #92400e; }
-    .notif-tag.priority-baixa { background: rgba(148, 163, 184, 0.25); color: #475569; }
-
-    .notif-card__time {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        color: var(--notif-muted);
-        text-transform: capitalize;
-    }
-
-    .notif-card__message p {
-        margin: 0;
-        color: var(--notif-muted);
-        line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .notif-card__message p.expanded {
-        -webkit-line-clamp: unset;
-    }
-
-    .notif-link {
-        background: none;
-        border: none;
-        color: var(--notif-primary);
-        font-weight: 600;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        cursor: pointer;
-    }
-
-    .notif-link i {
-        transition: transform 0.2s;
-    }
-
-    .notif-link.is-open i {
-        transform: rotate(180deg);
-    }
-
-    .notif-card__footer {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
-        padding-top: 0.9rem;
-        border-top: 1px solid rgba(148, 163, 184, 0.25);
-    }
-
-    .notif-card__meta {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        color: var(--notif-muted);
-        font-size: 0.85rem;
-    }
-
-    .notif-card__actions {
-        display: inline-flex;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-    }
-
-    .notif-button {
-        border: none;
-        border-radius: 12px;
-        padding: 0.55rem 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        cursor: pointer;
-        font-weight: 600;
-        transition: 0.2s ease;
-        text-decoration: none;
-    }
-
-    .notif-button--primary {
-        background: var(--notif-primary);
-        color: #fff;
-        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
-    }
-
-    .notif-button--primary:hover {
-        background: var(--notif-primary-dark);
-    }
-
-    .notif-button--ghost {
-        background: rgba(148, 163, 184, 0.15);
-        color: var(--notif-text);
-    }
-
-    .notif-button--ghost:hover {
-        background: rgba(148, 163, 184, 0.3);
-    }
-
-    .notif-empty {
-        position: relative;
-        background: var(--notif-surface);
-        border-radius: var(--notif-radius);
-        padding: 4rem 2rem;
-        text-align: center;
-        overflow: hidden;
-        border: 1px solid var(--notif-border);
-        box-shadow: var(--notif-shadow);
-        margin-bottom: 1.5rem;
-    }
-
-    .notif-empty__glow {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle, rgba(37, 99, 235, 0.2), transparent 60%);
-        opacity: 0.6;
-    }
-
-    .notif-empty__icon {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        margin: 0 auto 1.5rem;
-        display: grid;
-        place-items: center;
-        background: rgba(37, 99, 235, 0.15);
-        color: var(--notif-primary);
-        font-size: 2rem;
-        position: relative;
-    }
-
-    .notif-empty h2 {
-        position: relative;
-        margin: 0 0 0.5rem;
-        color: var(--notif-text);
-    }
-
-    .notif-empty p {
-        position: relative;
-        margin: 0 auto 1.5rem;
-        color: var(--notif-muted);
-        max-width: 480px;
-    }
-
-    .notif-search-empty {
-        text-align: center;
-        padding: 2rem;
-        color: var(--notif-muted);
-    }
-
-    .notif-pagination {
-        margin-top: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        color: var(--notif-muted);
-    }
-
-    .notif-pagination__btn,
-    .notif-pagination__page {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: 1px solid var(--notif-border);
-        display: grid;
-        place-items: center;
-        background: var(--notif-surface);
-        color: var(--notif-text);
-        text-decoration: none;
-        font-weight: 600;
-        transition: 0.2s ease;
-    }
-
-    .notif-pagination__btn.is-disabled {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
-    .notif-pagination__page.is-active {
-        background: var(--notif-primary);
-        color: #fff;
-        border-color: var(--notif-primary);
-        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
-    }
-
-    .notif-pagination__summary {
-        font-weight: 600;
-        color: var(--notif-muted);
-    }
-
-    .notif-alert {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        padding: 0.85rem 1rem;
-        border-radius: 16px;
-        margin-bottom: 0.75rem;
-        border: 1px solid transparent;
-    }
-
-    .notif-alert--success {
-        background: rgba(16, 185, 129, 0.12);
-        border-color: rgba(16, 185, 129, 0.3);
-        color: #047857;
-    }
-
-    .notif-alert--error {
-        background: rgba(239, 68, 68, 0.12);
-        border-color: rgba(239, 68, 68, 0.35);
-        color: #b91c1c;
-    }
-
-    .notif-alert__close {
-        margin-left: auto;
-        border: none;
-        background: transparent;
-        color: inherit;
-        cursor: pointer;
-    }
-
-    .notif-toast__container {
-        position: fixed;
-        top: 1.5rem;
-        right: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        z-index: 999;
-        pointer-events: none;
-    }
-
-    .notif-toast {
-        background: var(--notif-surface);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
-        box-shadow: var(--notif-shadow);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--notif-text);
-        pointer-events: auto;
-        animation: toastIn 0.35s ease;
-    }
-
-    .notif-toast.error {
-        border: 1px solid rgba(239, 68, 68, 0.35);
-    }
-
-    @keyframes toastIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes notifPulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.3; transform: scale(1.3); }
-    }
-
-    @keyframes notifCardIntro {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 768px) {
-        .notif-hero {
-            padding: 1.75rem;
-        }
-        .notif-card {
-            flex-direction: column;
-        }
-        .notif-card__icon {
-            width: 48px;
-            height: 48px;
-        }
-        .notif-card__time {
-            flex-direction: row;
-            gap: 0.5rem;
-        }
-        .notif-card__actions {
-            width: 100%;
-            justify-content: flex-start;
-        }
-        .notif-toolbar {
-            flex-direction: column;
-        }
-        .notif-search {
-            max-width: none;
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .notif-hero__header h1 {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .notif-tabs {
-            width: 100%;
-        }
-        .notif-tab {
-            flex: 1;
-            justify-content: center;
-        }
-        .notif-button--primary {
-            width: 100%;
-            justify-content: center;
-        }
-        .notif-card__actions {
-            flex-direction: row;
-            flex-wrap: wrap;
-        }
-        .notif-card__actions .notif-button {
-            flex: 1;
-            justify-content: center;
-        }
-    }
-</style>
-
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        const csrfToken = /*[[${_csrf.token}]]*/ '';
-        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
-        const notificationItems = Array.from(document.querySelectorAll('.notif-card'));
-        const searchInput = document.getElementById('notificationSearch');
-        const emptySearchState = document.getElementById('emptySearchState');
-        const toastContainer = document.getElementById('toastContainer');
-
-        const showToast = (message, type = 'success') => {
-            const toast = document.createElement('div');
-            toast.className = `notif-toast ${type === 'error' ? 'error' : ''}`;
-            toast.innerHTML = `
-                <i class="bi ${type === 'error' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'}"></i>
-                <span>${message}</span>
-            `;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
-        };
-
-        const applySearchFilter = () => {
-            if (!searchInput) return;
-            const query = searchInput.value.trim().toLowerCase();
-            let visible = 0;
-
-            notificationItems.forEach(item => {
-                if (!query) {
-                    item.classList.remove('d-none');
-                    visible++;
+                            <footer class="notif-card__footer">
+                                <span class="notif-card__meta">
+                                    <i class="bi bi-clock"></i>
+                                    <span th:text="${#temporals.format(notification.createdAt, 'dd/MM/yyyy')} + ' as ' + ${#temporals.format(notification.createdAt, 'HH:mm')}">12/05/2024 as 09:20</span>
+                                </span>
+                                <div class="notif-card__actions">
+                                    <a th:if="${notification.actionUrl != null}"
+                                       th:href="@{${notification.actionUrl}}"
+                                       class="notif-button notif-button--ghost"
+                                       title="Abrir">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="notif-button notif-button--ghost mark-read-btn"
+                                            th:if="${notification.status.name() == 'UNREAD'}"
+                                            th:data-id="${notification.id}"
+                                            title="Marcar como lida">
+                                        <i class="bi bi-check2"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="notif-button notif-button--ghost mark-unread-btn"
+                                            th:if="${notification.status.name() == 'READ'}"
+                                            th:data-id="${notification.id}"
+                                            title="Marcar como nao lida">
+                                        <i class="bi bi-envelope"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="notif-button notif-button--ghost archive-btn"
+                                            th:if="${notification.status.name() != 'ARCHIVED'}"
+                                            th:data-id="${notification.id}"
+                                            title="Arquivar">
+                                        <i class="bi bi-archive"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="notif-button notif-button--ghost delete-btn"
+                                            th:data-id="${notification.id}"
+                                            title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </footer>
+                        </div>
+                    </li>
+                </ul>
+                <div class="notif-search-empty d-none" id="emptySearchState">
+                    <i class="bi bi-search"></i>
+                    <p>Nenhuma notificacao corresponde a sua busca.</p>
+                </div>
+            </section>
+
+            <nav th:if="${totalPages > 1}" class="notif-pagination" aria-label="Paginacao de notificacoes">
+                <a th:href="@{/notifications(page=${currentPage - 1}, filter=${filter})}"
+                   class="notif-pagination__btn"
+                   th:classappend="${currentPage == 0} ? ' is-disabled'"
+                   th:tabindex="${currentPage == 0} ? '-1' : '0'"
+                   aria-label="Pagina anterior">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <div class="notif-pagination__pages">
+                    <a th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}"
+                       th:if="${pageNum >= currentPage - 2 && pageNum <= currentPage + 2}"
+                       th:href="@{/notifications(page=${pageNum}, filter=${filter})}"
+                       class="notif-pagination__page"
+                       th:classappend="${pageNum == currentPage} ? ' is-active'"
+                       th:text="${pageNum + 1}"
+                       th:aria-current="${pageNum == currentPage} ? 'page'">1</a>
+                </div>
+                <a th:href="@{/notifications(page=${currentPage + 1}, filter=${filter})}"
+                   class="notif-pagination__btn"
+                   th:classappend="${currentPage == totalPages - 1} ? ' is-disabled'"
+                   th:tabindex="${currentPage == totalPages - 1} ? '-1' : '0'"
+                   aria-label="Proxima pagina">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <span class="notif-pagination__summary">
+                    Pagina <strong th:text="${currentPage + 1}">1</strong> de <strong th:text="${totalPages}">1</strong>
+                </span>
+            </nav>
+        </div>
+    </main>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfToken = /*[[${_csrf.token}]]*/ '';
+            const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+            const notificationItems = Array.from(document.querySelectorAll('.notif-card'));
+            const searchInput = document.getElementById('notificationSearch');
+            const emptySearchState = document.getElementById('emptySearchState');
+            const toastContainer = document.getElementById('toastContainer');
+
+            const showToast = (message, type = 'success') => {
+                const toast = document.createElement('div');
+                toast.className = `notif-toast ${type === 'error' ? 'error' : ''}`;
+                toast.innerHTML = `
+                    <i class="bi ${type === 'error' ? 'bi-x-circle-fill' : 'bi-check-circle-fill'}"></i>
+                    <span>${message}</span>
+                `;
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-10px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3200);
+            };
+
+            const applySearchFilter = () => {
+                if (!searchInput) return;
+                const query = searchInput.value.trim().toLowerCase();
+                let visible = 0;
+
+                notificationItems.forEach(item => {
+                    if (!query) {
+                        item.classList.remove('d-none');
+                        visible++;
+                        return;
+                    }
+                    const haystack = [
+                        item.dataset.title,
+                        item.dataset.message,
+                        item.dataset.type,
+                        item.dataset.priority
+                    ].filter(Boolean).join(' ').toLowerCase();
+
+                    const match = haystack.includes(query);
+                    item.classList.toggle('d-none', !match);
+                    if (match) visible++;
+                });
+
+                if (emptySearchState) {
+                    emptySearchState.classList.toggle('d-none', visible !== 0);
+                }
+            };
+
+            if (searchInput) {
+                searchInput.addEventListener('input', applySearchFilter);
+                document.addEventListener('keydown', (event) => {
+                    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+                        event.preventDefault();
+                        searchInput.focus();
+                    }
+                });
+            }
+
+            document.querySelectorAll('.notif-alert__close').forEach(btn => {
+                btn.addEventListener('click', () => btn.parentElement.remove());
+            });
+
+            const toggleButtons = document.querySelectorAll('.notif-message-toggle');
+            toggleButtons.forEach(btn => {
+                const targetId = btn.getAttribute('data-target');
+                const message = document.getElementById(targetId);
+                if (!message) return;
+
+                const needsToggle = message.scrollHeight > message.clientHeight + 4;
+                if (!needsToggle) {
+                    btn.style.display = 'none';
                     return;
                 }
-                const haystack = [
-                    item.dataset.title,
-                    item.dataset.message,
-                    item.dataset.type,
-                    item.dataset.priority
-                ].filter(Boolean).join(' ').toLowerCase();
 
-                const match = haystack.includes(query);
-                item.classList.toggle('d-none', !match);
-                if (match) visible++;
+                btn.addEventListener('click', () => {
+                    const expanded = message.classList.toggle('expanded');
+                    btn.classList.toggle('is-open', expanded);
+                    btn.querySelector('span').textContent = expanded ? 'Ver menos' : 'Ver mais';
+                });
             });
 
-            if (emptySearchState) {
-                emptySearchState.classList.toggle('d-none', visible !== 0);
-            }
-        };
+            const apiCall = async (url, method = 'POST') => {
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                return response.json();
+            };
 
-        if (searchInput) {
-            searchInput.addEventListener('input', applySearchFilter);
-            document.addEventListener('keydown', (event) => {
-                if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-                    event.preventDefault();
-                    searchInput.focus();
+            const removeNotificationItem = (id) => {
+                const item = document.querySelector(`[data-notification-id="${id}"]`);
+                if (item) {
+                    item.style.transition = '0.3s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(-8px)';
+                    setTimeout(() => {
+                        item.remove();
+                        if (!document.querySelectorAll('.notif-card').length) {
+                            location.reload();
+                        }
+                    }, 280);
                 }
-            });
-        }
+            };
 
-        document.querySelectorAll('.notif-alert__close').forEach(btn => {
-            btn.addEventListener('click', () => btn.parentElement.remove());
+            const updateNotificationItem = (id, newStatus) => {
+                const item = document.querySelector(`[data-notification-id="${id}"]`);
+                if (!item) return;
+
+                item.classList.remove('notif-card--unread', 'notif-card--archived');
+                if (newStatus === 'UNREAD') item.classList.add('notif-card--unread');
+                if (newStatus === 'ARCHIVED') item.classList.add('notif-card--archived');
+
+                const indicator = item.querySelector('.notif-card__indicator');
+                if (newStatus === 'UNREAD') {
+                    if (!indicator) {
+                        const dot = document.createElement('div');
+                        dot.className = 'notif-card__indicator';
+                        item.insertBefore(dot, item.firstChild);
+                    }
+                } else if (indicator) {
+                    indicator.remove();
+                }
+
+                const markReadBtn = item.querySelector('.mark-read-btn');
+                const markUnreadBtn = item.querySelector('.mark-unread-btn');
+
+                if (newStatus === 'READ' && markReadBtn) {
+                    markReadBtn.outerHTML = `
+                        <button type="button" class="notif-button notif-button--ghost mark-unread-btn" data-id="${id}" title="Marcar como nao lida">
+                            <i class="bi bi-envelope"></i>
+                        </button>
+                    `;
+                    attachMarkUnreadHandler(item.querySelector('.mark-unread-btn'));
+                }
+
+                if (newStatus === 'UNREAD' && markUnreadBtn) {
+                    markUnreadBtn.outerHTML = `
+                        <button type="button" class="notif-button notif-button--ghost mark-read-btn" data-id="${id}" title="Marcar como lida">
+                            <i class="bi bi-check2"></i>
+                        </button>
+                    `;
+                    attachMarkReadHandler(item.querySelector('.mark-read-btn'));
+                }
+            };
+
+            const updateUnreadCount = (delta) => {
+                const statValue = document.querySelector('.notif-stats .notif-stat--accent strong');
+                if (statValue) {
+                    const next = Math.max(0, (parseInt(statValue.textContent) || 0) + delta);
+                    statValue.textContent = next;
+                }
+
+                const bubble = document.querySelector('.notif-tab__badge--danger');
+                if (bubble) {
+                    const next = Math.max(0, (parseInt(bubble.textContent) || 0) + delta);
+                    if (next <= 0) {
+                        bubble.remove();
+                    } else {
+                        bubble.textContent = next;
+                    }
+                }
+            };
+
+            const attachMarkReadHandler = (btn) => {
+                if (!btn) return;
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    try {
+                        const data = await apiCall(`/notifications/api/${id}/mark-read`);
+                        if (data.status === 'success') {
+                            updateNotificationItem(id, 'READ');
+                            updateUnreadCount(-1);
+                            showToast('Notificacao marcada como lida');
+                        }
+                    } catch (error) {
+                        showToast('Erro ao marcar como lida', 'error');
+                    }
+                });
+            };
+
+            const attachMarkUnreadHandler = (btn) => {
+                if (!btn) return;
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    try {
+                        const data = await apiCall(`/notifications/api/${id}/mark-unread`);
+                        if (data.status === 'success') {
+                            updateNotificationItem(id, 'UNREAD');
+                            updateUnreadCount(1);
+                            showToast('Notificacao marcada como nao lida');
+                        }
+                    } catch (error) {
+                        showToast('Erro ao marcar como nao lida', 'error');
+                    }
+                });
+            };
+
+            document.querySelectorAll('.mark-read-btn').forEach(attachMarkReadHandler);
+            document.querySelectorAll('.mark-unread-btn').forEach(attachMarkUnreadHandler);
+
+            document.querySelectorAll('.archive-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    try {
+                        const data = await apiCall(`/notifications/api/${id}/archive`);
+                        if (data.status === 'success') {
+                            removeNotificationItem(id);
+                            showToast('Notificacao arquivada');
+                        }
+                    } catch (error) {
+                        showToast('Erro ao arquivar', 'error');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Deseja excluir esta notificacao?')) return;
+                    const id = btn.dataset.id;
+                    try {
+                        const data = await apiCall(`/notifications/api/${id}`, 'DELETE');
+                        if (data.status === 'success') {
+                            removeNotificationItem(id);
+                            showToast('Notificacao excluida');
+                        }
+                    } catch (error) {
+                        showToast('Erro ao excluir', 'error');
+                    }
+                });
+            });
+
+            const markAllBtn = document.getElementById('markAllReadBtn');
+            if (markAllBtn) {
+                markAllBtn.addEventListener('click', async () => {
+                    try {
+                        const data = await apiCall('/notifications/api/mark-all-read');
+                        if (data.status === 'success') {
+                            showToast('Notificacoes marcadas como lidas');
+                            setTimeout(() => location.reload(), 900);
+                        }
+                    } catch (error) {
+                        showToast('Erro ao marcar todas como lidas', 'error');
+                    }
+                });
+            }
         });
-
-        const toggleButtons = document.querySelectorAll('.notif-message-toggle');
-        toggleButtons.forEach(btn => {
-            const targetId = btn.getAttribute('data-target');
-            const message = document.getElementById(targetId);
-            if (!message) return;
-
-            const needsToggle = message.scrollHeight > message.clientHeight + 4;
-            if (!needsToggle) {
-                btn.style.display = 'none';
-                return;
-            }
-
-            btn.addEventListener('click', () => {
-                const expanded = message.classList.toggle('expanded');
-                btn.classList.toggle('is-open', expanded);
-                btn.querySelector('span').textContent = expanded ? 'Ver menos' : 'Ver mais';
-            });
-        });
-
-        const apiCall = async (url, method = 'POST') => {
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    [csrfHeader]: csrfToken,
-                    'Content-Type': 'application/json'
-                }
-            });
-            return response.json();
-        };
-
-        const removeNotificationItem = (id) => {
-            const item = document.querySelector(`[data-notification-id="${id}"]`);
-            if (item) {
-                item.style.transition = '0.3s ease';
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(-8px)';
-                setTimeout(() => {
-                    item.remove();
-                    if (!document.querySelectorAll('.notif-card').length) {
-                        location.reload();
-                    }
-                }, 280);
-            }
-        };
-
-        const updateNotificationItem = (id, newStatus) => {
-            const item = document.querySelector(`[data-notification-id="${id}"]`);
-            if (!item) return;
-
-            item.classList.remove('notif-card--unread', 'notif-card--archived');
-            if (newStatus === 'UNREAD') item.classList.add('notif-card--unread');
-            if (newStatus === 'ARCHIVED') item.classList.add('notif-card--archived');
-
-            const indicator = item.querySelector('.notif-card__indicator');
-            if (newStatus === 'UNREAD') {
-                if (!indicator) {
-                    const dot = document.createElement('div');
-                    dot.className = 'notif-card__indicator';
-                    item.insertBefore(dot, item.firstChild);
-                }
-            } else if (indicator) {
-                indicator.remove();
-            }
-
-            const markReadBtn = item.querySelector('.mark-read-btn');
-            const markUnreadBtn = item.querySelector('.mark-unread-btn');
-
-            if (newStatus === 'READ' && markReadBtn) {
-                markReadBtn.outerHTML = `
-                    <button type="button" class="notif-button notif-button--ghost mark-unread-btn" data-id="${id}" title="Marcar como não lida">
-                        <i class="bi bi-envelope"></i>
-                    </button>
-                `;
-                attachMarkUnreadHandler(item.querySelector('.mark-unread-btn'));
-            }
-
-            if (newStatus === 'UNREAD' && markUnreadBtn) {
-                markUnreadBtn.outerHTML = `
-                    <button type="button" class="notif-button notif-button--ghost mark-read-btn" data-id="${id}" title="Marcar como lida">
-                        <i class="bi bi-check2"></i>
-                    </button>
-                `;
-                attachMarkReadHandler(item.querySelector('.mark-read-btn'));
-            }
-        };
-
-        const updateUnreadCount = (delta) => {
-            const statValue = document.querySelector('.notif-stats .notif-stat--accent strong');
-            if (statValue) {
-                const next = Math.max(0, (parseInt(statValue.textContent) || 0) + delta);
-                statValue.textContent = next;
-            }
-
-            const bubble = document.querySelector('.notif-tab__badge--danger');
-            if (bubble) {
-                const next = Math.max(0, (parseInt(bubble.textContent) || 0) + delta);
-                if (next <= 0) {
-                    bubble.remove();
-                } else {
-                    bubble.textContent = next;
-                }
-            }
-        };
-
-        const attachMarkReadHandler = (btn) => {
-            if (!btn) return;
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.id;
-                try {
-                    const data = await apiCall(`/notifications/api/${id}/mark-read`);
-                    if (data.status === 'success') {
-                        updateNotificationItem(id, 'READ');
-                        updateUnreadCount(-1);
-                        showToast('Notificação marcada como lida');
-                    }
-                } catch (error) {
-                    showToast('Erro ao marcar como lida', 'error');
-                }
-            });
-        };
-
-        const attachMarkUnreadHandler = (btn) => {
-            if (!btn) return;
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.id;
-                try {
-                    const data = await apiCall(`/notifications/api/${id}/mark-unread`);
-                    if (data.status === 'success') {
-                        updateNotificationItem(id, 'UNREAD');
-                        updateUnreadCount(1);
-                        showToast('Notificação marcada como não lida');
-                    }
-                } catch (error) {
-                    showToast('Erro ao marcar como não lida', 'error');
-                }
-            });
-        };
-
-        document.querySelectorAll('.mark-read-btn').forEach(attachMarkReadHandler);
-        document.querySelectorAll('.mark-unread-btn').forEach(attachMarkUnreadHandler);
-
-        document.querySelectorAll('.archive-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.dataset.id;
-                try {
-                    const data = await apiCall(`/notifications/api/${id}/archive`);
-                    if (data.status === 'success') {
-                        removeNotificationItem(id);
-                        showToast('Notificação arquivada');
-                    }
-                } catch (error) {
-                    showToast('Erro ao arquivar', 'error');
-                }
-            });
-        });
-
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (!confirm('Deseja excluir esta notificação?')) return;
-                const id = btn.dataset.id;
-                try {
-                    const data = await apiCall(`/notifications/api/${id}`, 'DELETE');
-                    if (data.status === 'success') {
-                        removeNotificationItem(id);
-                        showToast('Notificação excluída');
-                    }
-                } catch (error) {
-                    showToast('Erro ao excluir', 'error');
-                }
-            });
-        });
-
-        const markAllBtn = document.getElementById('markAllReadBtn');
-        if (markAllBtn) {
-            markAllBtn.addEventListener('click', async () => {
-                try {
-                    const data = await apiCall('/notifications/api/mark-all-read');
-                    if (data.status === 'success') {
-                        showToast('Notificações marcadas como lidas');
-                        setTimeout(() => location.reload(), 900);
-                    }
-                } catch (error) {
-                    showToast('Erro ao marcar todas como lidas', 'error');
-                }
-            });
-        }
-    });
-</script>
-
-<script th:src="@{/js/notification-dropdown.js}"></script>
+    </script>
+</section>
 </body>
 </html>
