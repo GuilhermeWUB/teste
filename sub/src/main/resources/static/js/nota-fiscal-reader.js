@@ -12,9 +12,7 @@
     const placaInput = document.getElementById('placa');
     const feedbackElement = document.getElementById('notaFiscalAutoFillFeedback');
 
-    const PDF_JS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-    const PDF_JS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    let pdfJsLoadingPromise = null;
+    const PDF_JS_WORKER = '/js/lib/pdf.worker.min.js';
 
     function configurePdfJs() {
         if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
@@ -22,38 +20,6 @@
             return true;
         }
         return false;
-    }
-
-    function loadPdfJsIfNeeded() {
-        if (typeof pdfjsLib !== 'undefined') {
-            configurePdfJs();
-            return Promise.resolve();
-        }
-
-        if (!pdfJsLoadingPromise) {
-            pdfJsLoadingPromise = new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = PDF_JS_CDN;
-                script.async = true;
-
-                script.onload = () => {
-                    if (configurePdfJs()) {
-                        resolve();
-                    } else {
-                        reject(new Error('pdf.js não carregado após tentar o fallback'));
-                    }
-                };
-
-                script.onerror = () => reject(new Error('Não foi possível carregar a biblioteca PDF.'));
-
-                document.head.appendChild(script);
-            }).catch(error => {
-                pdfJsLoadingPromise = null;
-                throw error;
-            });
-        }
-
-        return pdfJsLoadingPromise;
     }
 
     // Tenta configurar imediatamente
@@ -118,7 +84,14 @@
     }
 
     async function readPdfText(file) {
-        await loadPdfJsIfNeeded();
+        if (typeof pdfjsLib === 'undefined') {
+            throw new Error('pdf.js não carregado. Recarregue a página.');
+        }
+
+        // Configura o worker se ainda não foi configurado
+        if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER;
+        }
 
         const arrayBuffer = await file.arrayBuffer();
 
