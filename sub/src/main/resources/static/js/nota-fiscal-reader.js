@@ -14,9 +14,16 @@
 
     const PDF_JS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js';
 
-    if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER;
+    function configurePdfJs() {
+        if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER;
+            return true;
+        }
+        return false;
     }
+
+    // Tenta configurar imediatamente
+    configurePdfJs();
 
     fileInput.addEventListener('change', handlePdfUpload);
 
@@ -64,17 +71,33 @@
             }
         } catch (error) {
             console.error('Erro ao processar PDF da nota fiscal:', error);
-            setFeedback('Não conseguimos ler este PDF. Verifique o arquivo e tente novamente.', 'danger');
+            if (error.message && error.message.includes('pdf.js não carregado')) {
+                setFeedback('Biblioteca PDF não carregou. Recarregue a página e tente novamente.', 'danger');
+            } else if (error.name === 'InvalidPDFException') {
+                setFeedback('Este arquivo não é um PDF válido.', 'danger');
+            } else if (error.name === 'PasswordException') {
+                setFeedback('Este PDF está protegido por senha.', 'danger');
+            } else {
+                setFeedback('Erro ao ler o PDF: ' + (error.message || 'Verifique o arquivo e tente novamente.'), 'danger');
+            }
         }
     }
 
     async function readPdfText(file) {
         if (typeof pdfjsLib === 'undefined') {
-            throw new Error('pdf.js não carregado');
+            throw new Error('pdf.js não carregado. Recarregue a página.');
+        }
+
+        // Configura o worker se ainda não foi configurado
+        if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_JS_WORKER;
         }
 
         const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+
         let combinedText = '';
 
         const pagesToRead = Math.min(pdf.numPages, 5);
