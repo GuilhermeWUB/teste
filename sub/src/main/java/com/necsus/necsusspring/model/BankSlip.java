@@ -80,4 +80,7 @@ public class BankSlip {
     @ManyToOne
     @JoinColumn(name = "slips_briefing_id", insertable = false, updatable = false)
     private SlipsBriefing slipsBriefing;
+
+    @Column(name = "pdf_path")
+    private String pdfPath;
 }

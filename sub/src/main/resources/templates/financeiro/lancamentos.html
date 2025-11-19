@@ -16,36 +16,220 @@
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-4" id="cadastro-contas">
         <div class="col-12">
-            <div class="card border-0 shadow-sm" id="cadastro-contas">
+            <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <p class="text-uppercase text-muted small mb-1">2.1)</p>
-                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
                         <div>
+                            <p class="text-uppercase text-muted small mb-1">2.1)</p>
                             <h2 class="h4 mb-2">Cadastrar Contas a Pagar e Receber</h2>
                             <p class="mb-0 text-muted">
-                                Central de cadastros para controlar obrigações financeiras e registrar novos recebimentos.
+                                Acompanhe o que ainda falta ser registrado, confira valores já quitados e acesse rapidamente os formulários do módulo.
                             </p>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary fw-semibold">Em desenvolvimento</span>
+                        <div class="text-end">
+                            <span class="badge bg-success-subtle text-success fw-semibold">Integração ativa</span>
+                            <p class="mb-0 text-muted small">Dados vindos de boletos e contas cadastradas.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-3 h-100 border bg-success-subtle bg-opacity-10">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div>
+                                        <p class="text-muted small mb-1">Entradas pendentes</p>
+                                        <h4 class="mb-0 text-success" th:text="${'R$ ' + #numbers.formatDecimal(totalReceber != null ? totalReceber : 0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                                    </div>
+                                    <span class="badge bg-light text-success" th:text="${quantidadeReceber} + ' títulos'">0 títulos</span>
+                                </div>
+                                <ul class="list-unstyled mb-4 small text-muted">
+                                    <li class="d-flex justify-content-between">
+                                        <span>Recebido no período:</span>
+                                        <strong class="text-dark" th:text="${'R$ ' + #numbers.formatDecimal(totalRecebido != null ? totalRecebido : 0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>Próximos vencimentos acompanhados:</span>
+                                        <strong class="text-dark" th:text="${#lists.size(upcomingReceivables)}"></strong>
+                                    </li>
+                                </ul>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a class="btn btn-primary" th:href="@{/pagamentos/boletos}">
+                                        <i class="bi bi-journal-text me-2"></i>Lista de boletos
+                                    </a>
+                                    <a class="btn btn-outline-primary" th:href="@{/pagamentos/boletos}">
+                                        Registrar novo recebimento
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-4 rounded-3 h-100 border bg-danger-subtle bg-opacity-10">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <div>
+                                        <p class="text-muted small mb-1">Saídas pendentes</p>
+                                        <h4 class="mb-0 text-danger" th:text="${'R$ ' + #numbers.formatDecimal(totalPagar != null ? totalPagar : 0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
+                                    </div>
+                                    <span class="badge bg-light text-danger" th:text="${quantidadePagar} + ' contas'">0 contas</span>
+                                </div>
+                                <ul class="list-unstyled mb-4 small text-muted">
+                                    <li class="d-flex justify-content-between">
+                                        <span>Quitado recentemente:</span>
+                                        <strong class="text-dark" th:text="${'R$ ' + #numbers.formatDecimal(totalPago != null ? totalPago : 0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>Próximas saídas monitoradas:</span>
+                                        <strong class="text-dark" th:text="${#lists.size(upcomingPayables)}"></strong>
+                                    </li>
+                                </ul>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a class="btn btn-danger" th:href="@{/pagamentos/boletos}">
+                                        <i class="bi bi-receipt me-2"></i>Contas a pagar
+                                    </a>
+                                    <a class="btn btn-outline-danger" th:href="@{/pagamentos/boletos}">
+                                        Registrar nova saída
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="col-12">
-            <div class="card border-0 shadow-sm" id="notas-fiscais">
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <p class="text-uppercase text-muted small mb-1">2.2)</p>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Próximas entradas</h5>
+                            <p class="text-muted mb-0">Boletos a receber ordenados por vencimento.</p>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Receber</span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(upcomingReceivables)}" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox mb-2 fs-3 d-block"></i>
+                        Nenhum boleto pendente neste momento.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(upcomingReceivables)}" class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Vencimento</th>
+                                    <th class="text-end">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="slip : ${upcomingReceivables}">
+                                    <td>
+                                        <div class="fw-semibold" th:text="${slip.partner != null ? slip.partner.name : 'Recebimento'}">Recebimento</div>
+                                        <small class="text-muted" th:text="${slip.numeroDocumento != null ? slip.numeroDocumento : 'Boleto #' + slip.id}">Boleto</small>
+                                    </td>
+                                    <td th:text="${slip.vencimento != null ? #dates.format(slip.vencimento, 'dd/MM/yyyy') : '--'}">--</td>
+                                    <td class="text-end" th:text="${slip.valor != null ? 'R$ ' + #numbers.formatDecimal(slip.valor, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Próximas saídas</h5>
+                            <p class="text-muted mb-0">Contas a pagar que vencem em breve.</p>
+                        </div>
+                        <span class="badge bg-danger-subtle text-danger">Pagar</span>
+                    </div>
+                    <div th:if="${#lists.isEmpty(upcomingPayables)}" class="text-center text-muted py-4">
+                        <i class="bi bi-emoji-smile mb-2 fs-3 d-block"></i>
+                        Nenhuma conta pendente encontrada.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(upcomingPayables)}" class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Fornecedor</th>
+                                    <th>Vencimento</th>
+                                    <th class="text-end">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="bill : ${upcomingPayables}">
+                                    <td>
+                                        <div class="fw-semibold" th:text="${bill.descricao}">Conta</div>
+                                        <small class="text-muted" th:text="${bill.fornecedor != null ? bill.fornecedor : (bill.categoria != null ? bill.categoria : 'Fornecedor não informado')}">Fornecedor</small>
+                                    </td>
+                                    <td th:text="${bill.dataVencimento != null ? #dates.format(bill.dataVencimento, 'dd/MM/yyyy') : '--'}">--</td>
+                                    <td class="text-end" th:text="${bill.valor != null ? 'R$ ' + #numbers.formatDecimal(bill.valor, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Últimos lançamentos registrados</h5>
+                            <p class="text-muted mb-0">Entradas e saídas já confirmadas.</p>
+                        </div>
+                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/pagamentos/boletos}">
+                            Ver detalhes completos
+                        </a>
+                    </div>
+                    <div th:if="${#lists.isEmpty(recentMovements)}" class="text-center text-muted py-4">
+                        <i class="bi bi-clock-history mb-2 fs-3 d-block"></i>
+                        Ainda não registramos nenhum pagamento ou recebimento.
+                    </div>
+                    <div th:unless="${#lists.isEmpty(recentMovements)}" class="list-group list-group-flush">
+                        <div class="list-group-item px-0" th:each="movement : ${recentMovements}">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge" th:classappend="${movement.entrada} ? ' bg-success-subtle text-success' : ' bg-danger-subtle text-danger'" th:text="${movement.tipo}">Entrada</span>
+                                        <span class="fw-semibold" th:text="${movement.titulo}">Título</span>
+                                    </div>
+                                    <div class="text-muted small" th:text="${movement.subtitulo != null ? movement.subtitulo : 'Registro sem referência'}">Documento</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-semibold" th:text="${movement.valor != null ? 'R$ ' + #numbers.formatDecimal(movement.valor, 1, 'POINT', 2, 'COMMA') : 'R$ 0,00'}">R$ 0,00</div>
+                                    <small class="text-muted" th:text="${movement.data != null ? #dates.format(movement.data, 'dd/MM/yyyy') : ''}"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="notas-fiscais">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
                         <div>
+                            <p class="text-uppercase text-muted small mb-1">2.2)</p>
                             <h2 class="h4 mb-2">Notas Fiscais</h2>
                             <p class="mb-0 text-muted">
-                                Espaço reservado para upload, conferência e acompanhamento do ciclo de notas fiscais.
+                                A integração com o módulo fiscal está em andamento. Enquanto isso você pode registrar anexos importantes diretamente junto aos boletos ou contas acima.
                             </p>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary fw-semibold">Em desenvolvimento</span>
+                        <span class="badge bg-warning-subtle text-warning fw-semibold">Atualização em breve</span>
                     </div>
                 </div>
             </div>
