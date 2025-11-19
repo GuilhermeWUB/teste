@@ -73,16 +73,15 @@ public class NotificationController {
             model.addAttribute("filter", "archived");
             model.addAttribute("pageTitle", "SUB - Notificações Arquivadas");
         } else {
-            // Mostra todas as notificações não arquivadas
-            notificationsPage = notificationService.findNonArchivedByRecipient(currentUser, pageable);
+            // Mostra todas as notificações, incluindo arquivadas
+            notificationsPage = notificationService.findByRecipient(currentUser, pageable);
             model.addAttribute("filter", "all");
             model.addAttribute("pageTitle", "SUB - Notificações");
         }
 
         // Contadores
         long unreadCount = notificationService.countUnread(currentUser);
-        long totalCount = notificationService.countByStatus(currentUser, NotificationStatus.UNREAD) +
-                         notificationService.countByStatus(currentUser, NotificationStatus.READ);
+        long totalCount = notificationService.countAll(currentUser);
 
         model.addAttribute("notifications", notificationsPage.getContent());
         model.addAttribute("currentPage", page);
@@ -166,8 +165,10 @@ public class NotificationController {
             notifications = notificationService.findUnreadByRecipient(currentUser);
         } else if ("recent".equals(filter)) {
             notifications = notificationService.findRecentNotifications(currentUser);
+        } else if ("archived".equals(filter)) {
+            notifications = notificationService.findArchivedByRecipient(currentUser);
         } else {
-            notifications = notificationService.findNonArchivedByRecipient(currentUser);
+            notifications = notificationService.findByRecipient(currentUser);
         }
 
         return ResponseEntity.ok(notifications);
