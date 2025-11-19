@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
     'use strict';
 
     const fileInput = document.getElementById('notaFiscalPdf');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const placaInput = document.getElementById('placa');
     const feedbackElement = document.getElementById('notaFiscalAutoFillFeedback');
 
-    const PDF_JS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js';
+    const PDF_JS_WORKER = '/js/lib/pdf.worker.min.js';
 
     function configurePdfJs() {
         if (typeof pdfjsLib !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
@@ -216,4 +216,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return filled;
     }
-});
+})();
