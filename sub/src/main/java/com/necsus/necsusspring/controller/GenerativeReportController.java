@@ -81,6 +81,13 @@ public class GenerativeReportController {
 
             return ResponseEntity.ok(response);
 
+        } catch (IllegalStateException e) {
+            // Configuração ausente (ex: chave da API não configurada)
+            logger.error("Configuração incompleta para relatórios IA: {}", e.getMessage());
+            response.put("sucesso", false);
+            response.put("mensagem", e.getMessage());
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+
         } catch (SecurityException e) {
             // Erro de segurança (SQL não permitido)
             logger.error("Erro de segurança ao gerar relatório: {}", e.getMessage());
