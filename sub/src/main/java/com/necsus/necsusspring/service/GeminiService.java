@@ -31,7 +31,7 @@ public class GeminiService {
 
     private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
     private static final int MAX_PAGES = 5;
-    private static final int DPI = 150;
+    private static final int DPI = 200; // Aumentado para melhor qualidade de leitura
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -109,19 +109,41 @@ public class GeminiService {
      */
     private String buildExtractionPrompt() {
         return """
-                Você é um assistente especializado em extrair dados de notas fiscais brasileiras.
+                Você é um assistente especializado em extrair dados de notas fiscais brasileiras (NF-e, NFS-e, Danfe).
 
-                Analise a(s) imagem(ns) da nota fiscal e extraia APENAS as seguintes informações:
+                Analise CUIDADOSAMENTE a(s) imagem(ns) da nota fiscal e extraia as seguintes informações:
 
-                1. numeroNota: O número da nota fiscal (apenas números)
-                2. dataEmissao: A data de emissão no formato YYYY-MM-DD
-                3. valor: O valor total da nota fiscal (use ponto como separador decimal, sem símbolo de moeda)
-                4. placa: A placa do veículo, se houver (formato ABC-1234 ou ABC1D23)
+                1. **numeroNota**: O número da nota fiscal
+                   - Procure por: "Nº", "N°", "NÚMERO", "NF-e Nº", "NOTA FISCAL Nº"
+                   - Retorne apenas os números (ex: "12345")
 
-                IMPORTANTE:
-                - Se não encontrar algum campo, retorne null para esse campo
-                - Retorne APENAS um JSON válido, sem texto adicional
-                - Não inclua explicações ou comentários
+                2. **dataEmissao**: A data de emissão
+                   - Procure por: "DATA DE EMISSÃO", "EMISSÃO", "DT. EMISSÃO"
+                   - Converta para formato YYYY-MM-DD (ex: "2024-01-15")
+
+                3. **valor**: O VALOR TOTAL da nota fiscal
+                   - ATENÇÃO: Este é o campo mais importante!
+                   - Procure por textos como:
+                     * "VALOR TOTAL DA NOTA"
+                     * "VALOR TOTAL"
+                     * "TOTAL DA NOTA"
+                     * "VLR TOTAL"
+                     * "V. TOTAL"
+                   - O valor numérico geralmente está ABAIXO ou AO LADO do texto descritivo
+                   - O texto descritivo pode estar em FONTE PEQUENA
+                   - Procure o maior valor em destaque no documento
+                   - Exemplos: R$ 1.250,50 → retorne "1250.50"
+                   - Use PONTO como separador decimal, SEM símbolo de moeda
+
+                4. **placa**: Placa do veículo (se houver)
+                   - Procure por: "PLACA", "VEÍCULO"
+                   - Formatos: ABC-1234 ou ABC1D23
+
+                INSTRUÇÕES CRÍTICAS:
+                - Analise TODO o documento, incluindo áreas com texto pequeno
+                - Para o VALOR: se houver um texto pequeno como "VALOR TOTAL DA NOTA", o número grande próximo é o valor
+                - Se não encontrar algum campo após análise completa, retorne null
+                - Retorne APENAS um JSON válido, sem explicações
 
                 Formato de resposta:
                 {
