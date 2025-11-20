@@ -422,12 +422,27 @@
 
         try {
             console.log('Fazendo requisição para API...');
+
+            // Obter token CSRF
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            // Preparar headers
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            // Adicionar token CSRF se disponível
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+
+            console.log('Headers:', headers);
+
             // Fazer requisição para API
             const response = await fetch('/api/relatorios-ia/gerar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: headers,
                 body: JSON.stringify({ pergunta: pergunta })
             });
 
