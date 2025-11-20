@@ -11,6 +11,7 @@ import com.necsus.necsusspring.service.FiscalDocumentService;
 import com.necsus.necsusspring.service.GeminiService;
 import com.necsus.necsusspring.service.JinjavaService;
 import com.necsus.necsusspring.service.PaymentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -8,17 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Controller REST para geração de relatórios dinâmicos usando IA (Gemini).
- *
- * Este controller permite que usuários façam perguntas em linguagem natural
- * e recebam dados do banco de dados como resposta.
- *
- * IMPORTANTE: Para produção, configure o banco de dados com um usuário
- * que tenha APENAS permissões de leitura (SELECT).
+ * Controller REST para Relatórios Inteligentes com IA (RAG). 🧠
+ * * Agora focado em análise de dados (Data Analysis) e não mais em geração de SQL.
+ * O retorno é um HTML formatado pela própria IA.
  */
 @RestController
 @RequestMapping("/api/relatorios-ia")
@@ -33,85 +28,47 @@ public class GenerativeReportController {
     }
 
     /**
-     * Endpoint para gerar relatórios baseados em perguntas em linguagem natural.
-     *
-     * Exemplo de requisição:
-     * POST /api/relatorios-ia/gerar
-     * {
-     *   "pergunta": "Quantos veículos ativos temos?"
-     * }
-     *
-     * Exemplo de resposta:
-     * {
-     *   "sucesso": true,
-     *   "dados": [
-     *     {"count": 150}
-     *   ],
-     *   "mensagem": "Relatório gerado com sucesso",
-     *   "sql": "SELECT COUNT(*) as count FROM vehicle WHERE vehicle_status = 'ACTIVE'"
-     * }
-     *
-     * @param requestBody Mapa contendo a chave "pergunta" com a pergunta do usuário
-     * @return ResponseEntity com os dados ou mensagem de erro
+     * Endpoint de Análise de Dados (RAG)
+     * * Recebe uma pergunta, o backend carrega os dados, manda pro Gemini
+     * e retorna a análise pronta em HTML.
      */
-    @PostMapping("/gerar")
-    public ResponseEntity<Map<String, Object>> gerarRelatorio(@RequestBody Map<String, String> requestBody) {
+    @PostMapping("/analisar") // Mudei para /analisar para refletir a nova lógica
+    public ResponseEntity<Map<String, Object>> analisarDados(@RequestBody Map<String, String> requestBody) {
         Map<String, Object> response = new HashMap<>();
 
         try {
             String pergunta = requestBody.get("pergunta");
 
-            // Validar entrada
             if (pergunta == null || pergunta.trim().isEmpty()) {
                 response.put("sucesso", false);
-                response.put("mensagem", "A pergunta não pode estar vazia");
+                response.put("mensagem", "A pergunta é obrigatória.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            logger.info("Recebida pergunta para relatório: {}", pergunta);
+            logger.info("🔍 Iniciando análise IA para: {}", pergunta);
 
-            // Gerar e executar SQL
-            List<Map<String, Object>> dados = geminiService.gerarRelatorioPorTexto(pergunta);
+            // Chama o método RAG (que retorna String/HTML)
+            String analiseHtml = geminiService.analisarDadosComRAG(pergunta);
 
-            // Preparar resposta de sucesso
+            // Resposta de sucesso
             response.put("sucesso", true);
-            response.put("dados", dados);
-            response.put("mensagem", "Relatório gerado com sucesso");
-            response.put("totalLinhas", dados.size());
+            response.put("html", analiseHtml); // O front vai pegar isso e dar um .innerHTML
 
             return ResponseEntity.ok(response);
 
-        } catch (IllegalStateException e) {
-            // Configuração ausente (ex: chave da API não configurada)
-            logger.error("Configuração incompleta para relatórios IA: {}", e.getMessage());
-            response.put("sucesso", false);
-            response.put("mensagem", e.getMessage());
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
-
-        } catch (SecurityException e) {
-            // Erro de segurança (SQL não permitido)
-            logger.error("Erro de segurança ao gerar relatório: {}", e.getMessage());
-            response.put("sucesso", false);
-            response.put("mensagem", "Erro de segurança: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-
         } catch (Exception e) {
-            // Erro geral
-            logger.error("Erro ao gerar relatório", e);
+            logger.error("Erro na análise IA", e);
             response.put("sucesso", false);
-            response.put("mensagem", "Erro ao gerar relatório: " + e.getMessage());
+            response.put("html", "<div class='alert alert-danger'>Erro ao analisar dados: " + e.getMessage() + "</div>");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     /**
-     * Endpoint de health check
+     * Health check
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> status() {
-        Map<String, String> response = new HashMap<>();
-        response.put("status", "online");
-        response.put("servico", "Relatórios com IA");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(Map.of("status", "online", "mode", "RAG Analysis"));
     }
 }

@@ -99,7 +99,7 @@
             const filledFields = applyExtractedData(extracted);
 
             if (filledFields.length) {
-                setFeedback(`Campos preenchidos automaticamente: ${filledFields.join(', ')}.`, 'success');
+                setFeedback(`Lembre-se de confirmar as informações para que não haja erros`, 'success');
             } else {
                 setFeedback('Não foi possível identificar automaticamente os dados da nota. Preencha os campos manualmente.', 'warning');
             }
