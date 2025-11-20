@@ -39,7 +39,7 @@ public class GeminiService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.api.model:gemini-2.0-flash-exp}")
+    @Value("${gemini.api.model:gemini-1.5-flash}")
     private String modelName;
 
     private final RestTemplate restTemplate;
@@ -506,6 +506,15 @@ public class GeminiService {
             return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
         } catch (HttpClientErrorException.Forbidden ex) {
             throw new RuntimeException("A chamada para o Gemini foi recusada (403). Verifique a chave da API.", ex);
+        } catch (HttpClientErrorException.TooManyRequests ex) {
+            String detalheQuota = ex.getResponseBodyAsString();
+            logger.warn("Limite do Gemini excedido ou modelo sem cota: {}", detalheQuota);
+            throw new RuntimeException(
+                "Limite do Gemini excedido ou sem cota para o modelo '" + modelName +
+                    "'. Tente novamente mais tarde ou configure um modelo gratuito (ex: gemini-1.5-flash) " +
+                    "em gemini.api.model, e garanta que sua conta tenha quota disponível.",
+                ex
+            );
         }
     }
 }
