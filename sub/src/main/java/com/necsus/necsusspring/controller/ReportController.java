@@ -56,6 +56,12 @@ public class ReportController {
         return "redirect:/reports/vehicles";
     }
 
+    @GetMapping("/ai")
+    public String aiReport(Model model) {
+        model.addAttribute("pageTitle", "SUB - Relatórios com IA");
+        return "relatorio_ia";
+    }
+
     @GetMapping("/vehicles")
     public String vehicleReport(@RequestParam(value = "sections", required = false) List<String> sections,
                                @RequestParam(value = "generate", defaultValue = "false") boolean generate,

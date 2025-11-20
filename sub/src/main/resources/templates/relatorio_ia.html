@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Relatórios com IA</title>
+    <style>
+        .ai-report-page {
+            padding: 2rem 0;
+        }
+
+        .ai-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ai-header p {
+            margin: 0.75rem 0 0 0;
+            opacity: 0.95;
+            font-size: 1.05rem;
+        }
+
+        .ai-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        [data-theme="dark"] .ai-card {
+            background: #1a1a1a;
+        }
+
+        .ai-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .ai-example {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .ai-example {
+            background: #2a2a2a;
+        }
+
+        .ai-example:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        [data-theme="dark"] .ai-example:hover {
+            background: #333;
+        }
+
+        .ai-example-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-example-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        [data-theme="dark"] .ai-example-text {
+            color: #aaa;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .ai-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        [data-theme="dark"] .ai-input {
+            background: #2a2a2a;
+            border-color: #444;
+            color: white;
+        }
+
+        .ai-btn {
+            padding: 0.875rem 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 1rem;
+        }
+
+        .ai-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ai-results {
+            margin-top: 2rem;
+        }
+
+        .ai-table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .ai-table {
+            background: #1a1a1a;
+        }
+
+        .ai-table th {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+        }
+
+        [data-theme="dark"] .ai-table th {
+            background-color: #2a2a2a;
+            color: #aaa;
+            border-bottom-color: #444;
+        }
+
+        .ai-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        [data-theme="dark"] .ai-table td {
+            border-bottom-color: #333;
+        }
+
+        .ai-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        [data-theme="dark"] .ai-table tbody tr:hover {
+            background-color: #2a2a2a;
+        }
+
+        .ai-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ai-alert {
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ai-alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .ai-alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .ai-alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .ai-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .security-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .security-warning h6 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .security-warning p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content" class="ai-report-page">
+    <div class="ai-header">
+        <h1>
+            🤖 Relatórios Dinâmicos com Inteligência Artificial
+        </h1>
+        <p>
+            Faça perguntas em linguagem natural e obtenha dados do sistema instantaneamente.
+            A IA converterá sua pergunta em consultas SQL e retornará os resultados.
+        </p>
+    </div>
+
+    <div class="ai-card">
+        <div class="security-warning">
+            <h6>🔒 Modo Seguro Ativado</h6>
+            <p>
+                Este sistema opera apenas com consultas de leitura (SELECT). Comandos de modificação de dados
+                (INSERT, UPDATE, DELETE) são bloqueados automaticamente para garantir a integridade dos dados.
+            </p>
+        </div>
+
+        <div class="ai-input-container">
+            <input
+                type="text"
+                id="aiPergunta"
+                class="ai-input"
+                placeholder="Digite sua pergunta aqui... Ex: Quantos veículos ativos temos?"
+            />
+            <button id="aiBtn" class="ai-btn">
+                Gerar Relatório
+            </button>
+        </div>
+
+        <div>
+            <h6 class="mb-3">💡 Exemplos de Perguntas:</h6>
+            <div class="ai-examples">
+                <div class="ai-example" data-pergunta="Quantos veículos ativos temos?">
+                    <div class="ai-example-icon">🚗</div>
+                    <strong>Veículos Ativos</strong>
+                    <p class="ai-example-text">Quantos veículos ativos temos?</p>
+                </div>
+                <div class="ai-example" data-pergunta="Liste os 10 parceiros mais recentes">
+                    <div class="ai-example-icon">👥</div>
+                    <strong>Parceiros Recentes</strong>
+                    <p class="ai-example-text">Liste os 10 parceiros mais recentes</p>
+                </div>
+                <div class="ai-example" data-pergunta="Qual o total de mensalidades?">
+                    <div class="ai-example-icon">💰</div>
+                    <strong>Total de Mensalidades</strong>
+                    <p class="ai-example-text">Qual o total de mensalidades?</p>
+                </div>
+                <div class="ai-example" data-pergunta="Quantos eventos pendentes existem?">
+                    <div class="ai-example-icon">📅</div>
+                    <strong>Eventos Pendentes</strong>
+                    <p class="ai-example-text">Quantos eventos pendentes existem?</p>
+                </div>
+                <div class="ai-example" data-pergunta="Mostre os veículos por montadora">
+                    <div class="ai-example-icon">🏭</div>
+                    <strong>Veículos por Montadora</strong>
+                    <p class="ai-example-text">Mostre os veículos por montadora</p>
+                </div>
+                <div class="ai-example" data-pergunta="Quantos processos jurídicos estão em aberto?">
+                    <div class="ai-example-icon">⚖️</div>
+                    <strong>Processos Jurídicos</strong>
+                    <p class="ai-example-text">Quantos processos jurídicos estão em aberto?</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="aiResultados" class="ai-results"></div>
+    </div>
+</section>
+
+<th:block layout:fragment="scripts">
+<script>
+(function() {
+    'use strict';
+
+    console.log('Script de relatórios IA carregado');
+
+    function inicializarRelatoriosIA() {
+        console.log('Inicializando relatórios IA...');
+
+        // Buscar elementos
+        const exemplos = document.querySelectorAll('.ai-example');
+        const btnGerar = document.getElementById('aiBtn');
+        const inputPergunta = document.getElementById('aiPergunta');
+
+        console.log('Exemplos encontrados:', exemplos.length);
+        console.log('Botão gerar:', btnGerar);
+        console.log('Input pergunta:', inputPergunta);
+
+        // Anexar event listeners aos exemplos
+        exemplos.forEach(function(exemplo, index) {
+            exemplo.addEventListener('click', function(e) {
+                console.log('Clique no exemplo', index);
+                e.preventDefault();
+                e.stopPropagation();
+                const pergunta = this.getAttribute('data-pergunta');
+                console.log('Pergunta selecionada:', pergunta);
+                usarExemplo(pergunta);
+            });
+        });
+
+        // Anexar event listener ao botão "Gerar Relatório"
+        if (btnGerar) {
+            btnGerar.addEventListener('click', function(e) {
+                console.log('Clique no botão gerar');
+                e.preventDefault();
+                e.stopPropagation();
+                gerarRelatorioIA();
+            });
+        }
+
+        // Anexar event listener para tecla Enter
+        if (inputPergunta) {
+            inputPergunta.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    console.log('Enter pressionado');
+                    event.preventDefault();
+                    gerarRelatorioIA();
+                }
+            });
+        }
+
+        console.log('Relatórios IA inicializado com sucesso!');
+    }
+
+    /**
+     * Usa um exemplo de pergunta
+     */
+    function usarExemplo(pergunta) {
+        console.log('usarExemplo chamado com:', pergunta);
+        const inputPergunta = document.getElementById('aiPergunta');
+        if (inputPergunta) {
+            inputPergunta.value = pergunta;
+            inputPergunta.focus();
+            // Scroll suave até o input
+            inputPergunta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    /**
+     * Função para gerar relatório usando IA
+     */
+    async function gerarRelatorioIA() {
+        console.log('gerarRelatorioIA chamado');
+        const pergunta = document.getElementById('aiPergunta').value.trim();
+        const btnElement = document.getElementById('aiBtn');
+        const resultadosDiv = document.getElementById('aiResultados');
+
+        console.log('Pergunta:', pergunta);
+
+        // Validar entrada
+        if (!pergunta) {
+            resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-circle-fill"></i><span>Por favor, digite uma pergunta.</span></div>';
+            return;
+        }
+
+        // Desabilitar botão e mostrar loading
+        btnElement.disabled = true;
+        btnElement.innerHTML = '<span class="ai-loading"></span>Gerando...';
+        resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-hourglass-split"></i><span>Processando sua pergunta com IA...</span></div>';
+
+        try {
+            console.log('Fazendo requisição para API...');
+
+            // Obter token CSRF
+            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+            // Preparar headers
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+
+            // Adicionar token CSRF se disponível
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+
+            console.log('Headers:', headers);
+
+            // Fazer requisição para API
+            const response = await fetch('/api/relatorios-ia/gerar', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ pergunta: pergunta })
+            });
+
+            console.log('Resposta recebida:', response.status);
+            const data = await response.json();
+            console.log('Dados:', data);
+
+            if (data.sucesso && data.dados && data.dados.length > 0) {
+                // Renderizar tabela com resultados
+                renderizarTabela(data.dados);
+
+                // Mostrar mensagem de sucesso
+                const mensagem = `
+                    <div class="ai-alert ai-alert-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>${data.mensagem} - ${data.totalLinhas} linha(s) encontrada(s)</span>
+                    </div>
+                `;
+                resultadosDiv.insertAdjacentHTML('afterbegin', mensagem);
+
+            } else if (data.sucesso && data.dados && data.dados.length === 0) {
+                resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-info-circle-fill"></i><span>Nenhum resultado encontrado para sua pergunta.</span></div>';
+
+            } else {
+                // Mostrar mensagem de erro
+                resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-triangle-fill"></i><span>${data.mensagem || 'Erro ao gerar relatório'}</span></div>`;
+            }
+
+        } catch (error) {
+            console.error('Erro ao gerar relatório:', error);
+            resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-x-circle-fill"></i><span>Erro de conexão: ${error.message}</span></div>`;
+
+        } finally {
+            // Reabilitar botão
+            btnElement.disabled = false;
+            btnElement.innerHTML = 'Gerar Relatório';
+        }
+    }
+
+    /**
+     * Renderiza tabela HTML com os dados retornados
+     */
+    function renderizarTabela(dados) {
+        const resultadosDiv = document.getElementById('aiResultados');
+
+        // Obter colunas do primeiro registro
+        const colunas = Object.keys(dados[0]);
+
+        // Construir tabela
+        let tabelaHTML = '<table class="ai-table">';
+
+        // Cabeçalho
+        tabelaHTML += '<thead><tr>';
+        colunas.forEach(coluna => {
+            tabelaHTML += `<th>${formatarNomeColuna(coluna)}</th>`;
+        });
+        tabelaHTML += '</tr></thead>';
+
+        // Corpo
+        tabelaHTML += '<tbody>';
+        dados.forEach(linha => {
+            tabelaHTML += '<tr>';
+            colunas.forEach(coluna => {
+                const valor = linha[coluna];
+                tabelaHTML += `<td>${formatarValor(valor)}</td>`;
+            });
+            tabelaHTML += '</tr>';
+        });
+        tabelaHTML += '</tbody></table>';
+
+        resultadosDiv.innerHTML += tabelaHTML;
+    }
+
+    /**
+     * Formata nome da coluna para exibição
+     */
+    function formatarNomeColuna(nome) {
+        // Converter snake_case para Título
+        return nome
+            .split('_')
+            .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase())
+            .join(' ');
+    }
+
+    /**
+     * Formata valor para exibição
+     */
+    function formatarValor(valor) {
+        if (valor === null || valor === undefined) {
+            return '<em style="color: #999;">-</em>';
+        }
+
+        // Formatar números
+        if (typeof valor === 'number') {
+            // Se for um número grande, pode ser um valor monetário
+            if (Number.isInteger(valor) && valor > 1000000) {
+                return valor.toLocaleString('pt-BR');
+            }
+            // Se tiver decimais, pode ser valor monetário
+            if (!Number.isInteger(valor)) {
+                return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            return valor.toLocaleString('pt-BR');
+        }
+
+        // Formatar datas (formato ISO)
+        if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) {
+            const data = new Date(valor);
+            if (!isNaN(data.getTime())) {
+                return data.toLocaleDateString('pt-BR');
+            }
+        }
+
+        // Escapar HTML para prevenir XSS
+        const div = document.createElement('div');
+        div.textContent = valor;
+        return div.innerHTML;
+    }
+
+    // Inicializar quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializarRelatoriosIA);
+    } else {
+        inicializarRelatoriosIA();
+    }
+})();
+</script>
+</th:block>
+</body>
+</html>
