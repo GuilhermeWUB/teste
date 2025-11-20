@@ -283,9 +283,8 @@
                 id="aiPergunta"
                 class="ai-input"
                 placeholder="Digite sua pergunta aqui... Ex: Quantos veículos ativos temos?"
-                onkeypress="if(event.key === 'Enter') gerarRelatorioIA()"
             />
-            <button id="aiBtn" class="ai-btn" onclick="gerarRelatorioIA()">
+            <button id="aiBtn" class="ai-btn">
                 Gerar Relatório
             </button>
         </div>
@@ -293,32 +292,32 @@
         <div>
             <h6 class="mb-3">💡 Exemplos de Perguntas:</h6>
             <div class="ai-examples">
-                <div class="ai-example" onclick="usarExemplo('Quantos veículos ativos temos?')">
+                <div class="ai-example" data-pergunta="Quantos veículos ativos temos?">
                     <div class="ai-example-icon">🚗</div>
                     <strong>Veículos Ativos</strong>
                     <p class="ai-example-text">Quantos veículos ativos temos?</p>
                 </div>
-                <div class="ai-example" onclick="usarExemplo('Liste os 10 parceiros mais recentes')">
+                <div class="ai-example" data-pergunta="Liste os 10 parceiros mais recentes">
                     <div class="ai-example-icon">👥</div>
                     <strong>Parceiros Recentes</strong>
                     <p class="ai-example-text">Liste os 10 parceiros mais recentes</p>
                 </div>
-                <div class="ai-example" onclick="usarExemplo('Qual o total de mensalidades?')">
+                <div class="ai-example" data-pergunta="Qual o total de mensalidades?">
                     <div class="ai-example-icon">💰</div>
                     <strong>Total de Mensalidades</strong>
                     <p class="ai-example-text">Qual o total de mensalidades?</p>
                 </div>
-                <div class="ai-example" onclick="usarExemplo('Quantos eventos pendentes existem?')">
+                <div class="ai-example" data-pergunta="Quantos eventos pendentes existem?">
                     <div class="ai-example-icon">📅</div>
                     <strong>Eventos Pendentes</strong>
                     <p class="ai-example-text">Quantos eventos pendentes existem?</p>
                 </div>
-                <div class="ai-example" onclick="usarExemplo('Mostre os veículos por montadora')">
+                <div class="ai-example" data-pergunta="Mostre os veículos por montadora">
                     <div class="ai-example-icon">🏭</div>
                     <strong>Veículos por Montadora</strong>
                     <p class="ai-example-text">Mostre os veículos por montadora</p>
                 </div>
-                <div class="ai-example" onclick="usarExemplo('Quantos processos jurídicos estão em aberto?')">
+                <div class="ai-example" data-pergunta="Quantos processos jurídicos estão em aberto?">
                     <div class="ai-example-icon">⚖️</div>
                     <strong>Processos Jurídicos</strong>
                     <p class="ai-example-text">Quantos processos jurídicos estão em aberto?</p>
@@ -331,12 +330,46 @@
 </section>
 
 <script th:inline="javascript">
+// Aguardar o DOM carregar
+document.addEventListener('DOMContentLoaded', function() {
+    // Anexar event listeners aos exemplos de perguntas
+    const exemplos = document.querySelectorAll('.ai-example');
+    exemplos.forEach(function(exemplo) {
+        exemplo.addEventListener('click', function() {
+            const pergunta = this.getAttribute('data-pergunta');
+            usarExemplo(pergunta);
+        });
+    });
+
+    // Anexar event listener ao botão "Gerar Relatório"
+    const btnGerar = document.getElementById('aiBtn');
+    if (btnGerar) {
+        btnGerar.addEventListener('click', function() {
+            gerarRelatorioIA();
+        });
+    }
+
+    // Anexar event listener para tecla Enter no input
+    const inputPergunta = document.getElementById('aiPergunta');
+    if (inputPergunta) {
+        inputPergunta.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                gerarRelatorioIA();
+            }
+        });
+    }
+});
+
 /**
  * Usa um exemplo de pergunta
  */
 function usarExemplo(pergunta) {
-    document.getElementById('aiPergunta').value = pergunta;
-    document.getElementById('aiPergunta').focus();
+    const inputPergunta = document.getElementById('aiPergunta');
+    inputPergunta.value = pergunta;
+    inputPergunta.focus();
+
+    // Scroll suave até o input
+    inputPergunta.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 /**
