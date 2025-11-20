@@ -329,191 +329,232 @@
     </div>
 </section>
 
-<script th:inline="javascript">
-// Aguardar o DOM carregar
-document.addEventListener('DOMContentLoaded', function() {
-    // Anexar event listeners aos exemplos de perguntas
-    const exemplos = document.querySelectorAll('.ai-example');
-    exemplos.forEach(function(exemplo) {
-        exemplo.addEventListener('click', function() {
-            const pergunta = this.getAttribute('data-pergunta');
-            usarExemplo(pergunta);
-        });
-    });
+<th:block layout:fragment="scripts">
+<script>
+(function() {
+    'use strict';
 
-    // Anexar event listener ao botão "Gerar Relatório"
-    const btnGerar = document.getElementById('aiBtn');
-    if (btnGerar) {
-        btnGerar.addEventListener('click', function() {
-            gerarRelatorioIA();
-        });
-    }
+    console.log('Script de relatórios IA carregado');
 
-    // Anexar event listener para tecla Enter no input
-    const inputPergunta = document.getElementById('aiPergunta');
-    if (inputPergunta) {
-        inputPergunta.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
+    function inicializarRelatoriosIA() {
+        console.log('Inicializando relatórios IA...');
+
+        // Buscar elementos
+        const exemplos = document.querySelectorAll('.ai-example');
+        const btnGerar = document.getElementById('aiBtn');
+        const inputPergunta = document.getElementById('aiPergunta');
+
+        console.log('Exemplos encontrados:', exemplos.length);
+        console.log('Botão gerar:', btnGerar);
+        console.log('Input pergunta:', inputPergunta);
+
+        // Anexar event listeners aos exemplos
+        exemplos.forEach(function(exemplo, index) {
+            exemplo.addEventListener('click', function(e) {
+                console.log('Clique no exemplo', index);
+                e.preventDefault();
+                e.stopPropagation();
+                const pergunta = this.getAttribute('data-pergunta');
+                console.log('Pergunta selecionada:', pergunta);
+                usarExemplo(pergunta);
+            });
+        });
+
+        // Anexar event listener ao botão "Gerar Relatório"
+        if (btnGerar) {
+            btnGerar.addEventListener('click', function(e) {
+                console.log('Clique no botão gerar');
+                e.preventDefault();
+                e.stopPropagation();
                 gerarRelatorioIA();
-            }
-        });
-    }
-});
-
-/**
- * Usa um exemplo de pergunta
- */
-function usarExemplo(pergunta) {
-    const inputPergunta = document.getElementById('aiPergunta');
-    inputPergunta.value = pergunta;
-    inputPergunta.focus();
-
-    // Scroll suave até o input
-    inputPergunta.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-/**
- * Função para gerar relatório usando IA
- */
-async function gerarRelatorioIA() {
-    const pergunta = document.getElementById('aiPergunta').value.trim();
-    const btnElement = document.getElementById('aiBtn');
-    const resultadosDiv = document.getElementById('aiResultados');
-
-    // Validar entrada
-    if (!pergunta) {
-        resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-circle-fill"></i><span>Por favor, digite uma pergunta.</span></div>';
-        return;
-    }
-
-    // Desabilitar botão e mostrar loading
-    btnElement.disabled = true;
-    btnElement.innerHTML = '<span class="ai-loading"></span>Gerando...';
-    resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-hourglass-split"></i><span>Processando sua pergunta com IA...</span></div>';
-
-    try {
-        // Fazer requisição para API
-        const response = await fetch('/api/relatorios-ia/gerar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ pergunta: pergunta })
-        });
-
-        const data = await response.json();
-
-        if (data.sucesso && data.dados && data.dados.length > 0) {
-            // Renderizar tabela com resultados
-            renderizarTabela(data.dados);
-
-            // Mostrar mensagem de sucesso
-            const mensagem = `
-                <div class="ai-alert ai-alert-success">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span>${data.mensagem} - ${data.totalLinhas} linha(s) encontrada(s)</span>
-                </div>
-            `;
-            resultadosDiv.insertAdjacentHTML('afterbegin', mensagem);
-
-        } else if (data.sucesso && data.dados && data.dados.length === 0) {
-            resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-info-circle-fill"></i><span>Nenhum resultado encontrado para sua pergunta.</span></div>';
-
-        } else {
-            // Mostrar mensagem de erro
-            resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-triangle-fill"></i><span>${data.mensagem || 'Erro ao gerar relatório'}</span></div>`;
+            });
         }
 
-    } catch (error) {
-        console.error('Erro ao gerar relatório:', error);
-        resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-x-circle-fill"></i><span>Erro de conexão: ${error.message}</span></div>`;
+        // Anexar event listener para tecla Enter
+        if (inputPergunta) {
+            inputPergunta.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    console.log('Enter pressionado');
+                    event.preventDefault();
+                    gerarRelatorioIA();
+                }
+            });
+        }
 
-    } finally {
-        // Reabilitar botão
-        btnElement.disabled = false;
-        btnElement.innerHTML = 'Gerar Relatório';
+        console.log('Relatórios IA inicializado com sucesso!');
     }
-}
 
-/**
- * Renderiza tabela HTML com os dados retornados
- */
-function renderizarTabela(dados) {
-    const resultadosDiv = document.getElementById('aiResultados');
+    /**
+     * Usa um exemplo de pergunta
+     */
+    function usarExemplo(pergunta) {
+        console.log('usarExemplo chamado com:', pergunta);
+        const inputPergunta = document.getElementById('aiPergunta');
+        if (inputPergunta) {
+            inputPergunta.value = pergunta;
+            inputPergunta.focus();
+            // Scroll suave até o input
+            inputPergunta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
 
-    // Obter colunas do primeiro registro
-    const colunas = Object.keys(dados[0]);
+    /**
+     * Função para gerar relatório usando IA
+     */
+    async function gerarRelatorioIA() {
+        console.log('gerarRelatorioIA chamado');
+        const pergunta = document.getElementById('aiPergunta').value.trim();
+        const btnElement = document.getElementById('aiBtn');
+        const resultadosDiv = document.getElementById('aiResultados');
 
-    // Construir tabela
-    let tabelaHTML = '<table class="ai-table">';
+        console.log('Pergunta:', pergunta);
 
-    // Cabeçalho
-    tabelaHTML += '<thead><tr>';
-    colunas.forEach(coluna => {
-        tabelaHTML += `<th>${formatarNomeColuna(coluna)}</th>`;
-    });
-    tabelaHTML += '</tr></thead>';
+        // Validar entrada
+        if (!pergunta) {
+            resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-circle-fill"></i><span>Por favor, digite uma pergunta.</span></div>';
+            return;
+        }
 
-    // Corpo
-    tabelaHTML += '<tbody>';
-    dados.forEach(linha => {
-        tabelaHTML += '<tr>';
+        // Desabilitar botão e mostrar loading
+        btnElement.disabled = true;
+        btnElement.innerHTML = '<span class="ai-loading"></span>Gerando...';
+        resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-hourglass-split"></i><span>Processando sua pergunta com IA...</span></div>';
+
+        try {
+            console.log('Fazendo requisição para API...');
+            // Fazer requisição para API
+            const response = await fetch('/api/relatorios-ia/gerar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ pergunta: pergunta })
+            });
+
+            console.log('Resposta recebida:', response.status);
+            const data = await response.json();
+            console.log('Dados:', data);
+
+            if (data.sucesso && data.dados && data.dados.length > 0) {
+                // Renderizar tabela com resultados
+                renderizarTabela(data.dados);
+
+                // Mostrar mensagem de sucesso
+                const mensagem = `
+                    <div class="ai-alert ai-alert-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>${data.mensagem} - ${data.totalLinhas} linha(s) encontrada(s)</span>
+                    </div>
+                `;
+                resultadosDiv.insertAdjacentHTML('afterbegin', mensagem);
+
+            } else if (data.sucesso && data.dados && data.dados.length === 0) {
+                resultadosDiv.innerHTML = '<div class="ai-alert ai-alert-info"><i class="bi bi-info-circle-fill"></i><span>Nenhum resultado encontrado para sua pergunta.</span></div>';
+
+            } else {
+                // Mostrar mensagem de erro
+                resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-exclamation-triangle-fill"></i><span>${data.mensagem || 'Erro ao gerar relatório'}</span></div>`;
+            }
+
+        } catch (error) {
+            console.error('Erro ao gerar relatório:', error);
+            resultadosDiv.innerHTML = `<div class="ai-alert ai-alert-error"><i class="bi bi-x-circle-fill"></i><span>Erro de conexão: ${error.message}</span></div>`;
+
+        } finally {
+            // Reabilitar botão
+            btnElement.disabled = false;
+            btnElement.innerHTML = 'Gerar Relatório';
+        }
+    }
+
+    /**
+     * Renderiza tabela HTML com os dados retornados
+     */
+    function renderizarTabela(dados) {
+        const resultadosDiv = document.getElementById('aiResultados');
+
+        // Obter colunas do primeiro registro
+        const colunas = Object.keys(dados[0]);
+
+        // Construir tabela
+        let tabelaHTML = '<table class="ai-table">';
+
+        // Cabeçalho
+        tabelaHTML += '<thead><tr>';
         colunas.forEach(coluna => {
-            const valor = linha[coluna];
-            tabelaHTML += `<td>${formatarValor(valor)}</td>`;
+            tabelaHTML += `<th>${formatarNomeColuna(coluna)}</th>`;
         });
-        tabelaHTML += '</tr>';
-    });
-    tabelaHTML += '</tbody></table>';
+        tabelaHTML += '</tr></thead>';
 
-    resultadosDiv.innerHTML += tabelaHTML;
-}
+        // Corpo
+        tabelaHTML += '<tbody>';
+        dados.forEach(linha => {
+            tabelaHTML += '<tr>';
+            colunas.forEach(coluna => {
+                const valor = linha[coluna];
+                tabelaHTML += `<td>${formatarValor(valor)}</td>`;
+            });
+            tabelaHTML += '</tr>';
+        });
+        tabelaHTML += '</tbody></table>';
 
-/**
- * Formata nome da coluna para exibição
- */
-function formatarNomeColuna(nome) {
-    // Converter snake_case para Título
-    return nome
-        .split('_')
-        .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase())
-        .join(' ');
-}
-
-/**
- * Formata valor para exibição
- */
-function formatarValor(valor) {
-    if (valor === null || valor === undefined) {
-        return '<em style="color: #999;">-</em>';
+        resultadosDiv.innerHTML += tabelaHTML;
     }
 
-    // Formatar números
-    if (typeof valor === 'number') {
-        // Se for um número grande, pode ser um valor monetário
-        if (Number.isInteger(valor) && valor > 1000000) {
+    /**
+     * Formata nome da coluna para exibição
+     */
+    function formatarNomeColuna(nome) {
+        // Converter snake_case para Título
+        return nome
+            .split('_')
+            .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase())
+            .join(' ');
+    }
+
+    /**
+     * Formata valor para exibição
+     */
+    function formatarValor(valor) {
+        if (valor === null || valor === undefined) {
+            return '<em style="color: #999;">-</em>';
+        }
+
+        // Formatar números
+        if (typeof valor === 'number') {
+            // Se for um número grande, pode ser um valor monetário
+            if (Number.isInteger(valor) && valor > 1000000) {
+                return valor.toLocaleString('pt-BR');
+            }
+            // Se tiver decimais, pode ser valor monetário
+            if (!Number.isInteger(valor)) {
+                return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
             return valor.toLocaleString('pt-BR');
         }
-        // Se tiver decimais, pode ser valor monetário
-        if (!Number.isInteger(valor)) {
-            return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Formatar datas (formato ISO)
+        if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) {
+            const data = new Date(valor);
+            if (!isNaN(data.getTime())) {
+                return data.toLocaleDateString('pt-BR');
+            }
         }
-        return valor.toLocaleString('pt-BR');
+
+        // Escapar HTML para prevenir XSS
+        const div = document.createElement('div');
+        div.textContent = valor;
+        return div.innerHTML;
     }
 
-    // Formatar datas (formato ISO)
-    if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}/.test(valor)) {
-        const data = new Date(valor);
-        if (!isNaN(data.getTime())) {
-            return data.toLocaleDateString('pt-BR');
-        }
+    // Inicializar quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializarRelatoriosIA);
+    } else {
+        inicializarRelatoriosIA();
     }
-
-    // Escapar HTML para prevenir XSS
-    const div = document.createElement('div');
-    div.textContent = valor;
-    return div.innerHTML;
-}
+})();
 </script>
+</th:block>
 </body>
 </html>
