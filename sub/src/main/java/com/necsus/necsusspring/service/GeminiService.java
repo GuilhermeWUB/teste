@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Serviço para extração de dados de notas fiscais usando Gemini 2.5 Flash API
@@ -41,10 +43,12 @@ public class GeminiService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final JdbcTemplate jdbcTemplate;
 
-    public GeminiService() {
+    public GeminiService(JdbcTemplate jdbcTemplate) {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
@@ -241,5 +245,232 @@ public class GeminiService {
         logger.debug("Resposta do Gemini: {}", textContent);
 
         return objectMapper.readValue(textContent, ExtractedDataDto.class);
+    }
+
+    /**
+     * Gera relatório dinâmico baseado em uma pergunta em linguagem natural.
+     * Converte a pergunta em SQL usando Gemini AI e executa no banco de dados.
+     *
+     * IMPORTANTE: Este método executa SQL dinâmico. Para produção, recomenda-se usar
+     * um usuário de banco de dados com permissões SOMENTE LEITURA (apenas SELECT).
+     *
+     * @param pergunta A pergunta em linguagem natural (ex: "Quantos veículos ativos temos?")
+     * @return Lista de mapas contendo os dados retornados pela query
+     * @throws Exception Se houver erro na geração ou execução do SQL
+     */
+    public List<Map<String, Object>> gerarRelatorioPorTexto(String pergunta) throws Exception {
+        logger.info("Gerando relatório para pergunta: {}", pergunta);
+
+        // 1. Construir o prompt com esquema do banco
+        String prompt = buildSqlGenerationPrompt(pergunta);
+
+        // 2. Chamar Gemini para gerar SQL
+        String sql = callGeminiForSql(prompt);
+
+        // 3. Sanitizar e validar SQL
+        sql = sanitizeSql(sql);
+
+        // 4. Executar SQL
+        logger.info("Executando SQL gerado: {}", sql);
+        List<Map<String, Object>> resultados = jdbcTemplate.queryForList(sql);
+
+        logger.info("Relatório gerado com sucesso. {} linhas retornadas", resultados.size());
+        return resultados;
+    }
+
+    /**
+     * Constrói o prompt para geração de SQL com esquema do banco
+     */
+    private String buildSqlGenerationPrompt(String pergunta) {
+        return """
+                Você é um especialista em SQL e banco de dados PostgreSQL.
+
+                Baseado no seguinte esquema de banco de dados, gere uma query SQL para responder a pergunta do usuário.
+
+                ESQUEMA DO BANCO DE DADOS:
+
+                1. Tabela: app_users
+                   - id (BIGINT, PRIMARY KEY)
+                   - full_name (VARCHAR)
+                   - username (VARCHAR, UNIQUE)
+                   - email (VARCHAR, UNIQUE)
+                   - role (VARCHAR) - Tipos: ADMIN, USER, etc.
+                   - created_at (TIMESTAMP)
+
+                2. Tabela: partner
+                   - id (BIGINT, PRIMARY KEY)
+                   - name (VARCHAR)
+                   - date_born (DATE)
+                   - email (VARCHAR)
+                   - cpf (VARCHAR)
+                   - phone (VARCHAR)
+                   - cell (VARCHAR)
+                   - rg (VARCHAR)
+                   - status (VARCHAR) - Tipos: ACTIVE, INACTIVE, etc.
+
+                3. Tabela: vehicle
+                   - id (BIGINT, PRIMARY KEY)
+                   - maker (VARCHAR) - Montadora
+                   - type_vehicle (VARCHAR)
+                   - plaque (VARCHAR) - Placa
+                   - partners_id (BIGINT) - FK para partner
+                   - model (VARCHAR)
+                   - status (INTEGER)
+                   - vehicle_status (VARCHAR) - Tipos: ACTIVE, INACTIVE, etc.
+
+                4. Tabela: event
+                   - id (BIGINT, PRIMARY KEY)
+                   - titulo (VARCHAR)
+                   - descricao (TEXT)
+                   - status (VARCHAR) - Tipos: PENDING, COMPLETED, etc.
+                   - prioridade (VARCHAR) - ALTA, MEDIA, BAIXA
+                   - motivo (VARCHAR)
+                   - envolvimento (VARCHAR)
+                   - data_aconteceu (DATE)
+                   - data_comunicacao (DATE)
+
+                5. Tabela: info_payment (pagamentos)
+                   - id (BIGINT, PRIMARY KEY)
+                   - vehicle_id (BIGINT) - FK para vehicle
+                   - partners_id (BIGINT) - FK para partner
+                   - monthly (DECIMAL) - Mensalidade
+                   - vencimento (INTEGER) - Dia do vencimento (1-31)
+                   - date_create (TIMESTAMP)
+
+                6. Tabela: legal_processes
+                   - id (BIGINT, PRIMARY KEY)
+                   - autor (VARCHAR)
+                   - reu (VARCHAR)
+                   - materia (VARCHAR)
+                   - numero_processo (VARCHAR, UNIQUE)
+                   - valor_causa (DECIMAL)
+                   - pedidos (TEXT)
+                   - status (VARCHAR) - EM_ABERTO_7_0, etc.
+                   - process_type (VARCHAR) - TERCEIROS, etc.
+                   - source_event_id (BIGINT)
+
+                PERGUNTA DO USUÁRIO:
+                """ + pergunta + """
+
+                INSTRUÇÕES CRÍTICAS:
+                - Retorne APENAS o SQL puro, sem markdown, sem explicações, sem ```sql
+                - Use SOMENTE SELECT (não use INSERT, UPDATE, DELETE, DROP, ALTER, etc.)
+                - Use nomes de tabelas e colunas exatamente como no esquema
+                - Para contagens, use COUNT(*)
+                - Para valores monetários, use SUM() e formate se necessário
+                - Adicione ORDER BY quando relevante
+                - Limite resultados com LIMIT quando apropriado
+                - Use JOINs quando precisar relacionar tabelas
+
+                Retorne apenas o SQL:
+                """;
+    }
+
+    /**
+     * Chama a API do Gemini para gerar SQL
+     */
+    private String callGeminiForSql(String prompt) throws Exception {
+        String url = String.format(
+            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
+            modelName,
+            apiKey
+        );
+
+        // Preparar o body da requisição
+        Map<String, Object> requestBody = new HashMap<>();
+
+        // Construir as parts (apenas texto)
+        List<Map<String, Object>> parts = new ArrayList<>();
+        Map<String, Object> textPart = new HashMap<>();
+        textPart.put("text", prompt);
+        parts.add(textPart);
+
+        // Construir contents
+        List<Map<String, Object>> contents = new ArrayList<>();
+        Map<String, Object> content = new HashMap<>();
+        content.put("parts", parts);
+        contents.add(content);
+
+        requestBody.put("contents", contents);
+
+        // Configurar headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        logger.info("Chamando Gemini API para gerar SQL...");
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Erro ao chamar Gemini API: " + response.getStatusCode());
+        }
+
+        // Extrair o SQL da resposta
+        JsonNode root = objectMapper.readTree(response.getBody());
+        JsonNode candidates = root.path("candidates");
+
+        if (candidates.isEmpty()) {
+            throw new RuntimeException("Nenhum SQL gerado pela API");
+        }
+
+        String sql = candidates.get(0)
+            .path("content")
+            .path("parts")
+            .get(0)
+            .path("text")
+            .asText()
+            .trim();
+
+        logger.debug("SQL bruto gerado: {}", sql);
+        return sql;
+    }
+
+    /**
+     * Sanitiza e valida o SQL gerado para prevenir SQL injection e comandos perigosos.
+     *
+     * SEGURANÇA: Esta validação é uma camada de proteção adicional, mas NÃO substitui
+     * a necessidade de usar um usuário de banco com permissões limitadas.
+     */
+    private String sanitizeSql(String sql) {
+        // Remover possíveis marcadores de markdown
+        sql = sql.replaceAll("```sql\\s*", "")
+                 .replaceAll("```\\s*", "")
+                 .trim();
+
+        // Normalizar espaços
+        String sqlUpper = sql.toUpperCase().replaceAll("\\s+", " ");
+
+        // Verificar se começa com SELECT
+        if (!sqlUpper.startsWith("SELECT")) {
+            throw new SecurityException("SQL deve começar com SELECT. SQL fornecido: " + sql);
+        }
+
+        // Lista de comandos perigosos proibidos
+        String[] comandosProibidos = {
+            "DELETE", "UPDATE", "DROP", "ALTER", "CREATE", "INSERT",
+            "TRUNCATE", "GRANT", "REVOKE", "EXEC", "EXECUTE", "--", "/*", "*/"
+        };
+
+        for (String comando : comandosProibidos) {
+            if (sqlUpper.contains(comando)) {
+                throw new SecurityException(
+                    "SQL contém comando proibido: " + comando + ". Apenas SELECT é permitido."
+                );
+            }
+        }
+
+        // Verificar por ponto-e-vírgula múltiplos (tentativa de injetar múltiplos comandos)
+        if (sql.indexOf(';') != sql.lastIndexOf(';') && sql.indexOf(';') != -1) {
+            throw new SecurityException("SQL não pode conter múltiplos comandos (múltiplos ;)");
+        }
+
+        // Remover ponto-e-vírgula final se existir
+        if (sql.endsWith(";")) {
+            sql = sql.substring(0, sql.length() - 1).trim();
+        }
+
+        logger.info("SQL validado e sanitizado com sucesso");
+        return sql;
     }
 }
