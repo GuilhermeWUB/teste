@@ -12,6 +12,7 @@ import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -35,7 +36,7 @@ public class GeminiService {
     private static final int MAX_PAGES = 5;
     private static final int DPI = 200; // Aumentado para melhor qualidade de leitura
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.api.key:}")
     private String apiKey;
 
     @Value("${gemini.api.model:gemini-2.0-flash-exp}")
@@ -163,10 +164,10 @@ public class GeminiService {
      * Chama a API do Gemini para extrair dados
      */
     private String callGeminiApi(String prompt, List<String> base64Images) throws Exception {
+        String resolvedApiKey = resolveApiKey();
         String url = String.format(
-            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
-            modelName,
-            apiKey
+            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent",
+            modelName
         );
 
         // Preparar o body da requisição
@@ -206,11 +207,12 @@ public class GeminiService {
         // Configurar headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("x-goog-api-key", resolvedApiKey);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         logger.info("Chamando Gemini API...");
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = executeGeminiRequest(url, entity);
 
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Erro ao chamar Gemini API: " + response.getStatusCode());
@@ -370,10 +372,10 @@ public class GeminiService {
      * Chama a API do Gemini para gerar SQL
      */
     private String callGeminiForSql(String prompt) throws Exception {
+        String resolvedApiKey = resolveApiKey();
         String url = String.format(
-            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s",
-            modelName,
-            apiKey
+            "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent",
+            modelName
         );
 
         // Preparar o body da requisição
@@ -396,11 +398,12 @@ public class GeminiService {
         // Configurar headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("x-goog-api-key", resolvedApiKey);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         logger.info("Chamando Gemini API para gerar SQL...");
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = executeGeminiRequest(url, entity);
 
         if (response.getStatusCode() != HttpStatus.OK) {
             throw new RuntimeException("Erro ao chamar Gemini API: " + response.getStatusCode());
@@ -472,5 +475,37 @@ public class GeminiService {
 
         logger.info("SQL validado e sanitizado com sucesso");
         return sql;
+    }
+
+    /**
+     * Resolve a chave de API do Gemini buscando em múltiplas fontes e falhando
+     * de forma clara quando não encontrada.
+     */
+    private String resolveApiKey() {
+        if (apiKey != null && !apiKey.isBlank()) {
+            return apiKey.trim();
+        }
+
+        String envKey = System.getenv("GOOGLE_API_KEY");
+        if (envKey != null && !envKey.isBlank()) {
+            logger.info("Usando chave de API do ambiente GOOGLE_API_KEY");
+            return envKey.trim();
+        }
+
+        envKey = System.getenv("GOOGLE_GENAI_API_KEY");
+        if (envKey != null && !envKey.isBlank()) {
+            logger.info("Usando chave de API do ambiente GOOGLE_GENAI_API_KEY");
+            return envKey.trim();
+        }
+
+        throw new IllegalStateException("Chave da API Gemini não configurada. Defina GEMINI_API_KEY ou GOOGLE_API_KEY.");
+    }
+
+    private ResponseEntity<String> executeGeminiRequest(String url, HttpEntity<Map<String, Object>> entity) {
+        try {
+            return restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        } catch (HttpClientErrorException.Forbidden ex) {
+            throw new RuntimeException("A chamada para o Gemini foi recusada (403). Verifique a chave da API.", ex);
+        }
     }
 }
