@@ -66,7 +66,6 @@ public class VistoriaService {
         logger.info("=== CREATE VISTORIA SERVICE ===");
         logger.info("Fotos antes de salvar: {}", vistoria.getQuantidadeFotos());
 
-        // Valida se o evento existe
         if (vistoria.getEvent() != null && vistoria.getEvent().getId() != null) {
             Event event = eventRepository.findById(vistoria.getEvent().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
@@ -84,67 +83,67 @@ public class VistoriaService {
     public Vistoria update(Long id, Vistoria vistoriaPayload) {
         logger.info("=== UPDATE VISTORIA SERVICE ===");
         logger.info("Vistoria ID: {}", id);
-        logger.info("Fotos no payload: {}", vistoriaPayload.getQuantidadeFotos());
 
         Vistoria existing = vistoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vistoria não encontrada com id " + id));
 
-        logger.info("Fotos na vistoria existente (antes): {}", existing.getFotos().size());
-
-        // Atualiza os campos
         existing.setObservacoes(vistoriaPayload.getObservacoes());
         existing.setUsuarioCriacao(vistoriaPayload.getUsuarioCriacao());
 
-        // Atualiza as fotos - adiciona as novas mantendo as antigas
-        if (vistoriaPayload.getFotos() != null && !vistoriaPayload.getFotos().isEmpty()) {
-            logger.info("Adicionando {} novas fotos", vistoriaPayload.getFotos().size());
-            vistoriaPayload.getFotos().forEach(foto -> {
-                logger.info("Adicionando foto: path={}, ordem={}", foto.getFotoPath(), foto.getOrdem());
-                existing.adicionarFoto(foto);
-            });
-        } else {
-            logger.warn("Nenhuma foto nova para adicionar");
+        if (vistoriaPayload.getAnaliseIa() != null) {
+            existing.setAnaliseIa(vistoriaPayload.getAnaliseIa());
         }
 
-        logger.info("Fotos na vistoria existente (depois): {}", existing.getFotos().size());
+        // Lógica segura para adicionar fotos SEM duplicar ou causar erro de concorrência
+        // Só adicionamos se o payload tiver fotos NOVAS que ainda não estão no banco
+        if (vistoriaPayload.getFotos() != null && !vistoriaPayload.getFotos().isEmpty()) {
+            logger.info("Processando fotos do payload...");
+            // Dica: No fluxo do Controller, evite chamar este método passando o objeto
+            // que acabou de ser salvo (vistoriaSalva), pois ele já contém as fotos persistidas.
+            for (com.necsus.necsusspring.model.VistoriaFoto foto : vistoriaPayload.getFotos()) {
+                // Verifica se a foto já tem ID (já existe no banco) para não readicionar
+                if (foto.getId() == null) {
+                    foto.setVistoria(existing);
+                    existing.getFotos().add(foto);
+                }
+            }
+        }
 
-        Vistoria saved = vistoriaRepository.save(existing);
-        logger.info("Vistoria salva com ID: {}, Fotos: {}", saved.getId(), saved.getQuantidadeFotos());
-        return saved;
+        return vistoriaRepository.save(existing);
     }
 
-    /**
-     * Atualiza vistoria com novas fotos (método que evita ConcurrentModificationException)
-     */
     @Transactional
     public Vistoria updateWithNewPhotos(Long id, String observacoes, List<com.necsus.necsusspring.model.VistoriaFoto> novasFotos) {
         logger.info("=== UPDATE VISTORIA WITH NEW PHOTOS ===");
-        logger.info("Vistoria ID: {}", id);
-        logger.info("Novas fotos recebidas: {}", novasFotos != null ? novasFotos.size() : 0);
 
         Vistoria existing = vistoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vistoria não encontrada com id " + id));
 
-        logger.info("Fotos existentes antes: {}", existing.getFotos().size());
-
-        // Atualiza observações
-        existing.setObservacoes(observacoes);
-
-        // Adiciona as novas fotos
-        if (novasFotos != null && !novasFotos.isEmpty()) {
-            logger.info("Adicionando {} novas fotos", novasFotos.size());
-            novasFotos.forEach(foto -> {
-                logger.info("Adicionando foto: path={}, ordem={}", foto.getFotoPath(), foto.getOrdem());
-                existing.adicionarFoto(foto);
-            });
+        if (observacoes != null) {
+            existing.setObservacoes(observacoes);
         }
 
-        logger.info("Fotos totais depois: {}", existing.getFotos().size());
+        if (novasFotos != null && !novasFotos.isEmpty()) {
+            logger.info("Adicionando {} novas fotos", novasFotos.size());
+            for (com.necsus.necsusspring.model.VistoriaFoto foto : novasFotos) {
+                foto.setVistoria(existing);
+                existing.getFotos().add(foto);
+            }
+        }
 
-        Vistoria saved = vistoriaRepository.save(existing);
-        logger.info("Vistoria salva com ID: {}, Fotos: {}", saved.getId(), saved.getQuantidadeFotos());
-        return saved;
+        return vistoriaRepository.save(existing);
     }
+
+    // === MÉTODO NOVO: SALVA SÓ A ANÁLISE DA IA (SEM MEXER EM FOTOS) ===
+    @Transactional
+    public void updateAnaliseIa(Long id, String analise) {
+        logger.info("Atualizando apenas Análise IA para Vistoria ID: {}", id);
+        vistoriaRepository.findById(id).ifPresent(v -> {
+            v.setAnaliseIa(analise);
+            vistoriaRepository.save(v);
+        });
+    }
+    // ==================================================================
 
     @Transactional
     public boolean delete(Long id) {
@@ -152,7 +151,6 @@ public class VistoriaService {
         if (existing.isEmpty()) {
             return false;
         }
-
         vistoriaRepository.delete(existing.get());
         return true;
     }

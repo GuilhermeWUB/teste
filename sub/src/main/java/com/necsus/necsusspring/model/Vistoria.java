@@ -41,17 +41,20 @@ public class Vistoria {
     @Column(columnDefinition = "TEXT")
     private String observacoes;
 
+    // === NOVO CAMPO PARA A IA ===
+    @Column(name = "analise_ia", columnDefinition = "TEXT")
+    private String analiseIa;
+    // ============================
+
     @PrePersist
     protected void onCreate() {
         dataCriacao = LocalDateTime.now();
     }
 
-    // Método auxiliar para contar quantas fotos foram anexadas
     public int getQuantidadeFotos() {
         return fotos != null ? fotos.size() : 0;
     }
 
-    // Método auxiliar para adicionar foto
     public void adicionarFoto(VistoriaFoto foto) {
         if (fotos == null) {
             fotos = new ArrayList<>();
@@ -60,7 +63,6 @@ public class Vistoria {
         foto.setVistoria(this);
     }
 
-    // Método auxiliar para remover foto
     public void removerFoto(VistoriaFoto foto) {
         if (fotos != null) {
             fotos.remove(foto);
