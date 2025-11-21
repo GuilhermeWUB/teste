@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-dashboard.css}">
+</head>
+<body>
+<section layout:fragment="content" class="crm-section">
+    <div class="crm-hero card border-0 shadow-sm mb-4">
+        <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <p class="text-uppercase text-muted small mb-2">Módulo Comercial</p>
+                <h1 class="mb-2" th:text="${crmHeroTitle}">CRM de Vendas</h1>
+                <p class="text-muted mb-0" th:text="${crmHeroSubtitle}">
+                    Centralize o funil, acompanhe follow-ups e enxergue a previsão de receita.
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-secondary" th:href="@{/dashboard}">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Visão geral
+                </a>
+                <button class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nova oportunidade
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3" th:each="metric : ${crmMetrics}">
+            <div class="card h-100 border-0 shadow-sm crm-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <p class="text-muted text-uppercase small mb-0" th:text="${metric.title()}">Métrica</p>
+                        <span class="badge bg-light text-dark" th:text="${metric.badge()}">Badge</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="mb-0" th:text="${metric.value()}">0</h3>
+                        <i class="bi fs-3" th:classappend="${metric.iconClass()} + ' ' + ${metric.badgeClass()}"></i>
+                    </div>
+                    <p class="text-muted small mb-0 mt-2" th:text="${metric.helper()}">Descrição</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Funil de oportunidades</h5>
+                            <p class="text-muted mb-0">Visualização rápida do pipeline e próximos passos.</p>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary">Funil atualizado</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle crm-table mb-0">
+                            <thead>
+                            <tr>
+                                <th>Oportunidade</th>
+                                <th>Empresa</th>
+                                <th>Etapa</th>
+                                <th>Valor</th>
+                                <th>Prazo</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="deal : ${crmPipeline}">
+                                <td class="fw-semibold" th:text="${deal.title()}">Nome</td>
+                                <td class="text-muted" th:text="${deal.company()}">Empresa</td>
+                                <td>
+                                    <span class="badge bg-light text-dark" th:text="${deal.stage()}">Etapa</span>
+                                </td>
+                                <td class="fw-semibold" th:text="${deal.amount()}">R$ 0,00</td>
+                                <td class="text-muted" th:text="${deal.dueDate()}">--/--</td>
+                                <td>
+                                    <span class="status-dot"></span>
+                                    <span th:text="${deal.status()}">Status</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h5 class="mb-1">Próximos follow-ups</h5>
+                            <p class="text-muted mb-0">Organize ligações, reuniões e envios de propostas.</p>
+                        </div>
+                        <span class="badge bg-success-subtle text-success">Em dia</span>
+                    </div>
+                    <div class="crm-activity" th:each="activity, iter : ${crmActivities}">
+                        <div class="d-flex align-items-start gap-3 pb-3" th:classappend="${iter.last}? '' : 'border-bottom'">
+                            <div class="activity-icon">
+                                <i class="bi bi-telephone-outbound" th:if="${activity.channel() == 'Ligação'}"></i>
+                                <i class="bi bi-envelope" th:if="${activity.channel() == 'E-mail'}"></i>
+                                <i class="bi bi-people" th:if="${activity.channel() == 'Reunião'}"></i>
+                                <i class="bi bi-chat-dots" th:if="${activity.channel() != 'Ligação' and activity.channel() != 'E-mail' and activity.channel() != 'Reunião'}"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" th:text="${activity.title()}">Tarefa</h6>
+                                <p class="text-muted small mb-1" th:text="${activity.owner()}">Responsável</p>
+                                <div class="d-flex align-items-center gap-2 text-muted small">
+                                    <i class="bi bi-clock"></i>
+                                    <span th:text="${activity.dueDate()}">Prazo</span>
+                                    <span class="badge bg-light text-dark" th:text="${activity.channel()}">Canal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="mb-1">Leads recentes</h5>
+                    <p class="text-muted mb-0">Novos contatos para prosseguir no funil.</p>
+                </div>
+                <a class="btn btn-outline-primary btn-sm" href="#">Ver todos</a>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3" th:each="lead : ${crmLeads}">
+                    <div class="crm-lead card h-100 border-0">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div class="avatar-circle">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0" th:text="${lead.name()}">Nome</h6>
+                                    <p class="text-muted small mb-0" th:text="${lead.company()}">Empresa</p>
+                                </div>
+                            </div>
+                            <p class="fw-semibold mb-1" th:text="${lead.interest()}">Interesse</p>
+                            <span class="badge bg-light text-dark" th:text="${lead.source()}">Origem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
