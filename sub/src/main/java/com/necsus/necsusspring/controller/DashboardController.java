@@ -41,6 +41,7 @@ public class DashboardController {
         DashboardSummary summary = dashboardService.loadSummary();
 
         model.addAttribute("pageTitle", "SUB - Dashboard");
+        model.addAttribute("isCrmNav", false);
         model.addAttribute("totalPartners", summary.totalPartners());
         model.addAttribute("activeVehicles", summary.activeVehicles());
         model.addAttribute("pendingInvoices", summary.pendingInvoices());
@@ -53,6 +54,7 @@ public class DashboardController {
     @GetMapping("/dashboard/crm")
     public String crmDashboard(Model model) {
         model.addAttribute("pageTitle", "SUB - CRM");
+        model.addAttribute("isCrmNav", true);
         model.addAttribute("crmHeroTitle", "CRM de Vendas");
         model.addAttribute("crmHeroSubtitle", "Acompanhe o funil, tarefas e oportunidades sem sair do SUB.");
         model.addAttribute("crmMetrics", loadCrmMetrics());

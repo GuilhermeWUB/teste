@@ -1,5 +1,72 @@
 /* Layout fragment specific styles */
 
+.crm-topbar {
+    background: linear-gradient(90deg, #1f153a 0%, #2b0f4b 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 30px rgba(41, 12, 92, 0.28);
+}
+
+.crm-nav-links {
+    gap: 0.5rem;
+}
+
+.crm-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 600;
+    color: #f7f5ff;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all 0.2s ease;
+}
+
+.crm-nav-link:hover,
+.crm-nav-link:focus {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.crm-nav-link--active {
+    background: #7c3aed;
+    border-color: #a855f7;
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+}
+
+.crm-nav-link--active:hover,
+.crm-nav-link--active:focus {
+    background: #8b5cf6;
+}
+
+.crm-quick-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8f7ff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.crm-quick-action__label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.crm-quick-action__value {
+    font-size: 0.95rem;
+    color: #ffffff;
+}
+
 /* Financeiro button alignment */
 .nav-financeiro-link {
     display: inline-flex;
