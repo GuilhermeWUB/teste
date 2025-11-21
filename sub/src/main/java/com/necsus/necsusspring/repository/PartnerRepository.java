@@ -14,6 +14,11 @@ import java.util.Optional;
 public interface PartnerRepository extends JpaRepository<Partner, Long> {
     Optional<Partner> findByEmailIgnoreCase(String email);
 
+    /**
+     * Busca parceiro por CNPJ
+     */
+    Optional<Partner> findByCnpj(String cnpj);
+
     @Query("SELECT DISTINCT p FROM Partner p " +
            "LEFT JOIN FETCH p.address " +
            "LEFT JOIN FETCH p.adhesion " +

@@ -41,6 +41,12 @@ public class Partner {
     private String email;
     @NotEmpty(message = "O CPF é obrigatório")
     private String cpf;
+
+    /**
+     * CNPJ (opcional) - usado quando o parceiro é uma empresa/fornecedor
+     */
+    private String cnpj;
+
     private String phone;
     private String cell;
     private String rg;
