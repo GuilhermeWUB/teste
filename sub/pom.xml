@@ -94,18 +94,20 @@
                 </dependency>
                 <!-- NFe Integration -->
                 <dependency>
-                        <groupId>io.github.samuel-oliveira</groupId>
-                        <artifactId>nfe-java</artifactId>
-                        <version>4.00.19</version>
+                        <groupId>br.com.swconsultoria</groupId>
+                        <artifactId>java-nfe</artifactId>
+                        <version>4.00.27</version>
                 </dependency>
                 <!-- JAXB for Java 17+ -->
                 <dependency>
                         <groupId>jakarta.xml.bind</groupId>
                         <artifactId>jakarta.xml.bind-api</artifactId>
+                        <version>4.0.0</version>
                 </dependency>
                 <dependency>
                         <groupId>org.glassfish.jaxb</groupId>
                         <artifactId>jaxb-runtime</artifactId>
+                        <version>4.0.0</version>
                 </dependency>
 	</dependencies>
 
