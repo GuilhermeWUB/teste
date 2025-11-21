@@ -17,9 +17,7 @@
     <link rel="stylesheet" th:href="@{/css/layout-fragment.css}">
 </head>
 <body>
-<header class="topbar"
-        th:with="crmNav=${#vars.containsKey('isCrmNav')} ? isCrmNav : false"
-        th:classappend="${crmNav} ? ' crm-topbar' : ''">
+<header class="topbar">
     <div class="brand">
         <a class="brand-link" th:href="${isLoggedIn} ? (${isAdmin} ? @{/dashboard} : @{/me/plan}) : @{/}">
             <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Ir para a página inicial">
@@ -35,7 +33,7 @@
     </label>
 
     <nav class="topbar-nav" aria-label="Navegação principal">
-        <ul class="nav-links" th:if="${!crmNav}">
+        <ul class="nav-links">
             <li th:if="${!isAdmin and isLoggedIn}">
                 <a th:href="@{/me/plan}">Meu Plano</a>
             </li>
@@ -179,26 +177,9 @@
                 </a>
             </li>
         </ul>
-
-        <ul class="nav-links crm-nav-links" th:if="${crmNav}">
-            <li><a th:href="@{/dashboard}" class="crm-nav-link">Dashboard</a></li>
-            <li><a th:href="@{/partners}" class="crm-nav-link">Associados</a></li>
-            <li><a th:href="@{/vehicles}" class="crm-nav-link">Veículos</a></li>
-            <li><a th:href="@{/events}" class="crm-nav-link">Eventos</a></li>
-            <li><a th:href="@{'/dashboard/crm#clientes'}" class="crm-nav-link">Clientes</a></li>
-            <li><a th:href="@{'/dashboard/crm#parcerias'}" class="crm-nav-link">Parcerias</a></li>
-            <li><a th:href="@{/reports/ai}" class="crm-nav-link">Relatórios</a></li>
-            <li><a th:href="@{/juridico/processos}" class="crm-nav-link">Jurídico</a></li>
-            <li><a th:href="@{/financeiro}" class="crm-nav-link">Financeiro</a></li>
-            <li><a th:href="@{/dashboard/crm}" class="crm-nav-link crm-nav-link--active">Vendas</a></li>
-        </ul>
     </nav>
 
     <div class="topbar-actions">
-        <div class="crm-quick-action" th:if="${crmNav}">
-            <span class="crm-quick-action__label">Ei</span>
-            <span class="crm-quick-action__value">Star</span>
-        </div>
         <!-- Botão de Notificações (Desktop) -->
         <div class="notification-bell-wrapper" th:if="${isLoggedIn}">
             <button type="button"
