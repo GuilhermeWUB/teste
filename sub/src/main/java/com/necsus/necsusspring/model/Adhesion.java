@@ -1,10 +1,11 @@
 package com.necsus.necsusspring.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.Date;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Data
@@ -18,6 +19,8 @@ public class Adhesion {
 
     @OneToOne
     @JoinColumn(name = "partners_id")
+    @ToString.Exclude          // <--- OBRIGATÓRIO: Quebra o ciclo com Partner
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO: Quebra o ciclo com Partner
     private Partner partner;
 
     @NotNull(message = "O valor da adesão é obrigatório")

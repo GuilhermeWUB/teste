@@ -24,8 +24,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,12 +33,11 @@ public class GeminiService {
     private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
     private static final int MAX_PAGES = 4;
     private static final int DPI = 150;
-    private static final int MAX_RETRIES = 3; // Insiste 3x se o Google der erro
+    private static final int MAX_RETRIES = 3;
 
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    // Agora sim: Padrão 2.5 Flash como você pediu
     @Value("${gemini.api.model:gemini-2.5-flash}")
     private String modelName;
 
@@ -59,7 +56,7 @@ public class GeminiService {
                          EventRepository eventRepository, PaymentRepository paymentRepository,
                          LegalProcessRepository legalProcessRepository) {
         this.restTemplate = new RestTemplate();
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
         this.vehicleRepository = vehicleRepository;
         this.partnerRepository = partnerRepository;
         this.eventRepository = eventRepository;
@@ -67,28 +64,78 @@ public class GeminiService {
         this.legalProcessRepository = legalProcessRepository;
     }
 
-    // --- EXTRAÇÃO PDF (Mantido igual) ---
+    // --- DTO Interno para Suportar Múltiplos Formatos (JPG/PNG) ---
+    private record GeminiImage(String base64, String mimeType) {}
+
+    // ==================================================================================
+    // 1. EXTRAÇÃO DE DADOS DE PDF (Mantido)
+    // ==================================================================================
     public ExtractedDataDto extractDataFromPdf(MultipartFile pdfFile) throws Exception {
         logger.info("🔥 Iniciando extração PDF...");
-        List<String> base64Images = convertPdfPagesToBase64Images(pdfFile);
-        if (base64Images.isEmpty()) throw new RuntimeException("PDF vazio.");
+
+        // Converte PDF para lista de imagens PNG (adaptado para GeminiImage)
+        List<GeminiImage> images = convertPdfPagesToImages(pdfFile);
+
+        if (images.isEmpty()) throw new RuntimeException("PDF vazio.");
+
         String prompt = buildExtractionPrompt();
-        String jsonResponse = callGeminiApiWithRetry(prompt, base64Images, 0.1, true);
+        String jsonResponse = callGeminiApiWithRetry(prompt, images, 0.1, true);
+
         return parseGeminiResponse(jsonResponse);
     }
 
-    /**
-     * ANÁLISE RAG - MODO SEM LIMITES + RETRY 🚀
-     */
+    // ==================================================================================
+    // 2. ANÁLISE DE VISTORIA (NOVO - Adicionado conforme pedido)
+    // ==================================================================================
+    public String analisarVistoria(String descricaoEvento, List<MultipartFile> fotos) {
+        logger.info("🚗 Iniciando análise de vistoria...");
+
+        if (fotos == null || fotos.isEmpty()) return "Nenhuma foto fornecida.";
+
+        try {
+            List<GeminiImage> images = new ArrayList<>();
+            for (MultipartFile foto : fotos) {
+                if (foto.getSize() > 0) {
+                    String base64 = Base64.getEncoder().encodeToString(foto.getBytes());
+                    // Detecta o tipo real (JPEG, PNG, etc)
+                    String mime = foto.getContentType() != null ? foto.getContentType() : "image/jpeg";
+                    images.add(new GeminiImage(base64, mime));
+                }
+            }
+
+            String prompt = """
+                Atue como um Perito Técnico de Seguros Automotivos e Orçamentista Sênior.
+                
+                Analise as imagens anexadas deste veículo acidentado em conjunto com o relato do evento.
+                Relato do Condutor: "%s"
+                
+                Gere um RELATÓRIO TÉCNICO PRELIMINAR (em Markdown) contendo:
+                1. **Análise de Coerência**: O dano visível nas fotos condiz com o relato? (Sim/Não/Parcialmente). Explique brevemente.
+                2. **Lista de Avarias Visíveis**: Liste as peças que aparentam estar danificadas.
+                3. **Gravidade Estimada**: (Leve / Média / Alta / Possível Perda Total).
+                4. **Sugestão de Reparo**: Para cada peça principal, sugira: Recuperação, Troca ou Pintura.
+                
+                Seja direto e técnico.
+                """.formatted(descricaoEvento != null ? descricaoEvento : "Sem descrição.");
+
+            // Chama API com temperatura 0.4 (ideal para análise criativa mas técnica)
+            return callGeminiApiWithRetry(prompt, images, 0.4, false);
+
+        } catch (Exception e) {
+            logger.error("Erro na análise de vistoria", e);
+            return "Erro técnico ao analisar vistoria: " + e.getMessage();
+        }
+    }
+
+    // ==================================================================================
+    // 3. ANÁLISE RAG (Mantido)
+    // ==================================================================================
     @Transactional(readOnly = true)
     public String analisarDadosComRAG(String perguntaUsuario) {
         logger.info("🧠 Iniciando análise FULL SCAN para: '{}'", perguntaUsuario);
 
         try {
             StringBuilder contextoGlobal = new StringBuilder();
-
-            // Carrega tudo. Com 20k registros, o Java tira de letra.
-            // A conversão para CSV é rápida.
             contextoGlobal.append(convertListToCsv("VEÍCULOS", safeFindAll(vehicleRepository)));
             contextoGlobal.append("\n");
             contextoGlobal.append(convertListToCsv("CLIENTES", safeFindAll(partnerRepository)));
@@ -97,135 +144,40 @@ public class GeminiService {
             contextoGlobal.append("\n");
             contextoGlobal.append(convertListToCsv("PAGAMENTOS", safeFindAll(paymentRepository)));
 
-            // Prompt ajustado: "Não limite a lista"
             String promptFinal = buildNoLimitPrompt(perguntaUsuario, contextoGlobal.toString());
 
-            // Chama com Retry para segurar o erro 503
+            // RAG não tem imagens, passa null
             return callGeminiApiWithRetry(promptFinal, null, 0.3, false);
 
         } catch (Exception e) {
-            logger.error("Erro fatal na análise IA após tentativas", e);
-            return "<div class='ai-alert ai-alert-error'><b>Erro de Capacidade:</b> O volume de dados é muito grande e o servidor da IA está instável no momento. Tente ser mais específico na pergunta.</div>";
+            logger.error("Erro fatal na análise IA", e);
+            return "<div class='ai-alert ai-alert-error'><b>Erro de Capacidade:</b> O volume de dados é muito grande.</div>";
         }
     }
 
-    // --- LÓGICA DE RETRY (O SEGREDO PRO 503) ---
+    // ==================================================================================
+    // MÉTODOS DE API (Atualizados para aceitar GeminiImage)
+    // ==================================================================================
 
-    private String callGeminiApiWithRetry(String prompt, List<String> base64Images, double temperature, boolean jsonMode) {
+    private String callGeminiApiWithRetry(String prompt, List<GeminiImage> images, double temperature, boolean jsonMode) {
         int attempts = 0;
-
         while (attempts < MAX_RETRIES) {
             try {
                 attempts++;
-                return callGeminiApi(prompt, base64Images, temperature, jsonMode);
-
+                return callGeminiApi(prompt, images, temperature, jsonMode);
             } catch (HttpServerErrorException.ServiceUnavailable | ResourceAccessException e) {
-                // Se der 503 (Overloaded) ou Timeout
-                logger.warn("⚠️ Gemini sobrecarregado (Tentativa {}/{}). Esperando...", attempts, MAX_RETRIES);
-                if (attempts == MAX_RETRIES) throw e; // Se foi a última, explode o erro
-
-                try {
-                    Thread.sleep(2000L * attempts); // Espera 2s, 4s, 6s...
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
+                logger.warn("⚠️ Gemini sobrecarregado (Tentativa {}/{}).", attempts, MAX_RETRIES);
+                if (attempts == MAX_RETRIES) throw e;
+                try { Thread.sleep(2000L * attempts); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
             } catch (Exception e) {
-                // Outros erros (400, 401) não adianta tentar de novo
                 logger.error("❌ Erro irrecuperável na API Gemini", e);
                 throw new RuntimeException("Erro na comunicação com a IA: " + e.getMessage());
             }
         }
-        throw new RuntimeException("Serviço indisponível após várias tentativas.");
+        throw new RuntimeException("Serviço indisponível.");
     }
 
-    // --- PROMPT SEM LIMITES ---
-
-    private String buildNoLimitPrompt(String pergunta, String dadosCsv) {
-        return """
-                Você é um Assistente Administrativo da UB.
-                
-                CONTEXTO (DADOS DO SISTEMA):
-                %s
-                
-                PERGUNTA DO USUÁRIO: "%s"
-                
-                REGRAS OBRIGATÓRIAS:
-                1. **SEM RESUMOS:** Se a resposta tiver 100, 1000 ou 5000 itens, LISTE TODOS eles. Não use frases como "aqui estão os 5 primeiros". O usuário quer a lista completa.
-                2. **Formatação:** Use uma tabela HTML (`<table class='table table-striped'>`) para listas longas. É mais organizado.
-                3. **Linguagem:** Fale como um humano (sem termos de TI).
-                4. **Precisão:** Se pedirem "carros pretos", filtre exatamente pela coluna cor.
-                5. **Limitação Técnica:** Se a lista for gigantesca e você não conseguir gerar tudo por limite de tamanho de resposta, liste o máximo possível e avise no final: "A lista continua..."
-                """.formatted(dadosCsv, pergunta);
-    }
-
-    // --- REFLECTION & CSV (Otimizado para não quebrar) ---
-
-    private <T> String convertListToCsv(String tituloTabela, List<T> lista) {
-        if (lista == null || lista.isEmpty()) return "";
-        StringBuilder csv = new StringBuilder("\n--- " + tituloTabela + " ---\n");
-
-        try {
-            Class<?> clazz = lista.get(0).getClass();
-            List<Field> fields = getAllFields(clazz);
-
-            // Cabeçalho
-            csv.append(fields.stream().map(Field::getName).collect(Collectors.joining(","))).append("\n");
-
-            for (T item : lista) {
-                List<String> valores = new ArrayList<>();
-                for (Field field : fields) {
-                    try {
-                        field.setAccessible(true);
-                        Object val = field.get(item);
-                        if (val == null) valores.add("");
-                        else if (isEntity(val)) valores.add(extrairNome(val));
-                        else valores.add(sanitize(val.toString()));
-                    } catch (Exception e) { valores.add("-"); }
-                }
-                csv.append(String.join(",", valores)).append("\n");
-            }
-        } catch (Exception e) { return ""; }
-        return csv.toString();
-    }
-
-    // --- MÉTODOS DE APOIO (Igual ao anterior) ---
-
-    private List<Field> getAllFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
-        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-            Arrays.stream(c.getDeclaredFields())
-                    .filter(f -> !Collection.class.isAssignableFrom(f.getType()))
-                    .filter(f -> !Map.class.isAssignableFrom(f.getType()))
-                    .filter(f -> !f.getName().toLowerCase().contains("photo"))
-                    .filter(f -> !f.getName().toLowerCase().contains("image"))
-                    .forEach(fields::add);
-        }
-        return fields;
-    }
-
-    private boolean isEntity(Object obj) {
-        return obj.getClass().getName().startsWith("com.necsus");
-    }
-
-    private String extrairNome(Object obj) {
-        try {
-            Field f = ReflectionUtils.findField(obj.getClass(), "name");
-            if (f == null) f = ReflectionUtils.findField(obj.getClass(), "titulo");
-            if (f == null) f = ReflectionUtils.findField(obj.getClass(), "model");
-            if (f != null) { f.setAccessible(true); return sanitize(f.get(obj).toString()); }
-            return "Ref";
-        } catch (Exception e) { return "Ref"; }
-    }
-
-    private String sanitize(String s) {
-        return s.replaceAll("[\\n\\r,;]", " ").trim();
-    }
-
-    private <T> List<T> safeFindAll(org.springframework.data.jpa.repository.JpaRepository<T, ?> repo) {
-        try { return repo.findAll(); } catch (Exception e) { return Collections.emptyList(); }
-    }
-
-    private String callGeminiApi(String prompt, List<String> base64Images, double temperature, boolean jsonMode) {
+    private String callGeminiApi(String prompt, List<GeminiImage> images, double temperature, boolean jsonMode) {
         String resolvedApiKey = resolveApiKey();
         String url = String.format("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s", modelName, resolvedApiKey);
 
@@ -233,9 +185,13 @@ public class GeminiService {
         List<Map<String, Object>> parts = new ArrayList<>();
         parts.add(Map.of("text", prompt));
 
-        if (base64Images != null) {
-            for (String img : base64Images) {
-                parts.add(Map.of("inline_data", Map.of("mime_type", "image/png", "data", img)));
+        if (images != null) {
+            for (GeminiImage img : images) {
+                // Aqui está o segredo: usa o mimeType correto de cada imagem
+                parts.add(Map.of("inline_data", Map.of(
+                        "mime_type", img.mimeType(),
+                        "data", img.base64()
+                )));
             }
         }
         requestBody.put("contents", List.of(Map.of("parts", parts)));
@@ -252,6 +208,10 @@ public class GeminiService {
         return extractTextFromResponse(response.getBody());
     }
 
+    // ==================================================================================
+    // MÉTODOS AUXILIARES (TODOS ELES ESTÃO AQUI)
+    // ==================================================================================
+
     private String extractTextFromResponse(String jsonResponse) {
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
@@ -261,8 +221,8 @@ public class GeminiService {
         } catch (IOException e) { throw new RuntimeException(e); }
     }
 
-    private List<String> convertPdfPagesToBase64Images(MultipartFile pdfFile) throws IOException {
-        List<String> base64Images = new ArrayList<>();
+    private List<GeminiImage> convertPdfPagesToImages(MultipartFile pdfFile) throws IOException {
+        List<GeminiImage> images = new ArrayList<>();
         try (PDDocument document = PDDocument.load(pdfFile.getInputStream())) {
             PDFRenderer renderer = new PDFRenderer(document);
             int pagesToProcess = Math.min(document.getNumberOfPages(), MAX_PAGES);
@@ -270,10 +230,12 @@ public class GeminiService {
                 BufferedImage image = renderer.renderImageWithDPI(i, DPI);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ImageIO.write(image, "PNG", baos);
-                base64Images.add(Base64.getEncoder().encodeToString(baos.toByteArray()));
+                String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+                // PDF convertido vira PNG
+                images.add(new GeminiImage(base64, "image/png"));
             }
         }
-        return base64Images;
+        return images;
     }
 
     private ExtractedDataDto parseGeminiResponse(String jsonText) throws Exception {
@@ -289,4 +251,68 @@ public class GeminiService {
     }
 
     private String buildExtractionPrompt() { return "Extraia JSON."; }
+
+    private String buildNoLimitPrompt(String pergunta, String dadosCsv) {
+        return """
+                Você é um Assistente Administrativo da UB.
+                CONTEXTO: %s
+                PERGUNTA: "%s"
+                REGRAS: Use HTML. Liste tudo.
+                """.formatted(dadosCsv, pergunta);
+    }
+
+    private <T> String convertListToCsv(String tituloTabela, List<T> lista) {
+        if (lista == null || lista.isEmpty()) return "";
+        StringBuilder csv = new StringBuilder("\n--- " + tituloTabela + " ---\n");
+        try {
+            Class<?> clazz = lista.get(0).getClass();
+            List<Field> fields = getAllFields(clazz);
+            csv.append(fields.stream().map(Field::getName).collect(Collectors.joining(","))).append("\n");
+            for (T item : lista) {
+                List<String> vals = new ArrayList<>();
+                for (Field f : fields) {
+                    try {
+                        f.setAccessible(true);
+                        Object v = f.get(item);
+                        if (v == null) vals.add("");
+                        else if (isEntity(v)) vals.add(extrairNome(v));
+                        else vals.add(sanitize(v.toString()));
+                    } catch (Exception e) { vals.add("-"); }
+                }
+                csv.append(String.join(",", vals)).append("\n");
+            }
+        } catch (Exception e) { return ""; }
+        return csv.toString();
+    }
+
+    private List<Field> getAllFields(Class<?> type) {
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            Arrays.stream(c.getDeclaredFields())
+                    .filter(f -> !Collection.class.isAssignableFrom(f.getType()))
+                    .filter(f -> !Map.class.isAssignableFrom(f.getType()))
+                    .filter(f -> !f.getName().toLowerCase().contains("photo"))
+                    .filter(f -> !f.getName().toLowerCase().contains("image"))
+                    .forEach(fields::add);
+        }
+        return fields;
+    }
+
+    private boolean isEntity(Object obj) { return obj.getClass().getName().startsWith("com.necsus"); }
+
+    private String extrairNome(Object obj) {
+        try {
+            Field f = ReflectionUtils.findField(obj.getClass(), "name");
+            if (f == null) f = ReflectionUtils.findField(obj.getClass(), "titulo");
+            if (f == null) f = ReflectionUtils.findField(obj.getClass(), "model");
+            if (f != null) { f.setAccessible(true); return sanitize(f.get(obj).toString()); }
+            return "Ref";
+        } catch (Exception e) { return "Ref"; }
+    }
+
+    private String sanitize(String s) { return s.replaceAll("[\\n\\r,;]", " ").trim(); }
+
+    private <T> List<T> safeFindAll(org.springframework.data.jpa.repository.JpaRepository<T, ?> repo) {
+        try { return repo.findAll(); } catch (Exception e) { return Collections.emptyList(); }
+    }
 }

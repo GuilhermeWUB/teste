@@ -68,6 +68,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/reports/**"),
                                 new AntPathRequestMatcher("/juridico/**"), // Adicionado por consistência
                                 new AntPathRequestMatcher("/financeiro/**"), // ADICIONADO AQUI
+                                new AntPathRequestMatcher("/api/nfe/**"), // API NFe
                                 new AntPathRequestMatcher("/admin/**")
                         ).hasAnyRole(ADMIN_ROLES)
 

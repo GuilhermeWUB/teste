@@ -1133,47 +1133,89 @@
             const vistoria = vistorias[vistorias.length - 1];
             console.log('[KANBAN] Vistoria selecionada:', vistoria);
 
+            // === NOVIDADE: EXIBIR ANÁLISE DA IA (O Perito Digital) ===
+            if (vistoria.analiseIa) {
+                const iaDiv = document.createElement('div');
+
+                // Estilo "Futurista/IA" - Borda roxa/azulada
+                iaDiv.style.cssText = `
+                    grid-column: 1 / -1;
+                    margin-bottom: 15px;
+                    padding: 15px;
+                    background: #f0f7ff;
+                    border: 1px solid #cce5ff;
+                    border-left: 4px solid #0d6efd;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    color: #212529;
+                `;
+
+                // Formatação simples de Markdown para HTML
+                // 1. Título (##) -> Negrito maior
+                // 2. Negrito (**) -> <b>
+                // 3. Quebra de linha -> <br>
+                let formattedText = escapeHtml(vistoria.analiseIa)
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                iaDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; margin-bottom: 10px; color: #0d6efd;">
+                        <i class="bi bi-robot" style="font-size: 18px; margin-right: 8px;"></i>
+                        <h5 style="margin: 0; font-size: 15px; font-weight: 700;">Análise Técnica IA (Gemini)</h5>
+                    </div>
+                    <div style="background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #e9ecef;">
+                        ${formattedText}
+                    </div>
+                `;
+
+                content.appendChild(iaDiv);
+            }
+            // =========================================================
+
             // Verifica se há fotos na vistoria
             const fotos = vistoria.fotos || [];
             console.log('[KANBAN] Número de fotos encontradas:', fotos.length);
 
-            if (fotos.length === 0) {
-                console.log('[KANBAN] Nenhuma foto encontrada na vistoria');
-                return; // Não mostra a seção se não houver fotos
+            if (fotos.length > 0) {
+                // Ordena fotos pela ordem
+                fotos.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+
+                // Adiciona cada foto
+                fotos.forEach(foto => {
+                    console.log('[KANBAN] Renderizando foto:', foto);
+                    const photoDiv = document.createElement('div');
+                    photoDiv.style.cssText = 'position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 1; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); cursor: pointer;';
+
+                    const img = document.createElement('img');
+                    img.src = `/vistorias/${vistoria.id}/download/${foto.id}`;
+                    img.alt = `Foto ${foto.ordem || ''}`;
+                    img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;';
+
+                    console.log('[KANBAN] URL da foto:', img.src);
+
+                    // Efeito de hover
+                    photoDiv.addEventListener('mouseenter', () => {
+                        img.style.transform = 'scale(1.05)';
+                    });
+                    photoDiv.addEventListener('mouseleave', () => {
+                        img.style.transform = 'scale(1)';
+                    });
+
+                    // Abre a imagem em uma nova aba utilizando AJAX para evitar download automático
+                    photoDiv.addEventListener('click', () => {
+                        openVistoriaPhotoPreview(vistoria.id, foto.id);
+                    });
+
+                    photoDiv.appendChild(img);
+                    content.appendChild(photoDiv);
+                });
+            } else {
+                if (!vistoria.analiseIa) {
+                    console.log('[KANBAN] Nenhuma foto e nenhuma análise encontrada');
+                    return; // Não mostra a seção se não houver nada
+                }
             }
-
-            // Ordena fotos pela ordem
-            fotos.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-
-            // Adiciona cada foto
-            fotos.forEach(foto => {
-                console.log('[KANBAN] Renderizando foto:', foto);
-                const photoDiv = document.createElement('div');
-                photoDiv.style.cssText = 'position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 1; background: var(--bg-secondary, #f8f9fa); border: 1px solid var(--border-color, #dee2e6); cursor: pointer;';
-
-                const img = document.createElement('img');
-                img.src = `/vistorias/${vistoria.id}/download/${foto.id}`;
-                img.alt = `Foto ${foto.ordem || ''}`;
-                img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s;';
-
-                console.log('[KANBAN] URL da foto:', img.src);
-
-                // Efeito de hover
-                photoDiv.addEventListener('mouseenter', () => {
-                    img.style.transform = 'scale(1.05)';
-                });
-                photoDiv.addEventListener('mouseleave', () => {
-                    img.style.transform = 'scale(1)';
-                });
-
-                // Abre a imagem em uma nova aba utilizando AJAX para evitar download automático
-                photoDiv.addEventListener('click', () => {
-                    openVistoriaPhotoPreview(vistoria.id, foto.id);
-                });
-
-                photoDiv.appendChild(img);
-                content.appendChild(photoDiv);
-            });
 
             // Adiciona observações da vistoria se existirem
             if (vistoria.observacoes) {

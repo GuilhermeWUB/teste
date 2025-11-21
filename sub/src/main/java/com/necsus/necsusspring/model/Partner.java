@@ -1,27 +1,16 @@
 package com.necsus.necsusspring.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.LinkedHashSet;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -41,6 +30,8 @@ public class Partner {
     private String email;
     @NotEmpty(message = "O CPF é obrigatório")
     private String cpf;
+
+    private String cnpj;
     private String phone;
     private String cell;
     private String rg;
@@ -64,18 +55,28 @@ public class Partner {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
+    @ToString.Exclude          // <--- OBRIGATÓRIO
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO
     private Address address;
 
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude          // <--- OBRIGATÓRIO
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO
     private List<Vehicle> vehicles;
 
     @OneToOne(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude          // <--- OBRIGATÓRIO (Aqui estava o loop principal)
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO
     private Adhesion adhesion;
 
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude          // <--- OBRIGATÓRIO
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO
     private Set<BankSlip> bankSlips = new LinkedHashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "company_id")
+    @ToString.Exclude          // <--- OBRIGATÓRIO
+    @EqualsAndHashCode.Exclude // <--- OBRIGATÓRIO
     private Company company;
 }
