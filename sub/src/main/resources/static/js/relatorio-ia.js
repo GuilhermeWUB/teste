@@ -1,93 +1,148 @@
 (function() {
     'use strict';
 
-    // Aguarda o DOM carregar para não dar erro de elemento null
     document.addEventListener('DOMContentLoaded', initializeAIReports);
 
     function initializeAIReports() {
-        // SELETORES ATUALIZADOS PARA O SEU NOVO HTML
-        const exampleCards = document.querySelectorAll('.ai-quick-card'); // Era .ai-example
+        const exampleCards = document.querySelectorAll('.ai-quick-card');
         const submitButton = document.getElementById('aiBtn');
         const questionInput = document.getElementById('aiPergunta');
+        const toneChips = document.querySelectorAll('.ai-chip');
+        const datasetSelect = document.getElementById('aiDataset');
+        const outputSelect = document.getElementById('aiOutput');
 
-        // 1. Configura clique nos cards de exemplo
+        setupPlaceholderRotation(questionInput);
+        setupToneChips(toneChips);
+
         exampleCards.forEach(card => {
             card.addEventListener('click', () => {
-                // Pega o texto do atributo correto (data-ai-example)
-                const pergunta = card.getAttribute('data-ai-example');
-                applyExample(pergunta);
+                applyExample({
+                    text: card.getAttribute('data-ai-example'),
+                    dataset: card.getAttribute('data-dataset'),
+                    tone: card.getAttribute('data-tone')
+                });
             });
         });
 
-        // 2. Configura clique no botão "Gerar Relatório"
         if (submitButton) {
             submitButton.addEventListener('click', event => {
-                event.preventDefault(); // Evita reload se estiver num form
+                event.preventDefault();
                 generateReport();
             });
         }
 
-        // 3. Configura o "Enter" no campo de texto
         if (questionInput) {
-            questionInput.addEventListener('keypress', event => {
-                if (event.key === 'Enter') {
+            questionInput.addEventListener('keydown', event => {
+                if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault();
                     generateReport();
                 }
             });
         }
+
+        if (datasetSelect) {
+            datasetSelect.addEventListener('change', () => pulseElement(datasetSelect));
+        }
+
+        if (outputSelect) {
+            outputSelect.addEventListener('change', () => pulseElement(outputSelect));
+        }
     }
 
-    function applyExample(exampleText) {
+    function setupPlaceholderRotation(input) {
+        if (!input) return;
+        const examples = [
+            'Monte um painel com KPIs de faturamento e churn dos últimos 90 dias',
+            'Quais veículos ativos estão sem vistoria válida e quem são os responsáveis?',
+            'Resuma ações priorizadas para reduzir inadimplência neste trimestre',
+            'Gere um comparativo de processos jurídicos abertos x resolvidos por mês'
+        ];
+        let index = 0;
+        setInterval(() => {
+            index = (index + 1) % examples.length;
+            input.setAttribute('placeholder', examples[index]);
+        }, 7000);
+    }
+
+    function setupToneChips(chips) {
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+    }
+
+    function applyExample({ text, dataset, tone }) {
         const questionInput = document.getElementById('aiPergunta');
-        if (!questionInput || !exampleText) return;
+        const datasetSelect = document.getElementById('aiDataset');
+        const toneChips = document.querySelectorAll('.ai-chip');
 
-        questionInput.value = exampleText;
+        if (!questionInput || !text) return;
+
+        questionInput.value = text;
         questionInput.focus();
+        pulseElement(questionInput.parentElement);
 
-        // Efeito visual de flash para mostrar que foi selecionado
-        questionInput.parentElement.style.borderColor = '#8b5cf6'; // Cor roxa do seu tema
-        setTimeout(() => {
-            questionInput.parentElement.style.borderColor = '';
-        }, 300);
+        if (datasetSelect && dataset) {
+            datasetSelect.value = dataset;
+            pulseElement(datasetSelect);
+        }
 
-        // Opcional: Já disparar a busca ao clicar no exemplo (descomente se quiser)
-        // generateReport();
+        if (tone && toneChips.length) {
+            toneChips.forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.tone === tone);
+            });
+        }
     }
 
     async function generateReport() {
         const questionInput = document.getElementById('aiPergunta');
         const resultsContainer = document.getElementById('aiResultados');
         const submitButton = document.getElementById('aiBtn');
+        const datasetSelect = document.getElementById('aiDataset');
+        const outputSelect = document.getElementById('aiOutput');
+        const toneChip = document.querySelector('.ai-chip.active');
+        const evidenceToggle = document.getElementById('aiEvidence');
+        const explainToggle = document.getElementById('aiExplain');
 
         if (!questionInput || !resultsContainer || !submitButton) return;
 
         const question = questionInput.value.trim();
 
         if (!question) {
-            // Usa seu estilo de alerta de erro
+            resultsContainer.classList.remove('ai-results--empty');
             resultsContainer.innerHTML = `
                 <div class="ai-alert ai-alert-error">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span>Por favor, digite uma pergunta para a IA analisar.</span>
+                    <span>Por favor, descreva o relatório que deseja gerar.</span>
                 </div>`;
             return;
         }
 
-        // --- ESTADO DE LOADING ---
+        const context = buildContext({
+            dataset: datasetSelect?.value,
+            output: outputSelect?.value,
+            tone: toneChip?.dataset.tone,
+            evidence: evidenceToggle?.checked,
+            explain: explainToggle?.checked
+        });
+
+        const enrichedQuestion = context ? `${question}\n\n${context}` : question;
+
         const originalBtnText = submitButton.innerHTML;
         submitButton.disabled = true;
-        submitButton.innerHTML = '<span class="ai-loading"></span> Analisando...';
+        submitButton.innerHTML = '<span class="ai-loading"></span> Refinando consulta...';
 
+        resultsContainer.classList.remove('ai-results--empty');
         resultsContainer.innerHTML = `
             <div class="ai-alert ai-alert-info fade show">
                 <span class="ai-loading" style="border-color: #3b82f6; border-top-color: transparent; margin-right: 0.5rem;"></span>
-                <span>A IA está lendo os dados e gerando seu relatório...</span>
+                <span>Conectando às bases e gerando um relatório com as evidências solicitadas...</span>
             </div>
         `;
 
         try {
-            // Pega Tokens CSRF do Spring Security (se existirem na página)
             const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
@@ -96,36 +151,30 @@
                 headers[csrfHeader] = csrfToken;
             }
 
-            // --- CHAMADA AO BACKEND (RAG) ---
             const response = await fetch('/api/relatorios-ia/analisar', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ pergunta: question })
+                body: JSON.stringify({ pergunta: enrichedQuestion })
             });
 
             const data = await response.json();
-
-            // Limpa o container
             resultsContainer.innerHTML = '';
 
             if (response.ok && data.sucesso && data.html) {
-                // SUCESSO: Renderiza o HTML que a IA mandou
-                // Adiciona uma div wrapper para animação se quiser
                 const resultWrapper = document.createElement('div');
-                resultWrapper.className = 'animate__animated animate__fadeIn'; // Se tiver animate.css
+                resultWrapper.className = 'animate__animated animate__fadeIn';
                 resultWrapper.innerHTML = `
                     <div class="ai-table-wrapper p-4" style="background: var(--ai-surface);">
                         ${data.html}
                         <div class="text-end mt-3">
                             <small style="color: var(--ai-muted); font-size: 0.85rem;">
-                                <i class="bi bi-stars"></i> Gerado por Gemini AI em ${new Date().toLocaleTimeString()}
+                                <i class="bi bi-stars"></i> Gerado às ${new Date().toLocaleTimeString()} com contexto seguro
                             </small>
                         </div>
                     </div>
                 `;
                 resultsContainer.appendChild(resultWrapper);
             } else {
-                // ERRO DO BACKEND
                 resultsContainer.innerHTML = `
                     <div class="ai-alert ai-alert-error">
                         <i class="bi bi-x-circle-fill"></i>
@@ -138,12 +187,27 @@
             resultsContainer.innerHTML = `
                 <div class="ai-alert ai-alert-error">
                     <i class="bi bi-wifi-off"></i>
-                    <span>Erro de conexão: Verifique sua internet ou contate o suporte.</span>
+                    <span>Erro de conexão: verifique sua internet ou contate o suporte.</span>
                 </div>`;
         } finally {
-            // Restaura o botão
             submitButton.disabled = false;
             submitButton.innerHTML = originalBtnText;
         }
+    }
+
+    function buildContext({ dataset, output, tone, evidence, explain }) {
+        const parts = [];
+        if (dataset) parts.push(`Foque na base: ${dataset}.`);
+        if (output) parts.push(`Entregue no formato: ${output}.`);
+        if (tone) parts.push(`Use tom ${tone}.`);
+        if (evidence) parts.push('Liste as evidências, campos e cálculos utilizados.');
+        if (explain) parts.push('Inclua próximos passos recomendados.');
+        return parts.length ? `Contexto: ${parts.join(' ')}` : '';
+    }
+
+    function pulseElement(element) {
+        if (!element) return;
+        element.classList.add('ai-pulse');
+        setTimeout(() => element.classList.remove('ai-pulse'), 450);
     }
 })();
