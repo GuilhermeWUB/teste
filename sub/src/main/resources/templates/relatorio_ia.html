@@ -6,86 +6,136 @@
     <link rel="stylesheet" th:href="@{/css/relatorio-ia.css}">
 </head>
 <body>
-<section layout:fragment="content" class="ai-report-page">
-    <div class="container ai-report-container">
-        <div class="ai-hero">
-            <span class="ai-hero__badge">
-                <i class="bi bi-robot"></i>
-                Relatórios com IA
-            </span>
-            <h1 class="ai-hero__title">Relatórios Inteligentes</h1>
-            <p class="ai-hero__subtitle">
-                Gere relatórios utilizando uma Inteligência Artificial.
-            </p>
-            <div class="ai-hero__meta">
-                <span class="ai-meta-chip"><i class="bi bi-shield-lock"></i>Modo seguro: apenas leitura</span>
-                <span class="ai-meta-chip"><i class="bi bi-chat-dots"></i>Respostas rápidas para o time</span>
+<section layout:fragment="content" class="ai-page">
+    <div class="container ai-shell">
+        <header class="ai-header">
+            <div>
+                <p class="ai-header__eyebrow"><i class="bi bi-robot"></i> Relatórios com IA</p>
+                <h1 class="ai-header__title">Pergunte. Filtre. Gere.</h1>
+                <p class="ai-header__subtitle">
+                    Descreva o que precisa e escolha as opções essenciais. A resposta volta pronta para uso, sem firulas.
+                </p>
             </div>
-        </div>
-
-        <div class="ai-panel">
-            <div class="ai-panel__header">
-                <div>
-                    <h2 class="ai-panel__title">Qual relatório você precisa agora?</h2>
-                    <p class="ai-panel__text">
-                        Conecte-se aos dados sem complexidade técnica. Pergunte em português e deixe a IA gerar
-                        o relatório para você.
-                    </p>
-                </div>
+            <div class="ai-header__meta">
+                <span><i class="bi bi-shield-lock"></i> Modo seguro</span>
+                <span><i class="bi bi-activity"></i> Consultas auditáveis</span>
             </div>
+        </header>
 
-            <div class="ai-query-box">
-                <div class="ai-input-row">
-                    <div class="ai-input-shell">
-                        <i class="bi bi-search ai-input-icon"></i>
+        <div class="ai-grid">
+            <div class="ai-panel">
+                <div class="ai-panel__block">
+                    <label class="ai-label" for="aiPergunta">Prompt</label>
+                    <div class="ai-input-row">
                         <input
                             type="text"
                             id="aiPergunta"
                             class="ai-input"
-                            placeholder="Ex.: Quais veículos estão ativos e qual a placa deles?"
+                            placeholder="Ex.: Monte um painel com KPIs de faturamento e churn dos últimos 90 dias"
                         >
+                        <button id="aiBtn" type="button" class="ai-primary-btn">
+                            <i class="bi bi-stars"></i>
+                            <span>Gerar</span>
+                        </button>
                     </div>
-                    <button id="aiBtn" type="button" class="ai-primary-btn">
-                        <i class="bi bi-stars"></i>
-                        <span>Gerar Relatório</span>
-                    </button>
+                    <p class="ai-hint">Enter envia. Shift + Enter quebra linha.</p>
+                </div>
+
+                <div class="ai-panel__block ai-options">
+                    <label class="ai-option">
+                        <span class="ai-label">Fonte</span>
+                        <select id="aiDataset" class="ai-select">
+                            <option value="visao geral" selected>Visão geral</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="frota">Frota &amp; Vistorias</option>
+                            <option value="juridico">Jurídico</option>
+                            <option value="comunicados">Comunicados</option>
+                        </select>
+                    </label>
+                    <label class="ai-option">
+                        <span class="ai-label">Formato</span>
+                        <select id="aiOutput" class="ai-select">
+                            <option value="relatório narrativo" selected>Relatório narrativo</option>
+                            <option value="tabela sintetizada">Tabela sintetizada</option>
+                            <option value="lista de ações">Lista de ações</option>
+                            <option value="resumo executivo">Resumo executivo</option>
+                        </select>
+                    </label>
+                    <label class="ai-option">
+                        <span class="ai-label">Foco</span>
+                        <div class="ai-chip-group">
+                            <button type="button" class="ai-chip" data-tone="analitico">Analítico</button>
+                            <button type="button" class="ai-chip" data-tone="operacional">Operacional</button>
+                            <button type="button" class="ai-chip active" data-tone="executivo">Executivo</button>
+                        </div>
+                    </label>
+                    <label class="ai-option">
+                        <span class="ai-label">Complementos</span>
+                        <div class="ai-checkbox">
+                            <input type="checkbox" id="aiEvidence" checked>
+                            <label for="aiEvidence">Incluir fontes utilizadas</label>
+                        </div>
+                        <div class="ai-checkbox">
+                            <input type="checkbox" id="aiExplain" checked>
+                            <label for="aiExplain">Trazer próximos passos</label>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="ai-panel__block">
+                    <div class="ai-quick__title">
+                        <span>Sugestões rápidas</span>
+                        <small>1 clique preenche o prompt</small>
+                    </div>
+                    <div class="ai-quick-grid">
+                        <button type="button" class="ai-quick-card" data-ai-example="Quais veículos ativos estão sem vistoria válida?" data-dataset="frota" data-tone="operacional">
+                            Saúde da frota
+                        </button>
+                        <button type="button" class="ai-quick-card" data-ai-example="Crie um resumo executivo com receita, inadimplência e churn dos últimos 3 meses" data-dataset="financeiro" data-tone="executivo">
+                            Radar financeiro
+                        </button>
+                        <button type="button" class="ai-quick-card" data-ai-example="Liste os 10 parceiros mais recentes e os respectivos planos" data-dataset="visao geral" data-tone="executivo">
+                            Onboarding de parceiros
+                        </button>
+                        <button type="button" class="ai-quick-card" data-ai-example="Mapeie os processos jurídicos em aberto com datas-chave" data-dataset="juridico" data-tone="analitico">
+                            Status jurídico
+                        </button>
+                        <button type="button" class="ai-quick-card" data-ai-example="Mostre um ranking de eventos pendentes por criticidade" data-dataset="visao geral" data-tone="operacional">
+                            Eventos pendentes
+                        </button>
+                        <button type="button" class="ai-quick-card" data-ai-example="Quais comunicados tiveram maior engajamento este mês?" data-dataset="comunicados" data-tone="executivo">
+                            Engajamento interno
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="ai-quick">
-                <div class="ai-quick__title">
-                    <i class="bi bi-lightning-charge-fill text-warning"></i>
-                    <span>Sugestões rápidas</span>
+            <aside class="ai-side">
+                <div class="ai-side__block">
+                    <p class="ai-label">Checklist rápido</p>
+                    <ul class="ai-list">
+                        <li><i class="bi bi-check-circle"></i> Defina período e filtros essenciais.</li>
+                        <li><i class="bi bi-check-circle"></i> Peça evidências e cálculos usados.</li>
+                        <li><i class="bi bi-check-circle"></i> Escolha o tom adequado ao público.</li>
+                    </ul>
                 </div>
-                <div class="ai-quick-grid">
-                    <button type="button" class="ai-quick-card" data-ai-example="Quantos veículos ativos temos?">
-                        <strong>Veículos Ativos</strong>
-                        <span>Quantos veículos ativos temos?</span>
-                    </button>
-                    <button type="button" class="ai-quick-card" data-ai-example="Liste os 10 parceiros mais recentes">
-                        <strong>Parceiros Recentes</strong>
-                        <span>Liste os 10 parceiros mais recentes</span>
-                    </button>
-                    <button type="button" class="ai-quick-card" data-ai-example="Qual o total de mensalidades?">
-                        <strong>Total de Mensalidades</strong>
-                        <span>Qual o total de mensalidades?</span>
-                    </button>
-                    <button type="button" class="ai-quick-card" data-ai-example="Quantos eventos pendentes existem?">
-                        <strong>Eventos Pendentes</strong>
-                        <span>Quantos eventos pendentes existem?</span>
-                    </button>
-                    <button type="button" class="ai-quick-card" data-ai-example="Mostre os veículos por montadora">
-                        <strong>Veículos por Montadora</strong>
-                        <span>Mostre os veículos por montadora</span>
-                    </button>
-                    <button type="button" class="ai-quick-card" data-ai-example="Quantos processos jurídicos estão em aberto?">
-                        <strong>Processos Jurídicos</strong>
-                        <span>Quantos processos jurídicos estão em aberto?</span>
-                    </button>
+                <div class="ai-side__block ai-note">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                        <p class="ai-note__title">Resultados diretos</p>
+                        <p class="ai-note__text">Sem efeitos visuais: foco em leitura, comparação e compartilhamento.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <div id="aiResultados" class="ai-results ai-results--empty">
+            <div class="ai-empty">
+                <div>
+                    <h3>Nenhum relatório ainda</h3>
+                    <p>Escreva seu pedido ou selecione uma sugestão para gerar.</p>
                 </div>
             </div>
-
-            <div id="aiResultados" class="ai-results"></div>
         </div>
     </div>
 </section>
