@@ -22,6 +22,54 @@ public class CrmController {
         return "dashboard-crm";
     }
 
+    @GetMapping("/vendas")
+    public String vendas(Model model) {
+        populateCrmModel(model, "vendas", "pipeline");
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/contatos")
+    public String contatos(Model model) {
+        populateCrmModel(model, "contatos", "leads");
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/atividades")
+    public String atividades(Model model) {
+        populateCrmModel(model, "atividades", "followups");
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/minha-conta")
+    public String minhaConta(Model model) {
+        populateCrmModel(model, "minha-conta", null);
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/relatorios")
+    public String relatorios(Model model) {
+        populateCrmModel(model, "relatorios", null);
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/financas")
+    public String financas(Model model) {
+        populateCrmModel(model, "financas", null);
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/minha-empresa")
+    public String minhaEmpresa(Model model) {
+        populateCrmModel(model, "minha-empresa", null);
+        return "dashboard-crm";
+    }
+
+    @GetMapping("/ferramentas")
+    public String ferramentas(Model model) {
+        populateCrmModel(model, "ferramentas", null);
+        return "dashboard-crm";
+    }
+
     @GetMapping("/funil")
     public String pipeline(Model model) {
         populateCrmModel(model, "pipeline", "pipeline");

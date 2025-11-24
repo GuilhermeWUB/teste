@@ -39,31 +39,52 @@
     <nav class="topbar-nav" aria-label="Navegação CRM">
         <ul class="nav-links">
             <li class="nav-item-crm">
-                <a th:href="@{/crm/overview}"
-                   th:classappend="${currentCrmPage == 'overview'} ? 'active' : ''">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>Visão CRM</span>
+                <a th:href="@{/crm/vendas}"
+                   th:classappend="${currentCrmPage == 'vendas'} ? 'active' : ''">
+                    <span>Vendas</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a th:href="@{/crm/funil}"
-                   th:classappend="${currentCrmPage == 'pipeline'} ? 'active' : ''">
-                    <i class="bi bi-kanban"></i>
-                    <span>Funil</span>
+                <a th:href="@{/crm/contatos}"
+                   th:classappend="${currentCrmPage == 'contatos'} ? 'active' : ''">
+                    <span>Contatos</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a th:href="@{/crm/followups}"
-                   th:classappend="${currentCrmPage == 'followups'} ? 'active' : ''">
-                    <i class="bi bi-telephone-forward"></i>
-                    <span>Follow-ups</span>
+                <a th:href="@{/crm/atividades}"
+                   th:classappend="${currentCrmPage == 'atividades'} ? 'active' : ''">
+                    <span>Atividades</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a th:href="@{/crm/leads}"
-                   th:classappend="${currentCrmPage == 'leads'} ? 'active' : ''">
-                    <i class="bi bi-people"></i>
-                    <span>Leads</span>
+                <a th:href="@{/crm/minha-conta}"
+                   th:classappend="${currentCrmPage == 'minha-conta'} ? 'active' : ''">
+                    <span>Minha Conta</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a th:href="@{/crm/relatorios}"
+                   th:classappend="${currentCrmPage == 'relatorios'} ? 'active' : ''">
+                    <span>Relatórios</span>
+                    <span class="nav-caret" aria-hidden="true">▾</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a th:href="@{/crm/financas}"
+                   th:classappend="${currentCrmPage == 'financas'} ? 'active' : ''">
+                    <span>Finanças</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a th:href="@{/crm/minha-empresa}"
+                   th:classappend="${currentCrmPage == 'minha-empresa'} ? 'active' : ''">
+                    <span>Minha Empresa</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a th:href="@{/crm/ferramentas}"
+                   th:classappend="${currentCrmPage == 'ferramentas'} ? 'active' : ''">
+                    <span>Ferramentas</span>
                 </a>
             </li>
 
