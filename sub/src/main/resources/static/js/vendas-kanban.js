@@ -678,45 +678,267 @@
     }
 
     function buildVendaDetailsSection(card) {
-        const html = [];
-        html.push('<div class="detail-section">');
-        html.push('<h3>Informações da Negociação</h3>');
-        html.push('<p><strong>Nome para contato:</strong> ' + escapeHtml(card.nomeContato || 'N/A') + '</p>');
-        html.push('<p><strong>Email:</strong> ' + escapeHtml(card.email || 'N/A') + '</p>');
-        html.push('<p><strong>Celular:</strong> ' + escapeHtml(card.celular || 'N/A') + '</p>');
-        html.push('<p><strong>Status:</strong> ' + escapeHtml(statusLabels[card.status] || card.status || 'N/A') + '</p>');
-        html.push('</div>');
+        const statusText = statusLabels[card.status] || 'Status não definido';
+        const statusClass = (card.status || 'desconhecido').toLowerCase();
+        const createdAt = formatDateTime(card.createdAt) || 'Data não informada';
+        const updatedAt = formatDateTime(card.updatedAt);
+        const observacoes = card.observacoes ? escapeHtml(card.observacoes) : 'Nenhuma observação registrada.';
 
-        html.push('<div class="detail-section">');
-        html.push('<h3>Dados do Veículo</h3>');
-        html.push('<p><strong>Tipo:</strong> ' + escapeHtml(card.tipoVeiculo || 'N/A') + '</p>');
-        html.push('<p><strong>Placa:</strong> ' + escapeHtml(card.placa || 'N/A') + '</p>');
-        html.push('<p><strong>Marca:</strong> ' + escapeHtml(card.marca || 'N/A') + '</p>');
-        html.push('<p><strong>Modelo:</strong> ' + escapeHtml(card.modelo || 'N/A') + '</p>');
-        html.push('<p><strong>Ano:</strong> ' + escapeHtml(card.anoModelo || 'N/A') + '</p>');
-        html.push('<p><strong>Veículo de trabalho:</strong> ' + (card.veiculoTrabalho ? 'Sim' : 'Não') + '</p>');
-        html.push('</div>');
+        const infoRows = [
+            ['Cooperativa', card.cooperativa],
+            ['Tipo de veículo', card.tipoVeiculo],
+            ['Placa', card.placa],
+            ['Marca', card.marca],
+            ['Modelo', card.modelo],
+            ['Ano modelo', card.anoModelo],
+            ['Estado', card.estado],
+            ['Cidade', card.cidade],
+            ['Origem do Lead', card.origemLead],
+            ['Veículo de trabalho', card.veiculoTrabalho ? 'Sim' : 'Não'],
+            ['Enviar cotação', card.enviarCotacao ? 'Sim' : 'Não']
+        ];
 
-        html.push('<div class="detail-section">');
-        html.push('<h3>Outras Informações</h3>');
-        html.push('<p><strong>Cooperativa:</strong> ' + escapeHtml(card.cooperativa || 'N/A') + '</p>');
-        html.push('<p><strong>Estado:</strong> ' + escapeHtml(card.estado || 'N/A') + '</p>');
-        html.push('<p><strong>Cidade:</strong> ' + escapeHtml(card.cidade || 'N/A') + '</p>');
-        html.push('<p><strong>Origem do Lead:</strong> ' + escapeHtml(card.origemLead || 'N/A') + '</p>');
-        html.push('<p><strong>Enviar cotação:</strong> ' + (card.enviarCotacao ? 'Sim' : 'Não') + '</p>');
-        html.push('</div>');
+        return `
+            <div class="venda-detail">
+                <div class="venda-detail-header">
+                    <div class="venda-detail-title">
+                        <span class="badge-pill">${escapeHtml(card.cooperativa || 'Negociação')}</span>
+                        <h3>${escapeHtml(card.nomeContato || 'Não definido')}</h3>
+                        <p class="venda-subtitle">${escapeHtml(card.placa || 'Placa não informada')}</p>
+                    </div>
+                    <div class="venda-detail-header-actions">
+                        <span class="badge-id">ID: ${escapeHtml(String(card.id || '-'))}</span>
+                        <span class="status-chip status-${statusClass}">${escapeHtml(statusText)}</span>
+                    </div>
+                </div>
 
-        if (card.observacoes) {
-            html.push('<div class="detail-section"><h3>Observações</h3>');
-            html.push('<p>' + escapeHtml(card.observacoes) + '</p></div>');
+                <div class="venda-detail-grid">
+                    <div class="venda-main">
+                        <section class="venda-panel">
+                            <header class="venda-panel-header">
+                                <div>
+                                    <h4>Atividades</h4>
+                                    <p class="muted">Organize o próximo passo desta negociação</p>
+                                </div>
+                                <div class="venda-toolbar">
+                                    <button class="btn btn-ghost" type="button"><i class="bi bi-download"></i> Receber cotação</button>
+                                    <button class="btn btn-primary" type="button"><i class="bi bi-telephone-fill"></i> Atender essa cotação</button>
+                                </div>
+                            </header>
+
+                            <div class="venda-form-grid">
+                                <label class="venda-field">
+                                    <span>Atividade</span>
+                                    <div class="inline-options">
+                                        <label class="pill-option"><input type="radio" name="atividade-${card.id}" checked> Ligar</label>
+                                        <label class="pill-option"><input type="radio" name="atividade-${card.id}"> Email</label>
+                                    </div>
+                                </label>
+
+                                <label class="venda-field">
+                                    <span>Quando?</span>
+                                    <input type="datetime-local" value="${formatDateTimeInput(card.createdAt)}">
+                                </label>
+
+                                <label class="venda-field">
+                                    <span>Responsável</span>
+                                    <select>
+                                        <option>Guilherme Wolff (Você)</option>
+                                        <option>Equipe Comercial</option>
+                                        <option>Time de Vendas</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <button class="btn btn-primary btn-full" type="button"><i class="bi bi-plus-circle"></i> Atividades</button>
+                            <p class="muted centered">Sem atividades nesta negociação.</p>
+                        </section>
+
+                        <section class="venda-panel">
+                            <header class="venda-panel-header">
+                                <h4>Geral</h4>
+                                <span class="badge-pill soft">Status atual: ${escapeHtml(statusText)}</span>
+                            </header>
+                            <div class="venda-info-grid">
+                                ${infoRows.map(row => buildInfoRow(row[0], row[1])).join('')}
+                            </div>
+                            <div class="venda-timeline">
+                                <div class="venda-timeline-item">
+                                    <div class="venda-timeline-dot"></div>
+                                    <div>
+                                        <strong>Negociação criada pelo site</strong>
+                                        <p class="muted">${createdAt}</p>
+                                    </div>
+                                </div>
+                                ${updatedAt ? `<div class="venda-timeline-item"><div class="venda-timeline-dot"></div><div><strong>Última atualização</strong><p class="muted">${updatedAt}</p></div></div>` : ''}
+                            </div>
+                        </section>
+
+                        <section class="venda-panel">
+                            <header class="venda-panel-header">
+                                <h4>Observações</h4>
+                                <span class="badge-pill soft">Histórico</span>
+                            </header>
+                            <p>${observacoes}</p>
+                        </section>
+                    </div>
+
+                    <div class="venda-side">
+                        <section class="venda-panel responsavel-panel">
+                            <header class="venda-panel-header">
+                                <h4>Responsável</h4>
+                                <span class="muted">${escapeHtml(card.responsavel || 'Nenhum')}</span>
+                            </header>
+                            <p class="muted">Atenção: esta negociação ainda não possui responsável definido.</p>
+                            <button class="btn btn-success btn-full" type="button"><i class="bi bi-headset"></i> Atender essa cotação</button>
+                        </section>
+
+                        <section class="venda-panel contato-panel">
+                            <div class="contato-heading">
+                                <div class="contato-avatar">${escapeHtml((card.nomeContato || 'N')[0])}</div>
+                                <div>
+                                    <strong>${escapeHtml(card.nomeContato || 'Contato não informado')}</strong>
+                                    <p class="muted">Lead via ${escapeHtml(card.origemLead || 'formulário')}</p>
+                                </div>
+                            </div>
+                            <div class="venda-info-grid compact">
+                                ${buildInfoRow('Email', card.email || 'Não informado')}
+                                ${buildInfoRow('Celular', card.celular || 'Não informado')}
+                                ${buildInfoRow('Cidade/Estado', (card.cidade && card.estado) ? card.cidade + ' / ' + card.estado : 'Não informado')}
+                            </div>
+                        </section>
+
+                        <section class="venda-panel status-panel">
+                            <header class="venda-panel-header">
+                                <h4>Contratação online</h4>
+                                <span class="status-chip warning">Dados incorretos</span>
+                            </header>
+                            <p class="muted">Revise os dados antes de liberar para cadastro.</p>
+                            <div class="venda-toolbar">
+                                <button class="btn btn-danger" type="button">Solicitar correção</button>
+                                <button class="btn btn-secondary" type="button">Editar</button>
+                            </div>
+                        </section>
+
+                        <section class="venda-panel lead-panel">
+                            <div class="venda-info-row">
+                                <span>Cooperativa</span>
+                                <strong>${escapeHtml(card.cooperativa || 'Não informado')}</strong>
+                            </div>
+                            <div class="venda-info-row">
+                                <span>Origem do lead</span>
+                                <select class="pill-select">
+                                    <option ${card.origemLead === 'Marketing ON' ? 'selected' : ''}>Marketing ON</option>
+                                    <option ${card.origemLead === 'Site' ? 'selected' : ''}>Site</option>
+                                    <option ${card.origemLead === 'Redes Sociais' ? 'selected' : ''}>Redes Sociais</option>
+                                    <option ${card.origemLead === 'Indicação' ? 'selected' : ''}>Indicação</option>
+                                </select>
+                            </div>
+                        </section>
+
+                        <section class="venda-panel comunicacao-panel">
+                            <header class="venda-panel-header">
+                                <h4>Comunicação</h4>
+                                <span class="badge-pill soft">Canais</span>
+                            </header>
+                            <div class="tag-list">${buildCommunicationTags(card)}</div>
+                        </section>
+
+                        <section class="venda-panel tags-panel">
+                            <header class="venda-panel-header">
+                                <h4>Tags</h4>
+                                <span class="badge-pill soft">Categoria</span>
+                            </header>
+                            <div class="tag-list">
+                                <span class="tag-chip">Validado</span>
+                                <span class="tag-chip">Elegível</span>
+                                <span class="tag-chip">Venda</span>
+                            </div>
+                        </section>
+
+                        <section class="venda-panel apps-panel">
+                            <header class="venda-panel-header">
+                                <h4>Apps</h4>
+                                <span class="badge-pill soft">Integrações</span>
+                            </header>
+                            <div class="venda-toolbar vertical">
+                                <button class="btn btn-outline" type="button">Formulário de Website</button>
+                                <button class="btn btn-outline" type="button">Formulário integrado do Facebook</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" onclick="window.vendasBoard.openEditModal(${card.id})"><i class="bi bi-pencil"></i> Editar</button>
+                    <button type="button" class="btn btn-danger" onclick="window.vendasBoard.deleteVenda(${card.id})"><i class="bi bi-trash"></i> Deletar</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function buildInfoRow(label, value) {
+        return `
+            <div class="venda-info-row">
+                <span>${escapeHtml(label)}</span>
+                <strong>${escapeHtml(value || 'Não informado')}</strong>
+            </div>
+        `;
+    }
+
+    function buildCommunicationTags(card) {
+        const tags = [];
+
+        if (card.email) {
+            tags.push({ icon: 'bi-envelope', label: card.email });
         }
 
-        html.push('<div class="modal-actions">');
-        html.push('<button type="button" class="btn btn-primary" onclick="window.vendasBoard.openEditModal(' + card.id + ')"><i class="bi bi-pencil"></i> Editar</button>');
-        html.push('<button type="button" class="btn btn-danger" onclick="window.vendasBoard.deleteVenda(' + card.id + ')"><i class="bi bi-trash"></i> Deletar</button>');
-        html.push('</div>');
+        if (card.celular) {
+            tags.push({ icon: 'bi-whatsapp', label: card.celular });
+        }
 
-        return html.join('');
+        if (card.placa) {
+            tags.push({ icon: 'bi-car-front', label: card.placa });
+        }
+
+        if (card.cidade || card.estado) {
+            tags.push({ icon: 'bi-geo-alt', label: `${card.cidade || ''} ${card.estado ? '/ ' + card.estado : ''}`.trim() });
+        }
+
+        if (!tags.length) {
+            return '<span class="muted">Nenhum contato informado.</span>';
+        }
+
+        return tags.map(tag => `<span class="tag-chip"><i class="bi ${tag.icon}"></i> ${escapeHtml(tag.label)}</span>`).join('');
+    }
+
+    function formatDateTime(dateValue) {
+        if (!dateValue) {
+            return '';
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+
+        return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
+    function formatDateTimeInput(dateValue) {
+        const date = new Date(dateValue || Date.now());
+
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
     function escapeHtml(text) {

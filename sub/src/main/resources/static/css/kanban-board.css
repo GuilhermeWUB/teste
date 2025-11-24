@@ -1327,3 +1327,293 @@ html:not([data-theme="dark"]) .btn-filter-apply {
     border-color: #5e7ce2;
     background: #f0f4ff;
 }
+
+/* --------------------------- */
+/* Modal detalhado das vendas  */
+/* --------------------------- */
+
+.venda-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.venda-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.venda-detail-title h3 {
+    margin: 0.25rem 0;
+    font-size: 1.35rem;
+}
+
+.venda-subtitle {
+    margin: 0;
+    color: var(--kanban-muted);
+}
+
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: color-mix(in srgb, var(--kanban-accent) 14%, var(--kanban-panel-bg));
+    color: var(--kanban-accent-strong, var(--kanban-text));
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    border: 1px solid var(--kanban-panel-border);
+}
+
+.badge-pill.soft {
+    background: color-mix(in srgb, var(--kanban-panel-bg) 70%, transparent);
+    color: var(--kanban-text);
+}
+
+.badge-id {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 10px;
+    border: 1px dashed var(--kanban-divider);
+    color: var(--kanban-muted);
+}
+
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--kanban-accent) 18%, transparent);
+    color: var(--kanban-accent-strong, var(--kanban-text));
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.status-chip.warning {
+    background: rgba(255, 193, 7, 0.16);
+    color: #b88300;
+}
+
+.venda-detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+}
+
+.venda-panel {
+    background: var(--kanban-panel-bg);
+    border: 1px solid var(--kanban-panel-border);
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    box-shadow: var(--kanban-card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.venda-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.venda-panel-header h4 {
+    margin: 0;
+}
+
+.venda-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.venda-toolbar.vertical {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px dashed var(--kanban-divider);
+    color: var(--kanban-text);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--kanban-panel-border);
+    color: var(--kanban-text);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff;
+    border: none;
+}
+
+.btn-secondary {
+    background: color-mix(in srgb, var(--kanban-panel-bg) 90%, rgba(255, 255, 255, 0.08));
+    color: var(--kanban-text);
+    border: 1px solid var(--kanban-panel-border);
+}
+
+.venda-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.venda-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.venda-field span {
+    color: var(--kanban-muted);
+}
+
+.venda-field input,
+.venda-field select,
+.venda-field textarea,
+.pill-select {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--kanban-input-border);
+    padding: 0.6rem 0.75rem;
+    background: var(--kanban-input-bg);
+    color: var(--kanban-text);
+}
+
+.inline-options {
+    display: inline-flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.pill-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--kanban-panel-border);
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+    cursor: pointer;
+}
+
+.muted {
+    color: var(--kanban-muted);
+    margin: 0;
+}
+
+.centered {
+    text-align: center;
+}
+
+.venda-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem;
+}
+
+.venda-info-grid.compact {
+    grid-template-columns: 1fr;
+}
+
+.venda-info-row {
+    display: flex;
+    flex-direction: column;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--kanban-panel-bg) 80%, transparent);
+    border: 1px solid var(--kanban-panel-border);
+    gap: 0.25rem;
+}
+
+.venda-info-row span {
+    font-size: 0.8rem;
+    color: var(--kanban-muted);
+}
+
+.venda-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.venda-timeline-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.65rem;
+    align-items: start;
+}
+
+.venda-timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--kanban-accent);
+    margin-top: 0.25rem;
+}
+
+.contato-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.contato-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--kanban-accent) 30%, var(--kanban-panel-bg));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--kanban-panel-bg) 80%, transparent);
+    border: 1px solid var(--kanban-panel-border);
+    color: var(--kanban-text);
+    font-weight: 600;
+}
+
+.venda-main,
+.venda-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+    .venda-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
