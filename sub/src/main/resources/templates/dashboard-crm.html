@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}">
+      layout:decorate="~{fragments/layout-crm}">
 <head>
     <title>SUB - CRM</title>
     <link rel="stylesheet" th:href="@{/css/crm-dashboard.css}">
@@ -49,50 +49,74 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" id="pipeline">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                         <div>
                             <h5 class="mb-1">Funil de oportunidades</h5>
-                            <p class="text-muted mb-0">Visualização rápida do pipeline e próximos passos.</p>
+                            <p class="text-muted mb-0">Visualização em colunas, pronta para acompanhar o fluxo do time.</p>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary">Funil atualizado</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary">Funil atualizado</span>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Nova negociação
+                            </button>
+                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table align-middle crm-table mb-0">
-                            <thead>
-                            <tr>
-                                <th>Oportunidade</th>
-                                <th>Empresa</th>
-                                <th>Etapa</th>
-                                <th>Valor</th>
-                                <th>Prazo</th>
-                                <th>Status</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="deal : ${crmPipeline}">
-                                <td class="fw-semibold" th:text="${deal.title()}">Nome</td>
-                                <td class="text-muted" th:text="${deal.company()}">Empresa</td>
-                                <td>
-                                    <span class="badge bg-light text-dark" th:text="${deal.stage()}">Etapa</span>
-                                </td>
-                                <td class="fw-semibold" th:text="${deal.amount()}">R$ 0,00</td>
-                                <td class="text-muted" th:text="${deal.dueDate()}">--/--</td>
-                                <td>
-                                    <span class="status-dot"></span>
-                                    <span th:text="${deal.status()}">Status</span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+                    <div class="crm-pipeline-board" role="list">
+                        <div class="pipeline-column" role="listitem" th:each="column : ${crmPipelineColumns}">
+                            <div class="pipeline-column__header">
+                                <div>
+                                    <p class="text-muted text-uppercase small mb-1">Etapa</p>
+                                    <h6 class="mb-1" th:text="${column.name()}">Cotações recebidas</h6>
+                                    <p class="text-muted small mb-0" th:text="${column.helper()}">Descrição</p>
+                                </div>
+                                <span class="badge" th:text="${column.badge()}"
+                                      th:classappend="' ' + ${column.badgeClass()}">0</span>
+                            </div>
+
+                            <div class="pipeline-column__body">
+                                <div class="pipeline-card" th:each="deal : ${column.deals()}">
+                                    <div class="pipeline-card__header">
+                                        <div class="fw-semibold" th:text="${deal.title()}">Oportunidade</div>
+                                        <span class="status-chip"
+                                              th:text="${deal.status()}"
+                                              th:classappend="${deal.status()} == 'Urgente' ? ' status-chip--danger' :
+                                                             ${deal.status()} == 'Negociando' ? ' status-chip--warning' :
+                                                             ${deal.status()} == 'Vitória' ? ' status-chip--success' :
+                                                             ${deal.status()} == 'Concluído' ? ' status-chip--muted' :
+                                                             ' status-chip--info'">
+                                            Status
+                                        </span>
+                                    </div>
+                                    <p class="text-muted small mb-2" th:text="${deal.company()}">Empresa</p>
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center gap-2 text-muted small">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span th:text="${deal.stage()}">Etapa</span>
+                                        </div>
+                                        <span class="fw-semibold text-primary" th:text="${deal.amount()}">R$ 0,00</span>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span class="badge bg-light text-dark" th:text="${deal.dueDate()}">Hoje</span>
+                                        <div class="pipeline-card__actions">
+                                            <i class="bi bi-chat-dots"></i>
+                                            <i class="bi bi-paperclip"></i>
+                                            <i class="bi bi-three-dots"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" id="followups">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div>
@@ -125,7 +149,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mt-4">
+    <div class="card border-0 shadow-sm mt-4" id="leads">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" data-theme="light">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}"/>
+    <title th:text="${pageTitle} ?: 'SUB - CRM'">SUB - CRM</title>
+    <script src="/js/layout.js"></script>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/custom-dark-mode.css}">
+    <link rel="stylesheet" th:href="@{/css/layout-crm.css}">
+</head>
+<body>
+<header th:fragment="header" class="topbar topbar-crm">
+    <div class="brand">
+        <a class="brand-link" th:href="@{/dashboard}" title="Voltar ao Dashboard">
+            <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB">
+            <div class="brand-text">
+                <span class="brand-title">SUB</span>
+                <small class="brand-subtitle">CRM de Vendas</small>
+            </div>
+        </a>
+    </div>
+
+    <input type="checkbox" id="navToggle" class="nav-toggle" aria-hidden="true">
+    <label class="nav-toggle-label" for="navToggle" aria-label="Alternar navegação">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+
+    <nav class="topbar-nav" aria-label="Navegação CRM">
+        <ul class="nav-links">
+            <li class="nav-item-crm">
+                <a th:href="@{/dashboard/crm}"
+                   th:classappend="${currentCrmPage == 'overview'} ? 'active' : ''">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Visão CRM</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a href="#pipeline">
+                    <i class="bi bi-kanban"></i>
+                    <span>Funil</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a href="#followups">
+                    <i class="bi bi-telephone-forward"></i>
+                    <span>Follow-ups</span>
+                </a>
+            </li>
+            <li class="nav-item-crm">
+                <a href="#leads">
+                    <i class="bi bi-people"></i>
+                    <span>Leads</span>
+                </a>
+            </li>
+
+            <li class="nav-item-mobile-action">
+                <a th:href="@{/dashboard}" class="btn btn-outline">
+                    <span>Voltar ao Sistema</span>
+                </a>
+            </li>
+            <li class="nav-item-mobile-action" th:if="${isLoggedIn}">
+                <a th:href="@{/notifications}">
+                    <span>Notificações</span>
+                    <span class="badge bg-primary ms-2" id="mobileNotificationBadge" style="display: none;">0</span>
+                </a>
+            </li>
+            <li class="nav-item-theme nav-item-mobile-action">
+                <button type="button" class="theme-toggle" data-theme-toggle>
+                    <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">🌙</span>
+                    <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">
+                        <i class="bi bi-sun-fill"></i></span>
+                    <span class="theme-toggle__label"></span>
+                </button>
+            </li>
+            <li class="nav-item-mobile-action" th:if="${isLoggedIn}">
+                <a class="btn btn-outline" th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right me-1"></i>
+                    <span>Sair</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="topbar-actions">
+        <div class="topbar-action-buttons">
+            <div class="notification-bell-wrapper" th:if="${isLoggedIn}">
+                <button type="button"
+                        class="notification-bell-button"
+                        id="notificationBellBtn"
+                        aria-label="Notificações"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                    <i class="bi bi-bell-fill" aria-hidden="true"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+                    <div class="notification-dropdown-header">
+                        <h6 class="mb-0">Notificações</h6>
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" id="markAllReadBtn"
+                                style="display: none;">
+                            Marcar todas como lidas
+                        </button>
+                    </div>
+                    <div class="notification-dropdown-body" id="notificationList">
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm mb-2" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="small mb-0">Carregando notificações...</p>
+                        </div>
+                    </div>
+                    <div class="notification-dropdown-footer">
+                        <a th:href="@{/notifications}" class="btn btn-sm btn-link text-decoration-none w-100">
+                            Ver todas as notificações
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="theme-toggle" data-theme-toggle>
+                <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true"><i class="bi bi-moon-fill"></i></span>
+                <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true"><i class="bi bi-sun-fill"></i></span>
+                <span class="theme-toggle__label"></span>
+            </button>
+            <a class="btn btn-outline" th:if="${isLoggedIn}" th:href="@{/logout}">
+                <i class="bi bi-box-arrow-right me-1"></i>
+                <span>Sair</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <div class="container">
+        <div class="page-content">
+            <section layout:fragment="content"></section>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; <span th:text="${T(java.time.Year).now()}"></span> SUB - Módulo CRM. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<button type="button" class="back-to-top" id="back-to-top" aria-hidden="true" tabindex="-1">
+    <span class="back-to-top__icon" aria-hidden="true">⬆</span>
+    <span class="back-to-top__text">Voltar ao topo</span>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        const toggles = document.querySelectorAll('[data-theme-toggle]');
+        const html = document.documentElement;
+
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            toggles.forEach(toggle => {
+                toggle.setAttribute('aria-pressed', theme === 'dark');
+            });
+        }
+
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme') || 'light';
+                setTheme(currentTheme === 'light' ? 'dark' : 'light');
+            });
+        });
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        const navDropdowns = document.querySelectorAll('[data-nav-dropdown]');
+        navDropdowns.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const expanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', String(!expanded));
+            });
+        });
+
+        const backToTop = document.getElementById('back-to-top');
+        if (backToTop) {
+            window.addEventListener('scroll', () => {
+                const show = window.scrollY > 300;
+                backToTop.style.opacity = show ? '1' : '0';
+                backToTop.style.pointerEvents = show ? 'all' : 'none';
+                backToTop.setAttribute('aria-hidden', show ? 'false' : 'true');
+                backToTop.tabIndex = show ? 0 : -1;
+            });
+
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        }
+    })();
+</script>
+</body>
+</html>

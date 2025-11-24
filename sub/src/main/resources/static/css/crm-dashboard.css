@@ -34,6 +34,105 @@
     padding-bottom: 1rem;
 }
 
+.crm-pipeline-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.pipeline-column {
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
+    border: 1px solid #eef2fb;
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.05);
+}
+
+.pipeline-column__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.pipeline-column__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pipeline-card {
+    border: 1px solid #e6e9f4;
+    border-radius: 12px;
+    padding: 0.85rem;
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pipeline-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(13, 110, 253, 0.08);
+}
+
+.pipeline-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+
+.pipeline-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #6c757d;
+}
+
+.pipeline-card__actions .bi {
+    font-size: 1rem;
+}
+
+.status-chip {
+    border-radius: 999px;
+    padding: 0.1rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.status-chip--danger {
+    background: #fff1f2;
+    color: #dc3545;
+    border-color: rgba(220, 53, 69, 0.2);
+}
+
+.status-chip--warning {
+    background: #fff7e6;
+    color: #f0ad4e;
+    border-color: rgba(240, 173, 78, 0.3);
+}
+
+.status-chip--success {
+    background: #e8f7f2;
+    color: #198754;
+    border-color: rgba(25, 135, 84, 0.3);
+}
+
+.status-chip--muted {
+    background: #f1f2f4;
+    color: #6c757d;
+    border-color: rgba(108, 117, 125, 0.3);
+}
+
+.status-chip--info {
+    background: #eef5ff;
+    color: #0d6efd;
+    border-color: rgba(13, 110, 253, 0.25);
+}
+
 .status-dot {
     width: 10px;
     height: 10px;
