@@ -1,0 +1,144 @@
+.crm-kanban-wrapper {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+.crm-board {
+    gap: 1.25rem;
+}
+
+.crm-column {
+    position: relative;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    padding-top: 0.5rem;
+}
+
+.crm-column__bar {
+    height: 6px;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+.crm-column .column-header {
+    padding: 0.75rem 1rem 0.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.crm-column .column-title h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.crm-column .column-count {
+    background: #f8fafc;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    font-weight: 600;
+}
+
+.crm-column .column-helper {
+    margin: 0.25rem 0 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.crm-column .tasks-container {
+    padding: 0.75rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: linear-gradient(180deg, rgba(99, 102, 241, 0.06) 0%, rgba(99, 102, 241, 0) 40%);
+}
+
+.crm-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 0.9rem;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.crm-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.crm-card__label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6366f1;
+    margin: 0 0 0.15rem;
+    font-weight: 700;
+}
+
+.crm-card__title {
+    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.crm-card__plate {
+    margin: 0;
+    color: #475569;
+    font-weight: 600;
+}
+
+.crm-card__status {
+    align-self: flex-start;
+    background: #ecfeff;
+    color: #0ea5e9;
+    border: 1px solid #bae6fd;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.crm-card__meta {
+    display: flex;
+    justify-content: space-between;
+    color: #334155;
+    font-weight: 600;
+}
+
+.crm-card__amount,
+.crm-card__date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.crm-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.crm-card .badge {
+    border: 1px dashed #cbd5e1;
+    color: #0f172a;
+    font-weight: 600;
+    background: #f8fafc;
+}
+
+.crm-column:nth-child(2) .crm-column__bar { background: linear-gradient(90deg, #06b6d4 0%, #0ea5e9 100%); }
+.crm-column:nth-child(3) .crm-column__bar { background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%); }
+.crm-column:nth-child(4) .crm-column__bar { background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%); }
+.crm-column:nth-child(5) .crm-column__bar { background: linear-gradient(90deg, #64748b 0%, #475569 100%); }
+.crm-column:nth-child(6) .crm-column__bar { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }

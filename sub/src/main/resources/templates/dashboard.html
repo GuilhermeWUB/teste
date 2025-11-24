@@ -7,14 +7,20 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
             <h1 class="mb-1">Visão geral</h1>
             <p class="text-muted mb-0">Acompanhe rapidamente os principais indicadores do SUB.</p>
         </div>
-        <span class="badge badge-soft badge-soft-primary">
-            <i class="bi bi-lightning-charge me-1"></i>Atualizado há poucos minutos
-        </span>
+        <div class="d-flex align-items-center gap-3">
+            <a class="btn btn-primary" th:href="@{/dashboard/crm}">
+                <i class="bi bi-bag-check me-2"></i>
+                Vendas
+            </a>
+            <span class="badge badge-soft badge-soft-primary">
+                <i class="bi bi-lightning-charge me-1"></i>Atualizado há poucos minutos
+            </span>
+        </div>
     </div>
 
     <div class="row g-4 mb-4">
