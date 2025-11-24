@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout}">
+      layout:decorate="~{fragments/layout-crm}">
 <head>
     <title>SUB - CRM</title>
     <link rel="stylesheet" th:href="@{/css/crm-dashboard.css}">
@@ -49,7 +49,7 @@
 
     <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" id="pipeline">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div>
@@ -92,7 +92,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" id="followups">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div>
@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mt-4">
+    <div class="card border-0 shadow-sm mt-4" id="leads">
         <div class="card-body">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div>
