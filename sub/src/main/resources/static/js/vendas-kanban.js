@@ -679,199 +679,228 @@
 
     function buildVendaDetailsSection(card) {
         const statusText = statusLabels[card.status] || 'Status não definido';
-        const statusClass = (card.status || 'desconhecido').toLowerCase();
-        const createdAt = formatDateTime(card.createdAt) || 'Data não informada';
+        const createdAt = formatDateTime(card.createdAt) || '24/11/2025 12:06';
         const updatedAt = formatDateTime(card.updatedAt);
+        const responsavel = card.responsavel || 'Nenhum';
         const observacoes = card.observacoes ? escapeHtml(card.observacoes) : 'Nenhuma observação registrada.';
 
-        const infoRows = [
-            ['Cooperativa', card.cooperativa],
-            ['Tipo de veículo', card.tipoVeiculo],
-            ['Placa', card.placa],
-            ['Marca', card.marca],
-            ['Modelo', card.modelo],
-            ['Ano modelo', card.anoModelo],
-            ['Estado', card.estado],
-            ['Cidade', card.cidade],
-            ['Origem do Lead', card.origemLead],
-            ['Veículo de trabalho', card.veiculoTrabalho ? 'Sim' : 'Não'],
-            ['Enviar cotação', card.enviarCotacao ? 'Sim' : 'Não']
-        ];
-
         return `
-            <div class="venda-detail">
-                <div class="venda-detail-header">
-                    <div class="venda-detail-title">
-                        <span class="badge-pill">${escapeHtml(card.cooperativa || 'Negociação')}</span>
-                        <h3>${escapeHtml(card.nomeContato || 'Não definido')}</h3>
-                        <p class="venda-subtitle">${escapeHtml(card.placa || 'Placa não informada')}</p>
+            <div class="crm-negociacao">
+                <div class="crm-topbar">
+                    <div>
+                        <p class="crm-topbar-label">Alerta</p>
+                        <h2 class="crm-topbar-title">${escapeHtml(card.alerta || 'Não Definido')}</h2>
                     </div>
-                    <div class="venda-detail-header-actions">
-                        <span class="badge-id">ID: ${escapeHtml(String(card.id || '-'))}</span>
-                        <span class="status-chip status-${statusClass}">${escapeHtml(statusText)}</span>
+                    <div class="crm-topbar-actions">
+                        <span class="crm-id-pill">ID: ${escapeHtml(String(card.id || '---'))}</span>
+                        <button class="crm-btn crm-btn-secondary" type="button">Ações</button>
+                        <button class="crm-btn crm-btn-icon" type="button" aria-label="Fechar" onclick="window.vendasBoard.closeModal()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="venda-detail-grid">
-                    <div class="venda-main">
-                        <section class="venda-panel">
-                            <header class="venda-panel-header">
-                                <div>
-                                    <h4>Atividades</h4>
-                                    <p class="muted">Organize o próximo passo desta negociação</p>
-                                </div>
-                                <div class="venda-toolbar">
-                                    <button class="btn btn-ghost" type="button"><i class="bi bi-download"></i> Receber cotação</button>
-                                    <button class="btn btn-primary" type="button"><i class="bi bi-telephone-fill"></i> Atender essa cotação</button>
-                                </div>
-                            </header>
+                <div class="crm-tabs primary">
+                    <button class="active" type="button">Atividades</button>
+                    <button type="button">Vendas</button>
+                    <button type="button">Pós-vendas</button>
+                    <button type="button">Frota</button>
+                    <button type="button">Riscos</button>
+                </div>
 
-                            <div class="venda-form-grid">
-                                <label class="venda-field">
-                                    <span>Atividade</span>
-                                    <div class="inline-options">
-                                        <label class="pill-option"><input type="radio" name="atividade-${card.id}" checked> Ligar</label>
-                                        <label class="pill-option"><input type="radio" name="atividade-${card.id}"> Email</label>
-                                    </div>
-                                </label>
+                <div class="crm-tabs secondary">
+                    <button class="active" type="button">Atividades</button>
+                    <button type="button">Negócio</button>
+                    <button type="button">Histórico</button>
+                    <button type="button">PowerSign</button>
+                    <button type="button">Anexos</button>
+                </div>
 
-                                <label class="venda-field">
-                                    <span>Quando?</span>
-                                    <input type="datetime-local" value="${formatDateTimeInput(card.createdAt)}">
-                                </label>
+                <div class="crm-grid">
+                    <div class="crm-main">
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Atividades</h3>
+                                <span class="crm-pill">Atividades</span>
+                            </div>
 
-                                <label class="venda-field">
-                                    <span>Responsável</span>
+                            <div class="crm-form-grid">
+                                <label class="crm-field">
+                                    <span>Atividade*</span>
                                     <select>
-                                        <option>Guilherme Wolff (Você)</option>
+                                        <option>Ligar</option>
+                                        <option>Email</option>
+                                        <option>Whatsapp</option>
+                                        <option>Reunião</option>
+                                    </select>
+                                </label>
+
+                                <label class="crm-field">
+                                    <span>Responsável*</span>
+                                    <select>
+                                        <option>${escapeHtml(responsavel)}</option>
                                         <option>Equipe Comercial</option>
                                         <option>Time de Vendas</option>
                                     </select>
                                 </label>
+
+                                <label class="crm-field">
+                                    <span>Quando*</span>
+                                    <input type="datetime-local" value="${formatDateTimeInput(card.createdAt)}">
+                                </label>
+
+                                <label class="crm-field">
+                                    <span>Cliente*</span>
+                                    <select>
+                                        <option>${escapeHtml(card.nomeContato || 'Não definido')}</option>
+                                    </select>
+                                </label>
+
+                                <label class="crm-field full">
+                                    <span>Observação</span>
+                                    <textarea rows="2" placeholder="Adicione observações">${card.observacoes ? escapeHtml(card.observacoes) : ''}</textarea>
+                                </label>
                             </div>
 
-                            <button class="btn btn-primary btn-full" type="button"><i class="bi bi-plus-circle"></i> Atividades</button>
-                            <p class="muted centered">Sem atividades nesta negociação.</p>
+                            <div class="crm-card-footer">
+                                <div class="crm-card-footer-actions">
+                                    <button class="crm-btn crm-btn-primary" type="button">Atividades</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">Comunicação</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">Histórico</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">PowerSign</button>
+                                </div>
+                                <p class="crm-muted">Sem atividades nesta negociação.</p>
+                            </div>
                         </section>
 
-                        <section class="venda-panel">
-                            <header class="venda-panel-header">
-                                <h4>Geral</h4>
-                                <span class="badge-pill soft">Status atual: ${escapeHtml(statusText)}</span>
-                            </header>
-                            <div class="venda-info-grid">
-                                ${infoRows.map(row => buildInfoRow(row[0], row[1])).join('')}
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Geral</h3>
+                                <span class="crm-pill">${escapeHtml(statusText)}</span>
                             </div>
-                            <div class="venda-timeline">
-                                <div class="venda-timeline-item">
-                                    <div class="venda-timeline-dot"></div>
+                            <div class="crm-info-grid">
+                                ${buildInfoRow('Cooperativa', card.cooperativa)}
+                                ${buildInfoRow('Tipo de veículo', card.tipoVeiculo)}
+                                ${buildInfoRow('Placa', card.placa)}
+                                ${buildInfoRow('Marca', card.marca)}
+                                ${buildInfoRow('Modelo', card.modelo)}
+                                ${buildInfoRow('Ano modelo', card.anoModelo)}
+                                ${buildInfoRow('Estado', card.estado)}
+                                ${buildInfoRow('Cidade', card.cidade)}
+                            </div>
+                            <div class="crm-history">
+                                <div class="crm-history-item">
+                                    <div class="crm-history-dot"></div>
                                     <div>
                                         <strong>Negociação criada pelo site</strong>
-                                        <p class="muted">${createdAt}</p>
+                                        <p class="crm-muted">${createdAt}</p>
                                     </div>
                                 </div>
-                                ${updatedAt ? `<div class="venda-timeline-item"><div class="venda-timeline-dot"></div><div><strong>Última atualização</strong><p class="muted">${updatedAt}</p></div></div>` : ''}
+                                ${updatedAt ? `<div class="crm-history-item"><div class="crm-history-dot"></div><div><strong>Última atualização</strong><p class="crm-muted">${updatedAt}</p></div></div>` : ''}
                             </div>
                         </section>
 
-                        <section class="venda-panel">
-                            <header class="venda-panel-header">
-                                <h4>Observações</h4>
-                                <span class="badge-pill soft">Histórico</span>
-                            </header>
-                            <p>${observacoes}</p>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Observações</h3>
+                                <span class="crm-pill">Anotações</span>
+                            </div>
+                            <p class="crm-muted">${observacoes}</p>
                         </section>
                     </div>
 
-                    <div class="venda-side">
-                        <section class="venda-panel responsavel-panel">
-                            <header class="venda-panel-header">
-                                <h4>Responsável</h4>
-                                <span class="muted">${escapeHtml(card.responsavel || 'Nenhum')}</span>
-                            </header>
-                            <p class="muted">Atenção: esta negociação ainda não possui responsável definido.</p>
-                            <button class="btn btn-success btn-full" type="button"><i class="bi bi-headset"></i> Atender essa cotação</button>
+                    <div class="crm-side">
+                        <section class="crm-card highlight">
+                            <div class="crm-card-header">
+                                <h3>Responsável</h3>
+                                <div class="crm-status">${escapeHtml(responsavel)}</div>
+                            </div>
+                            <p class="crm-muted">Atenção: esta negociação ainda não possui responsável definido.</p>
+                            <button class="crm-btn crm-btn-success full" type="button">Atender essa cotação</button>
                         </section>
 
-                        <section class="venda-panel contato-panel">
-                            <div class="contato-heading">
-                                <div class="contato-avatar">${escapeHtml((card.nomeContato || 'N')[0])}</div>
-                                <div>
-                                    <strong>${escapeHtml(card.nomeContato || 'Contato não informado')}</strong>
-                                    <p class="muted">Lead via ${escapeHtml(card.origemLead || 'formulário')}</p>
-                                </div>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Filiação</h3>
+                                <span class="crm-status">Nenhum</span>
                             </div>
-                            <div class="venda-info-grid compact">
-                                ${buildInfoRow('Email', card.email || 'Não informado')}
-                                ${buildInfoRow('Celular', card.celular || 'Não informado')}
-                                ${buildInfoRow('Cidade/Estado', (card.cidade && card.estado) ? card.cidade + ' / ' + card.estado : 'Não informado')}
-                            </div>
+                            <button class="crm-btn crm-btn-secondary full" type="button">Iniciar</button>
                         </section>
 
-                        <section class="venda-panel status-panel">
-                            <header class="venda-panel-header">
-                                <h4>Contratação online</h4>
-                                <span class="status-chip warning">Dados incorretos</span>
-                            </header>
-                            <p class="muted">Revise os dados antes de liberar para cadastro.</p>
-                            <div class="venda-toolbar">
-                                <button class="btn btn-danger" type="button">Solicitar correção</button>
-                                <button class="btn btn-secondary" type="button">Editar</button>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Contratação online</h3>
+                                <span class="crm-status warning">Atendimento necessário</span>
                             </div>
+                            <div class="crm-badges">
+                                <span class="crm-mini-badge info">Categoria</span>
+                                <span class="crm-mini-badge info">Tipo de carga</span>
+                                <span class="crm-mini-badge info">Trajeto</span>
+                                <span class="crm-mini-badge info">Equipamentos de carga</span>
+                            </div>
+                            <button class="crm-btn crm-btn-secondary full" type="button">Saiba mais</button>
                         </section>
 
-                        <section class="venda-panel lead-panel">
-                            <div class="venda-info-row">
-                                <span>Cooperativa</span>
-                                <strong>${escapeHtml(card.cooperativa || 'Não informado')}</strong>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Cooperativa</h3>
                             </div>
-                            <div class="venda-info-row">
-                                <span>Origem do lead</span>
-                                <select class="pill-select">
-                                    <option ${card.origemLead === 'Marketing ON' ? 'selected' : ''}>Marketing ON</option>
-                                    <option ${card.origemLead === 'Site' ? 'selected' : ''}>Site</option>
-                                    <option ${card.origemLead === 'Redes Sociais' ? 'selected' : ''}>Redes Sociais</option>
-                                    <option ${card.origemLead === 'Indicação' ? 'selected' : ''}>Indicação</option>
-                                </select>
-                            </div>
+                            <select class="crm-input">
+                                <option>${escapeHtml(card.cooperativa || 'Selecione')}</option>
+                            </select>
                         </section>
 
-                        <section class="venda-panel comunicacao-panel">
-                            <header class="venda-panel-header">
-                                <h4>Comunicação</h4>
-                                <span class="badge-pill soft">Canais</span>
-                            </header>
-                            <div class="tag-list">${buildCommunicationTags(card)}</div>
-                        </section>
-
-                        <section class="venda-panel tags-panel">
-                            <header class="venda-panel-header">
-                                <h4>Tags</h4>
-                                <span class="badge-pill soft">Categoria</span>
-                            </header>
-                            <div class="tag-list">
-                                <span class="tag-chip">Validado</span>
-                                <span class="tag-chip">Elegível</span>
-                                <span class="tag-chip">Venda</span>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Tag</h3>
+                            </div>
+                            <div class="crm-badges spaced">
+                                <span class="crm-mini-badge tag">Tag em falta</span>
+                                <span class="crm-mini-badge warning">Tag amarela</span>
+                                <span class="crm-mini-badge success">Tag verde</span>
                             </div>
                         </section>
 
-                        <section class="venda-panel apps-panel">
-                            <header class="venda-panel-header">
-                                <h4>Apps</h4>
-                                <span class="badge-pill soft">Integrações</span>
-                            </header>
-                            <div class="venda-toolbar vertical">
-                                <button class="btn btn-outline" type="button">Formulário de Website</button>
-                                <button class="btn btn-outline" type="button">Formulário integrado do Facebook</button>
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Origem do lead</h3>
+                            </div>
+                            <select class="crm-input">
+                                <option>${escapeHtml(card.origemLead || 'Marketing On Endomarketing')}</option>
+                                <option>Facebook Ads</option>
+                                <option>Contato direto</option>
+                            </select>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Área de contato</h3>
+                            </div>
+                            <div class="crm-form-grid compact">
+                                <label class="crm-field">
+                                    <span>Cotação de website</span>
+                                    <select>
+                                        <option>${escapeHtml(card.email || 'Selecione')}</option>
+                                    </select>
+                                </label>
+                                <label class="crm-field">
+                                    <span>Tag do WhatsApp</span>
+                                    <select>
+                                        <option>${escapeHtml(card.celular || 'Nenhum número')}</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="crm-footer-actions">
+                                <button class="crm-btn crm-btn-primary" type="button">Adicionar</button>
+                                <button class="crm-btn crm-btn-secondary" type="button">Aplicar</button>
                             </div>
                         </section>
                     </div>
                 </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-primary" onclick="window.vendasBoard.openEditModal(${card.id})"><i class="bi bi-pencil"></i> Editar</button>
-                    <button type="button" class="btn btn-danger" onclick="window.vendasBoard.deleteVenda(${card.id})"><i class="bi bi-trash"></i> Deletar</button>
+                <div class="crm-actions">
+                    <button type="button" class="crm-btn crm-btn-primary" onclick="window.vendasBoard.openEditModal(${card.id})"><i class="bi bi-pencil"></i> Editar</button>
+                    <button type="button" class="crm-btn crm-btn-danger" onclick="window.vendasBoard.deleteVenda(${card.id})"><i class="bi bi-trash"></i> Deletar</button>
                 </div>
             </div>
         `;
@@ -879,7 +908,7 @@
 
     function buildInfoRow(label, value) {
         return `
-            <div class="venda-info-row">
+            <div class="crm-info-row">
                 <span>${escapeHtml(label)}</span>
                 <strong>${escapeHtml(value || 'Não informado')}</strong>
             </div>

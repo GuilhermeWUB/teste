@@ -1332,91 +1332,183 @@ html:not([data-theme="dark"]) .btn-filter-apply {
 /* Modal detalhado das vendas  */
 /* --------------------------- */
 
-.venda-detail {
+.crm-negociacao {
+    --crm-primary: #2f72ee;
+    --crm-primary-strong: #1e4fb0;
+    --crm-success: #1ba64c;
+    --crm-warning: #f59e0b;
+    --crm-danger: #ef4444;
+    --crm-muted: #6b7280;
+    --crm-surface: #f8fafc;
+    --crm-border: #e5e7eb;
+    --crm-text: #0f172a;
+
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
+    color: var(--crm-text);
 }
 
-.venda-detail-header {
+.crm-topbar {
+    background: #f1f5f9;
+    border: 1px solid var(--crm-border);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    flex-wrap: wrap;
 }
 
-.venda-detail-title h3 {
-    margin: 0.25rem 0;
+.crm-topbar-label {
+    margin: 0;
+    color: var(--crm-muted);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.crm-topbar-title {
+    margin: 0.15rem 0 0;
     font-size: 1.35rem;
 }
 
-.venda-subtitle {
-    margin: 0;
-    color: var(--kanban-muted);
-}
-
-.badge-pill {
+.crm-topbar-actions {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: color-mix(in srgb, var(--kanban-accent) 14%, var(--kanban-panel-bg));
-    color: var(--kanban-accent-strong, var(--kanban-text));
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    font-weight: 600;
-    border: 1px solid var(--kanban-panel-border);
+    gap: 0.5rem;
 }
 
-.badge-pill.soft {
-    background: color-mix(in srgb, var(--kanban-panel-bg) 70%, transparent);
-    color: var(--kanban-text);
-}
-
-.badge-id {
+.crm-id-pill {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--crm-border);
     border-radius: 10px;
-    border: 1px dashed var(--kanban-divider);
-    color: var(--kanban-muted);
+    padding: 0.4rem 0.75rem;
+    color: var(--crm-muted);
+    background: white;
 }
 
-.status-chip {
-    display: inline-flex;
-    align-items: center;
+.crm-tabs {
+    display: flex;
     gap: 0.35rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--kanban-accent) 18%, transparent);
-    color: var(--kanban-accent-strong, var(--kanban-text));
-    font-weight: 700;
-    text-transform: capitalize;
+    flex-wrap: wrap;
 }
 
-.status-chip.warning {
-    background: rgba(255, 193, 7, 0.16);
-    color: #b88300;
+.crm-tabs.primary button,
+.crm-tabs.secondary button {
+    border: 1px solid var(--crm-border);
+    border-radius: 12px;
+    background: white;
+    padding: 0.55rem 0.9rem;
+    color: var(--crm-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-.venda-detail-grid {
+.crm-tabs.primary button.active,
+.crm-tabs.secondary button.active {
+    background: var(--crm-primary);
+    color: white;
+    border-color: var(--crm-primary);
+    box-shadow: 0 6px 12px rgba(47, 114, 238, 0.3);
+}
+
+.crm-tabs.primary button:not(.active):hover,
+.crm-tabs.secondary button:not(.active):hover {
+    border-color: var(--crm-primary);
+    color: var(--crm-primary);
+}
+
+.crm-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 1rem;
 }
 
-.venda-panel {
-    background: var(--kanban-panel-bg);
-    border: 1px solid var(--kanban-panel-border);
-    border-radius: 16px;
-    padding: 1rem 1.1rem;
-    box-shadow: var(--kanban-card-shadow);
+.crm-main,
+.crm-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.crm-card {
+    background: white;
+    border: 1px solid var(--crm-border);
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
 }
 
-.venda-panel-header {
+.crm-card.highlight {
+    border-color: rgba(34, 197, 94, 0.3);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(16, 185, 129, 0.08));
+}
+
+.crm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.crm-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.crm-pill {
+    background: var(--crm-primary);
+    color: white;
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    box-shadow: 0 6px 14px rgba(47, 114, 238, 0.28);
+}
+
+.crm-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+.crm-form-grid.compact {
+    grid-template-columns: 1fr;
+}
+
+.crm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.95rem;
+}
+
+.crm-field span {
+    color: var(--crm-muted);
+    font-weight: 600;
+}
+
+.crm-field select,
+.crm-field input,
+.crm-field textarea,
+.crm-input {
+    border: 1px solid var(--crm-border);
+    border-radius: 10px;
+    padding: 0.6rem 0.75rem;
+    background: var(--crm-surface);
+    color: var(--crm-text);
+}
+
+.crm-field.full {
+    grid-column: 1 / -1;
+}
+
+.crm-card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1424,196 +1516,185 @@ html:not([data-theme="dark"]) .btn-filter-apply {
     flex-wrap: wrap;
 }
 
-.venda-panel-header h4 {
-    margin: 0;
-}
-
-.venda-toolbar {
+.crm-card-footer-actions {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
 }
 
-.venda-toolbar.vertical {
-    flex-direction: column;
-    align-items: stretch;
-}
-
-.btn-full {
-    width: 100%;
-    justify-content: center;
-}
-
-.btn-ghost {
-    background: transparent;
-    border: 1px dashed var(--kanban-divider);
-    color: var(--kanban-text);
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid var(--kanban-panel-border);
-    color: var(--kanban-text);
-}
-
-.btn-success {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: #fff;
-    border: none;
-}
-
-.btn-secondary {
-    background: color-mix(in srgb, var(--kanban-panel-bg) 90%, rgba(255, 255, 255, 0.08));
-    color: var(--kanban-text);
-    border: 1px solid var(--kanban-panel-border);
-}
-
-.venda-form-grid {
+.crm-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
+    gap: 0.55rem;
 }
 
-.venda-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    font-size: 0.95rem;
-}
-
-.venda-field span {
-    color: var(--kanban-muted);
-}
-
-.venda-field input,
-.venda-field select,
-.venda-field textarea,
-.pill-select {
-    width: 100%;
-    border-radius: 12px;
-    border: 1px solid var(--kanban-input-border);
-    padding: 0.6rem 0.75rem;
-    background: var(--kanban-input-bg);
-    color: var(--kanban-text);
-}
-
-.inline-options {
-    display: inline-flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.pill-option {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    border: 1px solid var(--kanban-panel-border);
-    border-radius: 999px;
-    padding: 0.35rem 0.65rem;
-    cursor: pointer;
-}
-
-.muted {
-    color: var(--kanban-muted);
-    margin: 0;
-}
-
-.centered {
-    text-align: center;
-}
-
-.venda-info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.6rem;
-}
-
-.venda-info-grid.compact {
-    grid-template-columns: 1fr;
-}
-
-.venda-info-row {
-    display: flex;
-    flex-direction: column;
-    padding: 0.65rem 0.75rem;
+.crm-info-row {
+    border: 1px solid var(--crm-border);
     border-radius: 10px;
-    background: color-mix(in srgb, var(--kanban-panel-bg) 80%, transparent);
-    border: 1px solid var(--kanban-panel-border);
-    gap: 0.25rem;
+    padding: 0.65rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    background: var(--crm-surface);
 }
 
-.venda-info-row span {
-    font-size: 0.8rem;
-    color: var(--kanban-muted);
+.crm-info-row span {
+    color: var(--crm-muted);
+    font-size: 0.85rem;
 }
 
-.venda-timeline {
+.crm-history {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-top: 0.5rem;
 }
 
-.venda-timeline-item {
+.crm-history-item {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.65rem;
     align-items: start;
 }
 
-.venda-timeline-dot {
-    width: 10px;
-    height: 10px;
+.crm-history-dot {
+    width: 12px;
+    height: 12px;
     border-radius: 999px;
-    background: var(--kanban-accent);
-    margin-top: 0.25rem;
+    background: var(--crm-primary);
+    margin-top: 0.2rem;
 }
 
-.contato-heading {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.contato-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--kanban-accent) 30%, var(--kanban-panel-bg));
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.crm-status {
+    color: var(--crm-muted);
     font-weight: 700;
 }
 
-.tag-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+.crm-status.warning {
+    color: var(--crm-warning);
 }
 
-.tag-chip {
+.crm-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.crm-badges.spaced {
+    gap: 0.6rem;
+}
+
+.crm-mini-badge {
+    border-radius: 12px;
+    padding: 0.45rem 0.65rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    background: #e2e8f0;
+    border: 1px solid var(--crm-border);
+    color: var(--crm-text);
+}
+
+.crm-mini-badge.info {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #bae6fd;
+}
+
+.crm-mini-badge.tag {
+    background: #f8fafc;
+}
+
+.crm-mini-badge.warning {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fcd34d;
+}
+
+.crm-mini-badge.success {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.crm-btn {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 0.6rem 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.45rem 0.7rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--kanban-panel-bg) 80%, transparent);
-    border: 1px solid var(--kanban-panel-border);
-    color: var(--kanban-text);
-    font-weight: 600;
+    transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+    background: #eef2ff;
+    color: var(--crm-primary);
 }
 
-.venda-main,
-.venda-side {
+.crm-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(47, 114, 238, 0.18);
+}
+
+.crm-btn.full {
+    width: 100%;
+    justify-content: center;
+}
+
+.crm-btn-primary {
+    background: var(--crm-primary);
+    color: white;
+    border-color: var(--crm-primary);
+}
+
+.crm-btn-secondary {
+    background: white;
+    color: var(--crm-primary);
+    border-color: var(--crm-border);
+}
+
+.crm-btn-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    border: none;
+    box-shadow: 0 14px 24px rgba(34, 197, 94, 0.25);
+}
+
+.crm-btn-danger {
+    background: var(--crm-danger);
+    color: white;
+    border: none;
+}
+
+.crm-btn-icon {
+    background: white;
+    color: var(--crm-muted);
+    border-color: var(--crm-border);
+}
+
+.crm-actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.crm-muted {
+    color: var(--crm-muted);
+    margin: 0;
+}
+
+.crm-footer-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 @media (max-width: 1024px) {
-    .venda-detail-grid {
+    .crm-grid {
         grid-template-columns: 1fr;
+    }
+
+    .crm-actions {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }
