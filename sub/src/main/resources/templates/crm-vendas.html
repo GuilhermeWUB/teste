@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title th:text="${pageTitle} ?: 'SUB - CRM - Vendas'">SUB - CRM - Vendas</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+    <link rel="stylesheet" th:href="@{/css/crm-kanban.css}">
+</head>
+<body>
+<section layout:fragment="content" class="kanban-page">
+    <div class="kanban-wrapper crm-kanban-wrapper">
+        <div class="kanban-header">
+            <div class="kanban-header-info">
+                <p class="eyebrow">Pipeline</p>
+                <h1 th:text="${crmKanbanTitle}">Funil de Filiação</h1>
+                <p th:text="${crmKanbanSubtitle}">Acompanhe cada etapa da venda em um fluxo estilo kanban.</p>
+            </div>
+            <div class="kanban-controls">
+                <div class="kanban-controls-left">
+                    <div class="kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Buscar por placa ou produto" autocomplete="off">
+                    </div>
+                    <button class="kanban-filter-btn" type="button">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                    </button>
+                </div>
+                <div class="kanban-actions">
+                    <button class="btn-novo-evento" type="button">
+                        <i class="bi bi-plus-circle"></i> Nova negociação
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="kanban-board crm-board" aria-label="Kanban de Vendas">
+            <div class="kanban-column crm-column" th:each="column : ${crmKanbanColumns}" th:data-stage="${column.name()}">
+                <div class="crm-column__bar" th:classappend="${column.badgeClass()}"></div>
+                <div class="column-header">
+                    <div class="column-title">
+                        <h3 th:text="${column.name()}">Coluna</h3>
+                        <span class="column-count" th:text="${column.badge()}">0</span>
+                    </div>
+                    <p class="column-helper" th:text="${column.helper()}">Descrição</p>
+                </div>
+                <div class="tasks-container">
+                    <article class="crm-card" th:each="deal : ${column.deals()}">
+                        <div class="crm-card__top">
+                            <div>
+                                <p class="crm-card__label" th:text="${deal.stage()}">Status</p>
+                                <h4 class="crm-card__title" th:text="${deal.title()}">Produto</h4>
+                                <p class="crm-card__plate" th:text="${deal.company()}">PLACA: XXX-0000</p>
+                            </div>
+                            <span class="crm-card__status" th:text="${deal.status()}">Etiqueta</span>
+                        </div>
+                        <div class="crm-card__meta">
+                            <div class="crm-card__amount">
+                                <i class="bi bi-currency-dollar"></i>
+                                <span th:text="${deal.amount()}">R$ 0,00</span>
+                            </div>
+                            <div class="crm-card__date">
+                                <i class="bi bi-calendar4"></i>
+                                <span th:text="${deal.dueDate()}">Hoje</span>
+                            </div>
+                        </div>
+                        <div class="crm-card__badges">
+                            <span class="badge bg-light text-dark">Cotação Varejo</span>
+                            <span class="badge bg-light text-dark">Negociação</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
