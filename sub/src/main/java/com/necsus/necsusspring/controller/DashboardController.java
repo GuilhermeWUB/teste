@@ -46,6 +46,11 @@ public class DashboardController {
         return "dashboard";
     }
 
+    @GetMapping("/dashboard/crm")
+    public String redirectCrmModule() {
+        return "redirect:/crm/overview";
+    }
+
     private List<Demand> loadNextDemands(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return Collections.emptyList();

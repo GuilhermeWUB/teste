@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Vendas CRM</title>
+    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="kanban-wrapper">
+        <div class="kanban-header">
+            <div class="kanban-header-info">
+                <h1><i class="bi bi-graph-up-arrow"></i> Vendas</h1>
+                <p>Gerencie suas negociações e leads em tempo real.</p>
+            </div>
+                <div class="kanban-controls">
+                    <div class="kanban-controls-left">
+                        <div class="kanban-search">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="kanban-search" placeholder="Buscar por nome, placa ou email..." autocomplete="off"/>
+                        </div>
+                    </div>
+                <div class="kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.vendasBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Nova Negociação
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="kanban-alerts">
+            <div th:if="${success}" class="kanban-alert success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${success}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div th:if="${error}" class="kanban-alert danger" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${error}"></span>
+                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="kanban-board" data-dynamic="true"></div>
+    </div>
+
+    <div id="kanban-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2>Detalhes da Negociação</h2>
+                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body"></div>
+        </div>
+    </div>
+
+    <div id="create-venda-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-plus-circle"></i> Adicione uma nova negociação</h2>
+                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeCreateModal?.()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="kanban-modal-body">
+                <form id="create-venda-form" class="kanban-create-form">
+                    <div id="create-venda-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-cooperativa">Cooperativa</label>
+                            <select id="create-cooperativa" name="cooperativa">
+                                <option value="">Selecione</option>
+                                <option value="COOPERATIVA_A">Cooperativa A</option>
+                                <option value="COOPERATIVA_B">Cooperativa B</option>
+                                <option value="COOPERATIVA_C">Cooperativa C</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-nome-contato">Nome para contato</label>
+                            <input type="text" id="create-nome-contato" name="nomeContato" placeholder="Nome do contato">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-tipo-veiculo">Tipo de veículo</label>
+                            <select id="create-tipo-veiculo" name="tipoVeiculo">
+                                <option value="">Selecione o tipo</option>
+                                <option value="CARRO">Carro</option>
+                                <option value="MOTO">Moto</option>
+                                <option value="CAMINHAO">Caminhão</option>
+                                <option value="ONIBUS">Ônibus</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-email">E-mail</label>
+                            <input type="email" id="create-email" name="email" placeholder="email@exemplo.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-placa">Placa</label>
+                            <input type="text" id="create-placa" name="placa" placeholder="ABC-1234">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-celular">Celular</label>
+                            <input type="text" id="create-celular" name="celular" placeholder="(00) 00000-0000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-marca">Marca</label>
+                            <select id="create-marca" name="marca">
+                                <option value="">Selecione</option>
+                                <option value="FIAT">Fiat</option>
+                                <option value="VOLKSWAGEN">Volkswagen</option>
+                                <option value="CHEVROLET">Chevrolet</option>
+                                <option value="FORD">Ford</option>
+                                <option value="RENAULT">Renault</option>
+                                <option value="TOYOTA">Toyota</option>
+                                <option value="HONDA">Honda</option>
+                                <option value="HYUNDAI">Hyundai</option>
+                                <option value="OUTRA">Outra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-estado">Estado</label>
+                            <select id="create-estado" name="estado">
+                                <option value="">Selecione</option>
+                                <option value="AC">Acre</option>
+                                <option value="AL">Alagoas</option>
+                                <option value="AP">Amapá</option>
+                                <option value="AM">Amazonas</option>
+                                <option value="BA">Bahia</option>
+                                <option value="CE">Ceará</option>
+                                <option value="DF">Distrito Federal</option>
+                                <option value="ES">Espírito Santo</option>
+                                <option value="GO">Goiás</option>
+                                <option value="MA">Maranhão</option>
+                                <option value="MT">Mato Grosso</option>
+                                <option value="MS">Mato Grosso do Sul</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="PA">Pará</option>
+                                <option value="PB">Paraíba</option>
+                                <option value="PR">Paraná</option>
+                                <option value="PE">Pernambuco</option>
+                                <option value="PI">Piauí</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="RN">Rio Grande do Norte</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="RO">Rondônia</option>
+                                <option value="RR">Roraima</option>
+                                <option value="SC">Santa Catarina</option>
+                                <option value="SP">São Paulo</option>
+                                <option value="SE">Sergipe</option>
+                                <option value="TO">Tocantins</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-ano-modelo">Ano modelo</label>
+                            <select id="create-ano-modelo" name="anoModelo">
+                                <option value="">Selecione</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="ANTERIOR">Anterior a 2015</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-cidade">Cidade</label>
+                            <select id="create-cidade" name="cidade">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-modelo">Modelo</label>
+                            <select id="create-modelo" name="modelo">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-origem-lead">Origem do Lead</label>
+                            <select id="create-origem-lead" name="origemLead">
+                                <option value="">Selecione</option>
+                                <option value="SITE">Site</option>
+                                <option value="REDES_SOCIAIS">Redes Sociais</option>
+                                <option value="INDICACAO">Indicação</option>
+                                <option value="TELEFONE">Telefone</option>
+                                <option value="EMAIL">E-mail</option>
+                                <option value="PRESENCIAL">Presencial</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="create-veiculo-trabalho" name="veiculoTrabalho">
+                            Veículo de trabalho (Táxi/Uber)
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="create-enviar-cotacao" name="enviarCotacao">
+                            Enviar cotação para o associado por e-mail
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create-observacoes">Observações</label>
+                        <textarea id="create-observacoes" name="observacoes" rows="3" placeholder="Observações adicionais"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.vendasBoard?.closeCreateModal?.()">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill"></i> Adicionar negociação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            if (body) {
+                body.classList.remove('no-dark-blur');
+            }
+
+            const main = document.querySelector('main.page');
+            if (main) {
+                main.classList.add('kanban-page');
+            }
+
+            const container = document.querySelector('main.page > .container');
+            if (container) {
+                container.classList.add('kanban-full-width');
+            }
+
+            const pageContent = document.querySelector('main.page > .container > .page-content');
+            if (pageContent) {
+                pageContent.classList.add('kanban-content-stretch');
+            }
+        });
+    </script>
+    <script th:src="@{/js/vendas-kanban.js}"></script>
+</section>
+</body>
+</html>

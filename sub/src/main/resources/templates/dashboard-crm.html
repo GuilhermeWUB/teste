@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>SUB - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-dashboard.css}">
+</head>
+<body>
+<section layout:fragment="content" class="sales-page">
+    <div class="sales-hero card border-0 shadow-sm">
+        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="sales-hero__content">
+                <p class="eyebrow text-uppercase mb-2">Módulo Comercial</p>
+                <h1 class="mb-2" th:text="${crmHeroTitle}">CRM de Vendas</h1>
+                <p class="text-muted mb-0" th:text="${crmHeroSubtitle}">
+                    Centralize o funil, acompanhe follow-ups e enxergue a previsão de receita.
+                </p>
+                <div class="sales-hero__meta mt-3">
+                    <span class="pill pill--success">Ambiente dedicado</span>
+                    <span class="pill pill--neutral">Foco em vendas</span>
+                </div>
+            </div>
+            <div class="sales-hero__actions d-flex flex-wrap gap-2">
+                <a class="btn btn-light" th:href="@{/dashboard}">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar ao sistema
+                </a>
+                <button class="btn btn-outline-primary">
+                    <i class="bi bi-download me-2"></i>
+                    Exportar pipeline
+                </button>
+                <button class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Nova oportunidade
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 sales-metrics">
+        <div class="col-md-3" th:each="metric : ${crmMetrics}">
+            <div class="metric-card h-100 card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="eyebrow text-uppercase mb-0" th:text="${metric.title()}">Métrica</p>
+                        <span class="pill pill--neutral" th:text="${metric.badge()}">Hoje</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0" th:text="${metric.value()}">0</h3>
+                        <span class="metric-icon" th:classappend="${metric.badgeClass()}">
+                            <i class="bi" th:classappend="' ' + ${metric.iconClass()}"></i>
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-0 mt-2" th:text="${metric.helper()}">Descrição</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="sales-panel card border-0 shadow-sm h-100" id="pipeline">
+                <div class="card-body">
+                    <div class="section-head d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            <p class="eyebrow text-uppercase mb-1">Funil de oportunidades</p>
+                            <h5 class="mb-1">Visualização em colunas</h5>
+                            <p class="text-muted mb-0">Acompanhe cada etapa e mantenha o time alinhado.</p>
+                        </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="pill pill--success">Atualizado</span>
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-funnel me-1"></i>
+                                Filtros
+                            </button>
+                            <button class="btn btn-sm btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Nova negociação
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-board" role="list">
+                        <article class="pipeline-column" role="listitem" th:each="column : ${crmPipelineColumns}">
+                            <header class="pipeline-column__header">
+                                <div>
+                                    <p class="eyebrow text-uppercase mb-1">Etapa</p>
+                                    <h6 class="mb-1" th:text="${column.name()}">Cotações recebidas</h6>
+                                    <p class="text-muted small mb-0" th:text="${column.helper()}">Descrição</p>
+                                </div>
+                                <span class="pill pill--neutral" th:text="${column.badge()}"
+                                      th:classappend="' ' + ${column.badgeClass()}">0</span>
+                            </header>
+
+                            <div class="pipeline-column__body">
+                                <div class="deal-card" th:each="deal : ${column.deals()}">
+                                    <div class="deal-card__title">
+                                        <span class="status-dot" th:classappend="${deal.status()} == 'Urgente' ? ' status-dot--danger' :
+                                                                     ${deal.status()} == 'Negociando' ? ' status-dot--warning' :
+                                                                     ${deal.status()} == 'Vitória' ? ' status-dot--success' :
+                                                                     ${deal.status()} == 'Concluído' ? ' status-dot--muted' :
+                                                                     ' status-dot--info'"></span>
+                                        <div class="fw-semibold" th:text="${deal.title()}">Oportunidade</div>
+                                    </div>
+                                    <p class="text-muted small mb-2" th:text="${deal.company()}">Empresa</p>
+                                    <div class="deal-card__meta">
+                                        <span class="badge bg-light text-dark" th:text="${deal.stage()}">Etapa</span>
+                                        <span class="fw-semibold text-primary" th:text="${deal.amount()}">R$ 0,00</span>
+                                    </div>
+                                    <div class="deal-card__footer">
+                                        <div class="deal-card__date">
+                                            <i class="bi bi-calendar2-week"></i>
+                                            <span th:text="${deal.dueDate()}">Hoje</span>
+                                        </div>
+                                        <div class="deal-card__actions">
+                                            <button class="btn-icon" title="Comentários"><i class="bi bi-chat-dots"></i></button>
+                                            <button class="btn-icon" title="Arquivos"><i class="bi bi-paperclip"></i></button>
+                                            <button class="btn-icon" title="Mais opções"><i class="bi bi-three-dots"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sales-panel card border-0 shadow-sm h-100" id="followups">
+                <div class="card-body">
+                    <div class="section-head d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="eyebrow text-uppercase mb-1">Agenda</p>
+                            <h5 class="mb-1">Próximos follow-ups</h5>
+                            <p class="text-muted mb-0">Organize ligações, reuniões e envios de propostas.</p>
+                        </div>
+                        <span class="pill pill--success">Em dia</span>
+                    </div>
+                    <div class="activity-list" th:each="activity, iter : ${crmActivities}">
+                        <div class="activity-item" th:classappend="${iter.last}? 'activity-item--last' : ''">
+                            <div class="activity-icon" th:classappend="${activity.channel() == 'Ligação'} ? ' activity-icon--call' :
+                                                            ${activity.channel() == 'E-mail'} ? ' activity-icon--mail' :
+                                                            ${activity.channel() == 'Reunião'} ? ' activity-icon--meeting' :
+                                                            ' activity-icon--chat'">
+                                <i class="bi bi-telephone-outbound" th:if="${activity.channel() == 'Ligação'}"></i>
+                                <i class="bi bi-envelope" th:if="${activity.channel() == 'E-mail'}"></i>
+                                <i class="bi bi-people" th:if="${activity.channel() == 'Reunião'}"></i>
+                                <i class="bi bi-chat-dots" th:if="${activity.channel() != 'Ligação' and activity.channel() != 'E-mail' and activity.channel() != 'Reunião'}"></i>
+                            </div>
+                            <div class="activity-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1" th:text="${activity.title()}">Tarefa</h6>
+                                        <p class="text-muted small mb-1" th:text="${activity.owner()}">Responsável</p>
+                                    </div>
+                                    <span class="pill pill--neutral" th:text="${activity.channel()}">Canal</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 text-muted small">
+                                    <i class="bi bi-clock"></i>
+                                    <span th:text="${activity.dueDate()}">Prazo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sales-panel card border-0 shadow-sm mt-4" id="leads">
+        <div class="card-body">
+            <div class="section-head d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <p class="eyebrow text-uppercase mb-1">Leads</p>
+                    <h5 class="mb-1">Entradas recentes</h5>
+                    <p class="text-muted mb-0">Novos contatos para prosseguir no funil.</p>
+                </div>
+                <a class="btn btn-outline-primary btn-sm" href="#">Ver todos</a>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3" th:each="lead : ${crmLeads}">
+                    <div class="lead-card card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div class="avatar-circle">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0" th:text="${lead.name()}">Nome</h6>
+                                    <p class="text-muted small mb-0" th:text="${lead.company()}">Empresa</p>
+                                </div>
+                            </div>
+                            <p class="fw-semibold mb-1" th:text="${lead.interest()}">Interesse</p>
+                            <span class="pill pill--neutral" th:text="${lead.source()}">Origem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const focusSection = /*[[${crmFocusSection}]]*/ null;
+        if (focusSection) {
+            const target = document.getElementById(focusSection);
+            if (target) {
+                target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -134,6 +134,10 @@
             </li>
 
             <li th:if="${isAdmin}">
+                <a th:href="@{/dashboard/crm}">Vendas</a>
+            </li>
+
+            <li th:if="${isAdmin}">
                 <a th:href="@{/admin/users}">Usuários</a>
             </li>
             <li th:if="${!isAdmin and isLoggedIn}">
