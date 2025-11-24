@@ -65,6 +65,23 @@
     color: var(--color-nav-link-hover);
 }
 
+body.crm-fullwidth .container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: clamp(1.25rem, 2vw, 1.75rem);
+    padding-right: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+body.crm-fullwidth .page-content {
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+    padding: 0;
+}
+
+body.crm-fullwidth .kanban-wrapper {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 html[data-theme="dark"] .nav-item-crm a {
     color: var(--color-nav-link);
 }

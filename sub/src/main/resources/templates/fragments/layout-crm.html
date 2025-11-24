@@ -17,7 +17,7 @@
     <link rel="stylesheet" th:href="@{/css/layout-fragment.css}">
     <link rel="stylesheet" th:href="@{/css/layout-crm.css}">
 </head>
-<body>
+<body th:classappend="${crmFullWidth} ? ' crm-fullwidth' : ''">
 <header th:fragment="header" class="topbar topbar-crm">
     <div class="brand">
         <a class="brand-link" th:href="@{/dashboard}" title="Voltar ao Dashboard">

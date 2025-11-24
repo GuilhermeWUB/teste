@@ -29,6 +29,7 @@ public class CrmController {
         model.addAttribute("crmKanbanTitle", "Funil de Filiação");
         model.addAttribute("crmKanbanSubtitle", "Visualize todas as etapas da venda em formato kanban.");
         model.addAttribute("crmKanbanColumns", loadCrmKanbanColumns());
+        model.addAttribute("crmFullWidth", true);
         return "crm-vendas";
     }
 
