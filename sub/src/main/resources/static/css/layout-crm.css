@@ -1,22 +1,20 @@
 :root {
-    --crm-primary: #7c5dff;
-    --crm-secondary: #23d5ab;
-    --crm-surface: rgba(27, 20, 61, 0.82);
+    --crm-primary: #0057d9;
+    --crm-secondary: #0ac4a7;
+    --crm-surface: #0f172a;
     --crm-border: rgba(255, 255, 255, 0.12);
 }
 
-html[data-theme="light"] .topbar-crm {
-    background: linear-gradient(90deg, #0d0b1a 0%, #1e123f 35%, #0e141b 100%);
+.topbar-crm {
+    background: linear-gradient(120deg, #0b1b35 0%, #132a4c 40%, #0b1b35 100%);
     border-bottom: 1px solid var(--crm-border);
-}
-
-html[data-theme="dark"] .topbar-crm {
-    background: linear-gradient(90deg, #0a0716 0%, #1a1033 35%, #0a1015 100%);
-    border-bottom: 1px solid var(--crm-border);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
 }
 
 .topbar-crm .brand-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.75rem;
     color: #fff;
@@ -28,7 +26,8 @@ html[data-theme="dark"] .topbar-crm {
     height: 40px;
     border-radius: 10px;
     object-fit: cover;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .topbar-crm .brand-text {
@@ -47,34 +46,33 @@ html[data-theme="dark"] .topbar-crm {
     letter-spacing: 0.02em;
 }
 
+.topbar-crm .nav-links {
+    gap: 0.35rem;
+}
+
 .nav-item-crm a {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.65rem 0.9rem;
+    gap: 0.45rem;
+    padding: 0.65rem 0.95rem;
     color: rgba(255, 255, 255, 0.82);
-    border-radius: 10px;
+    border-radius: 12px;
     transition: all 0.2s ease;
     font-weight: 600;
-    background-color: transparent;
+    text-decoration: none;
+}
+
+.nav-item-crm a .bi {
+    font-size: 1rem;
+    color: var(--crm-secondary);
 }
 
 .nav-item-crm a:hover,
 .nav-item-crm a:focus,
 .nav-item-crm a.active {
     color: #fff;
-    background: linear-gradient(120deg, rgba(124, 93, 255, 0.28), rgba(35, 213, 171, 0.25));
-    box-shadow: 0 10px 30px rgba(124, 93, 255, 0.18);
-    text-decoration: none;
-}
-
-.nav-item-crm a .bi {
-    font-size: 1.05rem;
-    color: var(--crm-secondary);
-}
-
-.topbar-crm .nav-links {
-    gap: 0.25rem;
+    background: linear-gradient(120deg, rgba(0, 87, 217, 0.2), rgba(10, 196, 167, 0.16));
+    box-shadow: 0 12px 28px rgba(0, 87, 217, 0.18);
 }
 
 .topbar-crm .topbar-actions .btn.btn-outline {
@@ -84,20 +82,20 @@ html[data-theme="dark"] .topbar-crm {
 
 .topbar-crm .topbar-actions .btn.btn-outline:hover,
 .topbar-crm .topbar-actions .btn.btn-outline:focus {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #fff;
 }
 
 .topbar-crm .notification-bell-button {
     color: #fff;
     background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .topbar-crm .notification-dropdown {
-    background: var(--crm-surface);
+    background: rgba(10, 15, 28, 0.95);
     border: 1px solid var(--crm-border);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
 .topbar-crm .notification-dropdown-header h6,
@@ -109,7 +107,7 @@ html[data-theme="dark"] .topbar-crm {
 .topbar-crm .back-to-top {
     background: var(--crm-primary);
     color: #fff;
-    box-shadow: 0 10px 30px rgba(124, 93, 255, 0.35);
+    box-shadow: 0 12px 30px rgba(0, 87, 217, 0.35);
 }
 
 @media (max-width: 992px) {
