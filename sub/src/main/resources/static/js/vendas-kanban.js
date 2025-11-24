@@ -678,45 +678,296 @@
     }
 
     function buildVendaDetailsSection(card) {
-        const html = [];
-        html.push('<div class="detail-section">');
-        html.push('<h3>Informações da Negociação</h3>');
-        html.push('<p><strong>Nome para contato:</strong> ' + escapeHtml(card.nomeContato || 'N/A') + '</p>');
-        html.push('<p><strong>Email:</strong> ' + escapeHtml(card.email || 'N/A') + '</p>');
-        html.push('<p><strong>Celular:</strong> ' + escapeHtml(card.celular || 'N/A') + '</p>');
-        html.push('<p><strong>Status:</strong> ' + escapeHtml(statusLabels[card.status] || card.status || 'N/A') + '</p>');
-        html.push('</div>');
+        const statusText = statusLabels[card.status] || 'Status não definido';
+        const createdAt = formatDateTime(card.createdAt) || '24/11/2025 12:06';
+        const updatedAt = formatDateTime(card.updatedAt);
+        const responsavel = card.responsavel || 'Nenhum';
+        const observacoes = card.observacoes ? escapeHtml(card.observacoes) : 'Nenhuma observação registrada.';
 
-        html.push('<div class="detail-section">');
-        html.push('<h3>Dados do Veículo</h3>');
-        html.push('<p><strong>Tipo:</strong> ' + escapeHtml(card.tipoVeiculo || 'N/A') + '</p>');
-        html.push('<p><strong>Placa:</strong> ' + escapeHtml(card.placa || 'N/A') + '</p>');
-        html.push('<p><strong>Marca:</strong> ' + escapeHtml(card.marca || 'N/A') + '</p>');
-        html.push('<p><strong>Modelo:</strong> ' + escapeHtml(card.modelo || 'N/A') + '</p>');
-        html.push('<p><strong>Ano:</strong> ' + escapeHtml(card.anoModelo || 'N/A') + '</p>');
-        html.push('<p><strong>Veículo de trabalho:</strong> ' + (card.veiculoTrabalho ? 'Sim' : 'Não') + '</p>');
-        html.push('</div>');
+        return `
+            <div class="crm-negociacao">
+                <div class="crm-topbar">
+                    <div>
+                        <p class="crm-topbar-label">Alerta</p>
+                        <h2 class="crm-topbar-title">${escapeHtml(card.alerta || 'Não Definido')}</h2>
+                    </div>
+                    <div class="crm-topbar-actions">
+                        <span class="crm-id-pill">ID: ${escapeHtml(String(card.id || '---'))}</span>
+                        <button class="crm-btn crm-btn-secondary" type="button">Ações</button>
+                        <button class="crm-btn crm-btn-icon" type="button" aria-label="Fechar" onclick="window.vendasBoard.closeModal()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                </div>
 
-        html.push('<div class="detail-section">');
-        html.push('<h3>Outras Informações</h3>');
-        html.push('<p><strong>Cooperativa:</strong> ' + escapeHtml(card.cooperativa || 'N/A') + '</p>');
-        html.push('<p><strong>Estado:</strong> ' + escapeHtml(card.estado || 'N/A') + '</p>');
-        html.push('<p><strong>Cidade:</strong> ' + escapeHtml(card.cidade || 'N/A') + '</p>');
-        html.push('<p><strong>Origem do Lead:</strong> ' + escapeHtml(card.origemLead || 'N/A') + '</p>');
-        html.push('<p><strong>Enviar cotação:</strong> ' + (card.enviarCotacao ? 'Sim' : 'Não') + '</p>');
-        html.push('</div>');
+                <div class="crm-tabs primary">
+                    <button class="active" type="button">Atividades</button>
+                    <button type="button">Vendas</button>
+                    <button type="button">Pós-vendas</button>
+                    <button type="button">Frota</button>
+                    <button type="button">Riscos</button>
+                </div>
 
-        if (card.observacoes) {
-            html.push('<div class="detail-section"><h3>Observações</h3>');
-            html.push('<p>' + escapeHtml(card.observacoes) + '</p></div>');
+                <div class="crm-tabs secondary">
+                    <button class="active" type="button">Atividades</button>
+                    <button type="button">Negócio</button>
+                    <button type="button">Histórico</button>
+                    <button type="button">PowerSign</button>
+                    <button type="button">Anexos</button>
+                </div>
+
+                <div class="crm-grid">
+                    <div class="crm-main">
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Atividades</h3>
+                                <span class="crm-pill">Atividades</span>
+                            </div>
+
+                            <div class="crm-form-grid">
+                                <label class="crm-field">
+                                    <span>Atividade*</span>
+                                    <select>
+                                        <option>Ligar</option>
+                                        <option>Email</option>
+                                        <option>Whatsapp</option>
+                                        <option>Reunião</option>
+                                    </select>
+                                </label>
+
+                                <label class="crm-field">
+                                    <span>Responsável*</span>
+                                    <select>
+                                        <option>${escapeHtml(responsavel)}</option>
+                                        <option>Equipe Comercial</option>
+                                        <option>Time de Vendas</option>
+                                    </select>
+                                </label>
+
+                                <label class="crm-field">
+                                    <span>Quando*</span>
+                                    <input type="datetime-local" value="${formatDateTimeInput(card.createdAt)}">
+                                </label>
+
+                                <label class="crm-field">
+                                    <span>Cliente*</span>
+                                    <select>
+                                        <option>${escapeHtml(card.nomeContato || 'Não definido')}</option>
+                                    </select>
+                                </label>
+
+                                <label class="crm-field full">
+                                    <span>Observação</span>
+                                    <textarea rows="2" placeholder="Adicione observações">${card.observacoes ? escapeHtml(card.observacoes) : ''}</textarea>
+                                </label>
+                            </div>
+
+                            <div class="crm-card-footer">
+                                <div class="crm-card-footer-actions">
+                                    <button class="crm-btn crm-btn-primary" type="button">Atividades</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">Comunicação</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">Histórico</button>
+                                    <button class="crm-btn crm-btn-secondary" type="button">PowerSign</button>
+                                </div>
+                                <p class="crm-muted">Sem atividades nesta negociação.</p>
+                            </div>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Geral</h3>
+                                <span class="crm-pill">${escapeHtml(statusText)}</span>
+                            </div>
+                            <div class="crm-info-grid">
+                                ${buildInfoRow('Cooperativa', card.cooperativa)}
+                                ${buildInfoRow('Tipo de veículo', card.tipoVeiculo)}
+                                ${buildInfoRow('Placa', card.placa)}
+                                ${buildInfoRow('Marca', card.marca)}
+                                ${buildInfoRow('Modelo', card.modelo)}
+                                ${buildInfoRow('Ano modelo', card.anoModelo)}
+                                ${buildInfoRow('Estado', card.estado)}
+                                ${buildInfoRow('Cidade', card.cidade)}
+                            </div>
+                            <div class="crm-history">
+                                <div class="crm-history-item">
+                                    <div class="crm-history-dot"></div>
+                                    <div>
+                                        <strong>Negociação criada pelo site</strong>
+                                        <p class="crm-muted">${createdAt}</p>
+                                    </div>
+                                </div>
+                                ${updatedAt ? `<div class="crm-history-item"><div class="crm-history-dot"></div><div><strong>Última atualização</strong><p class="crm-muted">${updatedAt}</p></div></div>` : ''}
+                            </div>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Observações</h3>
+                                <span class="crm-pill">Anotações</span>
+                            </div>
+                            <p class="crm-muted">${observacoes}</p>
+                        </section>
+                    </div>
+
+                    <div class="crm-side">
+                        <section class="crm-card highlight">
+                            <div class="crm-card-header">
+                                <h3>Responsável</h3>
+                                <div class="crm-status">${escapeHtml(responsavel)}</div>
+                            </div>
+                            <p class="crm-muted">Atenção: esta negociação ainda não possui responsável definido.</p>
+                            <button class="crm-btn crm-btn-success full" type="button">Atender essa cotação</button>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Filiação</h3>
+                                <span class="crm-status">Nenhum</span>
+                            </div>
+                            <button class="crm-btn crm-btn-secondary full" type="button">Iniciar</button>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Contratação online</h3>
+                                <span class="crm-status warning">Atendimento necessário</span>
+                            </div>
+                            <div class="crm-badges">
+                                <span class="crm-mini-badge info">Categoria</span>
+                                <span class="crm-mini-badge info">Tipo de carga</span>
+                                <span class="crm-mini-badge info">Trajeto</span>
+                                <span class="crm-mini-badge info">Equipamentos de carga</span>
+                            </div>
+                            <button class="crm-btn crm-btn-secondary full" type="button">Saiba mais</button>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Cooperativa</h3>
+                            </div>
+                            <select class="crm-input">
+                                <option>${escapeHtml(card.cooperativa || 'Selecione')}</option>
+                            </select>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Tag</h3>
+                            </div>
+                            <div class="crm-badges spaced">
+                                <span class="crm-mini-badge tag">Tag em falta</span>
+                                <span class="crm-mini-badge warning">Tag amarela</span>
+                                <span class="crm-mini-badge success">Tag verde</span>
+                            </div>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Origem do lead</h3>
+                            </div>
+                            <select class="crm-input">
+                                <option>${escapeHtml(card.origemLead || 'Marketing On Endomarketing')}</option>
+                                <option>Facebook Ads</option>
+                                <option>Contato direto</option>
+                            </select>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Área de contato</h3>
+                            </div>
+                            <div class="crm-form-grid compact">
+                                <label class="crm-field">
+                                    <span>Cotação de website</span>
+                                    <select>
+                                        <option>${escapeHtml(card.email || 'Selecione')}</option>
+                                    </select>
+                                </label>
+                                <label class="crm-field">
+                                    <span>Tag do WhatsApp</span>
+                                    <select>
+                                        <option>${escapeHtml(card.celular || 'Nenhum número')}</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="crm-footer-actions">
+                                <button class="crm-btn crm-btn-primary" type="button">Adicionar</button>
+                                <button class="crm-btn crm-btn-secondary" type="button">Aplicar</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="crm-actions">
+                    <button type="button" class="crm-btn crm-btn-primary" onclick="window.vendasBoard.openEditModal(${card.id})"><i class="bi bi-pencil"></i> Editar</button>
+                    <button type="button" class="crm-btn crm-btn-danger" onclick="window.vendasBoard.deleteVenda(${card.id})"><i class="bi bi-trash"></i> Deletar</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function buildInfoRow(label, value) {
+        return `
+            <div class="crm-info-row">
+                <span>${escapeHtml(label)}</span>
+                <strong>${escapeHtml(value || 'Não informado')}</strong>
+            </div>
+        `;
+    }
+
+    function buildCommunicationTags(card) {
+        const tags = [];
+
+        if (card.email) {
+            tags.push({ icon: 'bi-envelope', label: card.email });
         }
 
-        html.push('<div class="modal-actions">');
-        html.push('<button type="button" class="btn btn-primary" onclick="window.vendasBoard.openEditModal(' + card.id + ')"><i class="bi bi-pencil"></i> Editar</button>');
-        html.push('<button type="button" class="btn btn-danger" onclick="window.vendasBoard.deleteVenda(' + card.id + ')"><i class="bi bi-trash"></i> Deletar</button>');
-        html.push('</div>');
+        if (card.celular) {
+            tags.push({ icon: 'bi-whatsapp', label: card.celular });
+        }
 
-        return html.join('');
+        if (card.placa) {
+            tags.push({ icon: 'bi-car-front', label: card.placa });
+        }
+
+        if (card.cidade || card.estado) {
+            tags.push({ icon: 'bi-geo-alt', label: `${card.cidade || ''} ${card.estado ? '/ ' + card.estado : ''}`.trim() });
+        }
+
+        if (!tags.length) {
+            return '<span class="muted">Nenhum contato informado.</span>';
+        }
+
+        return tags.map(tag => `<span class="tag-chip"><i class="bi ${tag.icon}"></i> ${escapeHtml(tag.label)}</span>`).join('');
+    }
+
+    function formatDateTime(dateValue) {
+        if (!dateValue) {
+            return '';
+        }
+
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+
+        return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
+    function formatDateTimeInput(dateValue) {
+        const date = new Date(dateValue || Date.now());
+
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
     function escapeHtml(text) {
