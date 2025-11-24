@@ -725,6 +725,28 @@
         return div.innerHTML;
     }
 
+    // Função para aguardar o board estar disponível
+    function waitForBoard(callback, maxAttempts = 50) {
+        let attempts = 0;
+
+        const checkBoard = () => {
+            attempts++;
+            const board = selectors.board();
+
+            if (board) {
+                console.log('[VENDAS-KANBAN] Board encontrado após', attempts, 'tentativa(s)');
+                callback();
+            } else if (attempts < maxAttempts) {
+                console.log('[VENDAS-KANBAN] Aguardando board... tentativa', attempts);
+                setTimeout(checkBoard, 100);
+            } else {
+                console.error('[VENDAS-KANBAN] Board não encontrado após', maxAttempts, 'tentativas');
+            }
+        };
+
+        checkBoard();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         console.log('[VENDAS-KANBAN] DOM carregado, inicializando...');
 
@@ -738,6 +760,7 @@
 
         console.log('[VENDAS-KANBAN] window.vendasBoard criado:', window.vendasBoard);
 
-        init();
+        // Aguarda o board estar disponível antes de inicializar
+        waitForBoard(init);
     });
 })();
