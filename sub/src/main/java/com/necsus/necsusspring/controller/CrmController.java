@@ -17,6 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CrmController {
 
     /**
+     * Página Overview do CRM
+     */
+    @GetMapping(value = "/overview", produces = MediaType.TEXT_HTML_VALUE)
+    public String overview(Model model) {
+        model.addAttribute("pageTitle", "Overview - CRM");
+        return "crm/overview";
+    }
+
+    /**
      * Página de Funil de Filiação (Kanban de negociações)
      */
     @GetMapping(value = "/vendas", produces = MediaType.TEXT_HTML_VALUE)
