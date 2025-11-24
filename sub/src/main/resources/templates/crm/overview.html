@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - CRM Overview</title>
+    <style>
+        .crm-overview {
+            padding: 20px;
+        }
+
+        .overview-header {
+            margin-bottom: 30px;
+        }
+
+        .overview-header h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .overview-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #6366f1;
+        }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.success {
+            border-left-color: #10b981;
+        }
+
+        .stat-card.info {
+            border-left-color: #3b82f6;
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .description {
+            font-size: 0.875rem;
+            color: #999;
+        }
+
+        .quick-actions {
+            margin-top: 30px;
+        }
+
+        .quick-actions h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-overview">
+        <div class="overview-header">
+            <h1><i class="bi bi-speedometer2"></i> CRM Overview</h1>
+            <p>Visão geral do seu funil de filiação e métricas importantes</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Cotações Recebidas</h3>
+                <div class="value" id="stat-cotacoes">-</div>
+                <div class="description">Aguardando contato</div>
+            </div>
+
+            <div class="stat-card warning">
+                <h3>Em Negociação</h3>
+                <div class="value" id="stat-negociacao">-</div>
+                <div class="description">Em processo de negociação</div>
+            </div>
+
+            <div class="stat-card info">
+                <h3>Vistorias</h3>
+                <div class="value" id="stat-vistorias">-</div>
+                <div class="description">Aguardando vistoria</div>
+            </div>
+
+            <div class="stat-card warning">
+                <h3>Liberadas para Cadastro</h3>
+                <div class="value" id="stat-liberadas">-</div>
+                <div class="description">Prontas para finalização</div>
+            </div>
+
+            <div class="stat-card success">
+                <h3>Filiações Concretizadas</h3>
+                <div class="value" id="stat-concretizadas">-</div>
+                <div class="description">Filiações finalizadas</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total de Negociações</h3>
+                <div class="value" id="stat-total">-</div>
+                <div class="description">Todas as negociações</div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Ações Rápidas</h2>
+            <div class="action-buttons">
+                <a href="/crm/vendas" class="action-btn">
+                    <i class="bi bi-funnel"></i>
+                    Funil de Filiação
+                </a>
+                <a href="/crm/vendas" class="action-btn" onclick="event.preventDefault(); window.location.href='/crm/vendas'; setTimeout(() => window.vendasBoard?.openCreateModal?.(), 500);">
+                    <i class="bi bi-plus-circle"></i>
+                    Nova Negociação
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carrega estatísticas via API
+        async function loadStats() {
+            try {
+                const response = await fetch('/crm/api/vendas', {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar dados');
+                }
+
+                const vendas = await response.json();
+
+                // Conta por status
+                const stats = {
+                    COTACOES_RECEBIDAS: 0,
+                    EM_NEGOCIACAO: 0,
+                    VISTORIAS: 0,
+                    LIBERADAS_PARA_CADASTRO: 0,
+                    FILIACAO_CONCRETIZADAS: 0
+                };
+
+                vendas.forEach(venda => {
+                    if (stats.hasOwnProperty(venda.status)) {
+                        stats[venda.status]++;
+                    }
+                });
+
+                // Atualiza os valores na tela
+                document.getElementById('stat-cotacoes').textContent = stats.COTACOES_RECEBIDAS;
+                document.getElementById('stat-negociacao').textContent = stats.EM_NEGOCIACAO;
+                document.getElementById('stat-vistorias').textContent = stats.VISTORIAS;
+                document.getElementById('stat-liberadas').textContent = stats.LIBERADAS_PARA_CADASTRO;
+                document.getElementById('stat-concretizadas').textContent = stats.FILIACAO_CONCRETIZADAS;
+                document.getElementById('stat-total').textContent = vendas.length;
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+                // Define valores como 0 em caso de erro
+                ['stat-cotacoes', 'stat-negociacao', 'stat-vistorias', 'stat-liberadas', 'stat-concretizadas', 'stat-total'].forEach(id => {
+                    document.getElementById(id).textContent = '0';
+                });
+            }
+        }
+
+        // Carrega quando a página estiver pronta
+        document.addEventListener('DOMContentLoaded', loadStats);
+    </script>
+</section>
+</body>
+</html>
