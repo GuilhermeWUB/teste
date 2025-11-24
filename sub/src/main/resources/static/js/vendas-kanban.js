@@ -2,7 +2,7 @@
     console.log('[VENDAS-KANBAN] Script carregado com sucesso');
 
     const API_BASE = '/crm/api/vendas';
-    const STATUSES = ['NOVO_LEAD', 'CONTATO_INICIAL', 'PROPOSTA_ENVIADA', 'NEGOCIACAO', 'FECHADO', 'PERDIDO'];
+    const STATUSES = ['COTACOES_RECEBIDAS', 'EM_NEGOCIACAO', 'VISTORIAS', 'LIBERADAS_PARA_CADASTRO', 'FILIACAO_CONCRETIZADAS'];
 
     const state = {
         cards: [],
@@ -15,21 +15,19 @@
     };
 
     const statusLabels = {
-        NOVO_LEAD: 'Novo Lead',
-        CONTATO_INICIAL: 'Contato Inicial',
-        PROPOSTA_ENVIADA: 'Proposta Enviada',
-        NEGOCIACAO: 'Negociação',
-        FECHADO: 'Fechado',
-        PERDIDO: 'Perdido'
+        COTACOES_RECEBIDAS: 'Cotações recebidas',
+        EM_NEGOCIACAO: 'Em negociação',
+        VISTORIAS: 'Vistorias',
+        LIBERADAS_PARA_CADASTRO: 'Liberadas para cadastro',
+        FILIACAO_CONCRETIZADAS: 'Filiação concretizadas'
     };
 
     const statusColors = {
-        NOVO_LEAD: '#6366f1',
-        CONTATO_INICIAL: '#3b82f6',
-        PROPOSTA_ENVIADA: '#f59e0b',
-        NEGOCIACAO: '#8b5cf6',
-        FECHADO: '#10b981',
-        PERDIDO: '#ef4444'
+        COTACOES_RECEBIDAS: '#6366f1',
+        EM_NEGOCIACAO: '#f59e0b',
+        VISTORIAS: '#3b82f6',
+        LIBERADAS_PARA_CADASTRO: '#8b5cf6',
+        FILIACAO_CONCRETIZADAS: '#10b981'
     };
 
     const selectors = {
