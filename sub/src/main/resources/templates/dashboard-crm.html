@@ -200,5 +200,16 @@
         </div>
     </div>
 </section>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const focusSection = /*[[${crmFocusSection}]]*/ null;
+        if (focusSection) {
+            const target = document.getElementById(focusSection);
+            if (target) {
+                target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            }
+        }
+    });
+</script>
 </body>
 </html>

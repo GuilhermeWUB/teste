@@ -38,26 +38,29 @@
     <nav class="topbar-nav" aria-label="Navegação CRM">
         <ul class="nav-links">
             <li class="nav-item-crm">
-                <a th:href="@{/dashboard/crm}"
+                <a th:href="@{/crm/overview}"
                    th:classappend="${currentCrmPage == 'overview'} ? 'active' : ''">
                     <i class="bi bi-speedometer2"></i>
                     <span>Visão CRM</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a href="#pipeline">
+                <a th:href="@{/crm/funil}"
+                   th:classappend="${currentCrmPage == 'pipeline'} ? 'active' : ''">
                     <i class="bi bi-kanban"></i>
                     <span>Funil</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a href="#followups">
+                <a th:href="@{/crm/followups}"
+                   th:classappend="${currentCrmPage == 'followups'} ? 'active' : ''">
                     <i class="bi bi-telephone-forward"></i>
                     <span>Follow-ups</span>
                 </a>
             </li>
             <li class="nav-item-crm">
-                <a href="#leads">
+                <a th:href="@{/crm/leads}"
+                   th:classappend="${currentCrmPage == 'leads'} ? 'active' : ''">
                     <i class="bi bi-people"></i>
                     <span>Leads</span>
                 </a>
