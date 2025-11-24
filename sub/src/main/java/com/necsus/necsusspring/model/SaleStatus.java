@@ -1,13 +1,12 @@
 package com.necsus.necsusspring.model;
 
 public enum SaleStatus {
-    // Status para vendas/negociações
-    NOVO_LEAD("Novo Lead"),
-    CONTATO_INICIAL("Contato Inicial"),
-    PROPOSTA_ENVIADA("Proposta Enviada"),
-    NEGOCIACAO("Negociação"),
-    FECHADO("Fechado"),
-    PERDIDO("Perdido");
+    // Status para funil de filiação
+    COTACOES_RECEBIDAS("Cotações recebidas"),
+    EM_NEGOCIACAO("Em negociação"),
+    VISTORIAS("Vistorias"),
+    LIBERADAS_PARA_CADASTRO("Liberadas para cadastro"),
+    FILIACAO_CONCRETIZADAS("Filiação concretizadas");
 
     private final String displayName;
 

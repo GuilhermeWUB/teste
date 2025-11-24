@@ -1,4 +1,4 @@
--- Tabela para gerenciar vendas/negociacoes do CRM
+-- Tabela para gerenciar funil de filiacao do CRM
 CREATE TABLE sales (
     id BIGSERIAL PRIMARY KEY,
     cooperativa VARCHAR(255),
@@ -15,11 +15,11 @@ CREATE TABLE sales (
     origem_lead VARCHAR(255),
     veiculo_trabalho BOOLEAN DEFAULT FALSE,
     enviar_cotacao BOOLEAN DEFAULT FALSE,
-    status VARCHAR(50) NOT NULL DEFAULT 'NOVO_LEAD',
+    status VARCHAR(50) NOT NULL DEFAULT 'COTACOES_RECEBIDAS',
     observacoes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT chk_sale_status CHECK (status IN ('NOVO_LEAD', 'CONTATO_INICIAL', 'PROPOSTA_ENVIADA', 'NEGOCIACAO', 'FECHADO', 'PERDIDO'))
+    CONSTRAINT chk_sale_status CHECK (status IN ('COTACOES_RECEBIDAS', 'EM_NEGOCIACAO', 'VISTORIAS', 'LIBERADAS_PARA_CADASTRO', 'FILIACAO_CONCRETIZADAS'))
 );
 
 -- Indice para melhorar performance de buscas por status

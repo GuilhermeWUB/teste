@@ -55,7 +55,7 @@ public class Sale {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SaleStatus status = SaleStatus.NOVO_LEAD;
+    private SaleStatus status = SaleStatus.COTACOES_RECEBIDAS;
 
     @Column(length = 2000)
     private String observacoes;

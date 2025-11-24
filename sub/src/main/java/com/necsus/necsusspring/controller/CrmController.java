@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CrmController {
 
     /**
-     * Página de Vendas (Kanban de negociações)
+     * Página de Funil de Filiação (Kanban de negociações)
      */
     @GetMapping(value = "/vendas", produces = MediaType.TEXT_HTML_VALUE)
     public String vendas(Model model) {
-        model.addAttribute("pageTitle", "Vendas - CRM");
+        model.addAttribute("pageTitle", "Funil de Filiação - CRM");
         return "crm/vendas";
     }
 }

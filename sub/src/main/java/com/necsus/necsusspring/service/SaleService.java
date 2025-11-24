@@ -49,7 +49,7 @@ public class SaleService {
         sale.setVeiculoTrabalho(request.veiculoTrabalho() != null ? request.veiculoTrabalho() : false);
         sale.setEnviarCotacao(request.enviarCotacao() != null ? request.enviarCotacao() : false);
         sale.setObservacoes(request.observacoes());
-        sale.setStatus(SaleStatus.NOVO_LEAD);
+        sale.setStatus(SaleStatus.COTACOES_RECEBIDAS);
 
         return saleRepository.save(sale);
     }
