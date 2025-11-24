@@ -906,8 +906,8 @@ html[data-theme="dark"] .kanban-wrapper {
 }
 
 .kanban-modal-content {
-    width: min(600px, 95vw);
-    max-height: 80vh;
+    width: min(820px, 96vw);
+    max-height: 90vh;
     overflow: hidden;
     border-radius: clamp(16px, 2vw, 20px);
     background: var(--kanban-modal-bg, var(--color-surface-elevated));
