@@ -126,13 +126,6 @@ public class CrmController {
                 new CrmDeal("APP Maxi Brasil", "PLACA: ESA-2I49", "R$ 155,00", "Negociação", "Hoje", "Negociação")
         );
 
-        List<CrmDeal> readyForOnboarding = List.of(
-                new CrmDeal("APP Maxi Brasil", "PLACA: RZH-1H74", "R$ 165,00", "Documentos", "Hoje", "Documentos"),
-                new CrmDeal("APP Maxi Brasil", "PLACA: HSF-2J55", "R$ 112,67", "Documentos", "Hoje", "Documentos"),
-                new CrmDeal("APP Maxi Brasil", "PLACA: GPJ-4D20", "R$ 165,00", "Documentos", "Hoje", "Documentos"),
-                new CrmDeal("APP Maxi Brasil", "PLACA: KMB-3434", "R$ 165,00", "Documentos", "Hoje", "Negociação")
-        );
-
         List<CrmDeal> affiliations = List.of(
                 new CrmDeal("APP Maxi Brasil", "PLACA: IME-7I35", "R$ 139,00", "Vencedor", "Hoje", "Documentos"),
                 new CrmDeal("APP Maxi Brasil", "PLACA: PZX-6J44", "R$ 165,00", "Negociação", "Hoje", "Documentos"),
@@ -140,18 +133,11 @@ public class CrmController {
                 new CrmDeal("APP Maxi Brasil", "PLACA: ONE-4D98", "R$ 156,00", "Negociação", "Hoje", "Documentos")
         );
 
-        List<CrmDeal> notNegotiated = List.of(
-                new CrmDeal("APP Maxi Brasil", "PLACA: GLW-4C38", "R$ 139,00", "Não negociado", "Hoje", "Não Negociado"),
-                new CrmDeal("APP Maxi Brasil", "PLACA: RGH-4B06", "R$ 119,00", "Não negociado", "Hoje", "Não Negociado")
-        );
-
         return List.of(
                 new CrmPipelineColumn("Cotações recebidas", "Novos leads aguardando retorno", String.valueOf(received.size()), "bg-primary-subtle text-primary", received),
                 new CrmPipelineColumn("Em negociação", "Propostas em tratativa", String.valueOf(negotiating.size()), "bg-info-subtle text-info", negotiating),
-                new CrmPipelineColumn("Vitórias", "Negócios ganhos", String.valueOf(wins.size()), "bg-success-subtle text-success", wins),
-                new CrmPipelineColumn("Liberado para cadastro", "Documentação validada", String.valueOf(readyForOnboarding.size()), "bg-warning-subtle text-warning", readyForOnboarding),
-                new CrmPipelineColumn("Filiações concretizadas", "Em ativação", String.valueOf(affiliations.size()), "bg-secondary-subtle text-secondary", affiliations),
-                new CrmPipelineColumn("Não negociado", "Oportunidades arquivadas", String.valueOf(notNegotiated.size()), "bg-danger-subtle text-danger", notNegotiated)
+                new CrmPipelineColumn("Vitória", "Negócios ganhos", String.valueOf(wins.size()), "bg-success-subtle text-success", wins),
+                new CrmPipelineColumn("Filiações concretizadas", "Em ativação", String.valueOf(affiliations.size()), "bg-secondary-subtle text-secondary", affiliations)
         );
     }
 
