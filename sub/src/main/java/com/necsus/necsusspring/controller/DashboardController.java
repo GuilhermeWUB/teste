@@ -4,6 +4,7 @@ import com.necsus.necsusspring.dto.CrmActivity;
 import com.necsus.necsusspring.dto.CrmDeal;
 import com.necsus.necsusspring.dto.CrmLead;
 import com.necsus.necsusspring.dto.CrmMetric;
+import com.necsus.necsusspring.dto.CrmPipelineColumn;
 import com.necsus.necsusspring.dto.DashboardSummary;
 import com.necsus.necsusspring.model.Demand;
 import com.necsus.necsusspring.model.UserAccount;
@@ -57,7 +58,7 @@ public class DashboardController {
         model.addAttribute("crmHeroTitle", "CRM de Vendas");
         model.addAttribute("crmHeroSubtitle", "Acompanhe o funil, tarefas e oportunidades sem sair do SUB.");
         model.addAttribute("crmMetrics", loadCrmMetrics());
-        model.addAttribute("crmPipeline", loadCrmPipeline());
+        model.addAttribute("crmPipelineColumns", loadCrmPipelineColumns());
         model.addAttribute("crmActivities", loadCrmActivities());
         model.addAttribute("crmLeads", loadCrmLeads());
 
@@ -89,13 +90,60 @@ public class DashboardController {
         );
     }
 
-    private List<CrmDeal> loadCrmPipeline() {
+    private List<CrmPipelineColumn> loadCrmPipelineColumns() {
+        List<CrmDeal> quotes = List.of(
+                new CrmDeal("Cotação APP Maxi Brasil", "Lidertech - Curitiba", "R$ 120,00", "Retorno pendente", "Hoje", "Acompanhar"),
+                new CrmDeal("Adesão Star Assistência", "Star Assistência 24H", "R$ 72,00", "Documentação", "Hoje", "Ver proposta"),
+                new CrmDeal("Cotação APP Axa Restituição", "Valter Mendes - Curitiba", "R$ 110,00", "Checagem", "Amanhã", "Fup"),
+                new CrmDeal("Rastreamento Light + APP", "Herick Anderson - SP", "R$ 149,00", "Retorno", "Amanhã", "Fup")
+        );
+
+        List<CrmDeal> negotiating = List.of(
+                new CrmDeal("Cotação APP Maxi Brasil", "Alexandre - Maringá", "R$ 155,00", "Contraproposta", "Hoje", "Negociando"),
+                new CrmDeal("APP Porte para Aplicativo", "Andreia Fimatti - PR", "R$ 198,00", "Ajustar cobertura", "Hoje", "Urgente"),
+                new CrmDeal("Renovação APP Ferrari Brasil", "Clecio Serapião - GO", "R$ 210,00", "Revisão", "Amanhã", "Acompanhar"),
+                new CrmDeal("APP Passageiros Fidelização", "Samuel Gutierrez - PR", "R$ 140,00", "Rever franquia", "Amanhã", "Fup")
+        );
+
+        List<CrmDeal> wins = List.of(
+                new CrmDeal("Assistência 24H", "Mauro Oliveira - PR", "R$ 85,00", "Fechada", "Hoje", "Vitória"),
+                new CrmDeal("Fidelização Auto + Assistência", "Alexandre Gomes - PR", "R$ 132,00", "Fechada", "Hoje", "Vitória"),
+                new CrmDeal("APP Maxi Brasil", "Ribamar Silva - SP", "R$ 175,00", "Fechada", "Hoje", "Vitória"),
+                new CrmDeal("APP Maxi Brasil", "Adriano Cardozo - RJ", "R$ 165,00", "Fechada", "Hoje", "Vitória"),
+                new CrmDeal("Cobertura Premium APP", "Carlos - Itajubá", "R$ 188,00", "Fechada", "Hoje", "Vitória")
+        );
+
+        List<CrmDeal> readyForOnboarding = List.of(
+                new CrmDeal("APP + Assistência", "Elze Rodrigues - PR", "R$ 150,00", "Dados enviados", "Hoje", "Cadastro"),
+                new CrmDeal("APP Porte Fidelização", "Rafael Canuto", "R$ 119,00", "Dados enviados", "Hoje", "Cadastro"),
+                new CrmDeal("APP Maxi Brasil", "Santiago Aparecido - SP", "R$ 180,00", "Docs pendentes", "Amanhã", "Checar"),
+                new CrmDeal("APP Peregrino", "Josiel Júnior - PR", "R$ 132,00", "Dados enviados", "Amanhã", "Cadastro"),
+                new CrmDeal("APP Maxi Brasil", "Laercio Araújo", "R$ 142,00", "Dados enviados", "Amanhã", "Cadastro")
+        );
+
+        List<CrmDeal> closed = List.of(
+                new CrmDeal("APP Maxi Brasil", "Erumarbe Custódio - PR", "R$ 140,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Katia Cristina - SP", "R$ 129,90", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Graziele Cristino - SP", "R$ 142,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Odasio Junior - DF", "R$ 142,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Lucas Cardoso - RJ", "R$ 125,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Liliane - PR", "R$ 122,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "João Victor - PR", "R$ 148,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Erivaldo Silva - PE", "R$ 146,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Aldicley Nascimento - PR", "R$ 120,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Antonio Cesário - RN", "R$ 135,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Larissa Amorim - RJ", "R$ 149,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Douglas Rodrigues - SP", "R$ 155,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Roberto Santos - GO", "R$ 132,00", "Ativo", "Hoje", "Concluído"),
+                new CrmDeal("APP Maxi Brasil", "Daniel - SP", "R$ 140,00", "Ativo", "Hoje", "Concluído")
+        );
+
         return List.of(
-                new CrmDeal("Sistema de rastreamento", "AutoPrime", "R$ 18.500", "Proposta enviada", "20/07", "Quente"),
-                new CrmDeal("Upgrade de planos", "LogiTrans", "R$ 24.900", "Negociação", "17/07", "Em tratativa"),
-                new CrmDeal("Renovação anual", "Frota Sul", "R$ 36.200", "Fechamento", "15/07", "Confirmação"),
-                new CrmDeal("Cobertura premium", "Veloz Delivery", "R$ 9.800", "Diagnóstico", "22/07", "Descoberta"),
-                new CrmDeal("Pacote corporativo", "RotaMax", "R$ 53.100", "Prospecção", "30/07", "Em validação")
+                new CrmPipelineColumn("Cotações recebidas", "Novos leads aguardando retorno", String.valueOf(quotes.size()), "bg-primary-subtle text-primary", quotes),
+                new CrmPipelineColumn("Em negociação", "Em tratativa com o time comercial", String.valueOf(negotiating.size()), "bg-warning-subtle text-warning", negotiating),
+                new CrmPipelineColumn("Vitórias", "Fechados com sucesso", String.valueOf(wins.size()), "bg-success-subtle text-success", wins),
+                new CrmPipelineColumn("Liberado para cadastro", "Documentação validada", String.valueOf(readyForOnboarding.size()), "bg-info-subtle text-info", readyForOnboarding),
+                new CrmPipelineColumn("Filiações concretizadas", "Em processo de ativação", String.valueOf(closed.size()), "bg-secondary-subtle text-secondary", closed)
         );
     }
 
