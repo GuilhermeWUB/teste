@@ -48,7 +48,7 @@ public class DashboardController {
 
     @GetMapping("/dashboard/crm")
     public String redirectCrmModule() {
-        return "redirect:/crm/overview";
+        return "redirect:/crm/vendas";
     }
 
     private List<Demand> loadNextDemands(Authentication authentication) {
