@@ -897,12 +897,24 @@ html[data-theme="dark"] .kanban-wrapper {
     justify-content: center;
     background: var(--kanban-backdrop);
     backdrop-filter: blur(8px);
-    z-index: 1050;
+    z-index: 1400;
     padding: 2rem;
 }
 
 .kanban-modal.active {
     display: flex;
+}
+
+body.kanban-modal-open {
+    overflow: hidden;
+}
+
+body.kanban-modal-open > .topbar,
+body.kanban-modal-open > .topbar-crm {
+    pointer-events: none;
+    filter: blur(8px);
+    opacity: 0.45;
+    transition: filter 0.2s ease, opacity 0.2s ease;
 }
 
 .kanban-modal-content {
