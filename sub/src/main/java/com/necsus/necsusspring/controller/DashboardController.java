@@ -53,6 +53,7 @@ public class DashboardController {
     @GetMapping("/dashboard/crm")
     public String crmDashboard(Model model) {
         model.addAttribute("pageTitle", "SUB - CRM");
+        model.addAttribute("currentCrmPage", "overview");
         model.addAttribute("crmHeroTitle", "CRM de Vendas");
         model.addAttribute("crmHeroSubtitle", "Acompanhe o funil, tarefas e oportunidades sem sair do SUB.");
         model.addAttribute("crmMetrics", loadCrmMetrics());
