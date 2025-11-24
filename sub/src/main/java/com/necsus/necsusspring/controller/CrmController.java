@@ -31,6 +31,6 @@ public class CrmController {
     @GetMapping(value = "/vendas", produces = MediaType.TEXT_HTML_VALUE)
     public String vendas(Model model) {
         model.addAttribute("pageTitle", "Funil de Filiação - CRM");
-        return "crm-vendas";
+        return "crm/vendas";
     }
 }
