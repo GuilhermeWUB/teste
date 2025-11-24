@@ -1,0 +1,68 @@
+.topbar-crm {
+    background: var(--color-topbar-bg);
+    border-bottom: 1px solid var(--color-topbar-border);
+    box-shadow: var(--shadow-soft);
+}
+
+.topbar-crm .brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-topbar-text);
+    text-decoration: none;
+}
+
+.topbar-crm .brand-logo {
+    width: 48px;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.35);
+    object-fit: cover;
+}
+
+.topbar-crm .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.topbar-crm .brand-title {
+    font-weight: 700;
+    color: var(--color-topbar-text);
+}
+
+.topbar-crm .brand-subtitle {
+    color: var(--color-nav-link);
+    letter-spacing: 0.02em;
+    font-size: 0.9rem;
+}
+
+.nav-item-crm a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.75rem;
+    color: var(--color-nav-link);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-item-crm a .bi {
+    font-size: 1rem;
+    color: currentColor;
+}
+
+.nav-item-crm a:hover,
+.nav-item-crm a:focus {
+    color: var(--color-nav-link-hover);
+}
+
+html[data-theme="dark"] .nav-item-crm a {
+    color: var(--color-nav-link);
+}
+
+html[data-theme="dark"] .nav-item-crm a:hover,
+html[data-theme="dark"] .nav-item-crm a:focus {
+    color: var(--color-nav-link-hover);
+}
