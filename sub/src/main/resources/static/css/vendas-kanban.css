@@ -520,7 +520,7 @@ body:has(.vendas-kanban-container) .page-content {
 body.kanban-modal-open { overflow: hidden; }
 
 .kanban-modal-content {
-    width: min(1280px, 96vw);
+    width: min(1100px, 90vw);
     max-height: 90vh;
     background: var(--panel);
     border-radius: 20px;
