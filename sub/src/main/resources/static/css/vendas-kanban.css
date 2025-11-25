@@ -455,15 +455,14 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-card-meta {
     display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
+    justify-content: flex-start;
+    gap: 0.65rem;
     padding-top: 0.6rem;
     border-top: 1px dashed var(--surface-strong);
     align-items: center;
 }
 
-.vendas-kanban-card-amount,
-.vendas-kanban-card-date {
+.vendas-kanban-card-amount {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -471,8 +470,7 @@ body:has(.vendas-kanban-container) .page-content {
     color: var(--panel-contrast);
 }
 
-.vendas-kanban-card-amount i,
-.vendas-kanban-card-date i { color: var(--muted-2); }
+.vendas-kanban-card-amount i { color: var(--muted-2); }
 
 .vendas-kanban-card-badges {
     display: flex;
@@ -488,18 +486,6 @@ body:has(.vendas-kanban-container) .page-content {
     border: 1px solid var(--surface-strong);
     background: var(--surface);
     color: var(--muted);
-}
-
-.vendas-kanban-mini-tag {
-    margin-left: auto;
-    padding: 0.3rem 0.65rem;
-    border-radius: 10px;
-    background: var(--surface);
-    border: 1px solid var(--surface-strong);
-    color: var(--muted);
-    font-weight: 800;
-    font-size: 0.8rem;
-    letter-spacing: 0.02em;
 }
 
 /* DRAG STATES ---------------------------------------------- */

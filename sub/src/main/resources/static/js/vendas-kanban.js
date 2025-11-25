@@ -278,7 +278,7 @@
 
         article.appendChild(top);
 
-        // Meta informações (valor e data)
+        // Meta informações (valor)
         const meta = document.createElement('div');
         meta.className = 'vendas-kanban-card-meta';
 
@@ -287,16 +287,6 @@
         amount.innerHTML = `<i class="bi bi-currency-dollar"></i><span>${formatCurrency(card.valor)}</span>`;
         meta.appendChild(amount);
 
-        const date = document.createElement('div');
-        date.className = 'vendas-kanban-card-date';
-        date.innerHTML = '<i class="bi bi-calendar4"></i><span>' + (formatDate(card.createdAt) || 'Hoje') + '</span>';
-        meta.appendChild(date);
-
-        const cooperativaTag = document.createElement('span');
-        cooperativaTag.className = 'vendas-kanban-mini-tag';
-        cooperativaTag.textContent = card.cooperativa || 'VR';
-        meta.appendChild(cooperativaTag);
-
         article.appendChild(meta);
 
         article.addEventListener('click', () => openModal(card));
@@ -304,11 +294,32 @@
         return article;
     }
 
-    function formatDate(dateValue) {
+    function formatDateTimeShort(dateValue) {
         if (!dateValue) return '';
         const date = new Date(dateValue);
         if (Number.isNaN(date.getTime())) return '';
-        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+    }
+
+    function formatCurrency(value) {
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (Number.isNaN(numeric)) {
+            return 'R$ 0,00';
+        }
+
+        return numeric.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 
     function formatDateTimeShort(dateValue) {
