@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title th:text="${pageTitle} ?: 'Em desenvolvimento - CRM'">Em desenvolvimento - CRM</title>
+    <style>
+        .crm-coming-soon {
+            max-width: 760px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        }
+
+        .crm-coming-soon__title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .crm-coming-soon__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem;
+            background: rgba(91, 99, 255, 0.1);
+            color: #5b63ff;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .crm-coming-soon__description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .crm-coming-soon__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .crm-coming-soon__actions .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-coming-soon">
+        <div class="crm-coming-soon__badge">
+            <i class="bi bi-tools"></i>
+            Em desenvolvimento
+        </div>
+        <h1 class="crm-coming-soon__title" th:text="${sectionTitle} ?: 'Área do CRM'">Área do CRM</h1>
+        <p class="crm-coming-soon__description" th:text="${sectionDescription}">
+            Esta área do CRM está em desenvolvimento. Em breve teremos novidades.
+        </p>
+        <div class="crm-coming-soon__actions">
+            <a class="btn btn-primary" th:href="@{/crm/dashboard}">
+                <i class="bi bi-speedometer2"></i>
+                Voltar para o dashboard
+            </a>
+            <a class="btn btn-outline-secondary" th:href="@{/crm/vendas}">
+                <i class="bi bi-kanban"></i>
+                Ir para Funil de Vendas
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

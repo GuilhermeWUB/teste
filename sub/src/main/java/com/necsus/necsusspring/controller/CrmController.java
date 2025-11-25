@@ -34,4 +34,46 @@ public class CrmController {
         model.addAttribute("pageTitle", "Funil de Filiação - CRM");
         return "crm/vendas";
     }
+
+    @GetMapping(value = "/contatos", produces = MediaType.TEXT_HTML_VALUE)
+    public String contatos(Model model) {
+        return buildComingSoonPage(model, "Contatos");
+    }
+
+    @GetMapping(value = "/atividades", produces = MediaType.TEXT_HTML_VALUE)
+    public String atividades(Model model) {
+        return buildComingSoonPage(model, "Atividades");
+    }
+
+    @GetMapping(value = "/minha-conta", produces = MediaType.TEXT_HTML_VALUE)
+    public String minhaConta(Model model) {
+        return buildComingSoonPage(model, "Minha Conta");
+    }
+
+    @GetMapping(value = "/relatorios", produces = MediaType.TEXT_HTML_VALUE)
+    public String relatorios(Model model) {
+        return buildComingSoonPage(model, "Relatórios");
+    }
+
+    @GetMapping(value = "/financeiro", produces = MediaType.TEXT_HTML_VALUE)
+    public String financeiro(Model model) {
+        return buildComingSoonPage(model, "Financeiro");
+    }
+
+    @GetMapping(value = "/minha-empresa", produces = MediaType.TEXT_HTML_VALUE)
+    public String minhaEmpresa(Model model) {
+        return buildComingSoonPage(model, "Minha Empresa");
+    }
+
+    @GetMapping(value = "/ferramentas", produces = MediaType.TEXT_HTML_VALUE)
+    public String ferramentas(Model model) {
+        return buildComingSoonPage(model, "Ferramentas");
+    }
+
+    private String buildComingSoonPage(Model model, String sectionTitle) {
+        model.addAttribute("pageTitle", sectionTitle + " - CRM");
+        model.addAttribute("sectionTitle", sectionTitle);
+        model.addAttribute("sectionDescription", "Esta área do CRM está em desenvolvimento. Em breve teremos novidades.");
+        return "crm/em-desenvolvimento";
+    }
 }
