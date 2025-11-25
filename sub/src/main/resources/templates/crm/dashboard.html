@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Dashboard - CRM</title>
+    <style>
+        .crm-dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .crm-dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .crm-dashboard-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card-icon.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .stat-card-icon.success {
+            background: #10b981;
+            color: white;
+        }
+
+        .stat-card-icon.warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .stat-card-icon.info {
+            background: #6366f1;
+            color: white;
+        }
+
+        .stat-card-title {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-card-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .quick-actions {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .quick-actions h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        .action-btn.secondary {
+            background: #6b7280;
+        }
+
+        .action-btn.secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Dark mode support */
+        [data-theme="dark"] {
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+
+        [data-theme="light"] {
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-dashboard">
+        <div class="crm-dashboard-header">
+            <h1><i class="bi bi-speedometer2"></i> Dashboard CRM</h1>
+            <p>Visão geral das suas vendas e métricas de desempenho</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-card-title">Vendas Hoje</div>
+                        <div class="stat-card-value">12</div>
+                    </div>
+                    <div class="stat-card-icon primary">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                </div>
+                <div class="stat-card-description">
+                    +15% em relação a ontem
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-card-title">Vendas Mês</div>
+                        <div class="stat-card-value">247</div>
+                    </div>
+                    <div class="stat-card-icon success">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                </div>
+                <div class="stat-card-description">
+                    Meta do mês: 300 vendas
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-card-title">Ticket Médio</div>
+                        <div class="stat-card-value">R$ 1.2K</div>
+                    </div>
+                    <div class="stat-card-icon warning">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                </div>
+                <div class="stat-card-description">
+                    Baseado nas últimas 30 vendas
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div>
+                        <div class="stat-card-title">Taxa de Conversão</div>
+                        <div class="stat-card-value">34%</div>
+                    </div>
+                    <div class="stat-card-icon info">
+                        <i class="bi bi-percent"></i>
+                    </div>
+                </div>
+                <div class="stat-card-description">
+                    Leads convertidos em vendas
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2><i class="bi bi-lightning-charge"></i> Ações Rápidas</h2>
+            <div class="action-buttons">
+                <a th:href="@{/crm/vendas}" class="action-btn">
+                    <i class="bi bi-funnel"></i>
+                    <span>Ir para Funil de Vendas</span>
+                </a>
+                <a th:href="@{/crm/vendas}" class="action-btn">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Nova Negociação</span>
+                </a>
+                <a th:href="@{/dashboard}" class="action-btn secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Voltar ao Sistema Principal</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para carregar dados reais no futuro -->
+    <script>
+        console.log('✅ Dashboard CRM carregado com sucesso');
+
+        // Futuramente, você pode fazer uma chamada AJAX aqui para carregar dados reais
+        // Exemplo:
+        // fetch('/crm/api/dashboard-stats')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         // Atualizar os cards com dados reais
+        //     });
+    </script>
+</section>
+</body>
+</html>

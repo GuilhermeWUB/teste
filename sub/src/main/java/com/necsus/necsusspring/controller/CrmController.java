@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CrmController {
 
     /**
-     * Página Overview do CRM
+     * Dashboard principal do módulo CRM
+     * Exibe métricas gerais e acesso rápido às funcionalidades
      */
-    @GetMapping(value = "/overview", produces = MediaType.TEXT_HTML_VALUE)
-    public String overview(Model model) {
-        model.addAttribute("pageTitle", "Overview - CRM");
-        return "crm/overview";
+    @GetMapping(value = "/dashboard", produces = MediaType.TEXT_HTML_VALUE)
+    public String dashboard(Model model) {
+        model.addAttribute("pageTitle", "Dashboard - CRM");
+        return "crm/dashboard";
     }
 
     /**
