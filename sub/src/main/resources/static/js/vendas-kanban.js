@@ -276,27 +276,34 @@
 
         top.appendChild(topLeft);
 
-        const topRight = document.createElement('div');
-        topRight.className = 'vendas-kanban-card-top-right';
+        article.appendChild(top);
 
-        const statusRow = document.createElement('div');
-        statusRow.className = 'vendas-kanban-card-status-row';
-
-        const statusBadge = document.createElement('span');
-        statusBadge.className = 'vendas-kanban-card-status';
-        statusBadge.textContent = statusLabels[card.status] || 'Em andamento';
-        statusRow.appendChild(statusBadge);
+        // Meta informações (valor)
+        const meta = document.createElement('div');
+        meta.className = 'vendas-kanban-card-meta';
 
         const amount = document.createElement('div');
         amount.className = 'vendas-kanban-card-amount';
         amount.innerHTML = `<i class="bi bi-currency-dollar"></i><span>${formatCurrency(card.valor)}</span>`;
-        statusRow.appendChild(amount);
+        meta.appendChild(amount);
 
-        topRight.appendChild(statusRow);
+        article.appendChild(meta);
 
-        top.appendChild(topRight);
+        article.addEventListener('click', () => openModal(card));
 
-        article.appendChild(top);
+        return article;
+    }
+
+    function formatDateTimeShort(dateValue) {
+        if (!dateValue) return '';
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return '';
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
 
         return `${day}/${month}/${year} - ${hours}:${minutes}`;
     }
