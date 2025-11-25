@@ -302,28 +302,6 @@
 
         article.appendChild(meta);
 
-        // Badges (opcional)
-        if (card.tipoVeiculo || card.origemLead) {
-            const badges = document.createElement('div');
-            badges.className = 'vendas-kanban-card-badges';
-
-            if (card.tipoVeiculo) {
-                const badge1 = document.createElement('span');
-                badge1.className = 'badge';
-                badge1.textContent = card.tipoVeiculo;
-                badges.appendChild(badge1);
-            }
-
-            if (card.origemLead) {
-                const badge2 = document.createElement('span');
-                badge2.className = 'badge';
-                badge2.textContent = card.origemLead;
-                badges.appendChild(badge2);
-            }
-
-            article.appendChild(badges);
-        }
-
         article.addEventListener('click', () => openModal(card));
 
         return article;
@@ -767,14 +745,13 @@
         return `
             <div class="crm-dialog">
                 <header class="crm-hero">
-                    <div class="crm-hero-left">
-                        <div class="crm-kicker">Olá</div>
-                        <div class="crm-hero-title">${escapeHtml(vehicleTitle)}</div>
-                        <div class="crm-hero-chips">
-                            <span class="crm-chip"><i class="bi bi-car-front"></i>${escapeHtml(card.tipoVeiculo || 'Tipo não informado')}</span>
-                            <span class="crm-chip"><i class="bi bi-credit-card-2-front"></i>${escapeHtml(card.placa || 'Placa não informada')}</span>
-                            <span class="crm-chip status ${statusClass}">${escapeHtml(statusText)}</span>
-                        </div>
+                        <div class="crm-hero-left">
+                            <div class="crm-kicker">Olá</div>
+                            <div class="crm-hero-title">${escapeHtml(vehicleTitle)}</div>
+                            <div class="crm-hero-chips">
+                                <span class="crm-chip"><i class="bi bi-credit-card-2-front"></i>${escapeHtml(card.placa || 'Placa não informada')}</span>
+                                <span class="crm-chip status ${statusClass}">${escapeHtml(statusText)}</span>
+                            </div>
                         <div class="crm-hero-contact">
                             <div class="crm-avatar">${escapeHtml(contactInitials)}</div>
                             <div>
@@ -832,14 +809,12 @@
                             </div>
                             <div class="crm-info-grid">
                                 ${buildInfoRow('Cooperativa', card.cooperativa)}
-                                ${buildInfoRow('Tipo de veículo', card.tipoVeiculo)}
                                 ${buildInfoRow('Placa', card.placa)}
                                 ${buildInfoRow('Marca', card.marca)}
                                 ${buildInfoRow('Modelo', card.modelo)}
                                 ${buildInfoRow('Ano modelo', card.anoModelo)}
                                 ${buildInfoRow('Estado', card.estado)}
                                 ${buildInfoRow('Cidade', card.cidade)}
-                                ${buildInfoRow('Origem do lead', card.origemLead)}
                                 ${buildInfoRow('Veículo de trabalho', card.veiculoTrabalho ? 'Sim' : 'Não')}
                             </div>
                             <div class="crm-history">
@@ -920,7 +895,6 @@
                                 <span class="crm-pill light">Detalhes</span>
                             </div>
                             <div class="crm-info-grid compact">
-                                ${buildInfoRow('Origem do lead', card.origemLead)}
                                 ${buildInfoRow('Envio de cotação', card.enviarCotacao ? 'Sim' : 'Não')}
                                 ${buildInfoRow('Cidade', card.cidade)}
                                 ${buildInfoRow('Estado', card.estado)}
