@@ -261,6 +261,63 @@ body:has(.vendas-kanban-container) .page-content {
     border-radius: 999px;
 }
 
+.vendas-kanban-inline-alert {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+    background: color-mix(in srgb, var(--warning) 12%, var(--surface));
+    color: var(--panel-contrast);
+    box-shadow: var(--shadow-soft);
+}
+
+.vendas-kanban-inline-alert__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--warning) 18%, transparent);
+    color: var(--warning);
+    font-size: 1.1rem;
+}
+
+.vendas-kanban-inline-alert p {
+    margin: 0.15rem 0 0;
+    color: var(--muted);
+}
+
+.vendas-kanban-inline-loading {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--panel);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--surface-strong);
+    box-shadow: var(--shadow-soft);
+    color: var(--muted);
+}
+
+.vendas-kanban-inline-loading .spinner {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-top-color: var(--accent);
+    animation: kanban-spin 0.8s linear infinite;
+}
+
+@keyframes kanban-spin {
+    from { transform: rotate(0); }
+    to { transform: rotate(360deg); }
+}
+
 /* COLUMN ---------------------------------------------------- */
 .vendas-kanban-column {
     background: var(--panel);
@@ -744,6 +801,7 @@ body.kanban-modal-open { overflow: hidden; }
     flex-direction: column;
     gap: 0.75rem;
 }
+.crm-tabs button.active { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent-strong); box-shadow: var(--shadow-soft); }
 
 .crm-card.highlight { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 22%, var(--surface-strong)); }
 .crm-card.ghost { background: color-mix(in srgb, var(--surface) 75%, transparent); }
@@ -800,33 +858,6 @@ body.kanban-modal-open { overflow: hidden; }
     text-decoration: none;
     justify-content: center;
 }
-.crm-tabs button.active { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent-strong); box-shadow: var(--shadow-soft); }
-
-.crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
-.crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }
-.crm-btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-.crm-btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-.crm-btn-ghost { background: transparent; border: 1px dashed var(--surface-strong); color: var(--panel-contrast); }
-.crm-btn.full { width: 100%; }
-.crm-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-
-.crm-status { padding: 0.45rem 0.7rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 800; }
-
-.crm-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.crm-mini-badge { padding: 0.35rem 0.55rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 700; color: var(--muted); }
-
-.crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
-.crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }
-.crm-btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-.crm-btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
-.crm-btn-ghost { background: transparent; border: 1px dashed var(--surface-strong); color: var(--panel-contrast); }
-.crm-btn.full { width: 100%; }
-.crm-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
-
-.crm-status { padding: 0.45rem 0.7rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 800; }
-
-.crm-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.crm-mini-badge { padding: 0.35rem 0.55rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 700; color: var(--muted); }
 
 .crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
 .crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }

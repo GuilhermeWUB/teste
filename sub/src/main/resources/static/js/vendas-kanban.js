@@ -6,7 +6,9 @@
 
     const state = {
         cards: [],
-        search: ''
+        search: '',
+        loading: true,
+        error: ''
     };
 
     const dragState = {
@@ -104,6 +106,9 @@
     async function loadBoard() {
         console.log('[VENDAS-KANBAN] Carregando vendas...');
         try {
+            state.loading = true;
+            render();
+
             const response = await fetch(API_BASE, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
@@ -115,16 +120,15 @@
             const data = await response.json();
             console.log('[VENDAS-KANBAN] Vendas carregadas:', data);
 
-            if (Array.isArray(data)) {
-                state.cards = data;
-            } else {
-                state.cards = [];
-            }
-
+            state.cards = normalizeResponse(data);
+            state.error = '';
+            state.loading = false;
             render();
         } catch (error) {
             console.error('[VENDAS-KANBAN] Erro ao carregar vendas:', error);
             state.cards = [];
+            state.error = 'Não foi possível carregar as negociações. Tente novamente em instantes.';
+            state.loading = false;
             render();
         }
     }
@@ -139,6 +143,14 @@
         const grouped = groupByStatus(filteredCards);
 
         board.innerHTML = '';
+
+        if (state.loading) {
+            board.appendChild(createLoadingState());
+        }
+
+        if (state.error) {
+            board.appendChild(createAlert(state.error));
+        }
 
         STATUSES.forEach(status => {
             const column = createColumn(status, grouped[status] || []);
@@ -177,11 +189,29 @@
 
         cards.forEach(card => {
             const rawStatus = card.status || STATUSES[0];
-            const status = STATUSES.includes(rawStatus) ? rawStatus : STATUSES[0];
+            const normalizedStatus = typeof rawStatus === 'string' ? rawStatus.trim() : '';
+            const status = STATUSES.includes(normalizedStatus) ? normalizedStatus : STATUSES[0];
             grouped[status].push(card);
         });
 
         return grouped;
+    }
+
+    function normalizeResponse(data) {
+        if (Array.isArray(data)) {
+            return data;
+        }
+
+        if (data && Array.isArray(data.content)) {
+            return data.content;
+        }
+
+        if (data && Array.isArray(data.items)) {
+            return data.items;
+        }
+
+        console.warn('[VENDAS-KANBAN] Resposta inesperada da API, usando array vazio');
+        return [];
     }
 
     function createColumn(status, items) {
@@ -296,6 +326,8 @@
 
         article.appendChild(top);
 
+        article.appendChild(top);
+
     function formatCurrency(value) {
         const numeric = typeof value === 'number' ? value : Number(value);
         if (Number.isNaN(numeric)) {
@@ -343,6 +375,35 @@
         div.className = 'vendas-kanban-empty';
         div.innerHTML = '<i class="bi bi-inbox"></i><p>Nenhuma negociação aqui ainda</p>';
         return div;
+    }
+
+    function createLoadingState() {
+        const loading = document.createElement('div');
+        loading.className = 'vendas-kanban-inline-loading';
+        loading.innerHTML = `
+            <span class="spinner"></span>
+            <div>
+                <p>Carregando negociações...</p>
+                <small>Isso pode levar alguns instantes.</small>
+            </div>
+        `;
+        return loading;
+    }
+
+    function createAlert(message) {
+        const alert = document.createElement('div');
+        alert.className = 'vendas-kanban-inline-alert';
+        alert.setAttribute('role', 'alert');
+        alert.innerHTML = `
+            <div class="vendas-kanban-inline-alert__icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div>
+                <strong>Ops!</strong>
+                <p>${escapeHtml(message)}</p>
+            </div>
+        `;
+        return alert;
     }
 
     function enableDragAndDrop() {
