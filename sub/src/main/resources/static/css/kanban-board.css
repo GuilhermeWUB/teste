@@ -52,6 +52,10 @@
 .kanban-content-stretch {
     flex: 1;
     gap: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 .kanban-content-stretch > section {
@@ -893,7 +897,7 @@ html[data-theme="dark"] .kanban-wrapper {
     position: fixed;
     inset: 0;
     display: none;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: var(--kanban-backdrop);
     backdrop-filter: blur(8px);
