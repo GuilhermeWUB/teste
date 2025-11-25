@@ -412,6 +412,21 @@ body:has(.vendas-kanban-container) .page-content {
     align-items: flex-start;
 }
 
+.vendas-kanban-card-top-right {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+
+.vendas-kanban-card-status-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .vendas-kanban-card-origin {
     display: inline-flex;
     align-items: center;
@@ -466,8 +481,13 @@ body:has(.vendas-kanban-container) .page-content {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface-strong) 32%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--surface-strong));
+    font-weight: 800;
     color: var(--panel-contrast);
+    white-space: nowrap;
 }
 
 .vendas-kanban-card-amount i { color: var(--muted-2); }
@@ -525,7 +545,7 @@ body:has(.vendas-kanban-container) .page-content {
 body.kanban-modal-open { overflow: hidden; }
 
 .kanban-modal-content {
-    width: min(1100px, 90vw);
+    width: min(140px, 90vw);
     max-height: 90vh;
     background: var(--panel);
     border-radius: 20px;
@@ -780,6 +800,7 @@ body.kanban-modal-open { overflow: hidden; }
     text-decoration: none;
     justify-content: center;
 }
+.crm-tabs button.active { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent-strong); box-shadow: var(--shadow-soft); }
 
 .crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
 .crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }
