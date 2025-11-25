@@ -188,37 +188,39 @@
 
     function createColumn(status, items) {
         const column = document.createElement('div');
-        column.className = 'kanban-column';
+        column.className = 'vendas-kanban-column kanban-column';
         column.dataset.status = status;
-        column.style.borderTopColor = statusColors[status] || '#6366f1';
+
+        // Barra colorida no topo da coluna
+        const bar = document.createElement('div');
+        bar.className = 'vendas-kanban-column-bar';
+        column.appendChild(bar);
 
         const header = document.createElement('div');
-        header.className = 'column-header';
+        header.className = 'vendas-kanban-column-header';
 
         const title = document.createElement('div');
-        title.className = 'column-title';
+        title.className = 'vendas-kanban-column-title';
 
         const heading = document.createElement('h3');
         heading.textContent = statusLabels[status] || status;
 
         const counter = document.createElement('span');
-        counter.className = 'column-count';
+        counter.className = 'vendas-kanban-column-count';
         counter.textContent = items.length;
 
         title.appendChild(heading);
         title.appendChild(counter);
 
-        const addButton = document.createElement('button');
-        addButton.className = 'column-add-btn';
-        addButton.type = 'button';
-        addButton.innerHTML = '<i class="bi bi-plus"></i> Novo';
-        addButton.addEventListener('click', () => openCreateModal());
-
         header.appendChild(title);
-        header.appendChild(addButton);
+
+        const helper = document.createElement('p');
+        helper.className = 'vendas-kanban-column-helper';
+        helper.textContent = getStatusHelper(status);
+        header.appendChild(helper);
 
         const container = document.createElement('div');
-        container.className = 'tasks-container';
+        container.className = 'vendas-kanban-tasks tasks-container';
 
         if (items.length === 0) {
             container.appendChild(createEmptyState());
@@ -234,69 +236,115 @@
         return column;
     }
 
+    function getStatusHelper(status) {
+        const helpers = {
+            COTACOES_RECEBIDAS: 'Cotações aguardando análise',
+            EM_NEGOCIACAO: 'Negociações em andamento',
+            VISTORIAS: 'Vistorias agendadas ou em execução',
+            LIBERADAS_PARA_CADASTRO: 'Aprovadas para cadastro',
+            FILIACAO_CONCRETIZADAS: 'Filiações concluídas com sucesso'
+        };
+        return helpers[status] || 'Acompanhe o progresso';
+    }
+
     function createCard(card) {
         const article = document.createElement('article');
-        article.className = 'task-card';
+        article.className = 'vendas-kanban-card';
         article.dataset.id = card.id;
+        article.setAttribute('draggable', 'true');
 
-        const header = document.createElement('div');
-        header.className = 'task-card-header';
+        // Topo do card
+        const top = document.createElement('div');
+        top.className = 'vendas-kanban-card-top';
+
+        const topLeft = document.createElement('div');
+
+        const label = document.createElement('p');
+        label.className = 'vendas-kanban-card-label';
+        label.textContent = statusLabels[card.status] || 'Status';
+        topLeft.appendChild(label);
 
         const title = document.createElement('h4');
+        title.className = 'vendas-kanban-card-title';
         title.textContent = card.nomeContato || 'Sem nome';
-        header.appendChild(title);
-
-        article.appendChild(header);
-
-        const body = document.createElement('div');
-        body.className = 'task-card-body';
-
-        if (card.email) {
-            const emailP = document.createElement('p');
-            emailP.innerHTML = '<strong>Email:</strong> ' + escapeHtml(card.email);
-            body.appendChild(emailP);
-        }
-
-        if (card.celular) {
-            const celularP = document.createElement('p');
-            celularP.innerHTML = '<strong>Celular:</strong> ' + escapeHtml(card.celular);
-            body.appendChild(celularP);
-        }
+        topLeft.appendChild(title);
 
         if (card.placa) {
-            const placaP = document.createElement('p');
-            placaP.innerHTML = '<strong>Placa:</strong> ' + escapeHtml(card.placa);
-            body.appendChild(placaP);
+            const plate = document.createElement('p');
+            plate.className = 'vendas-kanban-card-plate';
+            plate.textContent = 'PLACA: ' + card.placa.toUpperCase();
+            topLeft.appendChild(plate);
         }
 
-        if (card.tipoVeiculo) {
-            const tipoP = document.createElement('p');
-            tipoP.innerHTML = '<strong>Tipo:</strong> ' + escapeHtml(card.tipoVeiculo);
-            body.appendChild(tipoP);
-        }
+        top.appendChild(topLeft);
 
-        if (card.origemLead) {
-            const origemP = document.createElement('p');
-            origemP.innerHTML = '<strong>Origem:</strong> ' + escapeHtml(card.origemLead);
-            body.appendChild(origemP);
-        }
+        // Status badge
+        const statusBadge = document.createElement('span');
+        statusBadge.className = 'vendas-kanban-card-status';
+        statusBadge.textContent = card.cooperativa || 'Cooperativa';
+        top.appendChild(statusBadge);
 
-        article.appendChild(body);
+        article.appendChild(top);
+
+        // Meta informações (valor e data)
+        const meta = document.createElement('div');
+        meta.className = 'vendas-kanban-card-meta';
+
+        const amount = document.createElement('div');
+        amount.className = 'vendas-kanban-card-amount';
+        amount.innerHTML = '<i class="bi bi-currency-dollar"></i><span>Cotação</span>';
+        meta.appendChild(amount);
+
+        const date = document.createElement('div');
+        date.className = 'vendas-kanban-card-date';
+        date.innerHTML = '<i class="bi bi-calendar4"></i><span>' + (formatDate(card.createdAt) || 'Hoje') + '</span>';
+        meta.appendChild(date);
+
+        article.appendChild(meta);
+
+        // Badges (opcional)
+        if (card.tipoVeiculo || card.origemLead) {
+            const badges = document.createElement('div');
+            badges.className = 'vendas-kanban-card-badges';
+
+            if (card.tipoVeiculo) {
+                const badge1 = document.createElement('span');
+                badge1.className = 'badge';
+                badge1.textContent = card.tipoVeiculo;
+                badges.appendChild(badge1);
+            }
+
+            if (card.origemLead) {
+                const badge2 = document.createElement('span');
+                badge2.className = 'badge';
+                badge2.textContent = card.origemLead;
+                badges.appendChild(badge2);
+            }
+
+            article.appendChild(badges);
+        }
 
         article.addEventListener('click', () => openModal(card));
 
         return article;
     }
 
+    function formatDate(dateValue) {
+        if (!dateValue) return '';
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+
     function createEmptyState() {
         const div = document.createElement('div');
-        div.className = 'empty-state';
-        div.innerHTML = '<i class="bi bi-inbox"></i> Nenhuma negociação aqui ainda';
+        div.className = 'vendas-kanban-empty';
+        div.innerHTML = '<i class="bi bi-inbox"></i><p>Nenhuma negociação aqui ainda</p>';
         return div;
     }
 
     function enableDragAndDrop() {
-        document.querySelectorAll('.task-card').forEach(card => {
+        document.querySelectorAll('.vendas-kanban-card').forEach(card => {
             card.setAttribute('draggable', 'true');
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
@@ -304,31 +352,54 @@
     }
 
     function bindColumnDropZone(column) {
-        const container = column.querySelector('.tasks-container');
+        const container = column.querySelector('.vendas-kanban-tasks, .tasks-container');
         if (!container || container.dataset.dndBound) {
             return;
         }
 
         container.addEventListener('dragover', handleDragOver);
         container.addEventListener('drop', handleDrop);
+        container.addEventListener('dragenter', handleDragEnter);
+        container.addEventListener('dragleave', handleDragLeave);
         container.dataset.dndBound = 'true';
     }
 
     function handleDragStart(event) {
         const card = event.currentTarget;
         dragState.cardId = card.dataset.id || null;
-        dragState.originStatus = card.closest('.kanban-column')?.dataset.status || null;
+        dragState.originStatus = card.closest('.vendas-kanban-column, .kanban-column')?.dataset.status || null;
 
         if (event.dataTransfer) {
             event.dataTransfer.effectAllowed = 'move';
             event.dataTransfer.setData('text/plain', dragState.cardId || '');
         }
 
-        card.classList.add('is-dragging');
+        card.classList.add('dragging');
     }
 
     function handleDragEnd(event) {
-        event.currentTarget.classList.remove('is-dragging');
+        event.currentTarget.classList.remove('dragging');
+        // Remove drag-over de todas as colunas
+        document.querySelectorAll('.vendas-kanban-column').forEach(col => {
+            col.classList.remove('drag-over');
+        });
+    }
+
+    function handleDragEnter(event) {
+        const column = event.currentTarget.closest('.vendas-kanban-column');
+        if (column) {
+            column.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(event) {
+        const container = event.currentTarget;
+        const column = container.closest('.vendas-kanban-column');
+
+        // Verifica se realmente saiu da coluna
+        if (column && !column.contains(event.relatedTarget)) {
+            column.classList.remove('drag-over');
+        }
     }
 
     function handleDragOver(event) {
@@ -342,9 +413,14 @@
         event.preventDefault();
 
         const container = event.currentTarget;
-        const column = container.closest('.kanban-column');
+        const column = container.closest('.vendas-kanban-column, .kanban-column');
         const targetStatus = column?.dataset.status;
         const cardId = dragState.cardId || event.dataTransfer?.getData('text/plain');
+
+        // Remove drag-over visual
+        if (column) {
+            column.classList.remove('drag-over');
+        }
 
         if (!cardId || !targetStatus) {
             return;
