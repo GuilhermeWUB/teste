@@ -298,9 +298,21 @@
 
         article.appendChild(top);
 
-        article.addEventListener('click', () => openModal(card));
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+    }
 
-        return article;
+    function formatCurrency(value) {
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (Number.isNaN(numeric)) {
+            return 'R$ 0,00';
+        }
+
+        return numeric.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 
     function formatDateTimeShort(dateValue) {

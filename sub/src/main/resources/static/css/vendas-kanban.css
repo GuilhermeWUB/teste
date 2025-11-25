@@ -800,6 +800,7 @@ body.kanban-modal-open { overflow: hidden; }
     text-decoration: none;
     justify-content: center;
 }
+.crm-tabs button.active { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent-strong); box-shadow: var(--shadow-soft); }
 
 .crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
 .crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }
