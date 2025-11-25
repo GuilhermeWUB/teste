@@ -276,34 +276,27 @@
 
         top.appendChild(topLeft);
 
-        article.appendChild(top);
+        const topRight = document.createElement('div');
+        topRight.className = 'vendas-kanban-card-top-right';
 
-        // Meta informações (valor)
-        const meta = document.createElement('div');
-        meta.className = 'vendas-kanban-card-meta';
+        const statusRow = document.createElement('div');
+        statusRow.className = 'vendas-kanban-card-status-row';
+
+        const statusBadge = document.createElement('span');
+        statusBadge.className = 'vendas-kanban-card-status';
+        statusBadge.textContent = statusLabels[card.status] || 'Em andamento';
+        statusRow.appendChild(statusBadge);
 
         const amount = document.createElement('div');
         amount.className = 'vendas-kanban-card-amount';
         amount.innerHTML = `<i class="bi bi-currency-dollar"></i><span>${formatCurrency(card.valor)}</span>`;
-        meta.appendChild(amount);
+        statusRow.appendChild(amount);
 
-        article.appendChild(meta);
+        topRight.appendChild(statusRow);
 
-        article.addEventListener('click', () => openModal(card));
+        top.appendChild(topRight);
 
-        return article;
-    }
-
-    function formatDateTimeShort(dateValue) {
-        if (!dateValue) return '';
-        const date = new Date(dateValue);
-        if (Number.isNaN(date.getTime())) return '';
-
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
+        article.appendChild(top);
 
         return `${day}/${month}/${year} - ${hours}:${minutes}`;
     }
@@ -815,14 +808,6 @@
                     <button type="button">Pós-vendas</button>
                     <button type="button">Frota</button>
                     <button type="button">Riscos</button>
-                </div>
-
-                <div class="crm-tabs secondary">
-                    <button class="active" type="button">Atividades</button>
-                    <button type="button">Negócio</button>
-                    <button type="button">Histórico</button>
-                    <button type="button">PowerSign</button>
-                    <button type="button">Anexos</button>
                 </div>
 
                 <div class="crm-grid">
