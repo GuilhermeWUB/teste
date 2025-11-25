@@ -445,6 +445,177 @@ body:has(.vendas-kanban-container) .page-content {
     opacity: 0.65;
 }
 
+/* MODALS ---------------------------------------------------- */
+.kanban-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 3vw, 2rem);
+    background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.12), rgba(15, 23, 42, 0.62));
+    backdrop-filter: blur(8px);
+    z-index: 1400;
+}
+
+.kanban-modal.active {
+    display: flex;
+}
+
+body.kanban-modal-open {
+    overflow: hidden;
+}
+
+.kanban-modal-content {
+    width: min(960px, 100%);
+    max-height: 88vh;
+    background: var(--panel);
+    border-radius: 20px;
+    box-shadow: 0 22px 80px rgba(15, 23, 42, 0.35);
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fade-slide 220ms ease;
+}
+
+.kanban-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--panel-border);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0));
+}
+
+.kanban-modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-strong);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.kanban-modal-close {
+    border: 1px solid var(--panel-border);
+    background: #fff;
+    color: var(--text-strong);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.kanban-modal-close:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+
+.kanban-modal-body {
+    padding: 1.2rem 1.4rem 1.4rem;
+    overflow-y: auto;
+    max-height: 70vh;
+    display: grid;
+    gap: 1rem;
+}
+
+.kanban-create-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.kanban-create-form .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.kanban-create-form .form-group {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.kanban-create-form label {
+    font-weight: 700;
+    color: var(--text-strong);
+}
+
+.kanban-create-form input,
+.kanban-create-form select,
+.kanban-create-form textarea {
+    width: 100%;
+    border: 1.5px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.98rem;
+    background: #fff;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.kanban-create-form input:focus,
+.kanban-create-form select:focus,
+.kanban-create-form textarea:focus {
+    outline: none;
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.kanban-create-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.kanban-create-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.kanban-create-form .form-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.kanban-create-form .btn-primary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+}
+
+.kanban-create-form .btn-secondary {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.kanban-create-form .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+
+.create-processo-error {
+    display: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.08);
+    color: #b91c1c;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.create-processo-error.active {
+    display: block;
+}
+
 /* RESPONSIVE ------------------------------------------------ */
 @media (max-width: 1100px) {
     .vendas-kanban-board { grid-auto-columns: minmax(290px, 320px); }
