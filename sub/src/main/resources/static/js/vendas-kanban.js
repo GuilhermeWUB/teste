@@ -322,6 +322,34 @@
         });
     }
 
+    function formatDateTimeShort(dateValue) {
+        if (!dateValue) return '';
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return '';
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+    }
+
+    function formatCurrency(value) {
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (Number.isNaN(numeric)) {
+            return 'R$ 0,00';
+        }
+
+        return numeric.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
     function createEmptyState() {
         const div = document.createElement('div');
         div.className = 'vendas-kanban-empty';
