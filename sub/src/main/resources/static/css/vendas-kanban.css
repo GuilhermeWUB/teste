@@ -1,26 +1,85 @@
 /* =========================================================
-   VENDAS KANBAN – EXPERIENCE FIRST STYLESHEET
-   Rebuilt for clarity, balance and high-contrast usability.
+   VENDAS KANBAN – UI/UX REBUILD
+   Theme-aware, high-contrast, and responsive.
    ========================================================= */
 
-/* FOUNDATION ------------------------------------------------ */
+/* COLOR TOKENS -------------------------------------------- */
 :root {
-    --bg: linear-gradient(180deg, #f6f8fb 0%, #eef2f7 40%, #e6ebf3 100%);
+    --gradient-top: #f4f7fb;
+    --gradient-mid: #e7edf7;
+    --gradient-bottom: #dfe6f2;
     --panel: #ffffff;
-    --panel-border: #d9e2ec;
-    --muted: #6b7280;
-    --text-strong: #0f172a;
-    --accent: #6366f1;
-    --accent-2: #8b5cf6;
+    --panel-contrast: #0f172a;
+    --surface: #f8fafc;
+    --surface-strong: #e2e8f0;
+    --muted: #4b5563;
+    --muted-2: #6b7280;
+    --accent: #6f7bff;
+    --accent-2: #a78bfa;
+    --accent-strong: #4338ca;
+    --positive: #22c55e;
+    --warning: #f59e0b;
+    --info: #0ea5e9;
     --shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-hover: 0 16px 40px rgba(15, 23, 42, 0.18);
     --radius-lg: 18px;
+    --radius-md: 14px;
     --radius-sm: 10px;
     --transition-fast: 180ms ease;
     --transition-slow: 280ms ease;
-    --glass: rgba(255, 255, 255, 0.7);
 }
 
+/* DARK THEME SUPPORT -------------------------------------- */
+:root[data-theme="dark"],
+:root[data-bs-theme="dark"],
+body[data-theme="dark"],
+body[data-bs-theme="dark"],
+body.dark,
+.theme-dark {
+    --gradient-top: #0b1220;
+    --gradient-mid: #0f172a;
+    --gradient-bottom: #0a1020;
+    --panel: #131c2f;
+    --panel-contrast: #e5e7eb;
+    --surface: #0f172a;
+    --surface-strong: #1f2937;
+    --muted: #cbd5e1;
+    --muted-2: #94a3b8;
+    --accent: #7aa2f7;
+    --accent-2: #a78bfa;
+    --accent-strong: #8ba8ff;
+    --positive: #4ade80;
+    --warning: #fbbf24;
+    --info: #38bdf8;
+    --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
+        --gradient-top: #0b1220;
+        --gradient-mid: #0f172a;
+        --gradient-bottom: #0a1020;
+        --panel: #131c2f;
+        --panel-contrast: #e5e7eb;
+        --surface: #0f172a;
+        --surface-strong: #1f2937;
+        --muted: #cbd5e1;
+        --muted-2: #94a3b8;
+        --accent: #7aa2f7;
+        --accent-2: #a78bfa;
+        --accent-strong: #8ba8ff;
+        --positive: #4ade80;
+        --warning: #fbbf24;
+        --info: #38bdf8;
+        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
+        --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+        color-scheme: dark;
+    }
+}
+
+/* LAYOUT RESET -------------------------------------------- */
 body:has(.vendas-kanban-container) .page,
 body:has(.vendas-kanban-container) .page > .container,
 body:has(.vendas-kanban-container) .page-content {
@@ -36,16 +95,19 @@ body:has(.vendas-kanban-container) .page-content {
 /* CANVAS ---------------------------------------------------- */
 .vendas-kanban-container {
     min-height: calc(100vh - 64px);
-    background: var(--bg);
+    background: radial-gradient(circle at 12% 8%, rgba(124, 92, 255, 0.08), transparent 35%),
+                radial-gradient(circle at 78% 22%, rgba(99, 102, 241, 0.12), transparent 40%),
+                linear-gradient(180deg, var(--gradient-top) 0%, var(--gradient-mid) 45%, var(--gradient-bottom) 100%);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     isolation: isolate;
+    color: var(--panel-contrast);
 }
 
 .vendas-kanban-wrapper {
     flex: 1;
-    padding: clamp(1.25rem, 3vw, 2.5rem);
+    padding: clamp(1.25rem, 3vw, 2.75rem);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -84,12 +146,12 @@ body:has(.vendas-kanban-container) .page-content {
     font-size: clamp(1.8rem, 4vw, 2.35rem);
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: var(--text-strong);
+    color: var(--panel-contrast);
 }
 
 .vendas-kanban-title-text p {
     margin: 0.35rem 0 0;
-    color: var(--muted);
+    color: var(--muted-2);
     font-weight: 600;
     font-size: 0.98rem;
 }
@@ -116,8 +178,9 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-search input {
     width: 100%;
-    border: 1.5px solid var(--panel-border);
-    background: #fff;
+    border: 1.5px solid var(--surface-strong);
+    background: var(--panel);
+    color: var(--panel-contrast);
     border-radius: var(--radius-lg);
     padding: 0.85rem 1rem 0.85rem 3rem;
     font-size: 0.95rem;
@@ -126,7 +189,7 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-search input:focus {
     border-color: var(--accent);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 20%, transparent);
     transform: translateY(-1px);
     outline: none;
 }
@@ -136,7 +199,7 @@ body:has(.vendas-kanban-container) .page-content {
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
+    color: var(--muted-2);
     font-size: 1.1rem;
 }
 
@@ -150,12 +213,12 @@ body:has(.vendas-kanban-container) .page-content {
     align-items: center;
     gap: 0.55rem;
     padding: 0.85rem 1.25rem;
-    transition: transform var(--transition-fast), box-shadow var(--transition-slow), background var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-slow), background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .vendas-kanban-filter-btn {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: var(--panel-border);
+    background: var(--surface);
+    border-color: var(--surface-strong);
     color: var(--muted);
 }
 
@@ -163,7 +226,7 @@ body:has(.vendas-kanban-container) .page-content {
     transform: translateY(-2px);
     border-color: var(--accent);
     color: var(--accent);
-    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .vendas-kanban-actions .btn-novo-evento {
@@ -191,30 +254,24 @@ body:has(.vendas-kanban-container) .page-content {
     scroll-snap-type: x mandatory;
 }
 
-.vendas-kanban-board::-webkit-scrollbar {
-    height: 10px;
-}
-
-.vendas-kanban-board::-webkit-scrollbar-track {
-    background: transparent;
-}
-
+.vendas-kanban-board::-webkit-scrollbar { height: 10px; }
+.vendas-kanban-board::-webkit-scrollbar-track { background: transparent; }
 .vendas-kanban-board::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(148, 163, 184, 0.8), rgba(99, 102, 241, 0.35));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--muted-2) 70%, transparent), color-mix(in srgb, var(--accent) 45%, transparent));
     border-radius: 999px;
 }
 
 /* COLUMN ---------------------------------------------------- */
 .vendas-kanban-column {
     background: var(--panel);
-    border: 1.5px solid var(--panel-border);
+    border: 1.5px solid var(--surface-strong);
     border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
     min-height: 0;
     scroll-snap-align: start;
     box-shadow: var(--shadow-soft);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
     position: relative;
     overflow: hidden;
 }
@@ -222,13 +279,14 @@ body:has(.vendas-kanban-container) .page-content {
 .vendas-kanban-column:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--surface-strong));
 }
 
 .vendas-kanban-column::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, rgba(99, 102, 241, 0.07), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 10%, transparent), color-mix(in srgb, var(--accent-2) 8%, transparent));
     opacity: 0;
     transition: opacity var(--transition-fast);
     pointer-events: none;
@@ -238,7 +296,7 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-column-bar {
     height: 6px;
-    background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
 }
 
 .vendas-kanban-column:nth-child(2) .vendas-kanban-column-bar { background: linear-gradient(90deg, #f59e0b, #fb923c); }
@@ -249,8 +307,8 @@ body:has(.vendas-kanban-container) .page-content {
 /* COLUMN HEADER -------------------------------------------- */
 .vendas-kanban-column-header {
     padding: 1.15rem 1.25rem 0.85rem;
-    border-bottom: 1.5px solid #eef2f7;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
+    border-bottom: 1.5px solid var(--surface-strong);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 92%, transparent), color-mix(in srgb, var(--panel) 72%, transparent));
     backdrop-filter: blur(6px);
     position: sticky;
     top: 0;
@@ -268,24 +326,24 @@ body:has(.vendas-kanban-container) .page-content {
     margin: 0;
     font-size: 1.02rem;
     font-weight: 800;
-    color: var(--text-strong);
+    color: var(--panel-contrast);
     letter-spacing: -0.01em;
 }
 
 .vendas-kanban-column-count {
     padding: 0.35rem 0.8rem;
-    background: #eef2ff;
-    color: #4338ca;
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent-strong);
     border-radius: 999px;
     font-weight: 700;
-    border: 1px solid #c7d2fe;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
     min-width: 32px;
     text-align: center;
 }
 
 .vendas-kanban-column-helper {
     margin: 0.35rem 0 0;
-    color: var(--muted);
+    color: var(--muted-2);
     font-size: 0.88rem;
 }
 
@@ -302,15 +360,15 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-tasks::-webkit-scrollbar { width: 7px; }
 .vendas-kanban-tasks::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: color-mix(in srgb, var(--muted-2) 65%, transparent);
     border-radius: 999px;
 }
 
 /* CARD ------------------------------------------------------ */
 .vendas-kanban-card {
-    border: 1.5px solid var(--panel-border);
+    border: 1.5px solid var(--surface-strong);
     border-radius: var(--radius-sm);
-    background: linear-gradient(180deg, #fff 0%, #fdfdff 50%, #fafbff 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 98%, transparent) 0%, color-mix(in srgb, var(--panel) 90%, transparent) 50%, color-mix(in srgb, var(--panel) 82%, transparent) 100%);
     padding: 1rem;
     display: flex;
     flex-direction: column;
@@ -322,8 +380,8 @@ body:has(.vendas-kanban-container) .page-content {
 
 .vendas-kanban-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--panel-contrast) 20%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 30%, var(--surface-strong));
 }
 
 .vendas-kanban-card:active { cursor: grabbing; }
@@ -339,7 +397,7 @@ body:has(.vendas-kanban-container) .page-content {
 }
 
 .vendas-kanban-card:hover::before {
-    box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.14);
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .vendas-kanban-card.dragging {
@@ -366,22 +424,22 @@ body:has(.vendas-kanban-container) .page-content {
 .vendas-kanban-card-title {
     margin: 0;
     font-weight: 800;
-    color: var(--text-strong);
+    color: var(--panel-contrast);
     line-height: 1.3;
     font-size: 1rem;
 }
 
 .vendas-kanban-card-plate {
     margin: 0;
-    color: #475569;
+    color: var(--muted);
     font-weight: 600;
     font-size: 0.92rem;
 }
 
 .vendas-kanban-card-status {
-    background: #e0e7ff;
-    color: #3730a3;
-    border: 1px solid #cbd5ff;
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent-strong);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
     padding: 0.4rem 0.85rem;
     border-radius: 999px;
     font-weight: 700;
@@ -394,7 +452,7 @@ body:has(.vendas-kanban-container) .page-content {
     justify-content: space-between;
     gap: 0.75rem;
     padding-top: 0.6rem;
-    border-top: 1px dashed #e2e8f0;
+    border-top: 1px dashed var(--surface-strong);
 }
 
 .vendas-kanban-card-amount,
@@ -403,11 +461,11 @@ body:has(.vendas-kanban-container) .page-content {
     align-items: center;
     gap: 0.45rem;
     font-weight: 700;
-    color: #1f2937;
+    color: var(--panel-contrast);
 }
 
 .vendas-kanban-card-amount i,
-.vendas-kanban-card-date i { color: #94a3b8; }
+.vendas-kanban-card-date i { color: var(--muted-2); }
 
 .vendas-kanban-card-badges {
     display: flex;
@@ -420,21 +478,21 @@ body:has(.vendas-kanban-container) .page-content {
     border-radius: 12px;
     font-size: 0.82rem;
     font-weight: 700;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
-    color: #475569;
+    border: 1px solid var(--surface-strong);
+    background: var(--surface);
+    color: var(--muted);
 }
 
 /* DRAG STATES ---------------------------------------------- */
 .vendas-kanban-column.drag-over {
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--surface-strong));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .vendas-kanban-empty {
     padding: 1.75rem 1rem;
     text-align: center;
-    color: #94a3b8;
+    color: var(--muted-2);
     font-weight: 600;
 }
 
@@ -453,30 +511,26 @@ body:has(.vendas-kanban-container) .page-content {
     align-items: center;
     justify-content: center;
     padding: clamp(1rem, 3vw, 2rem);
-    background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.12), rgba(15, 23, 42, 0.62));
+    background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--accent) 18%, transparent), color-mix(in srgb, #000 45%, transparent));
     backdrop-filter: blur(8px);
     z-index: 1400;
 }
 
-.kanban-modal.active {
-    display: flex;
-}
-
-body.kanban-modal-open {
-    overflow: hidden;
-}
+.kanban-modal.active { display: flex; }
+body.kanban-modal-open { overflow: hidden; }
 
 .kanban-modal-content {
     width: min(960px, 100%);
     max-height: 88vh;
     background: var(--panel);
     border-radius: 20px;
-    box-shadow: 0 22px 80px rgba(15, 23, 42, 0.35);
-    border: 1px solid var(--panel-border);
+    box-shadow: 0 22px 80px color-mix(in srgb, #000 45%, transparent);
+    border: 1px solid var(--surface-strong);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     animation: fade-slide 220ms ease;
+    color: var(--panel-contrast);
 }
 
 .kanban-modal-header {
@@ -485,23 +539,23 @@ body.kanban-modal-open {
     justify-content: space-between;
     gap: 1rem;
     padding: 1.1rem 1.4rem;
-    border-bottom: 1px solid var(--panel-border);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0));
+    border-bottom: 1px solid var(--surface-strong);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent);
 }
 
 .kanban-modal-header h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--text-strong);
+    color: var(--panel-contrast);
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
 .kanban-modal-close {
-    border: 1px solid var(--panel-border);
-    background: #fff;
-    color: var(--text-strong);
+    border: 1px solid var(--surface-strong);
+    background: var(--surface);
+    color: var(--panel-contrast);
     width: 38px;
     height: 38px;
     border-radius: 12px;
@@ -520,14 +574,10 @@ body.kanban-modal-open {
     padding: 1.2rem 1.4rem 1.4rem;
     overflow-y: auto;
     max-height: 70vh;
-    display: grid;
-    gap: 1rem;
+    background: var(--panel);
 }
 
-.kanban-create-form {
-    display: grid;
-    gap: 1rem;
-}
+.kanban-create-form { display: flex; flex-direction: column; gap: 1.1rem; }
 
 .kanban-create-form .form-row {
     display: grid;
@@ -535,40 +585,37 @@ body.kanban-modal-open {
     gap: 1rem;
 }
 
-.kanban-create-form .form-group {
-    display: grid;
-    gap: 0.35rem;
-}
+.kanban-create-form .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .kanban-create-form label {
     font-weight: 700;
-    color: var(--text-strong);
+    color: var(--panel-contrast);
+    font-size: 0.95rem;
 }
 
 .kanban-create-form input,
 .kanban-create-form select,
 .kanban-create-form textarea {
     width: 100%;
-    border: 1.5px solid var(--panel-border);
+    border: 1.5px solid var(--surface-strong);
     border-radius: 12px;
     padding: 0.65rem 0.75rem;
     font-size: 0.98rem;
-    background: #fff;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    background: var(--surface);
+    color: var(--panel-contrast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .kanban-create-form input:focus,
 .kanban-create-form select:focus,
 .kanban-create-form textarea:focus {
     outline: none;
-    border-color: rgba(99, 102, 241, 0.6);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    border-color: color-mix(in srgb, var(--accent) 65%, var(--surface-strong));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
 }
 
-.kanban-create-form textarea {
-    resize: vertical;
-    min-height: 120px;
-}
+.kanban-create-form textarea { resize: vertical; min-height: 120px; }
 
 .kanban-create-form .form-actions {
     display: flex;
@@ -588,33 +635,21 @@ body.kanban-modal-open {
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.kanban-create-form .btn-primary {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #fff;
-}
+.kanban-create-form .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+.kanban-create-form .btn-secondary { background: var(--surface-strong); color: var(--panel-contrast); }
 
-.kanban-create-form .btn-secondary {
-    background: #e2e8f0;
-    color: #0f172a;
-}
-
-.kanban-create-form .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-soft);
-}
+.kanban-create-form .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
 
 .create-processo-error {
     display: none;
     padding: 0.8rem 1rem;
     border-radius: 12px;
-    background: rgba(239, 68, 68, 0.08);
-    color: #b91c1c;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: color-mix(in srgb, #ef4444 12%, transparent);
+    color: #fca5a5;
+    border: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
 }
 
-.create-processo-error.active {
-    display: block;
-}
+.create-processo-error.active { display: block; }
 
 /* RESPONSIVE ------------------------------------------------ */
 @media (max-width: 1100px) {
@@ -622,52 +657,18 @@ body.kanban-modal-open {
 }
 
 @media (max-width: 768px) {
-    .vendas-kanban-header {
-        grid-template-columns: 1fr;
-    }
-
-    .vendas-kanban-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .vendas-kanban-controls-left {
-        flex-direction: column;
-        min-width: 100%;
-    }
-
+    .vendas-kanban-header { grid-template-columns: 1fr; }
+    .vendas-kanban-controls { flex-direction: column; align-items: stretch; }
+    .vendas-kanban-controls-left { flex-direction: column; min-width: 100%; }
     .vendas-kanban-board { grid-auto-columns: minmax(260px, 280px); }
-}
-
-/* DARK MODE ------------------------------------------------- */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: linear-gradient(180deg, #0b1220 0%, #0f172a 40%, #111827 100%);
-        --panel: #131c2f;
-        --panel-border: #1f2937;
-        --muted: #94a3b8;
-        --text-strong: #e5e7eb;
-        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.35);
-        --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    .vendas-kanban-column-header { border-bottom-color: #1f2937; }
-    .vendas-kanban-search input { background: #0f172a; color: #e5e7eb; }
-    .vendas-kanban-filter-btn { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
-    .vendas-kanban-card { background: linear-gradient(180deg, #1b2437, #111827); }
-    .vendas-kanban-card-plate { color: #cbd5e1; }
-    .vendas-kanban-card-meta { border-top-color: #1f2937; }
-}
-
-/* ANIMATIONS ------------------------------------------------ */
-@keyframes fade-slide {
-    from { opacity: 0; transform: translateY(-12px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ACCESSIBILITY -------------------------------------------- */
 .vendas-kanban-card:focus-visible,
 .vendas-kanban-column:focus-within {
-    outline: 2px solid rgba(99, 102, 241, 0.55);
+    outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
     outline-offset: 2px;
 }
+
+/* ANIMATIONS ------------------------------------------------ */
+@keyframes fade-slide { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
