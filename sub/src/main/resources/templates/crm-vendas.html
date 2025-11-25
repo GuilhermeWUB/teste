@@ -5,27 +5,35 @@
     <title th:text="${pageTitle} ?: 'SUB - CRM - Vendas'">SUB - CRM - Vendas</title>
     <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
     <link rel="stylesheet" th:href="@{/css/crm-kanban.css}">
+    <link rel="stylesheet" th:href="@{/css/vendas-kanban.css}">
 </head>
 <body>
-<section layout:fragment="content" class="kanban-page">
-    <div class="kanban-wrapper crm-kanban-wrapper kanban-full-width">
-        <div class="kanban-header">
-            <div class="kanban-header-info">
-                <p class="eyebrow">Pipeline</p>
-                <h1 th:text="${crmKanbanTitle}">Funil de Filiação</h1>
-                <p th:text="${crmKanbanSubtitle}">Acompanhe cada etapa da venda em um fluxo estilo kanban.</p>
+<section layout:fragment="content" class="vendas-kanban-container">
+    <div class="vendas-kanban-wrapper">
+        <!-- Cabeçalho do Kanban de Vendas -->
+        <div class="vendas-kanban-header">
+            <div class="vendas-kanban-title-section">
+                <div class="vendas-kanban-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <div class="vendas-kanban-title-text">
+                    <h1>Kanban Vendas</h1>
+                    <p>Gerencie o pipeline de vendas com eficiência e visualize o progresso em tempo real</p>
+                </div>
             </div>
-            <div class="kanban-controls">
-                <div class="kanban-controls-left">
-                    <div class="kanban-search">
+
+            <!-- Controles: Busca, Filtros e Ações -->
+            <div class="vendas-kanban-controls">
+                <div class="vendas-kanban-controls-left">
+                    <div class="vendas-kanban-search">
                         <i class="bi bi-search"></i>
-                        <input type="text" placeholder="Buscar por placa ou produto" autocomplete="off">
+                        <input type="text" id="kanban-search" placeholder="Buscar por placa, produto ou cooperativa..." autocomplete="off">
                     </div>
-                    <button class="kanban-filter-btn" type="button">
+                    <button class="vendas-kanban-filter-btn" type="button">
                         <i class="bi bi-funnel-fill"></i> Filtros
                     </button>
                 </div>
-                <div class="kanban-actions">
+                <div class="vendas-kanban-actions">
                     <button class="btn-novo-evento" type="button">
                         <i class="bi bi-plus-circle"></i> Nova negociação
                     </button>
@@ -33,45 +41,57 @@
             </div>
         </div>
 
-        <div class="kanban-board crm-board" aria-label="Kanban de Vendas">
-            <div class="kanban-column crm-column" th:each="column : ${crmKanbanColumns}" th:data-stage="${column.name()}">
-                <div class="crm-column__bar" th:classappend="${column.badgeClass()}"></div>
-                <div class="column-header">
-                    <div class="column-title">
+        <!-- Board do Kanban -->
+        <div class="vendas-kanban-board kanban-board" aria-label="Kanban de Vendas" role="region">
+            <!-- Colunas serão renderizadas dinamicamente pelo JavaScript -->
+            <div class="vendas-kanban-column kanban-column" th:each="column : ${crmKanbanColumns}" th:data-stage="${column.name()}">
+                <div class="vendas-kanban-column-bar"></div>
+                <div class="vendas-kanban-column-header">
+                    <div class="vendas-kanban-column-title">
                         <h3 th:text="${column.name()}">Coluna</h3>
-                        <span class="column-count" th:text="${column.badge()}">0</span>
+                        <span class="vendas-kanban-column-count" th:text="${column.badge()}">0</span>
                     </div>
-                    <p class="column-helper" th:text="${column.helper()}">Descrição</p>
+                    <p class="vendas-kanban-column-helper" th:text="${column.helper()}">Descrição da etapa</p>
                 </div>
-                <div class="tasks-container">
-                    <article class="crm-card" th:each="deal : ${column.deals()}">
-                        <div class="crm-card__top">
+                <div class="vendas-kanban-tasks tasks-container">
+                    <!-- Cards serão renderizados dinamicamente -->
+                    <article class="vendas-kanban-card" th:each="deal : ${column.deals()}" draggable="true">
+                        <div class="vendas-kanban-card-top">
                             <div>
-                                <p class="crm-card__label" th:text="${deal.stage()}">Status</p>
-                                <h4 class="crm-card__title" th:text="${deal.title()}">Produto</h4>
-                                <p class="crm-card__plate" th:text="${deal.company()}">PLACA: XXX-0000</p>
+                                <p class="vendas-kanban-card-label" th:text="${deal.stage()}">Status</p>
+                                <h4 class="vendas-kanban-card-title" th:text="${deal.title()}">Produto</h4>
+                                <p class="vendas-kanban-card-plate" th:text="${deal.company()}">PLACA: XXX-0000</p>
                             </div>
-                            <span class="crm-card__status" th:text="${deal.status()}">Etiqueta</span>
+                            <span class="vendas-kanban-card-status" th:text="${deal.status()}">Etiqueta</span>
                         </div>
-                        <div class="crm-card__meta">
-                            <div class="crm-card__amount">
+                        <div class="vendas-kanban-card-meta">
+                            <div class="vendas-kanban-card-amount">
                                 <i class="bi bi-currency-dollar"></i>
                                 <span th:text="${deal.amount()}">R$ 0,00</span>
                             </div>
-                            <div class="crm-card__date">
+                            <div class="vendas-kanban-card-date">
                                 <i class="bi bi-calendar4"></i>
                                 <span th:text="${deal.dueDate()}">Hoje</span>
                             </div>
                         </div>
-                        <div class="crm-card__badges">
-                            <span class="badge bg-light text-dark">Cotação Varejo</span>
-                            <span class="badge bg-light text-dark">Negociação</span>
+                        <div class="vendas-kanban-card-badges">
+                            <span class="badge">Cotação Varejo</span>
+                            <span class="badge">Negociação</span>
                         </div>
                     </article>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal de Detalhes (será criado pelo JavaScript) -->
+    <div id="kanban-modal" class="kanban-modal" style="display: none;"></div>
+
+    <!-- Modal de Criação/Edição (será criado pelo JavaScript) -->
+    <div id="create-venda-modal" class="kanban-modal" style="display: none;"></div>
 </section>
+
+<!-- Script do Kanban de Vendas -->
+<script th:src="@{/js/vendas-kanban.js}" defer></script>
 </body>
 </html>
