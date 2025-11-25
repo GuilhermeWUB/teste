@@ -828,6 +828,19 @@ body.kanban-modal-open { overflow: hidden; }
 .crm-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .crm-mini-badge { padding: 0.35rem 0.55rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 700; color: var(--muted); }
 
+.crm-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+.crm-btn-secondary { background: var(--surface); border: 1px solid var(--surface-strong); color: var(--panel-contrast); }
+.crm-btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+.crm-btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+.crm-btn-ghost { background: transparent; border: 1px dashed var(--surface-strong); color: var(--panel-contrast); }
+.crm-btn.full { width: 100%; }
+.crm-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+
+.crm-status { padding: 0.45rem 0.7rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 800; }
+
+.crm-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.crm-mini-badge { padding: 0.35rem 0.55rem; border-radius: 10px; background: var(--surface); border: 1px solid var(--surface-strong); font-weight: 700; color: var(--muted); }
+
 .crm-actions { display: flex; justify-content: flex-end; gap: 0.6rem; padding-top: 0.25rem; }
 
 /* RESPONSIVE ------------------------------------------------ */

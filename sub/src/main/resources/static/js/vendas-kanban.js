@@ -176,10 +176,8 @@
         });
 
         cards.forEach(card => {
-            const status = card.status || STATUSES[0];
-            if (!grouped[status]) {
-                grouped[status] = [];
-            }
+            const rawStatus = card.status || STATUSES[0];
+            const status = STATUSES.includes(rawStatus) ? rawStatus : STATUSES[0];
             grouped[status].push(card);
         });
 
@@ -297,11 +295,6 @@
         top.appendChild(topRight);
 
         article.appendChild(top);
-
-        article.appendChild(top);
-
-        return `${day}/${month}/${year} - ${hours}:${minutes}`;
-    }
 
     function formatCurrency(value) {
         const numeric = typeof value === 'number' ? value : Number(value);
