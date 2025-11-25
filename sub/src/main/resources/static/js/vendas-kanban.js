@@ -259,30 +259,22 @@
 
         const topLeft = document.createElement('div');
 
+        const origin = document.createElement('span');
+        origin.className = 'vendas-kanban-card-origin';
+        origin.textContent = card.origemLead || 'Origem não definida';
+        topLeft.appendChild(origin);
+
         const label = document.createElement('p');
         label.className = 'vendas-kanban-card-label';
-        label.textContent = statusLabels[card.status] || 'Status';
+        label.textContent = `${card.nomeContato || 'Não definido'} • ${formatDateTimeShort(card.createdAt) || 'Sem data'}`;
         topLeft.appendChild(label);
 
         const title = document.createElement('h4');
         title.className = 'vendas-kanban-card-title';
-        title.textContent = card.nomeContato || 'Sem nome';
+        title.textContent = card.responsavel || statusLabels[card.status] || 'Não definido';
         topLeft.appendChild(title);
 
-        if (card.placa) {
-            const plate = document.createElement('p');
-            plate.className = 'vendas-kanban-card-plate';
-            plate.textContent = 'PLACA: ' + card.placa.toUpperCase();
-            topLeft.appendChild(plate);
-        }
-
         top.appendChild(topLeft);
-
-        // Status badge
-        const statusBadge = document.createElement('span');
-        statusBadge.className = 'vendas-kanban-card-status';
-        statusBadge.textContent = card.cooperativa || 'Cooperativa';
-        top.appendChild(statusBadge);
 
         article.appendChild(top);
 
@@ -292,13 +284,18 @@
 
         const amount = document.createElement('div');
         amount.className = 'vendas-kanban-card-amount';
-        amount.innerHTML = '<i class="bi bi-currency-dollar"></i><span>Cotação</span>';
+        amount.innerHTML = `<i class="bi bi-currency-dollar"></i><span>${formatCurrency(card.valor)}</span>`;
         meta.appendChild(amount);
 
         const date = document.createElement('div');
         date.className = 'vendas-kanban-card-date';
         date.innerHTML = '<i class="bi bi-calendar4"></i><span>' + (formatDate(card.createdAt) || 'Hoje') + '</span>';
         meta.appendChild(date);
+
+        const cooperativaTag = document.createElement('span');
+        cooperativaTag.className = 'vendas-kanban-mini-tag';
+        cooperativaTag.textContent = card.cooperativa || 'VR';
+        meta.appendChild(cooperativaTag);
 
         article.appendChild(meta);
 
@@ -312,6 +309,34 @@
         const date = new Date(dateValue);
         if (Number.isNaN(date.getTime())) return '';
         return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    }
+
+    function formatDateTimeShort(dateValue) {
+        if (!dateValue) return '';
+        const date = new Date(dateValue);
+        if (Number.isNaN(date.getTime())) return '';
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}/${month}/${year} - ${hours}:${minutes}`;
+    }
+
+    function formatCurrency(value) {
+        const numeric = typeof value === 'number' ? value : Number(value);
+        if (Number.isNaN(numeric)) {
+            return 'R$ 0,00';
+        }
+
+        return numeric.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 
     function createEmptyState() {
