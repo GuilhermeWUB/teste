@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualização de Venda</title>
+    <style>
+        .gabiii-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: #f9fafb;
+            min-height: 100vh;
+        }
+
+        .gabiii-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .gabiii-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .gabiii-id {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .gabiii-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .gabiii-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #6b7280;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gabiii-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        .gabiii-content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .gabiii-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .gabiii-sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .gabiii-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .gabiii-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .gabiii-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .gabiii-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gabiii-btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .gabiii-btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .gabiii-btn-success {
+            background: #10b981;
+            color: white;
+            width: 100%;
+        }
+
+        .gabiii-btn-success:hover {
+            background: #059669;
+        }
+
+        .gabiii-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .gabiii-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .gabiii-form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .gabiii-form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .gabiii-form-input,
+        .gabiii-form-select {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .gabiii-form-input:focus,
+        .gabiii-form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .gabiii-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .gabiii-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .gabiii-info-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .gabiii-info-value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .gabiii-highlight-card {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .gabiii-muted {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .gabiii-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+
+        .gabiii-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #d97706;
+        }
+    </style>
+</head>
+<body>
+    <div class="gabiii-container">
+        <div class="gabiii-header">
+            <h1 class="gabiii-title">Não Definido</h1>
+            <div class="gabiii-id" th:text="'ID: ' + ${vendaId}">ID: 123</div>
+        </div>
+
+        <div class="gabiii-tabs">
+            <button class="gabiii-tab" type="button">Atividades</button>
+            <button class="gabiii-tab" type="button">Associado</button>
+            <button class="gabiii-tab active" type="button">Cotações</button>
+            <button class="gabiii-tab" type="button">Vistoria</button>
+            <button class="gabiii-tab" type="button">PowerSign</button>
+        </div>
+
+        <div class="gabiii-content">
+            <div class="gabiii-main">
+                <!-- Aceite de cotação -->
+                <div class="gabiii-card gabiii-highlight-card">
+                    <div class="gabiii-card-header">
+                        <div>
+                            <p class="gabiii-info-label">ACEITE DE COTAÇÃO</p>
+                            <h3 class="gabiii-card-title" style="margin-top: 5px;">Envie o documento ao cliente</h3>
+                            <p class="gabiii-muted">Use este botão para confirmar o aceite do seu cliente nessa cotação.</p>
+                        </div>
+                    </div>
+                    <p class="gabiii-muted">Essa cotação foi visualizada pelo cliente 0 vezes.</p>
+                </div>
+
+                <!-- Informações do veículo -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Informações do veículo</h3>
+                        <button class="gabiii-btn gabiii-btn-primary" type="button">Consultar no SGA</button>
+                    </div>
+
+                    <div class="gabiii-form-grid">
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Tipo de veículo</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Selecione</option>
+                                <option value="CARRO">Carro</option>
+                                <option value="MOTO">Moto</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Placa</label>
+                            <input type="text" class="gabiii-form-input" placeholder="ABC-1234">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Renavam</label>
+                            <input type="text" class="gabiii-form-input">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Marca*</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Marca*</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Ano modelo</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Ano*</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Modelo*</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Modelo*</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Ano Fabricação</label>
+                            <input type="text" class="gabiii-form-input">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Código FIPE</label>
+                            <input type="text" class="gabiii-form-input">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Valor FIPE</label>
+                            <input type="text" class="gabiii-form-input">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Valor Protegido</label>
+                            <input type="text" class="gabiii-form-input" value="-">
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Depreciação</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Dia de Vencimento</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Cor</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Select an Option</option>
+                            </select>
+                        </div>
+
+                        <div class="gabiii-form-group">
+                            <label class="gabiii-form-label">Câmbio</label>
+                            <select class="gabiii-form-select">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gabiii-sidebar">
+                <!-- Responsável -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Responsável</h3>
+                        <div class="gabiii-avatar">VR</div>
+                    </div>
+                    <p class="gabiii-info-value">VINICIUS RIAN S...</p>
+                    <button class="gabiii-btn gabiii-btn-success" type="button">Atender essa cotação</button>
+                </div>
+
+                <!-- Afiliado(a) -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Afiliado(a)</h3>
+                    </div>
+                    <p class="gabiii-info-value">Nenhum</p>
+                </div>
+
+                <!-- Bônus -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Bônus</h3>
+                    </div>
+                    <p class="gabiii-info-value">R$ 0,00</p>
+                </div>
+
+                <!-- Contratação online -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Contratação online</h3>
+                    </div>
+                    <span class="gabiii-status">Dados incompletos</span>
+                </div>
+
+                <!-- Cooperativa -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Cooperativa</h3>
+                    </div>
+                    <select class="gabiii-form-select">
+                        <option value="">Select an Option</option>
+                    </select>
+                </div>
+
+                <!-- Origem do lead -->
+                <div class="gabiii-card">
+                    <div class="gabiii-card-header">
+                        <h3 class="gabiii-card-title">Origem do lead</h3>
+                    </div>
+                    <select class="gabiii-form-select">
+                        <option value="">Marketing ON</option>
+                    </select>
+                    <select class="gabiii-form-select" style="margin-top: 10px;">
+                        <option value="">Facebook Ads</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

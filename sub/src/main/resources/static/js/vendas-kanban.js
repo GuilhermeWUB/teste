@@ -485,7 +485,7 @@
         }
     }
 
-    function openModal(card) {
+    async function openModal(card) {
         const modal = selectors.modal();
         const modalBody = selectors.modalBody();
 
@@ -493,11 +493,28 @@
             return;
         }
 
-        const html = buildVendaDetailsSection(card);
-        modalBody.innerHTML = html;
+        // Mostra loading
+        modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bi bi-hourglass-split" style="font-size: 2rem; color: #6366f1;"></i><p style="margin-top: 10px; color: #6b7280;">Carregando...</p></div>';
 
         modal.classList.add('active');
         document.body.classList.add('kanban-modal-open');
+
+        try {
+            // Faz requisição AJAX para carregar o conteúdo
+            const response = await fetch(`/crm/vendas/${card.id}/view`, {
+                headers: buildHeaders({ 'Accept': 'text/html' })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao carregar detalhes da venda');
+            }
+
+            const html = await response.text();
+            modalBody.innerHTML = html;
+        } catch (error) {
+            console.error('[VENDAS-KANBAN] Erro ao carregar modal:', error);
+            modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="margin-top: 10px; color: #ef4444;">Erro ao carregar os detalhes da venda.</p></div>';
+        }
     }
 
     function closeModal() {

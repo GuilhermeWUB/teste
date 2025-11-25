@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -33,6 +34,16 @@ public class CrmController {
     public String vendas(Model model) {
         model.addAttribute("pageTitle", "Funil de Filiação - CRM");
         return "crm/vendas";
+    }
+
+    /**
+     * Página de visualização/edição de uma venda específica
+     * Retorna apenas o conteúdo HTML para ser carregado via AJAX
+     */
+    @GetMapping(value = "/vendas/{id}/view", produces = MediaType.TEXT_HTML_VALUE)
+    public String viewVenda(@PathVariable Long id, Model model) {
+        model.addAttribute("vendaId", id);
+        return "crm/venda-view";
     }
 
     @GetMapping(value = "/contatos", produces = MediaType.TEXT_HTML_VALUE)
