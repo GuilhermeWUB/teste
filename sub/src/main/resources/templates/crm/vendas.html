@@ -1,57 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{fragments/layout-crm}">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"      layout:decorate="~{fragments/layout-crm}">
 <head>
     <title>SUB - Funil de Filiação</title>
-    <link rel="stylesheet" th:href="@{/css/kanban-board.css}">
+    <link rel="stylesheet" th:href="@{/css/vendas-kanban.css}">
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="kanban-wrapper">
-        <div class="kanban-header">
-            <div class="kanban-header-info">
-                <h1><i class="bi bi-funnel"></i> Funil de Filiação</h1>
-                <p>Gerencie o processo de filiação de novos associados.</p>
+<section layout:fragment="content" class="vendas-kanban-container">
+    <div class="vendas-kanban-wrapper">
+        <div class="vendas-kanban-header">
+            <div class="vendas-kanban-title-section">
+                <div class="vendas-kanban-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <div class="vendas-kanban-title-text">
+                    <h1>Funil de Filiação</h1>
+                    <p>Gerencie o pipeline de vendas com eficiência e visualize o progresso em tempo real.</p>
+                </div>
             </div>
-            <div class="kanban-controls">
-                <div class="kanban-actions">
-                    <div class="kanban-search">
+
+            <div class="vendas-kanban-controls">
+                <div class="vendas-kanban-controls-left">
+                    <div class="vendas-kanban-search">
                         <i class="bi bi-search"></i>
-                        <input type="text" id="kanban-search" placeholder="Buscar por nome, placa ou email..." autocomplete="off"/>
+                        <input type="text" id="kanban-search" placeholder="Buscar por placa, produto ou cooperativa..." autocomplete="off">
                     </div>
-                    <button class="btn-novo-evento" type="button" onclick="window.vendasBoard?.openCreateModal?.()">
-                        <i class="bi bi-plus-circle"></i> Adicionar negociação
+                    <button class="vendas-kanban-filter-btn" type="button">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                    </button>
+                </div>
+                <div class="vendas-kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.vendasBoard && window.vendasBoard.openCreateModal && window.vendasBoard.openCreateModal()">
+                        <i class="bi bi-plus-circle"></i> Nova negociação
                     </button>
                 </div>
             </div>
-            </div>
         </div>
 
-        <div class="kanban-alerts">
-            <div th:if="${success}" class="kanban-alert success" role="alert">
-                <i class="bi bi-check-circle-fill"></i>
-                <span th:text="${success}"></span>
-                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <div th:if="${error}" class="kanban-alert danger" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span th:text="${error}"></span>
-                <button type="button" class="kanban-alert-close" onclick="this.parentElement.remove()">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="kanban-board" data-dynamic="true"></div>
+        <div class="vendas-kanban-board kanban-board" data-dynamic="true" aria-label="Kanban de Vendas" role="region"></div>
     </div>
 
     <div id="kanban-modal" class="kanban-modal">
         <div class="kanban-modal-content">
             <div class="kanban-modal-header">
                 <h2>Detalhes da Negociação</h2>
-                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeModal?.()">
+                <button class="kanban-modal-close" onclick="window.vendasBoard && window.vendasBoard.closeModal && window.vendasBoard.closeModal()">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
@@ -63,7 +55,7 @@
         <div class="kanban-modal-content">
             <div class="kanban-modal-header">
                 <h2><i class="bi bi-plus-circle"></i> Adicione uma nova negociação</h2>
-                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeCreateModal?.()">
+                <button class="kanban-modal-close" onclick="window.vendasBoard && window.vendasBoard.closeCreateModal && window.vendasBoard.closeCreateModal()">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
@@ -235,7 +227,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="window.vendasBoard?.closeCreateModal?.()">
+                        <button type="button" class="btn btn-secondary" onclick="window.vendasBoard && window.vendasBoard.closeCreateModal && window.vendasBoard.closeCreateModal()">
                             <i class="bi bi-x-circle"></i>
                             Cancelar
                         </button>
@@ -248,29 +240,6 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const body = document.body;
-            if (body) {
-                body.classList.remove('no-dark-blur');
-            }
-
-            const main = document.querySelector('main.page');
-            if (main) {
-                main.classList.add('kanban-page');
-            }
-
-            const container = document.querySelector('main.page > .container');
-            if (container) {
-                container.classList.add('kanban-full-width');
-            }
-
-            const pageContent = document.querySelector('main.page > .container > .page-content');
-            if (pageContent) {
-                pageContent.classList.add('kanban-content-stretch');
-            }
-        });
-    </script>
     <script th:src="@{/js/vendas-kanban.js}"></script>
 </section>
 </body>
