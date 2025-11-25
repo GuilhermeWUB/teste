@@ -893,7 +893,7 @@ html[data-theme="dark"] .kanban-wrapper {
     position: fixed;
     inset: 0;
     display: none;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: var(--kanban-backdrop);
     backdrop-filter: blur(8px);
