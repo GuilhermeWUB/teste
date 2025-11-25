@@ -9,8 +9,8 @@
      ======================================== -->
 <header th:fragment="header-crm" class="topbar">
     <div class="brand">
-        <a class="brand-link" th:href="@{/crm/dashboard}">
-            <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Dashboard CRM">
+        <a class="brand-link" th:href="@{/dashboard}">
+            <img class="brand-logo" th:src="@{/images/ub_02_2.jpeg}" alt="SUB" title="Voltar ao Sistema Principal">
             <span class="brand-title">SUB<span class="text-muted small ms-2">| CRM Vendas</span></span>
         </a>
     </div>
@@ -34,12 +34,6 @@
                 <a th:href="@{/crm/vendas}">
                     <i class="bi bi-funnel me-1"></i>
                     Funil de Vendas
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i>
-                    Voltar ao Sistema
                 </a>
             </li>
 
