@@ -49,9 +49,30 @@
     padding: 0 !important;
 }
 
+.vendas-page main.page {
+    padding-top: clamp(1.25rem, 2vw, 2rem);
+}
+
+.vendas-page main.page > .container {
+    width: 100%;
+    max-width: 100%;
+    padding-left: clamp(1.25rem, 3vw, 2.5rem);
+    padding-right: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.vendas-page main.page > .container > .page-content {
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
 .kanban-content-stretch {
     flex: 1;
     gap: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
 }
 
 .kanban-content-stretch > section {
@@ -893,7 +914,7 @@ html[data-theme="dark"] .kanban-wrapper {
     position: fixed;
     inset: 0;
     display: none;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background: var(--kanban-backdrop);
     backdrop-filter: blur(8px);
