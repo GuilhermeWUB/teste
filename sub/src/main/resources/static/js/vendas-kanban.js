@@ -511,10 +511,35 @@
 
             const html = await response.text();
             modalBody.innerHTML = html;
+
+            // Inicializa as abas após o conteúdo ser carregado
+            initializeModalTabs();
         } catch (error) {
             console.error('[VENDAS-KANBAN] Erro ao carregar modal:', error);
             modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="margin-top: 10px; color: #ef4444;">Erro ao carregar os detalhes da venda.</p></div>';
         }
+    }
+
+    function initializeModalTabs() {
+        const tabs = document.querySelectorAll('.gabiii-tab[data-tab]');
+        const contents = document.querySelectorAll('.gabiii-tab-content[data-content]');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const targetContent = document.querySelector(`.gabiii-tab-content[data-content="${targetTab}"]`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
     }
 
     function closeModal() {
