@@ -82,6 +82,21 @@ body.crm-fullwidth .kanban-wrapper {
     padding-right: 0;
 }
 
+/* Ajustes para aproximar o kanban do topo na página de vendas */
+body.crm-kanban-layout .page {
+    padding-top: clamp(1rem, 2vw, 1.5rem);
+    padding-bottom: clamp(3rem, 5vw, 4rem);
+}
+
+body.crm-kanban-layout .page-content {
+    gap: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+body.crm-kanban-layout .kanban-wrapper {
+    justify-content: flex-start;
+    padding-top: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
 html[data-theme="dark"] .nav-item-crm a {
     color: var(--color-nav-link);
 }
