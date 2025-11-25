@@ -1,149 +1,134 @@
-/* ========================================
-   VENDAS KANBAN - CSS DEDICADO
-   ======================================== */
+/* =========================================================
+   VENDAS KANBAN – EXPERIENCE FIRST STYLESHEET
+   Rebuilt for clarity, balance and high-contrast usability.
+   ========================================================= */
 
-/* IMPORTANTE: Overrides para o layout CRM */
-/* Força o kanban a ocupar toda a altura disponível */
-body:has(.vendas-kanban-container) .page {
-    padding: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
+/* FOUNDATION ------------------------------------------------ */
+:root {
+    --bg: linear-gradient(180deg, #f6f8fb 0%, #eef2f7 40%, #e6ebf3 100%);
+    --panel: #ffffff;
+    --panel-border: #d9e2ec;
+    --muted: #6b7280;
+    --text-strong: #0f172a;
+    --accent: #6366f1;
+    --accent-2: #8b5cf6;
+    --shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.12);
+    --shadow-hover: 0 16px 40px rgba(15, 23, 42, 0.18);
+    --radius-lg: 18px;
+    --radius-sm: 10px;
+    --transition-fast: 180ms ease;
+    --transition-slow: 280ms ease;
+    --glass: rgba(255, 255, 255, 0.7);
 }
 
-body:has(.vendas-kanban-container) .page > .container {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
+body:has(.vendas-kanban-container) .page,
+body:has(.vendas-kanban-container) .page > .container,
 body:has(.vendas-kanban-container) .page-content {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
     padding: 0 !important;
     margin: 0 !important;
-    gap: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 !important;
 }
 
-/* 1. CONTAINER PRINCIPAL DO KANBAN DE VENDAS */
+/* CANVAS ---------------------------------------------------- */
 .vendas-kanban-container {
-    width: 100%;
-    height: 100%;
-    min-height: calc(100vh - 80px); /* Desconta a altura do header */
+    min-height: calc(100vh - 64px);
+    background: var(--bg);
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-    padding: 0;
-    margin: 0;
     overflow: hidden;
+    isolation: isolate;
 }
 
-/* 2. WRAPPER DO KANBAN */
 .vendas-kanban-wrapper {
     flex: 1;
+    padding: clamp(1.25rem, 3vw, 2.5rem);
     display: flex;
     flex-direction: column;
-    padding: clamp(1.5rem, 3vw, 2.5rem);
+    gap: 1.5rem;
     overflow: hidden;
-    height: 100%;
-    max-height: 100%;
 }
 
-/* 3. CABEÇALHO DO KANBAN */
+/* HEADER ---------------------------------------------------- */
 .vendas-kanban-header {
-    margin-bottom: 2rem;
-    animation: slideDown 0.4s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    animation: fade-slide 320ms ease;
 }
 
 .vendas-kanban-title-section {
     display: flex;
-    align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    align-items: center;
 }
 
 .vendas-kanban-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 25% 25%, #9ea8ff 0%, #6c72ff 45%, #5b63ff 75%);
+    color: #fff;
+    border-radius: 22px;
+    box-shadow: var(--shadow-soft);
+    font-size: 1.6rem;
 }
 
 .vendas-kanban-title-text h1 {
     margin: 0;
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-size: clamp(1.8rem, 4vw, 2.35rem);
     font-weight: 800;
-    background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
     letter-spacing: -0.02em;
+    color: var(--text-strong);
 }
 
 .vendas-kanban-title-text p {
-    margin: 0.25rem 0 0;
-    font-size: 0.95rem;
-    color: #64748b;
-    font-weight: 500;
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.98rem;
 }
 
-/* 4. CONTROLES DO KANBAN (BUSCA E AÇÕES) */
+/* CONTROLS -------------------------------------------------- */
 .vendas-kanban-controls {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .vendas-kanban-controls-left {
     display: flex;
-    gap: 0.75rem;
     flex: 1;
-    min-width: 300px;
+    gap: 0.75rem;
+    min-width: 320px;
 }
 
 .vendas-kanban-search {
     position: relative;
     flex: 1;
-    max-width: 400px;
 }
 
 .vendas-kanban-search input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1.5px solid var(--panel-border);
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 0.85rem 1rem 0.85rem 3rem;
     font-size: 0.95rem;
-    background: white;
-    transition: all 0.2s ease;
-    outline: none;
+    transition: border var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .vendas-kanban-search input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18);
+    transform: translateY(-1px);
+    outline: none;
 }
 
 .vendas-kanban-search i {
@@ -155,309 +140,260 @@ body:has(.vendas-kanban-container) .page-content {
     font-size: 1.1rem;
 }
 
-.vendas-kanban-filter-btn {
-    padding: 0.75rem 1.25rem;
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #475569;
+.vendas-kanban-filter-btn,
+.vendas-kanban-actions .btn-novo-evento {
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    border: 1.5px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
+    padding: 0.85rem 1.25rem;
+    transition: transform var(--transition-fast), box-shadow var(--transition-slow), background var(--transition-fast);
+}
+
+.vendas-kanban-filter-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--panel-border);
+    color: var(--muted);
 }
 
 .vendas-kanban-filter-btn:hover {
-    border-color: #6366f1;
-    color: #6366f1;
-    background: #f8faff;
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
 }
 
 .vendas-kanban-actions .btn-novo-evento {
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 90%);
+    color: #fff;
+    box-shadow: var(--shadow-soft);
+    padding-inline: 1.45rem;
 }
 
 .vendas-kanban-actions .btn-novo-evento:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    box-shadow: var(--shadow-hover);
 }
 
-.vendas-kanban-actions .btn-novo-evento:active {
-    transform: translateY(0);
-}
-
-/* 5. BOARD DO KANBAN */
+/* BOARD ----------------------------------------------------- */
 .vendas-kanban-board {
     flex: 1;
-    display: flex;
-    gap: 1.5rem;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(320px, 340px);
+    gap: 1rem;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 1rem;
-    scroll-behavior: smooth;
-    min-height: 0; /* Importante para flex funcionar corretamente */
-    height: 100%;
+    padding-bottom: 0.35rem;
+    scroll-snap-type: x mandatory;
 }
 
-/* Scrollbar customizada */
 .vendas-kanban-board::-webkit-scrollbar {
     height: 10px;
 }
 
 .vendas-kanban-board::-webkit-scrollbar-track {
-    background: #e2e8f0;
-    border-radius: 10px;
-}
-
-.vendas-kanban-board::-webkit-scrollbar-thumb {
-    background: #94a3b8;
-    border-radius: 10px;
-}
-
-.vendas-kanban-board::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
-}
-
-/* 6. COLUNAS DO KANBAN */
-.vendas-kanban-column {
-    flex: 0 0 320px;
-    min-width: 320px;
-    max-width: 320px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-    transition: all 0.3s ease;
-    animation: fadeInUp 0.5s ease-out backwards;
-    overflow: hidden;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.vendas-kanban-column:nth-child(1) { animation-delay: 0.1s; }
-.vendas-kanban-column:nth-child(2) { animation-delay: 0.2s; }
-.vendas-kanban-column:nth-child(3) { animation-delay: 0.3s; }
-.vendas-kanban-column:nth-child(4) { animation-delay: 0.4s; }
-.vendas-kanban-column:nth-child(5) { animation-delay: 0.5s; }
-
-.vendas-kanban-column:hover {
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-    transform: translateY(-2px);
-}
-
-/* Barra colorida no topo da coluna */
-.vendas-kanban-column-bar {
-    height: 8px;
-    width: 100%;
-    border-radius: 16px 16px 0 0;
-    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-}
-
-/* Cores diferentes para cada coluna */
-.vendas-kanban-column:nth-child(1) .vendas-kanban-column-bar {
-    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-}
-
-.vendas-kanban-column:nth-child(2) .vendas-kanban-column-bar {
-    background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
-}
-
-.vendas-kanban-column:nth-child(3) .vendas-kanban-column-bar {
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.vendas-kanban-column:nth-child(4) .vendas-kanban-column-bar {
-    background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%);
-}
-
-.vendas-kanban-column:nth-child(5) .vendas-kanban-column-bar {
-    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-}
-
-/* 7. CABEÇALHO DA COLUNA */
-.vendas-kanban-column-header {
-    padding: 1.25rem 1.25rem 0.75rem;
-    border-bottom: 2px solid #f1f5f9;
-}
-
-.vendas-kanban-column-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.vendas-kanban-column-title h3 {
-    margin: 0;
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.01em;
-}
-
-.vendas-kanban-column-count {
-    background: #f1f5f9;
-    color: #334155;
-    border-radius: 999px;
-    padding: 0.25rem 0.75rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-    min-width: 28px;
-    text-align: center;
-}
-
-.vendas-kanban-column-helper {
-    margin: 0;
-    color: #64748b;
-    font-size: 0.85rem;
-    line-height: 1.4;
-}
-
-/* 8. CONTAINER DE CARDS */
-.vendas-kanban-tasks {
-    flex: 1;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-    overflow-y: auto;
-    overflow-x: hidden;
-    min-height: 0; /* Importante para flex funcionar */
-}
-
-/* Scrollbar das tasks */
-.vendas-kanban-tasks::-webkit-scrollbar {
-    width: 6px;
-}
-
-.vendas-kanban-tasks::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.vendas-kanban-tasks::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
+.vendas-kanban-board::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.8), rgba(99, 102, 241, 0.35));
+    border-radius: 999px;
 }
 
-.vendas-kanban-tasks::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* 9. CARDS DO KANBAN */
-.vendas-kanban-card {
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem;
-    cursor: move;
-    transition: all 0.2s ease;
+/* COLUMN ---------------------------------------------------- */
+.vendas-kanban-column {
+    background: var(--panel);
+    border: 1.5px solid var(--panel-border);
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    min-height: 0;
+    scroll-snap-align: start;
+    box-shadow: var(--shadow-soft);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
     position: relative;
     overflow: hidden;
 }
 
-.vendas-kanban-card::before {
-    content: '';
+.vendas-kanban-column:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.vendas-kanban-column::before {
+    content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+    inset: 0;
+    background: linear-gradient(120deg, rgba(99, 102, 241, 0.07), rgba(139, 92, 246, 0.05));
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition-fast);
+    pointer-events: none;
 }
 
-.vendas-kanban-card:hover {
-    border-color: #6366f1;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
-    transform: translateY(-2px);
+.vendas-kanban-column:hover::before { opacity: 1; }
+
+.vendas-kanban-column-bar {
+    height: 6px;
+    background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
 }
 
-.vendas-kanban-card:hover::before {
-    opacity: 1;
+.vendas-kanban-column:nth-child(2) .vendas-kanban-column-bar { background: linear-gradient(90deg, #f59e0b, #fb923c); }
+.vendas-kanban-column:nth-child(3) .vendas-kanban-column-bar { background: linear-gradient(90deg, #0ea5e9, #2563eb); }
+.vendas-kanban-column:nth-child(4) .vendas-kanban-column-bar { background: linear-gradient(90deg, #22c55e, #16a34a); }
+.vendas-kanban-column:nth-child(5) .vendas-kanban-column-bar { background: linear-gradient(90deg, #a855f7, #6366f1); }
+
+/* COLUMN HEADER -------------------------------------------- */
+.vendas-kanban-column-header {
+    padding: 1.15rem 1.25rem 0.85rem;
+    border-bottom: 1.5px solid #eef2f7;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
+    backdrop-filter: blur(6px);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
-.vendas-kanban-card.dragging {
-    opacity: 0.5;
-    transform: rotate(2deg);
-}
-
-/* Topo do card */
-.vendas-kanban-card-top {
+.vendas-kanban-column-title {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
 }
 
+.vendas-kanban-column-title h3 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: var(--text-strong);
+    letter-spacing: -0.01em;
+}
+
+.vendas-kanban-column-count {
+    padding: 0.35rem 0.8rem;
+    background: #eef2ff;
+    color: #4338ca;
+    border-radius: 999px;
+    font-weight: 700;
+    border: 1px solid #c7d2fe;
+    min-width: 32px;
+    text-align: center;
+}
+
+.vendas-kanban-column-helper {
+    margin: 0.35rem 0 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+/* TASK LIST ------------------------------------------------- */
+.vendas-kanban-tasks {
+    flex: 1;
+    padding: 1rem 0.95rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.vendas-kanban-tasks::-webkit-scrollbar { width: 7px; }
+.vendas-kanban-tasks::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+/* CARD ------------------------------------------------------ */
+.vendas-kanban-card {
+    border: 1.5px solid var(--panel-border);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(180deg, #fff 0%, #fdfdff 50%, #fafbff 100%);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    position: relative;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+    cursor: grab;
+}
+
+.vendas-kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.vendas-kanban-card:active { cursor: grabbing; }
+
+.vendas-kanban-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 2px transparent;
+    transition: box-shadow var(--transition-fast);
+    pointer-events: none;
+}
+
+.vendas-kanban-card:hover::before {
+    box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.14);
+}
+
+.vendas-kanban-card.dragging {
+    opacity: 0.65;
+    transform: scale(0.99) rotate(1deg);
+}
+
+.vendas-kanban-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
 .vendas-kanban-card-label {
-    font-size: 0.75rem;
+    margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #6366f1;
-    margin: 0 0 0.25rem;
+    font-size: 0.74rem;
     font-weight: 800;
+    color: var(--accent);
 }
 
 .vendas-kanban-card-title {
-    margin: 0 0 0.25rem;
+    margin: 0;
     font-weight: 800;
-    color: #0f172a;
-    font-size: 1rem;
+    color: var(--text-strong);
     line-height: 1.3;
+    font-size: 1rem;
 }
 
 .vendas-kanban-card-plate {
     margin: 0;
     color: #475569;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
 }
 
 .vendas-kanban-card-status {
-    align-self: flex-start;
-    background: #dbeafe;
-    color: #1e40af;
-    border: 1px solid #93c5fd;
-    padding: 0.35rem 0.75rem;
+    background: #e0e7ff;
+    color: #3730a3;
+    border: 1px solid #cbd5ff;
+    padding: 0.4rem 0.85rem;
     border-radius: 999px;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     white-space: nowrap;
 }
 
-/* Meta informações do card */
 .vendas-kanban-card-meta {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    padding-top: 0.5rem;
+    gap: 0.75rem;
+    padding-top: 0.6rem;
     border-top: 1px dashed #e2e8f0;
 }
 
@@ -465,71 +401,58 @@ body:has(.vendas-kanban-container) .page-content {
 .vendas-kanban-card-date {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    color: #334155;
-    font-weight: 600;
-    font-size: 0.9rem;
+    gap: 0.45rem;
+    font-weight: 700;
+    color: #1f2937;
 }
 
 .vendas-kanban-card-amount i,
-.vendas-kanban-card-date i {
-    color: #64748b;
-}
+.vendas-kanban-card-date i { color: #94a3b8; }
 
-/* Badges do card */
 .vendas-kanban-card-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.45rem;
 }
 
 .vendas-kanban-card-badges .badge {
-    padding: 0.3rem 0.7rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    background: #f1f5f9;
-    color: #475569;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
     border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
 }
 
-/* 10. ESTADOS DE DRAG AND DROP */
+/* DRAG STATES ---------------------------------------------- */
 .vendas-kanban-column.drag-over {
-    background: #f8faff;
-    border: 2px dashed #6366f1;
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.14);
 }
 
-.vendas-kanban-column.drag-over .vendas-kanban-column-bar {
-    opacity: 0.6;
-}
-
-/* 11. EMPTY STATE */
 .vendas-kanban-empty {
-    padding: 2rem 1rem;
+    padding: 1.75rem 1rem;
     text-align: center;
     color: #94a3b8;
-    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .vendas-kanban-empty i {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
     display: block;
-    opacity: 0.5;
+    font-size: 1.9rem;
+    margin-bottom: 0.4rem;
+    opacity: 0.65;
 }
 
-/* 12. RESPONSIVIDADE */
-@media (max-width: 1200px) {
-    .vendas-kanban-column {
-        flex: 0 0 280px;
-        min-width: 280px;
-        max-width: 280px;
-    }
+/* RESPONSIVE ------------------------------------------------ */
+@media (max-width: 1100px) {
+    .vendas-kanban-board { grid-auto-columns: minmax(290px, 320px); }
 }
 
 @media (max-width: 768px) {
-    .vendas-kanban-wrapper {
-        padding: 1rem;
+    .vendas-kanban-header {
+        grid-template-columns: 1fr;
     }
 
     .vendas-kanban-controls {
@@ -542,82 +465,38 @@ body:has(.vendas-kanban-container) .page-content {
         min-width: 100%;
     }
 
-    .vendas-kanban-search {
-        max-width: 100%;
-    }
-
-    .vendas-kanban-column {
-        flex: 0 0 260px;
-        min-width: 260px;
-        max-width: 260px;
-    }
-
-    .vendas-kanban-title-text h1 {
-        font-size: 1.5rem;
-    }
+    .vendas-kanban-board { grid-auto-columns: minmax(260px, 280px); }
 }
 
-/* 13. MODO ESCURO (OPCIONAL) */
+/* DARK MODE ------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
-    .vendas-kanban-container {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    :root {
+        --bg: linear-gradient(180deg, #0b1220 0%, #0f172a 40%, #111827 100%);
+        --panel: #131c2f;
+        --panel-border: #1f2937;
+        --muted: #94a3b8;
+        --text-strong: #e5e7eb;
+        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.35);
+        --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .vendas-kanban-title-text h1 {
-        background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .vendas-kanban-column,
-    .vendas-kanban-card {
-        background: #1e293b;
-        border-color: #334155;
-    }
-
-    .vendas-kanban-column-header {
-        border-bottom-color: #334155;
-    }
-
-    .vendas-kanban-column-title h3,
-    .vendas-kanban-card-title {
-        color: #f1f5f9;
-    }
-
-    .vendas-kanban-column-helper,
-    .vendas-kanban-card-plate {
-        color: #94a3b8;
-    }
-
-    .vendas-kanban-search input,
-    .vendas-kanban-filter-btn {
-        background: #1e293b;
-        border-color: #334155;
-        color: #f1f5f9;
-    }
+    .vendas-kanban-column-header { border-bottom-color: #1f2937; }
+    .vendas-kanban-search input { background: #0f172a; color: #e5e7eb; }
+    .vendas-kanban-filter-btn { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
+    .vendas-kanban-card { background: linear-gradient(180deg, #1b2437, #111827); }
+    .vendas-kanban-card-plate { color: #cbd5e1; }
+    .vendas-kanban-card-meta { border-top-color: #1f2937; }
 }
 
-/* 14. ANIMAÇÕES ADICIONAIS */
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
+/* ANIMATIONS ------------------------------------------------ */
+@keyframes fade-slide {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.vendas-kanban-loading {
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* 15. ACESSIBILIDADE */
-.vendas-kanban-card:focus {
-    outline: 2px solid #6366f1;
-    outline-offset: 2px;
-}
-
+/* ACCESSIBILITY -------------------------------------------- */
+.vendas-kanban-card:focus-visible,
 .vendas-kanban-column:focus-within {
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    outline: 2px solid rgba(99, 102, 241, 0.55);
+    outline-offset: 2px;
 }
