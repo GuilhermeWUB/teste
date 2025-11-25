@@ -801,6 +801,7 @@ body.kanban-modal-open { overflow: hidden; }
     flex-direction: column;
     gap: 0.75rem;
 }
+.crm-tabs button.active { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); color: var(--accent-strong); box-shadow: var(--shadow-soft); }
 
 .crm-card.highlight { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 22%, var(--surface-strong)); }
 .crm-card.ghost { background: color-mix(in srgb, var(--surface) 75%, transparent); }
