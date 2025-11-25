@@ -302,28 +302,6 @@
 
         article.appendChild(meta);
 
-        // Badges (opcional)
-        if (card.tipoVeiculo || card.origemLead) {
-            const badges = document.createElement('div');
-            badges.className = 'vendas-kanban-card-badges';
-
-            if (card.tipoVeiculo) {
-                const badge1 = document.createElement('span');
-                badge1.className = 'badge';
-                badge1.textContent = card.tipoVeiculo;
-                badges.appendChild(badge1);
-            }
-
-            if (card.origemLead) {
-                const badge2 = document.createElement('span');
-                badge2.className = 'badge';
-                badge2.textContent = card.origemLead;
-                badges.appendChild(badge2);
-            }
-
-            article.appendChild(badges);
-        }
-
         article.addEventListener('click', () => openModal(card));
 
         return article;
@@ -759,26 +737,45 @@
         const updatedAt = formatDateTime(card.updatedAt);
         const responsavel = card.responsavel || 'Nenhum';
         const observacoes = card.observacoes ? escapeHtml(card.observacoes) : 'Nenhuma observação registrada.';
+        const vehicleTitle = [card.marca, card.modelo, card.anoModelo].filter(Boolean).join(' • ') || 'Negociação em aberto';
+        const statusClass = (card.status || 'default').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const contactName = card.nomeContato || 'Contato não informado';
+        const contactInitials = (contactName.trim().charAt(0) || '?').toUpperCase();
 
         return `
-            <div class="crm-negociacao">
-                <div class="crm-topbar">
-                    <div>
-                        <p class="crm-topbar-label">Alerta</p>
-                        <h2 class="crm-topbar-title">${escapeHtml(card.alerta || 'Não Definido')}</h2>
+            <div class="crm-dialog">
+                <header class="crm-hero">
+                        <div class="crm-hero-left">
+                            <div class="crm-kicker">Olá</div>
+                            <div class="crm-hero-title">${escapeHtml(vehicleTitle)}</div>
+                            <div class="crm-hero-chips">
+                                <span class="crm-chip"><i class="bi bi-credit-card-2-front"></i>${escapeHtml(card.placa || 'Placa não informada')}</span>
+                                <span class="crm-chip status ${statusClass}">${escapeHtml(statusText)}</span>
+                            </div>
+                        <div class="crm-hero-contact">
+                            <div class="crm-avatar">${escapeHtml(contactInitials)}</div>
+                            <div>
+                                <p class="crm-contact-name">${escapeHtml(contactName)}</p>
+                                <div class="crm-contact-tags">${buildCommunicationTags(card)}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="crm-topbar-actions">
-                        <span class="crm-id-pill">ID: ${escapeHtml(String(card.id || '---'))}</span>
-                        <button class="crm-btn crm-btn-secondary" type="button">Ações</button>
-                        <button class="crm-btn crm-btn-icon" type="button" aria-label="Fechar" onclick="window.vendasBoard.closeModal()">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
+                    <div class="crm-hero-right">
+                        <div class="crm-hero-summary">
+                            <span class="label">Responsável</span>
+                            <strong>${escapeHtml(responsavel)}</strong>
+                            <p class="crm-muted">Defina alguém para assumir esta negociação.</p>
+                        </div>
+                        <div class="crm-hero-actions">
+                            <button class="crm-btn crm-btn-success" type="button">Atender cotação</button>
+                            <button class="crm-btn crm-btn-ghost" type="button" onclick="window.vendasBoard.closeModal()">Fechar</button>
+                        </div>
                     </div>
-                </div>
+                </header>
 
                 <div class="crm-tabs primary">
                     <button class="active" type="button">Atividades</button>
-                    <button type="button">Vendas</button>
+                    <button type="button">Cotações</button>
                     <button type="button">Pós-vendas</button>
                     <button type="button">Frota</button>
                     <button type="button">Riscos</button>
@@ -794,12 +791,49 @@
 
                 <div class="crm-grid">
                     <div class="crm-main">
+                        <section class="crm-card highlight">
+                            <div class="crm-card-header">
+                                <div>
+                                    <p class="crm-card-eyebrow">Aceite de cotação</p>
+                                    <h3>Envie o documento ao cliente</h3>
+                                    <p class="crm-muted">Revise as condições e confirme com o associado.</p>
+                                </div>
+                                <button class="crm-btn crm-btn-primary" type="button">Aceitar</button>
+                            </div>
+                        </section>
+
+                        <section class="crm-card">
+                            <div class="crm-card-header">
+                                <h3>Informações da venda</h3>
+                                <span class="crm-pill">${escapeHtml(statusText)}</span>
+                            </div>
+                            <div class="crm-info-grid">
+                                ${buildInfoRow('Cooperativa', card.cooperativa)}
+                                ${buildInfoRow('Placa', card.placa)}
+                                ${buildInfoRow('Marca', card.marca)}
+                                ${buildInfoRow('Modelo', card.modelo)}
+                                ${buildInfoRow('Ano modelo', card.anoModelo)}
+                                ${buildInfoRow('Estado', card.estado)}
+                                ${buildInfoRow('Cidade', card.cidade)}
+                                ${buildInfoRow('Veículo de trabalho', card.veiculoTrabalho ? 'Sim' : 'Não')}
+                            </div>
+                            <div class="crm-history">
+                                <div class="crm-history-item">
+                                    <div class="crm-history-dot"></div>
+                                    <div>
+                                        <strong>Negociação criada</strong>
+                                        <p class="crm-muted">${createdAt}</p>
+                                    </div>
+                                </div>
+                                ${updatedAt ? `<div class="crm-history-item"><div class="crm-history-dot"></div><div><strong>Última atualização</strong><p class="crm-muted">${updatedAt}</p></div></div>` : ''}
+                            </div>
+                        </section>
+
                         <section class="crm-card">
                             <div class="crm-card-header">
                                 <h3>Atividades</h3>
-                                <span class="crm-pill">Atividades</span>
+                                <span class="crm-pill">Agenda</span>
                             </div>
-
                             <div class="crm-form-grid">
                                 <label class="crm-field">
                                     <span>Atividade*</span>
@@ -810,7 +844,6 @@
                                         <option>Reunião</option>
                                     </select>
                                 </label>
-
                                 <label class="crm-field">
                                     <span>Responsável*</span>
                                     <select>
@@ -819,28 +852,24 @@
                                         <option>Time de Vendas</option>
                                     </select>
                                 </label>
-
                                 <label class="crm-field">
                                     <span>Quando*</span>
                                     <input type="datetime-local" value="${formatDateTimeInput(card.createdAt)}">
                                 </label>
-
                                 <label class="crm-field">
                                     <span>Cliente*</span>
                                     <select>
-                                        <option>${escapeHtml(card.nomeContato || 'Não definido')}</option>
+                                        <option>${escapeHtml(contactName)}</option>
                                     </select>
                                 </label>
-
                                 <label class="crm-field full">
                                     <span>Observação</span>
                                     <textarea rows="2" placeholder="Adicione observações">${card.observacoes ? escapeHtml(card.observacoes) : ''}</textarea>
                                 </label>
                             </div>
-
                             <div class="crm-card-footer">
                                 <div class="crm-card-footer-actions">
-                                    <button class="crm-btn crm-btn-primary" type="button">Atividades</button>
+                                    <button class="crm-btn crm-btn-primary" type="button">Salvar atividade</button>
                                     <button class="crm-btn crm-btn-secondary" type="button">Comunicação</button>
                                     <button class="crm-btn crm-btn-secondary" type="button">Histórico</button>
                                     <button class="crm-btn crm-btn-secondary" type="button">PowerSign</button>
@@ -848,128 +877,36 @@
                                 <p class="crm-muted">Sem atividades nesta negociação.</p>
                             </div>
                         </section>
+                    </div>
+
+                    <div class="crm-side">
+                        <section class="crm-card ghost">
+                            <div class="crm-card-header">
+                                <h3>Responsável</h3>
+                                <div class="crm-status">${escapeHtml(responsavel)}</div>
+                            </div>
+                            <p class="crm-muted">Defina um responsável para avançar com esta oportunidade.</p>
+                            <button class="crm-btn crm-btn-success full" type="button">Atender essa cotação</button>
+                        </section>
 
                         <section class="crm-card">
                             <div class="crm-card-header">
-                                <h3>Geral</h3>
-                                <span class="crm-pill">${escapeHtml(statusText)}</span>
+                                <h3>Contrato</h3>
+                                <span class="crm-pill light">Detalhes</span>
                             </div>
-                            <div class="crm-info-grid">
-                                ${buildInfoRow('Cooperativa', card.cooperativa)}
-                                ${buildInfoRow('Tipo de veículo', card.tipoVeiculo)}
-                                ${buildInfoRow('Placa', card.placa)}
-                                ${buildInfoRow('Marca', card.marca)}
-                                ${buildInfoRow('Modelo', card.modelo)}
-                                ${buildInfoRow('Ano modelo', card.anoModelo)}
-                                ${buildInfoRow('Estado', card.estado)}
+                            <div class="crm-info-grid compact">
+                                ${buildInfoRow('Envio de cotação', card.enviarCotacao ? 'Sim' : 'Não')}
                                 ${buildInfoRow('Cidade', card.cidade)}
-                            </div>
-                            <div class="crm-history">
-                                <div class="crm-history-item">
-                                    <div class="crm-history-dot"></div>
-                                    <div>
-                                        <strong>Negociação criada pelo site</strong>
-                                        <p class="crm-muted">${createdAt}</p>
-                                    </div>
-                                </div>
-                                ${updatedAt ? `<div class="crm-history-item"><div class="crm-history-dot"></div><div><strong>Última atualização</strong><p class="crm-muted">${updatedAt}</p></div></div>` : ''}
+                                ${buildInfoRow('Estado', card.estado)}
                             </div>
                         </section>
 
                         <section class="crm-card">
                             <div class="crm-card-header">
                                 <h3>Observações</h3>
-                                <span class="crm-pill">Anotações</span>
+                                <span class="crm-pill light">Notas</span>
                             </div>
                             <p class="crm-muted">${observacoes}</p>
-                        </section>
-                    </div>
-
-                    <div class="crm-side">
-                        <section class="crm-card highlight">
-                            <div class="crm-card-header">
-                                <h3>Responsável</h3>
-                                <div class="crm-status">${escapeHtml(responsavel)}</div>
-                            </div>
-                            <p class="crm-muted">Atenção: esta negociação ainda não possui responsável definido.</p>
-                            <button class="crm-btn crm-btn-success full" type="button">Atender essa cotação</button>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Filiação</h3>
-                                <span class="crm-status">Nenhum</span>
-                            </div>
-                            <button class="crm-btn crm-btn-secondary full" type="button">Iniciar</button>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Contratação online</h3>
-                                <span class="crm-status warning">Atendimento necessário</span>
-                            </div>
-                            <div class="crm-badges">
-                                <span class="crm-mini-badge info">Categoria</span>
-                                <span class="crm-mini-badge info">Tipo de carga</span>
-                                <span class="crm-mini-badge info">Trajeto</span>
-                                <span class="crm-mini-badge info">Equipamentos de carga</span>
-                            </div>
-                            <button class="crm-btn crm-btn-secondary full" type="button">Saiba mais</button>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Cooperativa</h3>
-                            </div>
-                            <select class="crm-input">
-                                <option>${escapeHtml(card.cooperativa || 'Selecione')}</option>
-                            </select>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Tag</h3>
-                            </div>
-                            <div class="crm-badges spaced">
-                                <span class="crm-mini-badge tag">Tag em falta</span>
-                                <span class="crm-mini-badge warning">Tag amarela</span>
-                                <span class="crm-mini-badge success">Tag verde</span>
-                            </div>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Origem do lead</h3>
-                            </div>
-                            <select class="crm-input">
-                                <option>${escapeHtml(card.origemLead || 'Marketing On Endomarketing')}</option>
-                                <option>Facebook Ads</option>
-                                <option>Contato direto</option>
-                            </select>
-                        </section>
-
-                        <section class="crm-card">
-                            <div class="crm-card-header">
-                                <h3>Área de contato</h3>
-                            </div>
-                            <div class="crm-form-grid compact">
-                                <label class="crm-field">
-                                    <span>Cotação de website</span>
-                                    <select>
-                                        <option>${escapeHtml(card.email || 'Selecione')}</option>
-                                    </select>
-                                </label>
-                                <label class="crm-field">
-                                    <span>Tag do WhatsApp</span>
-                                    <select>
-                                        <option>${escapeHtml(card.celular || 'Nenhum número')}</option>
-                                    </select>
-                                </label>
-                            </div>
-                            <div class="crm-footer-actions">
-                                <button class="crm-btn crm-btn-primary" type="button">Adicionar</button>
-                                <button class="crm-btn crm-btn-secondary" type="button">Aplicar</button>
-                            </div>
                         </section>
                     </div>
                 </div>
