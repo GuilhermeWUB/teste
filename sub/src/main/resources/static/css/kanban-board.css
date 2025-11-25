@@ -30,7 +30,6 @@
     background: var(--kanban-page-bg);
     border-radius: 0;
     padding: clamp(1.25rem, 3vw, 2.5rem);
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     gap: clamp(1.5rem, 3vw, 2.5rem);
