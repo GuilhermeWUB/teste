@@ -298,6 +298,8 @@
 
         article.appendChild(top);
 
+        article.appendChild(top);
+
         return `${day}/${month}/${year} - ${hours}:${minutes}`;
     }
 
