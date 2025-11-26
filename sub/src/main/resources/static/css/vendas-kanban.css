@@ -242,7 +242,7 @@ body:has(.vendas-kanban-container) .page-content {
     max-width: var(--kanban-col-max);
     width: 100%;
     justify-content: flex-end;
-    margin-right: 1rem;
+    margin-right: clamp(1.25rem, 3vw, 2.75rem);
 }
 
 .vendas-kanban-actions .btn-novo-evento {
