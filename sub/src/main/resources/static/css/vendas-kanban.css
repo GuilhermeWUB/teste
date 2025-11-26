@@ -123,7 +123,6 @@ body:has(.vendas-kanban-container) .page-content {
     gap: 1rem;
     align-items: center;
     animation: fade-slide 320ms ease;
-    padding-right: 1rem; /* Compensa a barra de rolagem do kanban board */
 }
 
 .vendas-kanban-title-section {
@@ -269,6 +268,7 @@ body:has(.vendas-kanban-container) .page-content {
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 0.35rem;
+    margin-right: 1rem; /* Ajuste de respiro alinhado à área de scroll horizontal */
     scroll-snap-type: x mandatory;
 }
 
