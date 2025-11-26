@@ -161,7 +161,9 @@ body:has(.vendas-kanban-container) .page-content {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: space-between;
 }
 
 .vendas-kanban-controls-left {
@@ -227,6 +229,11 @@ body:has(.vendas-kanban-container) .page-content {
     border-color: var(--accent);
     color: var(--accent);
     box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.vendas-kanban-actions {
+    display: flex;
+    align-items: flex-start;
 }
 
 .vendas-kanban-actions .btn-novo-evento {
