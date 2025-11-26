@@ -22,6 +22,11 @@
     --radius-md: 12px;
     --radius-sm: 10px;
     --transition: 180ms ease;
+    --page-gradient: radial-gradient(circle at 10% 18%, rgba(110, 65, 255, 0.12), transparent 28%),
+                     radial-gradient(circle at 90% 10%, rgba(45, 212, 191, 0.12), transparent 26%),
+                     linear-gradient(180deg, #fdfdff 0%, #f3f6ff 18%, var(--bg) 80%);
+    --header-gradient: linear-gradient(135deg, rgba(110, 65, 255, 0.1), rgba(45, 212, 191, 0.12));
+    --card-highlight: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.32), transparent 45%);
 }
 
 html[data-theme="dark"] {
@@ -42,8 +47,13 @@ html[data-theme="dark"] {
     --border: #1f2937;
     --shadow-soft: 0 14px 44px rgba(0, 0, 0, 0.48);
     --shadow-strong: 0 28px 70px rgba(124, 58, 237, 0.28);
-    --glass: rgba(15, 23, 42, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.04);
+    --glass: rgba(17, 24, 39, 0.78);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --page-gradient: radial-gradient(circle at 12% 20%, rgba(124, 58, 237, 0.28), transparent 32%),
+                     radial-gradient(circle at 86% 18%, rgba(52, 211, 153, 0.24), transparent 30%),
+                     linear-gradient(180deg, #0d1423 0%, #0b1220 22%, #0b1220 80%);
+    --header-gradient: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(52, 211, 153, 0.18));
+    --card-highlight: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.08), transparent 45%);
 }
 
 /* Page layout */
@@ -53,9 +63,7 @@ html[data-theme="dark"] {
     gap: 1.8rem;
     padding-bottom: 1.5rem;
     color: var(--text);
-    background: radial-gradient(circle at 10% 18%, rgba(110, 65, 255, 0.12), transparent 28%),
-                radial-gradient(circle at 90% 10%, rgba(45, 212, 191, 0.12), transparent 26%),
-                linear-gradient(180deg, #fdfdff 0%, #f3f6ff 18%, var(--bg) 80%);
+    background: var(--page-gradient);
 }
 
 .activities-header {
@@ -64,7 +72,7 @@ html[data-theme="dark"] {
     align-items: center;
     gap: 1rem;
     padding: 1.35rem 1.5rem;
-    background: linear-gradient(135deg, rgba(110, 65, 255, 0.1), rgba(45, 212, 191, 0.12));
+    background: var(--header-gradient);
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-soft);
@@ -143,7 +151,7 @@ html[data-theme="dark"] {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.32), transparent 45%);
+    background: var(--card-highlight);
     pointer-events: none;
 }
 
@@ -584,6 +592,11 @@ html[data-theme="dark"] .activity-card {
 
 html[data-theme="dark"] .tab-button {
     background: var(--card);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .tab-button.active {
+    box-shadow: 0 20px 50px rgba(124, 58, 237, 0.32);
 }
 
 html[data-theme="dark"] .activity-card::before {
@@ -592,6 +605,38 @@ html[data-theme="dark"] .activity-card::before {
 
 html[data-theme="dark"] .help-link {
     border-color: rgba(124, 58, 237, 0.45);
+}
+
+html[data-theme="dark"] .search-box input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="search"],
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] .period-button {
+    background: var(--card-strong);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .period-button.active {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: rgba(124, 58, 237, 0.5);
+    color: #e8ddff;
+}
+
+html[data-theme="dark"] .period-button:hover {
+    color: #e8ddff;
+    border-color: rgba(124, 58, 237, 0.6);
+}
+
+html[data-theme="dark"] .activities-filters,
+html[data-theme="dark"] .activities-header {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .empty-state {
+    background: rgba(17, 24, 39, 0.8);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 html[data-theme="dark"] .badge.info { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.24); }
