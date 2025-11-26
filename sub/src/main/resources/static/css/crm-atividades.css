@@ -22,10 +22,10 @@
     --radius-md: 12px;
     --radius-sm: 10px;
     --transition: 180ms ease;
-    --page-gradient: radial-gradient(circle at 10% 18%, rgba(110, 65, 255, 0.08), transparent 26%),
-                     radial-gradient(circle at 90% 10%, rgba(45, 212, 191, 0.07), transparent 24%),
+    --page-gradient: radial-gradient(circle at 10% 18%, rgba(110, 65, 255, 0.1), transparent 26%),
+                     radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.08), transparent 24%),
                      linear-gradient(180deg, #fcfdff 0%, #f6f8ff 16%, #f4f7ff 26%, var(--bg) 90%);
-    --header-gradient: linear-gradient(135deg, rgba(110, 65, 255, 0.12), rgba(45, 212, 191, 0.14));
+    --header-gradient: linear-gradient(135deg, rgba(110, 65, 255, 0.14), rgba(59, 130, 246, 0.16));
     --card-highlight: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.32), transparent 45%);
 }
 
@@ -49,10 +49,10 @@ html[data-theme="dark"] {
     --shadow-strong: 0 28px 70px rgba(124, 58, 237, 0.28);
     --glass: rgba(17, 24, 39, 0.78);
     --glass-border: rgba(255, 255, 255, 0.06);
-    --page-gradient: radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.24), transparent 30%),
-                     radial-gradient(circle at 86% 14%, rgba(52, 211, 153, 0.2), transparent 28%),
+    --page-gradient: radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.26), transparent 30%),
+                     radial-gradient(circle at 86% 14%, rgba(59, 130, 246, 0.18), transparent 28%),
                      linear-gradient(180deg, #0d1423 0%, #0c121f 18%, #0b1220 88%);
-    --header-gradient: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(52, 211, 153, 0.18));
+    --header-gradient: linear-gradient(135deg, rgba(124, 58, 237, 0.24), rgba(59, 130, 246, 0.2));
     --card-highlight: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.08), transparent 45%);
 }
 
@@ -101,7 +101,7 @@ html[data-theme="dark"] {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.18), transparent 38%),
-                radial-gradient(circle at 82% 20%, rgba(45, 212, 191, 0.16), transparent 40%);
+                radial-gradient(circle at 82% 20%, rgba(110, 65, 255, 0.14), transparent 40%);
     pointer-events: none;
 }
 
@@ -178,7 +178,7 @@ html[data-theme="dark"] {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(110, 65, 255, 0.08), rgba(45, 212, 191, 0.08));
+    background: linear-gradient(135deg, rgba(110, 65, 255, 0.1), rgba(59, 130, 246, 0.1));
     opacity: 0;
     transition: opacity var(--transition);
 }
@@ -211,10 +211,6 @@ html[data-theme="dark"] {
 }
 
 .summary-card:hover::before,
-.summary-card:hover::after {
-    opacity: 1;
-}
-
 .summary-card:hover::after {
     opacity: 1;
 }
@@ -274,7 +270,7 @@ html[data-theme="dark"] {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, rgba(110, 65, 255, 0.12), rgba(45, 212, 191, 0.12));
+    background: linear-gradient(120deg, rgba(110, 65, 255, 0.14), rgba(59, 130, 246, 0.12));
     opacity: 0;
     transition: opacity var(--transition);
 }
