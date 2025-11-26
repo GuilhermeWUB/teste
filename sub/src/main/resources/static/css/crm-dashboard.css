@@ -8,7 +8,7 @@
 .eyebrow {
     letter-spacing: 0.08em;
     font-size: 0.75rem;
-    color: #6b7280;
+    color: #2f4c97;
     font-weight: 700;
 }
 
@@ -18,53 +18,265 @@
     gap: 0.35rem;
     padding: 0.35rem 0.7rem;
     border-radius: 999px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.8rem;
-    border: 1px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #0f1b3f;
 }
 
 .pill--success {
-    background: #e8f7f0;
-    color: #0f9d58;
-    border-color: rgba(15, 157, 88, 0.18);
+    background: #d7ffe7;
+    color: #06743a;
+    border-color: rgba(6, 116, 58, 0.25);
 }
 
 .pill--neutral {
-    background: #f1f5f9;
-    color: #334155;
-    border-color: rgba(51, 65, 85, 0.18);
+    background: #e7eefc;
+    color: #1c2f62;
+    border-color: rgba(28, 47, 98, 0.25);
 }
 
-.sales-hero {
-    background: linear-gradient(120deg, #f6f9ff 0%, #ffffff 40%, #eef5ff 100%);
-    border-radius: 1.25rem;
+.pill--accent {
+    background: #0d5ad8;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.32);
 }
 
-.sales-hero__meta .pill + .pill {
-    margin-left: 0.35rem;
+.pill--soft {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
 }
 
-.sales-hero__actions .btn {
-    border-radius: 12px;
-}
-
-.sales-metrics .metric-card {
+.crm-intro {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
     border-radius: 1rem;
-    background: #ffffff;
+    background: linear-gradient(120deg, #0e3c88 0%, #0f62e7 100%);
+    color: #ffffff;
+    box-shadow: 0 18px 42px rgba(15, 62, 135, 0.25);
 }
 
-.metric-icon {
-    width: 42px;
-    height: 42px;
+.crm-intro__title {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.crm-intro__subtitle {
+    color: rgba(255, 255, 255, 0.86);
+    max-width: 620px;
+}
+
+.crm-intro__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.95rem;
     border-radius: 12px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #0f3e87;
+    border: 1px solid transparent;
+    transition: all 0.15s ease-in-out;
+    text-decoration: none;
+}
+
+.cta-button--ghost {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cta-button--light {
+    background: #ffffff;
+    color: #0f3e87;
+    border-color: rgba(15, 62, 135, 0.2);
+}
+
+.cta-button:hover,
+.cta-button:focus-visible {
+    color: #0b2f73;
+    border-color: rgba(15, 62, 135, 0.35);
+    box-shadow: 0 0 0 3px rgba(15, 98, 231, 0.25);
+}
+
+.cta-button--ghost:hover,
+.cta-button--ghost:focus-visible {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.insight-grid {
     display: grid;
-    place-items: center;
-    color: #0057d9;
-    background: linear-gradient(135deg, rgba(0, 87, 217, 0.12), rgba(10, 196, 167, 0.12));
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    .insight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .support-card {
+        grid-column: span 2;
+    }
+}
+
+.insight-card {
+    position: relative;
+    border-radius: 1rem;
+    padding: 1.25rem 1.4rem;
+    color: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(15, 62, 135, 0.15);
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #0a4cb3 0%, #0f7deb 60%, #0a1f4d 100%);
+}
+
+.activities-card {
+    background: linear-gradient(135deg, #0b427e 0%, #0c6ec4 100%);
+}
+
+.support-card {
+    background: linear-gradient(135deg, #0a2f5d 0%, #0b4f94 100%);
+}
+
+.insight-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.insight-card__title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.insight-card__subtitle {
+    margin: 0.15rem 0 0;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.balance-summary,
+.activity-badges {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.balance-summary {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.balance-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f3f6ff;
+    font-weight: 600;
+}
+
+.balance-value {
+    font-size: 1.35rem;
+}
+
+.insight-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.activity-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.activity-count {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 0.8rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 82px;
+}
+
+.activity-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.activity-value {
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+}
+
+.cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 12px;
+    color: #0b1f4e;
+    background: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+    transition: all 0.15s ease-in-out;
+    width: fit-content;
+}
+
+.cta-link:hover,
+.cta-link:focus-visible {
+    color: #0b3d9c;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4), 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+.support-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    transition: all 0.15s ease-in-out;
+}
+
+.support-link:hover,
+.support-link:focus-visible {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.32);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.22);
 }
 
 .sales-panel {
     border-radius: 1rem;
+    border: 1px solid #d9e4ff;
 }
 
 .section-head h5 {
@@ -80,7 +292,7 @@
 
 .pipeline-column {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #dbe4f4;
     border-radius: 14px;
     padding: 1rem;
     box-shadow: 0 14px 40px rgba(15, 23, 42, 0.05);
@@ -101,17 +313,17 @@
 }
 
 .deal-card {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #dbe4f4;
     border-radius: 12px;
     padding: 0.85rem;
-    background: #f9fbff;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+    background: linear-gradient(180deg, #ffffff 0%, #f4f6fb 100%);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .deal-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 34px rgba(0, 87, 217, 0.12);
+    box-shadow: 0 14px 34px rgba(11, 63, 168, 0.2);
 }
 
 .deal-card__title {
@@ -172,13 +384,14 @@
     border-radius: 8px;
     display: grid;
     place-items: center;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-icon:hover,
-.btn-icon:focus {
-    background: rgba(0, 87, 217, 0.08);
-    color: #0057d9;
+.btn-icon:focus-visible {
+    background: rgba(11, 63, 168, 0.12);
+    color: #0b3ea8;
+    box-shadow: 0 0 0 2px rgba(11, 63, 168, 0.12);
 }
 
 .activity-list {
@@ -210,14 +423,15 @@
     flex-shrink: 0;
 }
 
-.activity-icon--call { background: rgba(15, 157, 88, 0.14); color: #0f9d58; }
-.activity-icon--mail { background: rgba(0, 87, 217, 0.14); color: #0057d9; }
+.activity-icon--call { background: rgba(6, 116, 58, 0.12); color: #06743a; }
+.activity-icon--mail { background: rgba(11, 62, 168, 0.14); color: #0b3ea8; }
 .activity-icon--meeting { background: rgba(10, 196, 167, 0.14); color: #0ac4a7; }
 .activity-icon--chat { background: rgba(234, 88, 12, 0.14); color: #ea580c; }
 
 .lead-card {
     border-radius: 14px;
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid #dbe4f4;
 }
 
 .avatar-circle {
@@ -227,15 +441,11 @@
     background: #e0ebff;
     display: grid;
     place-items: center;
-    color: #0057d9;
+    color: #0b3ea8;
 }
 
 @media (max-width: 768px) {
-    .sales-hero {
-        padding: 0.5rem;
-    }
-
-    .sales-hero__actions {
+    .crm-intro__actions {
         width: 100%;
     }
 

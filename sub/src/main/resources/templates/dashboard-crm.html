@@ -7,54 +7,111 @@
 </head>
 <body>
 <section layout:fragment="content" class="sales-page">
-    <div class="sales-hero card border-0 shadow-sm">
-        <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
-            <div class="sales-hero__content">
-                <p class="eyebrow text-uppercase mb-2">Módulo Comercial</p>
-                <h1 class="mb-2" th:text="${crmHeroTitle}">CRM de Vendas</h1>
-                <p class="text-muted mb-0" th:text="${crmHeroSubtitle}">
-                    Centralize o funil, acompanhe follow-ups e enxergue a previsão de receita.
-                </p>
-                <div class="sales-hero__meta mt-3">
-                    <span class="pill pill--success">Ambiente dedicado</span>
-                    <span class="pill pill--neutral">Foco em vendas</span>
-                </div>
+    <header class="crm-intro">
+        <div>
+            <p class="eyebrow text-uppercase mb-1">Módulo Comercial</p>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h1 class="crm-intro__title mb-0" th:text="${crmHeroTitle}">CRM de Vendas</h1>
+                <span class="pill pill--accent">Ambiente dedicado</span>
             </div>
-            <div class="sales-hero__actions d-flex flex-wrap gap-2">
-                <a class="btn btn-light" th:href="@{/dashboard}">
-                    <i class="bi bi-arrow-left me-2"></i>
-                    Voltar ao sistema
-                </a>
-                <button class="btn btn-outline-primary">
-                    <i class="bi bi-download me-2"></i>
-                    Exportar pipeline
-                </button>
-                <button class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Nova oportunidade
-                </button>
-            </div>
+            <p class="crm-intro__subtitle mb-0" th:text="${crmHeroSubtitle}">
+                Centralize o funil, acompanhe follow-ups e enxergue a previsão de receita.
+            </p>
         </div>
-    </div>
+        <div class="crm-intro__actions">
+            <a class="cta-button" th:href="@{/dashboard}">
+                <i class="bi bi-arrow-left"></i>
+                Voltar ao sistema
+            </a>
+            <button class="cta-button cta-button--ghost" type="button">
+                <i class="bi bi-plus-circle"></i>
+                Nova oportunidade
+            </button>
+        </div>
+    </header>
 
-    <div class="row g-3 sales-metrics">
-        <div class="col-md-3" th:each="metric : ${crmMetrics}">
-            <div class="metric-card h-100 card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="eyebrow text-uppercase mb-0" th:text="${metric.title()}">Métrica</p>
-                        <span class="pill pill--neutral" th:text="${metric.badge()}">Hoje</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0" th:text="${metric.value()}">0</h3>
-                        <span class="metric-icon" th:classappend="${metric.badgeClass()}">
-                            <i class="bi" th:classappend="' ' + ${metric.iconClass()}"></i>
-                        </span>
-                    </div>
-                    <p class="text-muted small mb-0 mt-2" th:text="${metric.helper()}">Descrição</p>
+    <div class="insight-grid">
+        <article class="insight-card balance-card">
+            <div class="insight-card__header">
+                <div>
+                    <p class="eyebrow text-uppercase mb-1">Saldo</p>
+                    <h2 class="insight-card__title">Movimentação financeira</h2>
+                    <p class="insight-card__subtitle">Controle o que já pode usar e o que entra em breve.</p>
+                </div>
+                <span class="pill pill--soft">Atualizado</span>
+            </div>
+            <div class="balance-summary">
+                <div class="balance-line">
+                    <div class="balance-label">Disponível</div>
+                    <div class="balance-value" th:text="${crmBalanceAvailable} ?: 'R$ 0,00'">R$ 0,00</div>
+                </div>
+                <div class="balance-line">
+                    <div class="balance-label">A receber</div>
+                    <div class="balance-value" th:text="${crmBalanceToReceive} ?: 'R$ 0,00'">R$ 0,00</div>
                 </div>
             </div>
-        </div>
+            <div class="insight-card__actions">
+                <a class="cta-button cta-button--light" th:href="@{/crm/financeiro}">
+                    <i class="bi bi-wallet2"></i>
+                    Ver extrato
+                </a>
+                <button class="cta-button cta-button--ghost" type="button">
+                    <i class="bi bi-arrow-repeat"></i>
+                    Gerar transferência
+                </button>
+            </div>
+        </article>
+
+        <article class="insight-card activities-card">
+            <div class="insight-card__header">
+                <div>
+                    <p class="eyebrow text-uppercase mb-1">Atividades</p>
+                    <h2 class="insight-card__title">Pendências do time</h2>
+                    <p class="insight-card__subtitle">Priorize os follow-ups que mantêm o funil saudável.</p>
+                </div>
+                <span class="pill pill--soft">Agenda</span>
+            </div>
+            <div class="activity-badges">
+                <div class="activity-count">
+                    <span class="activity-label">Vencidas</span>
+                    <strong class="activity-value" th:text="${crmActivitiesOverdue} ?: 0">0</strong>
+                </div>
+                <div class="activity-count">
+                    <span class="activity-label">Para hoje</span>
+                    <strong class="activity-value" th:text="${crmActivitiesToday} ?: 0">0</strong>
+                </div>
+            </div>
+            <p class="insight-card__subtitle mb-3" th:text="${crmActivitiesHelper} ?: 'Tenha previsibilidade com as ações em dia.'">Tenha previsibilidade com as ações em dia.</p>
+            <a class="cta-link" th:href="@{/crm/vendas}">
+                <span>Acesse suas negociações</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </article>
+
+        <article class="insight-card support-card">
+            <div class="insight-card__header">
+                <div>
+                    <p class="eyebrow text-uppercase mb-1">Central de ajuda</p>
+                    <h2 class="insight-card__title">Conte com o time</h2>
+                    <p class="insight-card__subtitle">Encontre materiais ou fale com especialistas do CRM.</p>
+                </div>
+                <span class="pill pill--soft">Suporte</span>
+            </div>
+            <div class="support-links">
+                <a class="support-link" th:href="${crmHelpCourseLink} ?: '#'" target="_blank" rel="noreferrer">
+                    <i class="bi bi-play-circle"></i>
+                    Curso rápido
+                </a>
+                <a class="support-link" th:href="${crmHelpCenterLink} ?: '#'" target="_blank" rel="noreferrer">
+                    <i class="bi bi-life-preserver"></i>
+                    Central de ajuda
+                </a>
+                <a class="support-link" th:href="${crmHelpTicketLink} ?: '#'" target="_blank" rel="noreferrer">
+                    <i class="bi bi-send"></i>
+                    Enviar solicitação
+                </a>
+            </div>
+        </article>
     </div>
 
     <div class="row g-4">
