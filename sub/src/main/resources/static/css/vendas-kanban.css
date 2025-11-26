@@ -20,6 +20,8 @@
     --positive: #22c55e;
     --warning: #f59e0b;
     --info: #0ea5e9;
+    --kanban-col-min: 320px;
+    --kanban-col-max: 340px;
     --shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.12);
     --shadow-hover: 0 16px 40px rgba(15, 23, 42, 0.18);
     --radius-lg: 18px;
@@ -161,14 +163,18 @@ body:has(.vendas-kanban-container) .page-content {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: space-between;
+    column-gap: 1rem;
 }
 
 .vendas-kanban-controls-left {
     display: flex;
-    flex: 1;
+    flex: 1 1 calc(100% - var(--kanban-col-max));
     gap: 0.75rem;
     min-width: 320px;
+    max-width: calc(100% - var(--kanban-col-max) - 1rem);
 }
 
 .vendas-kanban-search {
@@ -229,11 +235,22 @@ body:has(.vendas-kanban-container) .page-content {
     box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
+.vendas-kanban-actions {
+    display: flex;
+    align-items: flex-start;
+    flex: 0 0 var(--kanban-col-max);
+    max-width: var(--kanban-col-max);
+    width: 100%;
+    justify-content: flex-end;
+}
+
 .vendas-kanban-actions .btn-novo-evento {
     background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 90%);
     color: #fff;
     box-shadow: var(--shadow-soft);
     padding-inline: 1.45rem;
+    width: 100%;
+    justify-content: center;
 }
 
 .vendas-kanban-actions .btn-novo-evento:hover {
@@ -246,7 +263,7 @@ body:has(.vendas-kanban-container) .page-content {
     flex: 1;
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(320px, 340px);
+    grid-auto-columns: minmax(var(--kanban-col-min), var(--kanban-col-max));
     gap: 1rem;
     overflow-x: auto;
     overflow-y: hidden;
@@ -798,14 +815,23 @@ body.kanban-modal-open { overflow: hidden; }
 
 /* RESPONSIVE ------------------------------------------------ */
 @media (max-width: 1100px) {
-    .vendas-kanban-board { grid-auto-columns: minmax(290px, 320px); }
+    :root {
+        --kanban-col-min: 290px;
+        --kanban-col-max: 320px;
+    }
 }
 
 @media (max-width: 768px) {
+    :root {
+        --kanban-col-min: 260px;
+        --kanban-col-max: 280px;
+    }
+
     .vendas-kanban-header { grid-template-columns: 1fr; }
     .vendas-kanban-controls { flex-direction: column; align-items: stretch; }
-    .vendas-kanban-controls-left { flex-direction: column; min-width: 100%; }
-    .vendas-kanban-board { grid-auto-columns: minmax(260px, 280px); }
+    .vendas-kanban-controls-left { flex-direction: column; min-width: 100%; max-width: 100%; }
+    .vendas-kanban-actions { flex: 1 1 100%; max-width: 100%; }
+    .vendas-kanban-actions .btn-novo-evento { width: 100%; }
 }
 
 /* ACCESSIBILITY -------------------------------------------- */
