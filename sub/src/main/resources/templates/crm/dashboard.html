@@ -5,6 +5,11 @@
     <title>Dashboard - CRM</title>
     <style>
         .crm-dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
             margin-bottom: 2rem;
         }
 
@@ -12,12 +17,55 @@
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .crm-dashboard-header p {
             color: var(--text-secondary);
             font-size: 1rem;
+            margin: 0;
+        }
+
+        .crm-dashboard-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .crm-user-greeting {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1.25rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(59, 130, 246, 0.12));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .crm-user-greeting .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.16);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            font-size: 1.2rem;
+        }
+
+        .crm-user-greeting .label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .crm-user-greeting .user-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-primary);
         }
 
         .stats-grid {
@@ -174,8 +222,17 @@
 <section layout:fragment="content">
     <div class="crm-dashboard">
         <div class="crm-dashboard-header">
-            <h1><i class="bi bi-speedometer2"></i> Dashboard CRM</h1>
-            <p>Visão geral das suas vendas e métricas de desempenho</p>
+            <div class="crm-dashboard-title">
+                <h1><i class="bi bi-speedometer2"></i> Dashboard CRM</h1>
+                <p>Visão geral das suas vendas e métricas de desempenho</p>
+            </div>
+            <div class="crm-user-greeting" th:if="${isLoggedIn}">
+                <span class="icon" aria-hidden="true"><i class="bi bi-person-badge"></i></span>
+                <div>
+                    <div class="label">Bem-vindo,</div>
+                    <div class="user-name" th:text="${currentUserFullName} ?: ${currentUsername}">Usuário</div>
+                </div>
+            </div>
         </div>
 
         <div class="stats-grid">
