@@ -60,6 +60,15 @@ public class Sale {
     @Column(length = 2000)
     private String observacoes;
 
+    @Column(name = "valor_venda")
+    private Double valorVenda;
+
+    @Column(name = "data_conclusao")
+    private LocalDateTime dataConclusao;
+
+    @Column(name = "concluida")
+    private Boolean concluida = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -228,5 +237,29 @@ public class Sale {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Double getValorVenda() {
+        return valorVenda;
+    }
+
+    public void setValorVenda(Double valorVenda) {
+        this.valorVenda = valorVenda;
+    }
+
+    public LocalDateTime getDataConclusao() {
+        return dataConclusao;
+    }
+
+    public void setDataConclusao(LocalDateTime dataConclusao) {
+        this.dataConclusao = dataConclusao;
+    }
+
+    public Boolean getConcluida() {
+        return concluida;
+    }
+
+    public void setConcluida(Boolean concluida) {
+        this.concluida = concluida;
     }
 }

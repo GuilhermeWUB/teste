@@ -15,5 +15,6 @@ public record SaleRequest(
     String origemLead,
     Boolean veiculoTrabalho,
     Boolean enviarCotacao,
-    String observacoes
+    String observacoes,
+    Double valorVenda
 ) {}

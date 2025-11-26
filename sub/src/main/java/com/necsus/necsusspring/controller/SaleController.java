@@ -80,4 +80,25 @@ public class SaleController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/{id}/concluir")
+    public ResponseEntity<Sale> completeSale(@PathVariable Long id, @RequestBody Map<String, Double> body) {
+        try {
+            Double valorVenda = body.get("valorVenda");
+            if (valorVenda == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Sale completed = saleService.completeSale(id, valorVenda);
+            return ResponseEntity.ok(completed);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/concluidas")
+    public ResponseEntity<List<Sale>> getConcluidedSales() {
+        List<Sale> sales = saleService.findConcluidas();
+        return ResponseEntity.ok(sales);
+    }
 }
