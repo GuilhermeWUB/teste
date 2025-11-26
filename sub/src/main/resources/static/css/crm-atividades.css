@@ -1,29 +1,9 @@
-/* CRM Atividades - Modern UI/UX with Dark Mode */
-
-:root {
-    --ativ-primary: #3b82f6;
-    --ativ-success: #10b981;
-    --ativ-warning: #f59e0b;
-    --ativ-bg: #f8fafc;
-    --ativ-card-bg: #ffffff;
-    --ativ-text-primary: #1e293b;
-    --ativ-text-secondary: #64748b;
-    --ativ-border: #e2e8f0;
-}
-
-[data-theme="dark"] {
-    --ativ-bg: #0f172a;
-    --ativ-card-bg: #1e293b;
-    --ativ-text-primary: #f1f5f9;
-    --ativ-text-secondary: #94a3b8;
-    --ativ-border: #334155;
-}
+/* CRM Atividades - Modern UI/UX */
 
 .crm-atividades {
     padding: 2rem;
     max-width: 1400px;
     margin: 0 auto;
-    background: var(--ativ-bg);
 }
 
 /* Page Header */
@@ -37,7 +17,7 @@
 .page-header h1 {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--ativ-text-primary);
+    color: var(--text-primary, #1e293b);
     margin: 0 0 0.5rem 0;
     display: flex;
     align-items: center;
@@ -45,7 +25,7 @@
 }
 
 .page-header p {
-    color: var(--ativ-text-secondary);
+    color: var(--text-secondary, #64748b);
     margin: 0;
 }
 
@@ -90,9 +70,9 @@
 }
 
 .btn-refresh {
-    background: var(--ativ-card-bg);
-    border: 1px solid var(--ativ-border);
-    color: var(--ativ-text-primary);
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
 }
 
 .btn-refresh:hover {
@@ -102,7 +82,7 @@
 
 /* Filters */
 .filters-section {
-    background: var(--ativ-card-bg);
+    background: white;
     padding: 1.25rem;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -121,7 +101,7 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--ativ-text-secondary);
+    color: #64748b;
     margin-bottom: 0.5rem;
 }
 
@@ -129,11 +109,9 @@
 .filter-group input {
     width: 100%;
     padding: 0.625rem;
-    border: 1px solid var(--ativ-border);
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 0.9375rem;
-    background: var(--ativ-card-bg);
-    color: var(--ativ-text-primary);
 }
 
 /* Mini Stats */
@@ -145,7 +123,7 @@
 }
 
 .stat-mini-card {
-    background: var(--ativ-card-bg);
+    background: white;
     padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -178,12 +156,12 @@
 .stat-mini-value {
     font-size: 1.75rem;
     font-weight: 700;
-    color: var(--ativ-text-primary);
+    color: #1e293b;
 }
 
 .stat-mini-label {
     font-size: 0.875rem;
-    color: var(--ativ-text-secondary);
+    color: #64748b;
 }
 
 /* Activities Container */
@@ -195,7 +173,7 @@
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background: var(--ativ-card-bg);
+    background: white;
     border-radius: 12px;
 }
 
@@ -220,12 +198,12 @@
 }
 
 .empty-state h3 {
-    color: var(--ativ-text-primary);
+    color: #1e293b;
     margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-    color: var(--ativ-text-secondary);
+    color: #64748b;
     margin-bottom: 1.5rem;
 }
 
@@ -237,11 +215,11 @@
 }
 
 .activity-card {
-    background: var(--ativ-card-bg);
+    background: white;
     border-radius: 12px;
     padding: 1.25rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--ativ-border);
+    border: 1px solid #e2e8f0;
     transition: all 0.3s;
 }
 
@@ -260,7 +238,7 @@
 .activity-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--ativ-text-primary);
+    color: #1e293b;
     margin-bottom: 0.5rem;
 }
 
@@ -285,7 +263,7 @@
 
 .activity-desc {
     font-size: 0.9375rem;
-    color: var(--ativ-text-secondary);
+    color: #64748b;
     margin-bottom: 1rem;
     line-height: 1.5;
 }
@@ -295,7 +273,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     font-size: 0.875rem;
-    color: var(--ativ-text-secondary);
+    color: #64748b;
     margin-bottom: 1rem;
 }
 
@@ -310,7 +288,7 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 1rem;
-    border-top: 1px solid var(--ativ-border);
+    border-top: 1px solid #e2e8f0;
 }
 
 .activity-actions {
@@ -362,7 +340,7 @@
 
 .modal-content {
     position: relative;
-    background: var(--ativ-card-bg);
+    background: white;
     border-radius: 12px;
     width: 90%;
     max-width: 700px;
@@ -373,7 +351,7 @@
 
 .modal-header {
     padding: 1.5rem;
-    border-bottom: 1px solid var(--ativ-border);
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -386,7 +364,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--ativ-text-primary);
 }
 
 .btn-close {
@@ -426,7 +403,7 @@
 .form-group label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--ativ-text-primary);
+    color: #334155;
     margin-bottom: 0.5rem;
 }
 
@@ -434,11 +411,9 @@
 .form-group select,
 .form-group textarea {
     padding: 0.625rem;
-    border: 1px solid var(--ativ-border);
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 0.9375rem;
-    background: var(--ativ-card-bg);
-    color: var(--ativ-text-primary);
 }
 
 .modal-footer {
@@ -446,7 +421,7 @@
     justify-content: flex-end;
     gap: 0.75rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--ativ-border);
+    border-top: 1px solid #e2e8f0;
     margin-top: 1rem;
 }
 
