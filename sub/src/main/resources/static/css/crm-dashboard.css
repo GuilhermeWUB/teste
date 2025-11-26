@@ -1,245 +1,508 @@
-.sales-page {
+/* CRM Dashboard Styles - Modern UI/UX */
+
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --info: #6366f1;
+    --purple: #8b5cf6;
+    --cyan: #06b6d4;
+    --green: #22c55e;
+    --orange: #f97316;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border: #334155;
+}
+
+.crm-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.dashboard-header {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-bottom: 1rem;
-}
-
-.eyebrow {
-    letter-spacing: 0.08em;
-    font-size: 0.75rem;
-    color: #6b7280;
-    font-weight: 700;
-}
-
-.pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.7rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    border: 1px solid transparent;
-}
-
-.pill--success {
-    background: #e8f7f0;
-    color: #0f9d58;
-    border-color: rgba(15, 157, 88, 0.18);
-}
-
-.pill--neutral {
-    background: #f1f5f9;
-    color: #334155;
-    border-color: rgba(51, 65, 85, 0.18);
-}
-
-.sales-hero {
-    background: linear-gradient(120deg, #f6f9ff 0%, #ffffff 40%, #eef5ff 100%);
-    border-radius: 1.25rem;
-}
-
-.sales-hero__meta .pill + .pill {
-    margin-left: 0.35rem;
-}
-
-.sales-hero__actions .btn {
-    border-radius: 12px;
-}
-
-.sales-metrics .metric-card {
-    border-radius: 1rem;
-    background: #ffffff;
-}
-
-.metric-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    color: #0057d9;
-    background: linear-gradient(135deg, rgba(0, 87, 217, 0.12), rgba(10, 196, 167, 0.12));
-}
-
-.sales-panel {
-    border-radius: 1rem;
-}
-
-.section-head h5 {
-    font-weight: 700;
-}
-
-.pipeline-board {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-    align-items: start;
-}
-
-.pipeline-column {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 1rem;
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.05);
-}
-
-.pipeline-column__header {
-    display: flex;
-    align-items: flex-start;
     justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-.pipeline-column__body {
+.dashboard-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.75rem;
 }
 
-.deal-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 0.85rem;
-    background: #f9fbff;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+.dashboard-header p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
 }
 
-.deal-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 34px rgba(0, 87, 217, 0.12);
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
 }
 
-.deal-card__title {
+.btn-refresh {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.3rem;
+    gap: 0.5rem;
 }
 
-.status-dot {
-    width: 10px;
-    height: 10px;
+.btn-refresh:hover {
+    background: var(--bg);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn-refresh i {
+    font-size: 1.1rem;
+}
+
+/* Loading State */
+.loading-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
     border-radius: 50%;
-    display: inline-block;
-    background: #0ea5e9;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
 }
 
-.status-dot--danger { background: #dc2626; }
-.status-dot--warning { background: #f59e0b; }
-.status-dot--success { background: #16a34a; }
-.status-dot--muted { background: #94a3b8; }
-.status-dot--info { background: #0ea5e9; }
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 
-.deal-card__meta {
+.loading-state p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* Section Header */
+.section-header {
+    margin: 2.5rem 0 1.25rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.625rem;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Stat Card */
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--card-color), var(--card-color-light));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    background: var(--card-color);
+    color: white;
+}
+
+.stat-card-body {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     margin-bottom: 0.5rem;
 }
 
-.deal-card__footer {
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.stat-trend {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.stat-trend.positive {
+    color: var(--success);
+}
+
+.stat-trend.negative {
+    color: #ef4444;
+}
+
+.stat-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* Progress Bar */
+.stat-progress {
+    margin-top: 0.75rem;
+}
+
+.progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), #34d399);
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* Conversion Bar */
+.conversion-bar {
+    margin-top: 0.75rem;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.conversion-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--info), #818cf8);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+/* Color Variants */
+.stat-card.primary {
+    --card-color: var(--primary);
+    --card-color-light: #60a5fa;
+}
+
+.stat-card.success {
+    --card-color: var(--success);
+    --card-color-light: #34d399;
+}
+
+.stat-card.warning {
+    --card-color: var(--warning);
+    --card-color-light: #fbbf24;
+}
+
+.stat-card.info {
+    --card-color: var(--info);
+    --card-color-light: #818cf8;
+}
+
+.stat-card.purple {
+    --card-color: var(--purple);
+    --card-color-light: #a78bfa;
+}
+
+.stat-card.cyan {
+    --card-color: var(--cyan);
+    --card-color-light: #22d3ee;
+}
+
+.stat-card.green {
+    --card-color: var(--green);
+    --card-color-light: #4ade80;
+}
+
+.stat-card.orange {
+    --card-color: var(--orange);
+    --card-color-light: #fb923c;
+}
+
+/* Funnel Grid */
+.funnel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.funnel-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.funnel-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary);
+}
+
+.funnel-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.funnel-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Activities Type Grid */
+.activities-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.activity-type-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.activity-type-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.activity-type-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 0.75rem;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--bg);
+    color: var(--primary);
 }
 
-.deal-card__date {
+.activity-type-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.activity-type-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Quick Actions */
+.quick-actions-section {
+    margin-top: 3rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    color: #475569;
-    font-size: 0.9rem;
-}
-
-.deal-card__actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.btn-icon {
+    gap: 0.625rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
     border: none;
-    background: transparent;
-    color: #0f172a;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    transition: background 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    font-size: 0.9375rem;
 }
 
-.btn-icon:hover,
-.btn-icon:focus {
-    background: rgba(0, 87, 217, 0.08);
-    color: #0057d9;
+.action-btn i {
+    font-size: 1.25rem;
 }
 
-.activity-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+.action-btn.primary {
+    background: var(--primary);
+    color: white;
 }
 
-.activity-item {
-    display: flex;
-    gap: 0.8rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #e5e7eb;
+.action-btn.primary:hover {
+    background: var(--primary-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
-.activity-item--last {
-    border-bottom: none;
-    padding-bottom: 0;
+.action-btn.secondary {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
 }
 
-.activity-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    color: #0b1b35;
-    background: #f1f5f9;
-    flex-shrink: 0;
+.action-btn.secondary:hover {
+    background: var(--bg);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
-.activity-icon--call { background: rgba(15, 157, 88, 0.14); color: #0f9d58; }
-.activity-icon--mail { background: rgba(0, 87, 217, 0.14); color: #0057d9; }
-.activity-icon--meeting { background: rgba(10, 196, 167, 0.14); color: #0ac4a7; }
-.activity-icon--chat { background: rgba(234, 88, 12, 0.14); color: #ea580c; }
-
-.lead-card {
-    border-radius: 14px;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+.action-btn.success {
+    background: var(--success);
+    color: white;
 }
 
-.avatar-circle {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: #e0ebff;
-    display: grid;
-    place-items: center;
-    color: #0057d9;
+.action-btn.success:hover {
+    background: #059669;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-    .sales-hero {
-        padding: 0.5rem;
+    .crm-dashboard {
+        padding: 1rem;
     }
 
-    .sales-hero__actions {
-        width: 100%;
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
-    .pipeline-board {
+    .stats-grid {
         grid-template-columns: 1fr;
     }
+
+    .stat-value {
+        font-size: 1.875rem;
+    }
+
+    .funnel-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .activities-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.funnel-item,
+.activity-type-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
