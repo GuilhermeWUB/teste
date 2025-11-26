@@ -123,6 +123,7 @@ body:has(.vendas-kanban-container) .page-content {
     gap: 1rem;
     align-items: center;
     animation: fade-slide 320ms ease;
+    padding-right: 1rem; /* Compensa a barra de rolagem do kanban board */
 }
 
 .vendas-kanban-title-section {
