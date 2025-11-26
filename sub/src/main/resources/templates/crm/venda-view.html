@@ -10,13 +10,61 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --venda-bg: #e5e7eb;
+            --venda-surface: #ffffff;
+            --venda-surface-muted: #f3f4f6;
+            --venda-surface-strong: #e5e7eb;
+            --venda-border: #d1d5db;
+            --venda-text: #111827;
+            --venda-muted: #6b7280;
+            --venda-muted-strong: #374151;
+            --venda-muted-soft: #9ca3af;
+            --venda-primary: #3b82f6;
+            --venda-primary-strong: #2563eb;
+            --venda-success: #10b981;
+            --venda-success-strong: #059669;
+            --venda-highlight-from: #eef2ff;
+            --venda-highlight-to: #e0e7ff;
+            --venda-warning-bg: #fef3c7;
+            --venda-warning-text: #d97706;
+            --venda-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        :root[data-theme="dark"],
+        body[data-theme="dark"],
+        html[data-bs-theme="dark"],
+        body[data-bs-theme="dark"],
+        body.dark {
+            --venda-bg: #0b1220;
+            --venda-surface: #0f172a;
+            --venda-surface-muted: #111827;
+            --venda-surface-strong: #1f2937;
+            --venda-border: #1f2937;
+            --venda-text: #e5e7eb;
+            --venda-muted: #94a3b8;
+            --venda-muted-strong: #cbd5e1;
+            --venda-muted-soft: #94a3b8;
+            --venda-primary: #60a5fa;
+            --venda-primary-strong: #3b82f6;
+            --venda-success: #22c55e;
+            --venda-success-strong: #16a34a;
+            --venda-highlight-from: #111827;
+            --venda-highlight-to: #0b1220;
+            --venda-warning-bg: rgba(234, 179, 8, 0.12);
+            --venda-warning-text: #fbbf24;
+            --venda-card-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            color-scheme: dark;
+        }
+
         .gabiii-container {
             display: flex;
             flex-direction: column;
             padding: 20px;
-            background: #e5e7eb;
+            background: var(--venda-bg);
             min-height: 100vh;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--venda-text);
         }
 
         .gabiii-header {
@@ -29,22 +77,22 @@
         .gabiii-title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #111827;
+            color: var(--venda-text);
         }
 
         .gabiii-id {
             padding: 8px 16px;
-            background: #f3f4f6;
+            background: var(--venda-surface-muted);
             border-radius: 8px;
             font-size: 0.875rem;
-            color: #6b7280;
+            color: var(--venda-muted);
         }
 
         .gabiii-tabs {
             display: flex;
             gap: 0;
             margin-bottom: 20px;
-            border-bottom: 1px solid #d1d5db;
+            border-bottom: 1px solid var(--venda-border);
             background: transparent;
         }
 
@@ -53,7 +101,7 @@
             background: none;
             border: none;
             border-bottom: 3px solid transparent;
-            color: #9ca3af;
+            color: var(--venda-muted-soft);
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
@@ -61,12 +109,12 @@
         }
 
         .gabiii-tab:hover {
-            color: #6b7280;
+            color: var(--venda-muted);
         }
 
         .gabiii-tab.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
+            color: var(--venda-primary);
+            border-bottom-color: var(--venda-primary);
         }
 
         .gabiii-content {
@@ -97,10 +145,11 @@
         }
 
         .gabiii-card {
-            background: white;
+            background: var(--venda-surface);
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: var(--venda-card-shadow);
+            border: 1px solid var(--venda-border);
         }
 
         .gabiii-card-header {
@@ -113,7 +162,7 @@
         .gabiii-card-title {
             font-size: 1rem;
             font-weight: 600;
-            color: #111827;
+            color: var(--venda-text);
         }
 
         .gabiii-btn {
@@ -124,34 +173,36 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 0.875rem;
+            color: var(--venda-text);
         }
 
         .gabiii-btn-primary {
-            background: #3b82f6;
-            color: white;
+            background: var(--venda-primary);
+            color: #ffffff;
         }
 
         .gabiii-btn-primary:hover {
-            background: #2563eb;
+            background: var(--venda-primary-strong);
         }
 
         .gabiii-btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
+            background: var(--venda-surface-strong);
+            color: var(--venda-muted-strong);
+            border: 1px solid var(--venda-border);
         }
 
         .gabiii-btn-secondary:hover {
-            background: #d1d5db;
+            background: color-mix(in srgb, var(--venda-surface-strong) 85%, transparent);
         }
 
         .gabiii-btn-success {
-            background: #10b981;
-            color: white;
+            background: var(--venda-success);
+            color: #ffffff;
             width: 100%;
         }
 
         .gabiii-btn-success:hover {
-            background: #059669;
+            background: var(--venda-success-strong);
         }
 
         .gabiii-form-grid {
@@ -173,41 +224,43 @@
         .gabiii-form-label {
             font-size: 0.875rem;
             font-weight: 500;
-            color: #374151;
+            color: var(--venda-muted-strong);
         }
 
         .gabiii-form-input,
         .gabiii-form-select,
         .gabiii-form-textarea {
             padding: 10px;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--venda-border);
             border-radius: 6px;
             font-size: 0.875rem;
+            background: var(--venda-surface-muted);
+            color: var(--venda-text);
         }
 
         .gabiii-form-input:focus,
         .gabiii-form-select:focus,
         .gabiii-form-textarea:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--venda-primary);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--venda-primary) 20%, transparent);
         }
 
         .gabiii-info-value {
             font-size: 0.875rem;
             font-weight: 500;
-            color: #111827;
+            color: var(--venda-text);
             margin-bottom: 10px;
         }
 
         .gabiii-highlight-card {
-            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, var(--venda-highlight-from) 0%, var(--venda-highlight-to) 100%);
+            border-left: 4px solid var(--venda-primary);
         }
 
         .gabiii-muted {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: var(--venda-muted);
             margin-top: 5px;
         }
 
@@ -215,12 +268,12 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: #4b5563;
+            background: var(--venda-muted);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: white;
+            color: #ffffff;
             margin-bottom: 10px;
             font-size: 1.1rem;
         }
@@ -231,13 +284,13 @@
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 600;
-            background: #fef3c7;
-            color: #d97706;
+            background: var(--venda-warning-bg);
+            color: var(--venda-warning-text);
         }
 
         .gabiii-info-label {
             font-size: 0.75rem;
-            color: #6b7280;
+            color: var(--venda-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 5px;
@@ -254,14 +307,14 @@
 
         .gabiii-empty-icon {
             font-size: 3rem;
-            color: #9ca3af;
+            color: var(--venda-muted-soft);
             margin-bottom: 15px;
         }
 
         .gabiii-empty-text {
             font-size: 1rem;
             font-weight: 500;
-            color: #6b7280;
+            color: var(--venda-muted);
             margin-bottom: 10px;
         }
 
@@ -272,7 +325,7 @@
         .gabiii-section-title {
             font-size: 0.875rem;
             font-weight: 600;
-            color: #374151;
+            color: var(--venda-muted-strong);
             margin-bottom: 15px;
         }
 
@@ -287,19 +340,19 @@
         }
 
         .gabiii-tag-blue {
-            background: #dbeafe;
-            color: #1e40af;
+            background: color-mix(in srgb, var(--venda-primary) 18%, transparent);
+            color: var(--venda-primary-strong);
         }
 
         .gabiii-tag-green {
-            background: #d1fae5;
-            color: #065f46;
+            background: color-mix(in srgb, var(--venda-success) 20%, transparent);
+            color: var(--venda-success-strong);
         }
 
         .gabiii-btn-link {
             background: none;
             border: none;
-            color: #3b82f6;
+            color: var(--venda-primary);
             cursor: pointer;
             font-size: 0.875rem;
             padding: 0;
@@ -322,7 +375,7 @@
         .gabiii-tabs-secondary {
             display: flex;
             gap: 0;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--venda-border);
             margin-bottom: 20px;
         }
 
@@ -331,7 +384,7 @@
             background: none;
             border: none;
             border-bottom: 2px solid transparent;
-            color: #6b7280;
+            color: var(--venda-muted);
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
@@ -339,8 +392,8 @@
         }
 
         .gabiii-tab-secondary.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
+            color: var(--venda-primary);
+            border-bottom-color: var(--venda-primary);
         }
     </style>
 </head>
@@ -422,21 +475,21 @@
                         <div class="gabiii-section-title">Histórico</div>
                         <div class="gabiii-section">
                             <div style="display: flex; gap: 10px; align-items: start; margin-bottom: 15px;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-megaphone" style="color: white;"></i>
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: color-mix(in srgb, var(--venda-primary) 70%, #ef4444 30%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-megaphone" style="color: #ffffff;"></i>
                                 </div>
                                 <div style="flex: 1;">
-                                    <p style="font-weight: 500; color: #111827; margin-bottom: 3px;">Marketing Up atribuiu a negociação para VINICIUS RIAN SOARES</p>
-                                    <p style="font-size: 0.75rem; color: #6b7280;">25/11/2025 - 13:27</p>
+                                    <p style="font-weight: 500; color: var(--venda-text); margin-bottom: 3px;">Marketing Up atribuiu a negociação para VINICIUS RIAN SOARES</p>
+                                    <p style="font-size: 0.75rem; color: var(--venda-muted);">25/11/2025 - 13:27</p>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px; align-items: start;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #9ca3af; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-globe" style="color: white;"></i>
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: color-mix(in srgb, var(--venda-muted-soft) 80%, #4b5563 20%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-globe" style="color: #ffffff;"></i>
                                 </div>
                                 <div style="flex: 1;">
-                                    <p style="font-weight: 500; color: #111827; margin-bottom: 3px;">Negociação criada pelo site</p>
-                                    <p style="font-size: 0.75rem; color: #6b7280;">25/11/2025 - 12:17</p>
+                                    <p style="font-weight: 500; color: var(--venda-text); margin-bottom: 3px;">Negociação criada pelo site</p>
+                                    <p style="font-size: 0.75rem; color: var(--venda-muted);">25/11/2025 - 12:17</p>
                                 </div>
                             </div>
                         </div>
@@ -784,7 +837,7 @@
                     <div class="gabiii-card-header">
                         <h3 class="gabiii-card-title">Bônus</h3>
                     </div>
-                    <p class="gabiii-info-value" style="color: #10b981;">R$ 0,00</p>
+                    <p class="gabiii-info-value" style="color: var(--venda-success);">R$ 0,00</p>
                 </div>
 
                 <div class="gabiii-card">
