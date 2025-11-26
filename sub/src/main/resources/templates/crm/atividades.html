@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title th:text="${pageTitle} ?: 'SUB - Atividades'">SUB - Atividades</title>
+    <link rel="stylesheet" th:href="@{/css/crm-atividades.css}">
+</head>
+<body>
+<section layout:fragment="content" class="activities-page">
+    <div class="activities-header">
+        <div class="activities-title">
+            <p class="breadcrumb">Home <span aria-hidden="true">›</span> Atividades</p>
+            <h1>Atividades</h1>
+            <p class="subtitle">Visualize e acompanhe as atividades da equipe comercial.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-new-activity" type="button">
+                <i class="bi bi-plus-circle"></i> Atividades
+            </button>
+        </div>
+    </div>
+
+    <div class="activities-summary" role="list">
+        <article class="summary-card summary-delayed" data-summary="atrasada" role="listitem">
+            <div class="summary-label">Atrasadas</div>
+            <div class="summary-count" id="summary-delayed">0</div>
+            <div class="summary-info">Apenas não vistas</div>
+        </article>
+        <article class="summary-card summary-today" data-summary="para-hoje" role="listitem">
+            <div class="summary-label">Para hoje</div>
+            <div class="summary-count" id="summary-today">0</div>
+            <div class="summary-info">Exibe atividades do dia</div>
+        </article>
+        <article class="summary-card summary-planned" data-summary="planejada" role="listitem">
+            <div class="summary-label">Planejadas</div>
+            <div class="summary-count" id="summary-planned">0</div>
+            <div class="summary-info">Próximos compromissos</div>
+        </article>
+        <article class="summary-card summary-done" data-summary="concluida" role="listitem">
+            <div class="summary-label">Concluídas</div>
+            <div class="summary-count" id="summary-done">0</div>
+            <div class="summary-info">Finalizadas recentemente</div>
+        </article>
+    </div>
+
+    <div class="activities-tabs" role="tablist" aria-label="Filtros de status">
+        <button class="tab-button active" data-status-filter="atrasada" role="tab" aria-selected="true">
+            Atrasadas <span class="tab-counter" id="tab-delayed">0</span>
+        </button>
+        <button class="tab-button" data-status-filter="para-hoje" role="tab" aria-selected="false">
+            Para hoje <span class="tab-counter" id="tab-today">0</span>
+        </button>
+        <button class="tab-button" data-status-filter="planejada" role="tab" aria-selected="false">
+            Planejadas <span class="tab-counter" id="tab-planned">0</span>
+        </button>
+        <button class="tab-button" data-status-filter="concluida" role="tab" aria-selected="false">
+            Concluídas <span class="tab-counter" id="tab-done">0</span>
+        </button>
+    </div>
+
+    <div class="activities-grid">
+        <div class="activities-list" id="activities-list" aria-live="polite">
+            <div class="empty-state" id="activities-empty" hidden>
+                <i class="bi bi-ui-checks-grid"></i>
+                <p>Nenhuma atividade para exibir com os filtros atuais.</p>
+            </div>
+        </div>
+
+        <aside class="activities-filters" aria-label="Filtros de atividades">
+            <div class="filter-header">
+                <div>
+                    <p class="filter-breadcrumb">Home <span aria-hidden="true">›</span> Atividades</p>
+                    <h2>Atividades</h2>
+                </div>
+                <a class="help-link" href="#" aria-label="Aprenda a usar o painel de atividades">
+                    <i class="bi bi-play-circle"></i> Aprenda a usar
+                </a>
+            </div>
+
+            <div class="filter-group">
+                <label for="search-input">Buscar</label>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input id="search-input" type="search" placeholder="Buscar..." autocomplete="off">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label for="responsavel-select">Responsável</label>
+                <select id="responsavel-select">
+                    <option value="">Todos</option>
+                    <option value="admin">Admin</option>
+                    <option value="jovani">Jovani Faussat</option>
+                    <option value="henrique">Henrique</option>
+                    <option value="gabriel">Gabriel</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Período</div>
+                <div class="period-buttons" role="group" aria-label="Filtrar por período">
+                    <button type="button" data-period="hoje" class="period-button active">Hoje</button>
+                    <button type="button" data-period="3d" class="period-button">3d</button>
+                    <button type="button" data-period="7d" class="period-button">7d</button>
+                    <button type="button" data-period="15d" class="period-button">15d</button>
+                    <button type="button" data-period="mes" class="period-button">Mês</button>
+                    <button type="button" data-period="tudo" class="period-button">Tudo</button>
+                </div>
+                <div class="period-inputs">
+                    <input type="date" id="period-start" aria-label="Data inicial">
+                    <input type="date" id="period-end" aria-label="Data final">
+                </div>
+                <button type="button" class="btn-apply" id="apply-period">Aplicar</button>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Tipo</div>
+                <div class="checkbox-list">
+                    <label><input type="checkbox" value="calculo" checked> Cálculos</label>
+                    <label><input type="checkbox" value="ligacao" checked> Ligações</label>
+                    <label><input type="checkbox" value="falecomigoloja" checked> Fale Comigo - Loja</label>
+                    <label><input type="checkbox" value="falecomigoportal" checked> Fale Comigo - Portal</label>
+                    <label><input type="checkbox" value="lead" checked> Lead vindo do chat</label>
+                </div>
+                <button type="button" class="btn-apply" id="apply-filters">Aplicar</button>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Visibilidade</div>
+                <div class="checkbox-list">
+                    <label><input type="checkbox" value="apenas-minhas"> Apenas minhas</label>
+                    <label><input type="checkbox" value="subordinados"> Só de subordinados</label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label for="zona-select">Zona</label>
+                <select id="zona-select">
+                    <option value="">Selecione</option>
+                    <option value="norte">Norte</option>
+                    <option value="sul">Sul</option>
+                    <option value="leste">Leste</option>
+                    <option value="oeste">Oeste</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="cidade-input">Cidade</label>
+                <input id="cidade-input" type="text" placeholder="Digite a cidade">
+            </div>
+        </aside>
+    </div>
+</section>
+<script th:src="@{/js/crm-atividades.js}"></script>
+</body>
+</html>
