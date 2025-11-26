@@ -66,6 +66,17 @@ html[data-theme="dark"] {
     background: var(--page-gradient);
 }
 
+/* Expand layout to full width on this page */
+.page > .container {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+}
+
+.page-content {
+    width: 100%;
+}
+
 .activities-header {
     display: flex;
     justify-content: space-between;
