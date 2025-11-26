@@ -6,7 +6,22 @@
     --bg: #f7f8fb;
     --card: #ffffff;
     --border: #e5e7eb;
+    --surface: #f0f2fb;
+    --surface-strong: #f9fafb;
     --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+html[data-theme="dark"] {
+    --primary: #a78bfa;
+    --primary-strong: #8b5cf6;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --bg: #0b1220;
+    --card: #0f172a;
+    --border: #1f2937;
+    --surface: #1f2937;
+    --surface-strong: #0b1324;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
 .activities-page {
@@ -14,6 +29,8 @@
     flex-direction: column;
     gap: 1.5rem;
     color: var(--text);
+    background: var(--bg);
+    padding-bottom: 1rem;
 }
 
 .activities-header {
@@ -123,7 +140,7 @@
 
 .tab-button {
     border: 1px solid var(--border);
-    background: #f0f2fb;
+    background: var(--surface);
     color: var(--muted);
     border-radius: 10px;
     padding: 0.65rem 1rem;
@@ -135,7 +152,7 @@
 }
 
 .tab-button .tab-counter {
-    background: #e5e7eb;
+    background: var(--surface-strong);
     padding: 0.15rem 0.55rem;
     border-radius: 999px;
     font-size: 0.9rem;
@@ -170,7 +187,7 @@
     grid-template-columns: auto 1fr auto;
     gap: 1rem;
     align-items: center;
-    background: linear-gradient(90deg, rgba(111, 66, 193, 0.07), #fff 35%);
+    background: linear-gradient(90deg, rgba(111, 66, 193, 0.08), var(--card) 35%);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 0.85rem 1rem;
@@ -218,7 +235,7 @@
     padding: 0.25rem 0.65rem;
     font-size: 0.85rem;
     border: 1px solid var(--border);
-    background: #fff;
+    background: var(--card);
     color: var(--muted);
 }
 
@@ -310,7 +327,7 @@
     padding: 0.6rem 0.9rem 0.6rem 2.4rem;
     border-radius: 10px;
     border: 1px solid var(--border);
-    background: #f9fafb;
+    background: var(--surface-strong);
 }
 
 select,
@@ -320,7 +337,7 @@ input[type="date"] {
     border-radius: 10px;
     border: 1px solid var(--border);
     padding: 0.55rem 0.75rem;
-    background: #f9fafb;
+    background: var(--surface-strong);
     width: 100%;
 }
 
@@ -332,7 +349,7 @@ input[type="date"] {
 
 .period-button {
     border: 1px solid var(--border);
-    background: #fff;
+    background: var(--card);
     border-radius: 10px;
     padding: 0.55rem 0.6rem;
     font-weight: 600;
@@ -342,7 +359,7 @@ input[type="date"] {
 
 .period-button.active {
     border-color: var(--primary);
-    background: #f5f3ff;
+    background: rgba(111, 66, 193, 0.12);
     color: var(--primary-strong);
 }
 
@@ -376,7 +393,47 @@ input[type="date"] {
     padding: 2rem;
     border: 1px dashed var(--border);
     border-radius: 12px;
-    background: #f9fafb;
+    background: var(--surface-strong);
+}
+
+html[data-theme="dark"] .activities-page {
+    color: var(--text);
+}
+
+html[data-theme="dark"] .tab-button {
+    color: var(--muted);
+    box-shadow: none;
+}
+
+html[data-theme="dark"] .activity-card {
+    background: linear-gradient(90deg, rgba(167, 139, 250, 0.2), var(--card) 35%);
+    box-shadow: var(--shadow);
+}
+
+html[data-theme="dark"] .badge.info { color: #67e8f9; border-color: #164e63; background: #0f172a; }
+html[data-theme="dark"] .badge.danger { color: #fda4af; border-color: #7f1d1d; background: #1f0f17; }
+html[data-theme="dark"] .badge.warning { color: #fcd34d; border-color: #92400e; background: #1f1305; }
+html[data-theme="dark"] .badge.success { color: #86efac; border-color: #14532d; background: #0f2116; }
+
+html[data-theme="dark"] .activity-badge-status.delayed { background: #2f1120; color: #fca5a5; }
+html[data-theme="dark"] .activity-badge-status.today { background: #221640; color: #c4b5fd; }
+html[data-theme="dark"] .activity-badge-status.planned { background: #0c2535; color: #93c5fd; }
+html[data-theme="dark"] .activity-badge-status.done { background: #0f2d1d; color: #bbf7d0; }
+
+html[data-theme="dark"] .activities-filters,
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .period-button,
+html[data-theme="dark"] .btn-apply,
+html[data-theme="dark"] .activity-card {
+    border-color: var(--border);
+}
+
+html[data-theme="dark"] .btn-apply {
+    background: var(--primary-strong);
+}
+
+html[data-theme="dark"] .empty-state {
+    background: var(--surface);
 }
 
 @media (max-width: 1024px) {
