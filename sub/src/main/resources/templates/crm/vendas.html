@@ -1,223 +1,197 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{fragments/layout-crm}">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"      layout:decorate="~{fragments/layout-crm}">
 <head>
-    <title>Funil de Filiação - CRM</title>
+    <title>SUB - Funil de Filiação</title>
     <link rel="stylesheet" th:href="@{/css/vendas-kanban.css}">
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="vendas-page">
-        <!-- Header -->
-        <div class="page-header-vendas">
-            <div class="header-left">
-                <div class="header-icon">
-                    <i class="bi bi-funnel-fill"></i>
+<section layout:fragment="content" class="vendas-kanban-container">
+    <div class="vendas-kanban-wrapper">
+        <div class="vendas-kanban-header">
+            <div class="vendas-kanban-title-section">
+                <div class="vendas-kanban-icon">
+                    <i class="bi bi-kanban"></i>
                 </div>
-                <div class="header-text">
+                <div class="vendas-kanban-title-text">
                     <h1>Funil de Filiação</h1>
-                    <p>Gerencie o pipeline de vendas e acompanhe cada etapa do processo</p>
+                    <p>Gerencie o pipeline de vendas com eficiência e visualize o progresso em tempo real.</p>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="btn-action btn-refresh" onclick="window.vendasBoard?.loadBoard?.()">
-                    <i class="bi bi-arrow-clockwise"></i>
-                    <span>Atualizar</span>
-                </button>
-                <button class="btn-action btn-primary" onclick="window.vendasBoard?.openCreateModal?.()">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Nova Negociação</span>
-                </button>
-            </div>
-        </div>
 
-        <!-- Stats Cards -->
-        <div class="vendas-stats">
-            <div class="stat-card-mini blue">
-                <div class="stat-mini-icon"><i class="bi bi-graph-up"></i></div>
-                <div class="stat-mini-content">
-                    <div class="stat-mini-value" id="totalVendas">0</div>
-                    <div class="stat-mini-label">Total de Vendas</div>
+            <div class="vendas-kanban-controls">
+                <div class="vendas-kanban-controls-left">
+                    <div class="vendas-kanban-search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="kanban-search" placeholder="Buscar por placa, produto ou cooperativa..." autocomplete="off">
+                    </div>
+                    <button class="vendas-kanban-filter-btn" type="button">
+                        <i class="bi bi-funnel-fill"></i> Filtros
+                    </button>
                 </div>
-            </div>
-            <div class="stat-card-mini green">
-                <div class="stat-mini-icon"><i class="bi bi-check-circle"></i></div>
-                <div class="stat-mini-content">
-                    <div class="stat-mini-value" id="vendasConcluidas">0</div>
-                    <div class="stat-mini-label">Concluídas</div>
-                </div>
-            </div>
-            <div class="stat-card-mini yellow">
-                <div class="stat-mini-icon"><i class="bi bi-hourglass-split"></i></div>
-                <div class="stat-mini-content">
-                    <div class="stat-mini-value" id="vendasEmProgresso">0</div>
-                    <div class="stat-mini-label">Em Progresso</div>
-                </div>
-            </div>
-            <div class="stat-card-mini purple">
-                <div class="stat-mini-icon"><i class="bi bi-currency-dollar"></i></div>
-                <div class="stat-mini-content">
-                    <div class="stat-mini-value" id="receitaTotal">R$ 0</div>
-                    <div class="stat-mini-label">Receita Total</div>
+                <div class="vendas-kanban-actions">
+                    <button class="btn-novo-evento" type="button" onclick="window.vendasBoard?.openCreateModal?.()">
+                        <i class="bi bi-plus-circle"></i> Nova negociação
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Search and Filters -->
-        <div class="search-filters-bar">
-            <div class="search-box">
-                <i class="bi bi-search"></i>
-                <input type="text" id="kanban-search" placeholder="Buscar por contato, placa ou cooperativa...">
-            </div>
-            <div class="filter-actions">
-                <button class="btn-filter">
-                    <i class="bi bi-funnel"></i> Filtros
-                </button>
-            </div>
-        </div>
-
-        <!-- Kanban Board -->
-        <div class="kanban-board-wrapper">
-            <div class="kanban-board" data-dynamic="true" role="region" aria-label="Kanban de Vendas">
-                <!-- Colunas serão geradas dinamicamente pelo JavaScript -->
-            </div>
-        </div>
+        <div class="vendas-kanban-board kanban-board" data-dynamic="true" aria-label="Kanban de Vendas" role="region"></div>
     </div>
 
-    <!-- Modal de Visualização (AJAX) -->
-    <div id="kanban-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
+    <div id="kanban-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
                 <h2>Detalhes da Negociação</h2>
-                <button class="btn-modal-close" onclick="window.vendasBoard?.closeModal?.()">
-                    <i class="bi bi-x-lg"></i>
+                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeModal?.()">
+                    <i class="bi bi-x"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <!-- Conteúdo carregado via AJAX -->
-            </div>
+            <div class="kanban-modal-body"></div>
         </div>
     </div>
 
-    <!-- Modal de Criação -->
-    <div id="create-venda-modal" class="modal-overlay">
-        <div class="modal-container create-modal">
-            <div class="modal-header">
-                <h2><i class="bi bi-plus-circle"></i> Nova Negociação</h2>
-                <button class="btn-modal-close" onclick="window.vendasBoard?.closeCreateModal?.()">
-                    <i class="bi bi-x-lg"></i>
+    <div id="create-venda-modal" class="kanban-modal">
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h2><i class="bi bi-plus-circle"></i> Adicione uma nova negociação</h2>
+                <button class="kanban-modal-close" onclick="window.vendasBoard?.closeCreateModal?.()">
+                    <i class="bi bi-x"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="create-venda-form">
-                    <div id="create-venda-error" class="alert-error" style="display: none;"></div>
+            <div class="kanban-modal-body">
+                <form id="create-venda-form" class="kanban-create-form">
+                    <div id="create-venda-error" class="create-processo-error" role="alert" aria-live="assertive"></div>
 
-                    <div class="form-section">
-                        <h3>Informações do Contato</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="create-nome-contato">Nome do Contato *</label>
-                                <input type="text" id="create-nome-contato" name="nomeContato" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-celular">Celular *</label>
-                                <input type="text" id="create-celular" name="celular" placeholder="(00) 00000-0000" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-email">E-mail</label>
-                                <input type="email" id="create-email" name="email" placeholder="email@exemplo.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="create-cooperativa">Cooperativa</label>
-                                <select id="create-cooperativa" name="cooperativa">
-                                    <option value="">Selecione</option>
-                                    <option value="COOPERATIVA_A">Cooperativa A</option>
-                                    <option value="COOPERATIVA_B">Cooperativa B</option>
-                                    <option value="COOPERATIVA_C">Cooperativa C</option>
-                                </select>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-cooperativa">Cooperativa</label>
+                            <select id="create-cooperativa" name="cooperativa">
+                                <option value="">Selecione</option>
+                                <option value="COOPERATIVA_A">Cooperativa A</option>
+                                <option value="COOPERATIVA_B">Cooperativa B</option>
+                                <option value="COOPERATIVA_C">Cooperativa C</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-nome-contato">Nome para contato</label>
+                            <input type="text" id="create-nome-contato" name="nomeContato" placeholder="Nome do contato">
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h3>Dados do Veículo</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="create-tipo-veiculo">Tipo de Veículo</label>
-                                <select id="create-tipo-veiculo" name="tipoVeiculo">
-                                    <option value="">Selecione</option>
-                                    <option value="CARRO">Carro</option>
-                                    <option value="MOTO">Moto</option>
-                                    <option value="CAMINHAO">Caminhão</option>
-                                    <option value="ONIBUS">Ônibus</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-placa">Placa</label>
-                                <input type="text" id="create-placa" name="placa" placeholder="ABC-1234">
-                            </div>
-                            <div class="form-group">
-                                <label for="create-marca">Marca</label>
-                                <select id="create-marca" name="marca">
-                                    <option value="">Selecione</option>
-                                    <option value="FIAT">Fiat</option>
-                                    <option value="VOLKSWAGEN">Volkswagen</option>
-                                    <option value="CHEVROLET">Chevrolet</option>
-                                    <option value="FORD">Ford</option>
-                                    <option value="RENAULT">Renault</option>
-                                    <option value="TOYOTA">Toyota</option>
-                                    <option value="HONDA">Honda</option>
-                                    <option value="HYUNDAI">Hyundai</option>
-                                    <option value="OUTRA">Outra</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-modelo">Modelo</label>
-                                <select id="create-modelo" name="modelo">
-                                    <option value="">Selecione a marca primeiro</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-ano-modelo">Ano/Modelo</label>
-                                <select id="create-ano-modelo" name="anoModelo">
-                                    <option value="">Selecione</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2024">2024</option>
-                                    <option value="2023">2023</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2021">2021</option>
-                                    <option value="2020">2020</option>
-                                    <option value="ANTERIOR">Anterior a 2020</option>
-                                </select>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-tipo-veiculo">Tipo de veículo</label>
+                            <select id="create-tipo-veiculo" name="tipoVeiculo">
+                                <option value="">Selecione o tipo</option>
+                                <option value="CARRO">Carro</option>
+                                <option value="MOTO">Moto</option>
+                                <option value="CAMINHAO">Caminhão</option>
+                                <option value="ONIBUS">Ônibus</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-email">E-mail</label>
+                            <input type="email" id="create-email" name="email" placeholder="email@exemplo.com">
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h3>Localização</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="create-estado">Estado</label>
-                                <select id="create-estado" name="estado">
-                                    <option value="">Selecione</option>
-                                    <option value="SP">São Paulo</option>
-                                    <option value="RJ">Rio de Janeiro</option>
-                                    <option value="MG">Minas Gerais</option>
-                                    <option value="RS">Rio Grande do Sul</option>
-                                    <option value="PR">Paraná</option>
-                                    <option value="SC">Santa Catarina</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="create-cidade">Cidade</label>
-                                <select id="create-cidade" name="cidade">
-                                    <option value="">Selecione o estado primeiro</option>
-                                </select>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-placa">Placa</label>
+                            <input type="text" id="create-placa" name="placa" placeholder="ABC-1234">
+                        </div>
+                        <div class="form-group">
+                            <label for="create-celular">Celular</label>
+                            <input type="text" id="create-celular" name="celular" placeholder="(00) 00000-0000">
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h3>Informações Adicionais</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-marca">Marca</label>
+                            <select id="create-marca" name="marca">
+                                <option value="">Selecione</option>
+                                <option value="FIAT">Fiat</option>
+                                <option value="VOLKSWAGEN">Volkswagen</option>
+                                <option value="CHEVROLET">Chevrolet</option>
+                                <option value="FORD">Ford</option>
+                                <option value="RENAULT">Renault</option>
+                                <option value="TOYOTA">Toyota</option>
+                                <option value="HONDA">Honda</option>
+                                <option value="HYUNDAI">Hyundai</option>
+                                <option value="OUTRA">Outra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-estado">Estado</label>
+                            <select id="create-estado" name="estado">
+                                <option value="">Selecione</option>
+                                <option value="AC">Acre</option>
+                                <option value="AL">Alagoas</option>
+                                <option value="AP">Amapá</option>
+                                <option value="AM">Amazonas</option>
+                                <option value="BA">Bahia</option>
+                                <option value="CE">Ceará</option>
+                                <option value="DF">Distrito Federal</option>
+                                <option value="ES">Espírito Santo</option>
+                                <option value="GO">Goiás</option>
+                                <option value="MA">Maranhão</option>
+                                <option value="MT">Mato Grosso</option>
+                                <option value="MS">Mato Grosso do Sul</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="PA">Pará</option>
+                                <option value="PB">Paraíba</option>
+                                <option value="PR">Paraná</option>
+                                <option value="PE">Pernambuco</option>
+                                <option value="PI">Piauí</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="RN">Rio Grande do Norte</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="RO">Rondônia</option>
+                                <option value="RR">Roraima</option>
+                                <option value="SC">Santa Catarina</option>
+                                <option value="SP">São Paulo</option>
+                                <option value="SE">Sergipe</option>
+                                <option value="TO">Tocantins</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-ano-modelo">Ano modelo</label>
+                            <select id="create-ano-modelo" name="anoModelo">
+                                <option value="">Selecione</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                                <option value="2020">2020</option>
+                                <option value="2019">2019</option>
+                                <option value="2018">2018</option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="ANTERIOR">Anterior a 2015</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-cidade">Cidade</label>
+                            <select id="create-cidade" name="cidade">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-modelo">Modelo</label>
+                            <select id="create-modelo" name="modelo">
+                                <option value="">Selecione</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="create-origem-lead">Origem do Lead</label>
                             <select id="create-origem-lead" name="origemLead">
@@ -231,30 +205,34 @@
                                 <option value="OUTRO">Outro</option>
                             </select>
                         </div>
-
-                        <div class="form-checkboxes">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="create-veiculo-trabalho" name="veiculoTrabalho">
-                                <span>Veículo de trabalho (Táxi/Uber)</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="create-enviar-cotacao" name="enviarCotacao">
-                                <span>Enviar cotação por e-mail</span>
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="create-observacoes">Observações</label>
-                            <textarea id="create-observacoes" name="observacoes" rows="3" placeholder="Observações adicionais sobre a negociação..."></textarea>
-                        </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn-secondary" onclick="window.vendasBoard?.closeCreateModal?.()">
-                            <i class="bi bi-x-circle"></i> Cancelar
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="create-veiculo-trabalho" name="veiculoTrabalho">
+                            Veículo de trabalho (Táxi/Uber)
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="create-enviar-cotacao" name="enviarCotacao">
+                            Enviar cotação para o associado por e-mail
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="create-observacoes">Observações</label>
+                        <textarea id="create-observacoes" name="observacoes" rows="3" placeholder="Observações adicionais"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.vendasBoard?.closeCreateModal?.()">
+                            <i class="bi bi-x-circle"></i>
+                            Cancelar
                         </button>
-                        <button type="submit" class="btn-primary">
-                            <i class="bi bi-check-circle"></i> Criar Negociação
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill"></i> Adicionar negociação
                         </button>
                     </div>
                 </form>
