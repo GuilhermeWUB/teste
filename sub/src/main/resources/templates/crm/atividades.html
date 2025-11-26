@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Atividades - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-atividades.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-atividades">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1><i class="bi bi-calendar-check"></i> Atividades CRM</h1>
+                <p>Gerencie todas as suas atividades comerciais em um só lugar</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-refresh" onclick="loadActivities()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button class="btn-primary" onclick="openCreateModal()">
+                    <i class="bi bi-plus-circle"></i>
+                    Nova Atividade
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label><i class="bi bi-funnel"></i> Filtrar por Status:</label>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">Todos</option>
+                    <option value="AGENDADA">Agendada</option>
+                    <option value="EM_ANDAMENTO">Em andamento</option>
+                    <option value="CONCLUIDA">Concluída</option>
+                    <option value="CANCELADA">Cancelada</option>
+                    <option value="REAGENDADA">Reagendada</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="bi bi-tag"></i> Tipo:</label>
+                <select id="filterTipo" onchange="applyFilters()">
+                    <option value="">Todos</option>
+                    <option value="LIGACAO">Ligação</option>
+                    <option value="EMAIL">E-mail</option>
+                    <option value="REUNIAO">Reunião</option>
+                    <option value="VISITA">Visita</option>
+                    <option value="FOLLOW_UP">Follow-up</option>
+                    <option value="APRESENTACAO">Apresentação</option>
+                    <option value="NEGOCIACAO">Negociação</option>
+                    <option value="VISTORIA">Vistoria</option>
+                    <option value="OUTRO">Outro</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="bi bi-search"></i> Buscar:</label>
+                <input type="text" id="searchInput" placeholder="Buscar atividades..." onkeyup="applyFilters()">
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-mini-grid">
+            <div class="stat-mini-card blue">
+                <div class="stat-mini-icon"><i class="bi bi-list-check"></i></div>
+                <div class="stat-mini-body">
+                    <div class="stat-mini-value" id="totalCount">0</div>
+                    <div class="stat-mini-label">Total</div>
+                </div>
+            </div>
+            <div class="stat-mini-card yellow">
+                <div class="stat-mini-icon"><i class="bi bi-clock"></i></div>
+                <div class="stat-mini-body">
+                    <div class="stat-mini-value" id="agendadasCount">0</div>
+                    <div class="stat-mini-label">Agendadas</div>
+                </div>
+            </div>
+            <div class="stat-mini-card green">
+                <div class="stat-mini-icon"><i class="bi bi-check-circle"></i></div>
+                <div class="stat-mini-body">
+                    <div class="stat-mini-value" id="concluidasCount">0</div>
+                    <div class="stat-mini-label">Concluídas</div>
+                </div>
+            </div>
+            <div class="stat-mini-card orange">
+                <div class="stat-mini-icon"><i class="bi bi-calendar-day"></i></div>
+                <div class="stat-mini-body">
+                    <div class="stat-mini-value" id="hojeCount">0</div>
+                    <div class="stat-mini-label">Hoje</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities List -->
+        <div class="activities-container">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner"></div>
+                <p>Carregando atividades...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <h3>Nenhuma atividade encontrada</h3>
+                <p>Crie sua primeira atividade para começar</p>
+                <button class="btn-primary" onclick="openCreateModal()">
+                    <i class="bi bi-plus-circle"></i>
+                    Nova Atividade
+                </button>
+            </div>
+
+            <!-- Activities Grid -->
+            <div id="activitiesGrid" class="activities-grid" style="display: none;">
+                <!-- Will be filled dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div id="activityModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"><i class="bi bi-plus-circle"></i> Nova Atividade</h2>
+                <button class="btn-close" onclick="closeModal()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="activityForm" onsubmit="saveActivity(event)">
+                    <input type="hidden" id="activityId">
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Título *</label>
+                            <input type="text" id="titulo" required maxlength="255">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo *</label>
+                            <select id="tipo" required>
+                                <option value="">Selecione...</option>
+                                <option value="LIGACAO">Ligação</option>
+                                <option value="EMAIL">E-mail</option>
+                                <option value="REUNIAO">Reunião</option>
+                                <option value="VISITA">Visita</option>
+                                <option value="FOLLOW_UP">Follow-up</option>
+                                <option value="APRESENTACAO">Apresentação</option>
+                                <option value="NEGOCIACAO">Negociação</option>
+                                <option value="VISTORIA">Vistoria</option>
+                                <option value="OUTRO">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Prioridade</label>
+                            <select id="prioridade">
+                                <option value="">Selecione...</option>
+                                <option value="BAIXA">Baixa</option>
+                                <option value="MEDIA">Média</option>
+                                <option value="ALTA">Alta</option>
+                                <option value="URGENTE">Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Descrição</label>
+                            <textarea id="descricao" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nome do Contato</label>
+                            <input type="text" id="contatoNome" maxlength="255">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="tel" id="contatoTelefone" maxlength="50">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>E-mail do Contato</label>
+                            <input type="email" id="contatoEmail" maxlength="255">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Responsável</label>
+                            <input type="text" id="responsavel" maxlength="255">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Data/Hora Agendada</label>
+                            <input type="datetime-local" id="dataAgendada">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ID da Venda (opcional)</label>
+                            <input type="number" id="saleId" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label>Resultado</label>
+                            <textarea id="resultado" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="bi bi-check-circle"></i>
+                            Salvar Atividade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/crm-atividades.js}"></script>
+</section>
+</body>
+</html>
