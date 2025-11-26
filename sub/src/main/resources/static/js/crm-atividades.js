@@ -1,5 +1,6 @@
 (function () {
     const today = new Date();
+    let activities = [];
 
     const statusLabels = {
         'atrasada': 'Atrasada',
@@ -8,99 +9,22 @@
         'concluida': 'Concluída'
     };
 
-    const activities = [
-        {
-            id: 1,
-            title: 'manda todos os valores e expliquei tudo que ajuda, está bem interessado',
-            description: 'Solicitar ligação para avançar na proposta e revisar cálculo.',
-            time: '15:30',
-            date: shiftDays(today, 0),
-            status: 'atrasada',
-            type: 'calculo',
-            leadSource: 'Fale Comigo',
-            responsible: 'admin',
-            city: 'Fortaleza',
-            state: 'CE'
-        },
-        {
-            id: 2,
-            title: 'Marcos, Ligar 11horas',
-            description: 'Lead vindo do chat, aguardando retorno do cálculo.',
-            time: '15:30',
-            date: shiftDays(today, 0),
-            status: 'atrasada',
-            type: 'ligacao',
-            leadSource: 'Lead do chat',
-            responsible: 'jovani',
-            city: 'Goiânia',
-            state: 'GO'
-        },
-        {
-            id: 3,
-            title: 'Ele não tem email nem sabe usar',
-            description: 'Solicitar ligação e enviar explicação detalhada.',
-            time: '16:30',
-            date: shiftDays(today, 0),
-            status: 'atrasada',
-            type: 'falecomigoloja',
-            leadSource: 'Loja física',
-            responsible: 'admin',
-            city: 'Fortaleza',
-            state: 'CE'
-        },
-        {
-            id: 4,
-            title: 'Diz ligar depois',
-            description: 'Solicitar ligação para confirmar interesse.',
-            time: '15:30',
-            date: shiftDays(today, 0),
-            status: 'para-hoje',
-            type: 'falecomigoportal',
-            leadSource: 'Portal',
-            responsible: 'henrique',
-            city: 'Brasília',
-            state: 'DF'
-        },
-        {
-            id: 5,
-            title: 'Atualizar base de Abril',
-            description: 'Revisar cálculos e compartilhar atualização com o cliente.',
-            time: '15:30',
-            date: shiftDays(today, 0),
-            status: 'para-hoje',
-            type: 'calculo',
-            leadSource: 'Site',
-            responsible: 'gabriel',
-            city: 'São Paulo',
-            state: 'SP'
-        },
-        {
-            id: 6,
-            title: 'não consegue trocar a "franja", expliquei que chamamos de franquia e expliquei como funciona',
-            description: 'Solicitar ligação e reforçar condições para o lead.',
-            time: '12:30',
-            date: shiftDays(today, 2),
-            status: 'planejada',
-            type: 'lead',
-            leadSource: 'Chat',
-            responsible: 'jovani',
-            city: 'Fortaleza',
-            state: 'CE'
-        },
-        {
-            id: 7,
-            title: 'Aguardando contato do setor responsável',
-            description: 'Lead de site, acompanhar resposta de Henrique.',
-            time: '14:10',
-            date: shiftDays(today, -1),
-            status: 'concluida',
-            type: 'calculo',
-            leadSource: 'Site',
-            responsible: 'henrique',
-            city: 'Recife',
-            state: 'PE'
-        }
-    ];
+    const listContainer = document.getElementById('activities-list');
+    const emptyState = document.getElementById('activities-empty');
+    const loadingState = document.getElementById('activities-loading');
+    const errorState = document.getElementById('activities-error');
+    const searchInput = document.getElementById('search-input');
+    const responsibleSelect = document.getElementById('responsavel-select');
+    const periodButtons = document.querySelectorAll('.period-button');
+    const applyPeriodButton = document.getElementById('apply-period');
+    const applyFiltersButton = document.getElementById('apply-filters');
+    const typeCheckboxes = document.querySelectorAll('.checkbox-list input[type="checkbox"]');
+    const tabs = document.querySelectorAll('[data-status-filter]');
+    const form = document.getElementById('activity-form');
+    const feedback = document.getElementById('activity-feedback');
+    const newActivityButton = document.getElementById('open-new-activity');
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
     const state = {
         status: 'atrasada',
@@ -112,26 +36,38 @@
         types: new Set(['calculo', 'ligacao', 'falecomigoloja', 'falecomigoportal', 'lead'])
     };
 
-    const listContainer = document.getElementById('activities-list');
-    const emptyState = document.getElementById('activities-empty');
-    const searchInput = document.getElementById('search-input');
-    const responsibleSelect = document.getElementById('responsavel-select');
-    const periodButtons = document.querySelectorAll('.period-button');
-    const applyPeriodButton = document.getElementById('apply-period');
-    const applyFiltersButton = document.getElementById('apply-filters');
-    const typeCheckboxes = document.querySelectorAll('.checkbox-list input[type="checkbox"]');
-    const tabs = document.querySelectorAll('[data-status-filter]');
-
     init();
 
     function init() {
-        attachEvents();
-        updateSummary();
-        updateTabs();
-        renderActivities();
+        hydrateFormDefaults();
+        bindFilters();
+        bindForm();
+        bindHeaderButton();
+        loadActivities();
     }
 
-    function attachEvents() {
+    function hydrateFormDefaults() {
+        const dateInput = document.getElementById('activity-date');
+        const timeInput = document.getElementById('activity-time');
+        if (dateInput) {
+            dateInput.valueAsDate = today;
+        }
+        if (timeInput) {
+            const now = new Date();
+            timeInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+    }
+
+    function bindHeaderButton() {
+        if (!newActivityButton || !form) return;
+        newActivityButton.addEventListener('click', () => {
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const title = document.getElementById('activity-title');
+            title?.focus();
+        });
+    }
+
+    function bindFilters() {
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(item => {
@@ -183,7 +119,119 @@
         });
     }
 
+    function bindForm() {
+        if (!form) return;
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            clearFeedback();
+            const payload = buildPayloadFromForm();
+            if (!payload) {
+                return;
+            }
+
+            setFormSubmitting(true);
+            try {
+                const created = await submitActivity(payload);
+                activities.push(normalizeActivity(created));
+                updateSummary();
+                updateTabs();
+                renderActivities();
+                form.reset();
+                hydrateFormDefaults();
+                showFeedback('Atividade criada e listada com sucesso.', 'success');
+            } catch (error) {
+                showFeedback(error.message || 'Não foi possível salvar a atividade.', 'error');
+            } finally {
+                setFormSubmitting(false);
+            }
+        });
+    }
+
+    function buildPayloadFromForm() {
+        const title = document.getElementById('activity-title')?.value.trim();
+        const responsible = document.getElementById('activity-responsible')?.value.trim();
+        const leadSource = document.getElementById('activity-lead')?.value.trim();
+        const status = document.getElementById('activity-status')?.value;
+        const type = document.getElementById('activity-type')?.value;
+        const dueDate = document.getElementById('activity-date')?.value;
+        const dueTime = document.getElementById('activity-time')?.value;
+
+        if (!title || !responsible || !leadSource || !status || !type || !dueDate || !dueTime) {
+            showFeedback('Preencha os campos obrigatórios: título, responsável, origem, status, tipo, data e hora.', 'error');
+            return null;
+        }
+
+        return {
+            title,
+            responsible,
+            leadSource,
+            status,
+            type,
+            city: document.getElementById('activity-city')?.value.trim() || null,
+            state: document.getElementById('activity-state')?.value.trim() || null,
+            description: document.getElementById('activity-description')?.value.trim() || null,
+            dueDate,
+            dueTime
+        };
+    }
+
+    async function submitActivity(payload) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (csrfHeader && csrfToken) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        const response = await fetch('/api/crm/atividades', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(errorMessage || 'Erro ao salvar atividade.');
+        }
+
+        return response.json();
+    }
+
+    async function loadActivities() {
+        if (loadingState) loadingState.hidden = false;
+        if (errorState) errorState.hidden = true;
+
+        try {
+            const response = await fetch('/api/crm/atividades');
+            if (!response.ok) {
+                throw new Error('Não foi possível carregar as atividades.');
+            }
+
+            const data = await response.json();
+            activities = data.map(normalizeActivity);
+            updateSummary();
+            updateTabs();
+            renderActivities();
+        } catch (error) {
+            console.error(error);
+            if (errorState) errorState.hidden = false;
+        } finally {
+            if (loadingState) loadingState.hidden = true;
+        }
+    }
+
+    function normalizeActivity(activity) {
+        const due = new Date(activity.dueAt);
+        return {
+            ...activity,
+            dueAt: due,
+            time: formatTime(due)
+        };
+    }
+
     function renderActivities() {
+        listContainer.querySelectorAll('.activity-card').forEach(el => el.remove());
+
+        if (loadingState && !loadingState.hidden) return;
+
         const filtered = activities.filter(activity =>
             matchesStatus(activity) &&
             matchesSearch(activity) &&
@@ -191,8 +239,6 @@
             matchesType(activity) &&
             matchesPeriod(activity)
         );
-
-        listContainer.querySelectorAll('.activity-card').forEach(el => el.remove());
 
         if (!filtered.length) {
             emptyState.hidden = false;
@@ -202,7 +248,7 @@
         emptyState.hidden = true;
         const fragment = document.createDocumentFragment();
         filtered
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .sort((a, b) => new Date(a.dueAt) - new Date(b.dueAt))
             .forEach(activity => fragment.appendChild(buildCard(activity)));
 
         listContainer.appendChild(fragment);
@@ -214,20 +260,27 @@
 
         const time = document.createElement('div');
         time.className = 'activity-time';
-        time.innerHTML = `<span class="time-label">${activity.time}</span><span class="time-day">${formatDay(activity.date)}</span>`;
+        time.innerHTML = `<span class="time-label">${activity.time}</span><span class="time-day">${formatDay(activity.dueAt)}</span>`;
 
         const content = document.createElement('div');
         content.className = 'activity-content';
         content.innerHTML = `
             <h3>${activity.title}</h3>
-            <p class="activity-meta">${activity.description}</p>
+            <p class="activity-meta">${activity.description || 'Sem descrição adicional.'}</p>
         `;
 
         const badges = document.createElement('div');
         badges.className = 'activity-badges';
-        badges.appendChild(createBadge('info', activity.leadSource));
-        badges.appendChild(createBadge('warning', `${activity.city} - ${activity.state}`));
-        badges.appendChild(createBadge('danger', `Responsável: ${formatResponsible(activity.responsible)}`));
+        if (activity.leadSource) {
+            badges.appendChild(createBadge('info', activity.leadSource));
+        }
+        if (activity.city || activity.state) {
+            const location = `${activity.city || ''}${activity.city && activity.state ? ' - ' : ''}${activity.state || ''}`;
+            badges.appendChild(createBadge('warning', location || 'Local indefinido'));
+        }
+        if (activity.responsible) {
+            badges.appendChild(createBadge('danger', `Responsável: ${formatResponsible(activity.responsible)}`));
+        }
         content.appendChild(badges);
 
         const actions = document.createElement('div');
@@ -256,7 +309,7 @@
 
     function matchesSearch(activity) {
         if (!state.search) return true;
-        const target = `${activity.title} ${activity.description} ${activity.leadSource}`.toLowerCase();
+        const target = `${activity.title} ${activity.description || ''} ${activity.leadSource || ''}`.toLowerCase();
         return target.includes(state.search);
     }
 
@@ -270,7 +323,7 @@
     }
 
     function matchesPeriod(activity) {
-        const activityDate = new Date(activity.date);
+        const activityDate = new Date(activity.dueAt);
         const startOfToday = startOfDay(today);
         const diffDays = Math.round((activityDate - startOfToday) / (1000 * 60 * 60 * 24));
 
@@ -320,17 +373,15 @@
         }, {});
     }
 
-    function shiftDays(base, days) {
-        const clone = new Date(base);
-        clone.setDate(clone.getDate() + days);
-        return clone;
-    }
-
     function formatDay(date) {
         const d = new Date(date);
         const todayLabel = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(d);
         const dateLabel = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
         return `${todayLabel} | ${dateLabel}`;
+    }
+
+    function formatTime(date) {
+        return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date);
     }
 
     function isSameDay(a, b) {
@@ -372,6 +423,25 @@
             henrique: 'Henrique',
             gabriel: 'Gabriel'
         };
-        return map[value] || 'Equipe';
+        return map[value] || value || 'Equipe';
+    }
+
+    function showFeedback(message, type) {
+        if (!feedback) return;
+        feedback.textContent = message;
+        feedback.className = `form-feedback ${type}`;
+    }
+
+    function clearFeedback() {
+        if (!feedback) return;
+        feedback.textContent = '';
+        feedback.className = 'form-feedback';
+    }
+
+    function setFormSubmitting(isSubmitting) {
+        const submitButton = document.getElementById('submit-activity');
+        if (!submitButton) return;
+        submitButton.disabled = isSubmitting;
+        submitButton.textContent = isSubmitting ? 'Salvando...' : 'Salvar atividade';
     }
 })();

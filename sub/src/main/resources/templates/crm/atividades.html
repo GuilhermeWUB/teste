@@ -14,10 +14,84 @@
             <p class="subtitle">Visualize e acompanhe as atividades da equipe comercial.</p>
         </div>
         <div class="header-actions">
-            <button class="btn-new-activity" type="button">
-                <i class="bi bi-plus-circle"></i> Atividades
+            <button class="btn-new-activity" type="button" id="open-new-activity">
+                <i class="bi bi-plus-circle"></i> Nova atividade
             </button>
         </div>
+    </div>
+
+    <div class="activity-composer" id="activity-composer">
+        <div class="composer-header">
+            <div>
+                <p class="composer-label">Registrar atividade</p>
+                <h2>Adicionar nova atividade</h2>
+                <p class="composer-hint">Preencha título, responsável e prazo. Ao salvar, ela aparece imediatamente na lista.</p>
+            </div>
+            <div class="composer-meta">
+                <span class="pill neutral">UX otimizado</span>
+                <span class="pill accent">Salva em backend</span>
+            </div>
+        </div>
+
+        <form class="activity-form" id="activity-form">
+            <div class="form-grid">
+                <div class="form-control">
+                    <label for="activity-title">Título</label>
+                    <input id="activity-title" name="title" type="text" placeholder="Ex.: Retornar ligação do lead" required maxlength="180">
+                </div>
+                <div class="form-control">
+                    <label for="activity-responsible">Responsável</label>
+                    <input id="activity-responsible" name="responsible" type="text" placeholder="Ex.: Jovani" required>
+                </div>
+                <div class="form-control">
+                    <label for="activity-lead">Origem do lead</label>
+                    <input id="activity-lead" name="leadSource" type="text" placeholder="Ex.: Chat, Portal, Loja" required>
+                </div>
+                <div class="form-control">
+                    <label for="activity-status">Status</label>
+                    <select id="activity-status" name="status" required>
+                        <option value="atrasada">Atrasada</option>
+                        <option value="para-hoje">Para hoje</option>
+                        <option value="planejada">Planejada</option>
+                        <option value="concluida">Concluída</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label for="activity-type">Tipo</label>
+                    <select id="activity-type" name="type" required>
+                        <option value="calculo">Cálculo</option>
+                        <option value="ligacao">Ligação</option>
+                        <option value="falecomigoloja">Fale Comigo - Loja</option>
+                        <option value="falecomigoportal">Fale Comigo - Portal</option>
+                        <option value="lead">Lead vindo do chat</option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label for="activity-date">Data</label>
+                    <input id="activity-date" name="dueDate" type="date" required>
+                </div>
+                <div class="form-control">
+                    <label for="activity-time">Horário</label>
+                    <input id="activity-time" name="dueTime" type="time" required>
+                </div>
+                <div class="form-control">
+                    <label for="activity-city">Cidade</label>
+                    <input id="activity-city" name="city" type="text" placeholder="Ex.: Fortaleza">
+                </div>
+                <div class="form-control">
+                    <label for="activity-state">UF</label>
+                    <input id="activity-state" name="state" type="text" placeholder="Ex.: CE" maxlength="2">
+                </div>
+            </div>
+            <div class="form-control full-width">
+                <label for="activity-description">Descrição</label>
+                <textarea id="activity-description" name="description" rows="2" placeholder="Contexto adicional, próximos passos e expectativas"></textarea>
+            </div>
+            <div class="form-actions">
+                <div class="form-feedback" id="activity-feedback" role="status" aria-live="polite"></div>
+                <button type="submit" class="btn-primary" id="submit-activity">Salvar atividade</button>
+            </div>
+        </form>
     </div>
 
     <div class="activities-summary" role="list">
@@ -60,6 +134,14 @@
 
     <div class="activities-grid">
         <div class="activities-list" id="activities-list" aria-live="polite">
+            <div class="loading-state" id="activities-loading">
+                <div class="spinner"></div>
+                <p>Carregando atividades...</p>
+            </div>
+            <div class="error-state" id="activities-error" hidden>
+                <i class="bi bi-wifi-off"></i>
+                <p>Não foi possível carregar as atividades. Tente novamente em instantes.</p>
+            </div>
             <div class="empty-state" id="activities-empty" hidden>
                 <i class="bi bi-ui-checks-grid"></i>
                 <p>Nenhuma atividade para exibir com os filtros atuais.</p>
