@@ -67,7 +67,7 @@ public class CrmDashboardService {
         // Atividades de hoje
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
-        Long atividadesHoje = activityRepository.findByDataAgendadaBetween(startOfDay, endOfDay).size();
+        Long atividadesHoje = (long) activityRepository.findByDataAgendadaBetween(startOfDay, endOfDay).size();
 
         // Atividades por tipo
         Map<String, Long> atividadesPorTipo = new HashMap<>();
