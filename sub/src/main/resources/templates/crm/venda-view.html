@@ -3,346 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Visualização de Venda</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .gabiii-container {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            background: #e5e7eb;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-
-        .gabiii-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .gabiii-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .gabiii-id {
-            padding: 8px 16px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .gabiii-tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #d1d5db;
-            background: transparent;
-        }
-
-        .gabiii-tab {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: #9ca3af;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .gabiii-tab:hover {
-            color: #6b7280;
-        }
-
-        .gabiii-tab.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
-        }
-
-        .gabiii-content {
-            display: flex;
-            gap: 20px;
-        }
-
-        .gabiii-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .gabiii-tab-content {
-            display: none;
-        }
-
-        .gabiii-tab-content.active {
-            display: block;
-        }
-
-        .gabiii-sidebar {
-            width: 280px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .gabiii-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .gabiii-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .gabiii-card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .gabiii-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .gabiii-btn-primary {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .gabiii-btn-primary:hover {
-            background: #2563eb;
-        }
-
-        .gabiii-btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .gabiii-btn-secondary:hover {
-            background: #d1d5db;
-        }
-
-        .gabiii-btn-success {
-            background: #10b981;
-            color: white;
-            width: 100%;
-        }
-
-        .gabiii-btn-success:hover {
-            background: #059669;
-        }
-
-        .gabiii-form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .gabiii-form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .gabiii-form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .gabiii-form-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .gabiii-form-input,
-        .gabiii-form-select,
-        .gabiii-form-textarea {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-
-        .gabiii-form-input:focus,
-        .gabiii-form-select:focus,
-        .gabiii-form-textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .gabiii-info-value {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #111827;
-            margin-bottom: 10px;
-        }
-
-        .gabiii-highlight-card {
-            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-            border-left: 4px solid #3b82f6;
-        }
-
-        .gabiii-muted {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .gabiii-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #4b5563;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
-        .gabiii-status {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .gabiii-info-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .gabiii-empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .gabiii-empty-icon {
-            font-size: 3rem;
-            color: #9ca3af;
-            margin-bottom: 15px;
-        }
-
-        .gabiii-empty-text {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        .gabiii-section {
-            margin-bottom: 20px;
-        }
-
-        .gabiii-section-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 15px;
-        }
-
-        .gabiii-tag {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 8px;
-            margin-bottom: 8px;
-        }
-
-        .gabiii-tag-blue {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .gabiii-tag-green {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .gabiii-btn-link {
-            background: none;
-            border: none;
-            color: #3b82f6;
-            cursor: pointer;
-            font-size: 0.875rem;
-            padding: 0;
-            text-decoration: underline;
-        }
-
-        .gabiii-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .gabiii-form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .gabiii-tabs-secondary {
-            display: flex;
-            gap: 0;
-            border-bottom: 1px solid #e5e7eb;
-            margin-bottom: 20px;
-        }
-
-        .gabiii-tab-secondary {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: #6b7280;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .gabiii-tab-secondary.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/venda-view.css}">
 </head>
 <body>
     <div class="gabiii-container">
@@ -421,22 +82,22 @@
                     <div class="gabiii-card">
                         <div class="gabiii-section-title">Histórico</div>
                         <div class="gabiii-section">
-                            <div style="display: flex; gap: 10px; align-items: start; margin-bottom: 15px;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #ef4444; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-megaphone" style="color: white;"></i>
+                            <div class="gabiii-history-item">
+                                <div class="gabiii-history-icon gabiii-history-icon-alert">
+                                    <i class="bi bi-megaphone"></i>
                                 </div>
-                                <div style="flex: 1;">
-                                    <p style="font-weight: 500; color: #111827; margin-bottom: 3px;">Marketing Up atribuiu a negociação para VINICIUS RIAN SOARES</p>
-                                    <p style="font-size: 0.75rem; color: #6b7280;">25/11/2025 - 13:27</p>
+                                <div class="gabiii-history-body">
+                                    <p class="gabiii-history-title">Marketing Up atribuiu a negociação para VINICIUS RIAN SOARES</p>
+                                    <p class="gabiii-history-meta">25/11/2025 - 13:27</p>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 10px; align-items: start;">
-                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #9ca3af; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-globe" style="color: white;"></i>
+                            <div class="gabiii-history-item">
+                                <div class="gabiii-history-icon gabiii-history-icon-neutral">
+                                    <i class="bi bi-globe"></i>
                                 </div>
-                                <div style="flex: 1;">
-                                    <p style="font-weight: 500; color: #111827; margin-bottom: 3px;">Negociação criada pelo site</p>
-                                    <p style="font-size: 0.75rem; color: #6b7280;">25/11/2025 - 12:17</p>
+                                <div class="gabiii-history-body">
+                                    <p class="gabiii-history-title">Negociação criada pelo site</p>
+                                    <p class="gabiii-history-meta">25/11/2025 - 12:17</p>
                                 </div>
                             </div>
                         </div>
@@ -523,7 +184,7 @@
                             </div>
                         </div>
 
-                        <div class="gabiii-section-title" style="margin-top: 25px; margin-bottom: 15px;">Contato</div>
+                        <div class="gabiii-section-title gabiii-section-title-spaced">Contato</div>
 
                         <div class="gabiii-form-grid">
                             <div class="gabiii-form-group">
@@ -552,7 +213,7 @@
                             </div>
                         </div>
 
-                        <div class="gabiii-section-title" style="margin-top: 25px; margin-bottom: 15px;">Endereço</div>
+                        <div class="gabiii-section-title gabiii-section-title-spaced">Endereço</div>
 
                         <div class="gabiii-form-grid">
                             <div class="gabiii-form-group">
@@ -612,7 +273,7 @@
                         <div class="gabiii-card-header">
                             <div>
                                 <p class="gabiii-info-label">ACEITE DE COTAÇÃO</p>
-                                <h3 class="gabiii-card-title" style="margin-top: 5px;">Envie o documento ao cliente</h3>
+                                <h3 class="gabiii-card-title gabiii-card-title-spaced">Envie o documento ao cliente</h3>
                                 <p class="gabiii-muted">Use este botão para confirmar o aceite do seu cliente nessa cotação.</p>
                             </div>
                         </div>
@@ -723,7 +384,7 @@
                         <div class="gabiii-empty-state">
                             <i class="bi bi-car-front gabiii-empty-icon"></i>
                             <p class="gabiii-empty-text">Este veículo não foi liberado para vistoria.</p>
-                            <div class="gabiii-actions" style="margin-top: 20px;">
+                            <div class="gabiii-actions gabiii-actions-spaced">
                                 <button class="gabiii-btn gabiii-btn-primary" type="button">Liberar vistoria</button>
                                 <button class="gabiii-btn gabiii-btn-secondary" type="button">Vincular vistoria</button>
                             </div>
@@ -745,7 +406,7 @@
                             </select>
                         </div>
 
-                        <div class="gabiii-tabs-secondary" style="margin-top: 20px;">
+                        <div class="gabiii-tabs-secondary gabiii-tabs-secondary-spaced">
                             <button class="gabiii-tab-secondary active" type="button">
                                 <i class="bi bi-file-earmark-text"></i> Documentos
                             </button>
@@ -784,7 +445,7 @@
                     <div class="gabiii-card-header">
                         <h3 class="gabiii-card-title">Bônus</h3>
                     </div>
-                    <p class="gabiii-info-value" style="color: #10b981;">R$ 0,00</p>
+                    <p class="gabiii-info-value gabiii-info-value-positive">R$ 0,00</p>
                 </div>
 
                 <div class="gabiii-card">
@@ -810,7 +471,7 @@
                     <select class="gabiii-form-select">
                         <option value="">Marketing ON</option>
                     </select>
-                    <select class="gabiii-form-select" style="margin-top: 10px;">
+                    <select class="gabiii-form-select gabiii-form-select-spaced">
                         <option value="">Facebook Ads</option>
                     </select>
                 </div>
