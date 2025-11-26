@@ -15,4 +15,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByNomeContatoContainingIgnoreCase(String nomeContato);
 
     List<Sale> findAllByOrderByCreatedAtDesc();
+
+    List<Sale> findByConcluida(Boolean concluida);
+
+    Long countByConcluida(Boolean concluida);
+
+    Long countByStatus(SaleStatus status);
 }

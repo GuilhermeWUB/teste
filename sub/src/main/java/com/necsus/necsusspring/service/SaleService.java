@@ -49,6 +49,7 @@ public class SaleService {
         sale.setVeiculoTrabalho(request.veiculoTrabalho() != null ? request.veiculoTrabalho() : false);
         sale.setEnviarCotacao(request.enviarCotacao() != null ? request.enviarCotacao() : false);
         sale.setObservacoes(request.observacoes());
+        sale.setValorVenda(request.valorVenda());
         sale.setStatus(SaleStatus.COTACOES_RECEBIDAS);
 
         return saleRepository.save(sale);
@@ -73,6 +74,7 @@ public class SaleService {
         sale.setVeiculoTrabalho(request.veiculoTrabalho() != null ? request.veiculoTrabalho() : false);
         sale.setEnviarCotacao(request.enviarCotacao() != null ? request.enviarCotacao() : false);
         sale.setObservacoes(request.observacoes());
+        sale.setValorVenda(request.valorVenda());
 
         return saleRepository.save(sale);
     }
@@ -90,5 +92,29 @@ public class SaleService {
             throw new RuntimeException("Venda nao encontrada: " + id);
         }
         saleRepository.deleteById(id);
+    }
+
+    public Sale completeSale(Long id, Double valorVenda) {
+        Sale sale = saleRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Venda nao encontrada: " + id));
+
+        sale.setConcluida(true);
+        sale.setValorVenda(valorVenda);
+        sale.setDataConclusao(java.time.LocalDateTime.now());
+        sale.setStatus(SaleStatus.FILIACAO_CONCRETIZADAS);
+
+        return saleRepository.save(sale);
+    }
+
+    public List<Sale> findConcluidas() {
+        return saleRepository.findByConcluida(true);
+    }
+
+    public Long countConcluidas() {
+        return saleRepository.countByConcluida(true);
+    }
+
+    public Long countByStatus(SaleStatus status) {
+        return saleRepository.countByStatus(status);
     }
 }
