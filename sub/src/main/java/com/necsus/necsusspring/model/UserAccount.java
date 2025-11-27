@@ -40,6 +40,9 @@ public class UserAccount {
     @Column(nullable = false)
     private String role = RoleType.USER.getCode();
 
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @Column(name = "created_at", nullable = false)
     @Getter(AccessLevel.NONE)  // Desabilita o getter gerado pelo Lombok
     @Setter(AccessLevel.NONE)  // Desabilita o setter gerado pelo Lombok
@@ -68,13 +71,14 @@ public class UserAccount {
      * Substitui o @AllArgsConstructor do Lombok para ter controle total
      */
     public UserAccount(Long id, String fullName, String username, String email,
-                       String password, String role, LocalDateTime createdAt) {
+                       String password, String role, Boolean active, LocalDateTime createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.active = (active != null) ? active : true;
         // Usa o setter personalizado para garantir que não seja null
         this.setCreatedAt(createdAt);
     }
@@ -86,6 +90,9 @@ public class UserAccount {
         }
         if (role == null) {
             role = RoleType.USER.getCode();
+        }
+        if (active == null) {
+            active = true;
         }
     }
 
