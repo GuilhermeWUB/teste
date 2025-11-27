@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Contatos - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-contatos.css}">
+</head>
+<body>
+<section layout:fragment="content" class="crm-contacts">
+    <div class="page-header">
+        <div class="title-group">
+            <div class="title-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <div>
+                <p class="eyebrow">CRM / Contatos</p>
+                <h1>Base de Contatos</h1>
+                <p class="subtitle">Visualize e gerencie seus leads, clientes e responsáveis em um só lugar.</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn ghost" type="button">
+                <i class="bi bi-upload"></i>
+                Importar
+            </button>
+            <button class="btn ghost" type="button">
+                <i class="bi bi-download"></i>
+                Exportar
+            </button>
+            <button class="btn primary" type="button">
+                <i class="bi bi-plus-circle"></i>
+                Novo contato
+            </button>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-icon blue">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+            <div>
+                <p class="summary-label">Contatos ativos</p>
+                <p class="summary-value" id="summaryTotal">0</p>
+                <p class="summary-note">+12% vs último mês</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon green">
+                <i class="bi bi-activity"></i>
+            </div>
+            <div>
+                <p class="summary-label">Em negociação</p>
+                <p class="summary-value" id="summaryDeals">0</p>
+                <p class="summary-note">leads com funil em aberto</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon purple">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+            <div>
+                <p class="summary-label">Atividades pendentes</p>
+                <p class="summary-value" id="summaryPending">0</p>
+                <p class="summary-note">tarefas e follow-ups</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon orange">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <p class="summary-label">Clientes</p>
+                <p class="summary-value" id="summaryClients">0</p>
+                <p class="summary-note">ativos e recorrentes</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-card">
+        <div class="filter-field search">
+            <label for="searchInput"><i class="bi bi-search"></i> Buscar contato</label>
+            <input id="searchInput" type="text" placeholder="Nome, e-mail, telefone ou responsável">
+        </div>
+        <div class="filter-field">
+            <label for="responsavelFilter">Responsável</label>
+            <select id="responsavelFilter">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="filter-field">
+            <label for="statusFilter">Status</label>
+            <select id="statusFilter">
+                <option value="">Todos</option>
+                <option value="Lead">Lead</option>
+                <option value="Cliente">Cliente</option>
+                <option value="Prospect">Prospect</option>
+                <option value="Inativo">Inativo</option>
+                <option value="Bloqueado">Bloqueado</option>
+            </select>
+        </div>
+        <div class="filter-actions">
+            <button class="btn ghost" type="button" id="clearFilters">Limpar</button>
+            <button class="btn primary" type="button" id="applyFilters">
+                <i class="bi bi-funnel"></i>
+                Aplicar filtros
+            </button>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-card__header">
+            <div>
+                <p class="eyebrow">Contatos</p>
+                <h2><span id="tableCount">0</span> contatos listados</h2>
+            </div>
+            <div class="table-card__actions">
+                <button class="btn ghost" type="button">
+                    <i class="bi bi-columns-gap"></i>
+                    Ajustar colunas
+                </button>
+                <button class="btn ghost" type="button">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="contacts-table">
+                <thead>
+                <tr>
+                    <th class="check-col"><input type="checkbox" id="checkAll"></th>
+                    <th>Contato</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Negociações</th>
+                    <th>Responsável</th>
+                    <th>Status</th>
+                    <th>Última atividade</th>
+                </tr>
+                </thead>
+                <tbody id="contactsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <p class="footnote">Dados demonstrativos para visualização do layout. Integrações poderão ser conectadas ao CRM existente.</p>
+            <div class="legend">
+                <span class="badge badge-lead">Lead</span>
+                <span class="badge badge-client">Cliente</span>
+                <span class="badge badge-prospect">Prospect</span>
+                <span class="badge badge-inactive">Inativo</span>
+                <span class="badge badge-blocked">Bloqueado</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function() {
+        const contacts = [
+            { nome: "Jhenifer Gonçalves Bueno", telefone: "(41) 99999-9999", email: "jhenifer@exemplo.com", negociacoes: 3, responsavel: "Jhenifer Gonçalves Bueno", status: "Lead", ultimaAtividade: "Hoje às 10:20", atividadesPendentes: 2 },
+            { nome: "Rosiane Ribeiro Santos Almeida", telefone: "(41) 90000-1000", email: "rosiane@empresa.com", negociacoes: 1, responsavel: "Eduardo Bernhert", status: "Prospect", ultimaAtividade: "Ontem", atividadesPendentes: 1 },
+            { nome: "Eduardo Ben Hur", telefone: "(41) 98888-7777", email: "eduardo@cliente.com", negociacoes: 5, responsavel: "Eduardo Bernhert", status: "Cliente", ultimaAtividade: "Há 3 dias", atividadesPendentes: 0 },
+            { nome: "Rafaela Martins", telefone: "(41) 97777-8888", email: "rafaela@lead.com", negociacoes: 0, responsavel: "Aline Costa", status: "Lead", ultimaAtividade: "Há 5 dias", atividadesPendentes: 3 },
+            { nome: "Carlos Menezes", telefone: "(11) 91111-2222", email: "carlos@prospect.com", negociacoes: 2, responsavel: "Aline Costa", status: "Prospect", ultimaAtividade: "Há 1 semana", atividadesPendentes: 1 },
+            { nome: "João Pedro Lemos", telefone: "(21) 93333-2222", email: "jp.lemos@cliente.com", negociacoes: 4, responsavel: "Jhenifer Gonçalves Bueno", status: "Cliente", ultimaAtividade: "Há 2 semanas", atividadesPendentes: 0 },
+            { nome: "Fernanda Lopes", telefone: "(51) 94444-5555", email: "fernanda@cliente.com", negociacoes: 1, responsavel: "Rosiane Almeida", status: "Cliente", ultimaAtividade: "Há 4 dias", atividadesPendentes: 1 },
+            { nome: "Marcos Vinícius", telefone: "(61) 95555-6666", email: "marcos@lead.com", negociacoes: 0, responsavel: "Rosiane Almeida", status: "Lead", ultimaAtividade: "Há 2 horas", atividadesPendentes: 2 },
+            { nome: "Ana Beatriz", telefone: "(71) 96666-7777", email: "ana@prospect.com", negociacoes: 1, responsavel: "Jhenifer Gonçalves Bueno", status: "Prospect", ultimaAtividade: "Há 8 horas", atividadesPendentes: 1 },
+            { nome: "Pedro Henrique", telefone: "(31) 97777-8888", email: "pedro@cliente.com", negociacoes: 6, responsavel: "Eduardo Bernhert", status: "Cliente", ultimaAtividade: "Há 1 mês", atividadesPendentes: 0 },
+            { nome: "Camila Duarte", telefone: "(41) 98888-9999", email: "camila@lead.com", negociacoes: 1, responsavel: "Aline Costa", status: "Lead", ultimaAtividade: "Há 12 horas", atividadesPendentes: 2 },
+            { nome: "Bruno Silveira", telefone: "(47) 91234-5678", email: "bruno@inativo.com", negociacoes: 0, responsavel: "Rosiane Almeida", status: "Inativo", ultimaAtividade: "Há 3 meses", atividadesPendentes: 0 },
+            { nome: "Tatiana Freitas", telefone: "(48) 90909-8080", email: "tatiana@cliente.com", negociacoes: 2, responsavel: "Eduardo Bernhert", status: "Cliente", ultimaAtividade: "Hoje às 09:00", atividadesPendentes: 1 },
+            { nome: "Gustavo Azevedo", telefone: "(85) 98765-4321", email: "gustavo@lead.com", negociacoes: 0, responsavel: "Aline Costa", status: "Lead", ultimaAtividade: "Há 6 dias", atividadesPendentes: 1 },
+            { nome: "Helena Prado", telefone: "(62) 99876-5432", email: "helena@prospect.com", negociacoes: 3, responsavel: "Jhenifer Gonçalves Bueno", status: "Prospect", ultimaAtividade: "Há 2 dias", atividadesPendentes: 1 },
+            { nome: "Luciana Ramos", telefone: "(41) 97770-5555", email: "luciana@cliente.com", negociacoes: 2, responsavel: "Rosiane Almeida", status: "Cliente", ultimaAtividade: "Há 1 dia", atividadesPendentes: 0 },
+            { nome: "André Teixeira", telefone: "(21) 93456-7890", email: "andre@bloqueado.com", negociacoes: 0, responsavel: "Aline Costa", status: "Bloqueado", ultimaAtividade: "Há 5 meses", atividadesPendentes: 0 }
+        ];
+
+        const tableBody = document.getElementById('contactsTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const responsavelFilter = document.getElementById('responsavelFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const tableCount = document.getElementById('tableCount');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const summaryDeals = document.getElementById('summaryDeals');
+        const summaryPending = document.getElementById('summaryPending');
+        const summaryClients = document.getElementById('summaryClients');
+        const checkAll = document.getElementById('checkAll');
+
+        function formatStatusBadge(status) {
+            const map = {
+                'Lead': 'badge-lead',
+                'Cliente': 'badge-client',
+                'Prospect': 'badge-prospect',
+                'Inativo': 'badge-inactive',
+                'Bloqueado': 'badge-blocked'
+            };
+            const badgeClass = map[status] || 'badge-lead';
+            return `<span class="badge ${badgeClass}">${status}</span>`;
+        }
+
+        function renderContacts(list) {
+            tableBody.innerHTML = '';
+            list.forEach((contato, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="check-col"><input type="checkbox" aria-label="Selecionar ${contato.nome}"></td>
+                    <td>
+                        <div class="contact-name">${contato.nome}</div>
+                        <small class="muted">Cadastro #${String(index + 1).padStart(4, '0')}</small>
+                    </td>
+                    <td>${contato.telefone}</td>
+                    <td><a href="mailto:${contato.email}" class="link">${contato.email}</a></td>
+                    <td><span class="deal-chip"><i class="bi bi-kanban"></i> ${contato.negociacoes}</span></td>
+                    <td>${contato.responsavel}</td>
+                    <td>${formatStatusBadge(contato.status)}</td>
+                    <td>
+                        <div class="activity-text">${contato.ultimaAtividade}</div>
+                        ${contato.atividadesPendentes > 0 ? `<span class="pending">${contato.atividadesPendentes} pendente(s)</span>` : '<span class="done">Sem pendências</span>'}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            tableCount.textContent = list.length;
+        }
+
+        function applyFilters() {
+            const search = searchInput.value.toLowerCase();
+            const responsavel = responsavelFilter.value;
+            const status = statusFilter.value;
+
+            const filtered = contacts.filter(contato => {
+                const matchesSearch = !search ||
+                    contato.nome.toLowerCase().includes(search) ||
+                    contato.email.toLowerCase().includes(search) ||
+                    contato.telefone.toLowerCase().includes(search) ||
+                    contato.responsavel.toLowerCase().includes(search);
+
+                const matchesResponsavel = !responsavel || contato.responsavel === responsavel;
+                const matchesStatus = !status || contato.status === status;
+
+                return matchesSearch && matchesResponsavel && matchesStatus;
+            });
+
+            renderContacts(filtered);
+            updateSummary(filtered);
+        }
+
+        function updateSummary(list) {
+            const total = list.length;
+            const deals = list.filter(c => c.negociacoes > 0).length;
+            const pending = list.reduce((acc, c) => acc + (c.atividadesPendentes || 0), 0);
+            const clients = list.filter(c => c.status === 'Cliente').length;
+
+            summaryTotal.textContent = total;
+            summaryDeals.textContent = deals;
+            summaryPending.textContent = pending;
+            summaryClients.textContent = clients;
+        }
+
+        function populateResponsavelFilter() {
+            const unique = Array.from(new Set(contacts.map(c => c.responsavel)));
+            unique.sort();
+            unique.forEach(nome => {
+                const opt = document.createElement('option');
+                opt.value = nome;
+                opt.textContent = nome;
+                responsavelFilter.appendChild(opt);
+            });
+        }
+
+        document.getElementById('applyFilters').addEventListener('click', applyFilters);
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            searchInput.value = '';
+            responsavelFilter.value = '';
+            statusFilter.value = '';
+            applyFilters();
+        });
+        searchInput.addEventListener('keyup', applyFilters);
+        responsavelFilter.addEventListener('change', applyFilters);
+        statusFilter.addEventListener('change', applyFilters);
+        checkAll.addEventListener('change', (event) => {
+            const checkboxes = tableBody.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = event.target.checked);
+        });
+
+        populateResponsavelFilter();
+        renderContacts(contacts);
+        updateSummary(contacts);
+    })();
+</script>
+</body>
+</html>
