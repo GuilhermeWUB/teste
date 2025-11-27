@@ -780,11 +780,13 @@
                     <p class="gabiii-info-value">Nenhum</p>
                 </div>
 
-                <div class="gabiii-card">
+                <div class="gabiii-card" th:data-venda-id="${vendaId}" th:data-valor-venda="${valorVenda}" id="bonus-card">
                     <div class="gabiii-card-header">
                         <h3 class="gabiii-card-title">Bônus</h3>
                     </div>
-                    <p class="gabiii-info-value" style="color: #10b981;">R$ 0,00</p>
+                    <p class="gabiii-info-value" style="color: #10b981;" id="bonus-valor">
+                        R$ <span th:text="${#numbers.formatDecimal(valorVenda, 1, 'DEFAULT', 2, 'DEFAULT')}">0,00</span>
+                    </p>
 
                     <button class="gabiii-btn" type="button" onclick="testarVendaConcluida()"
                             style="background: #ff9800; color: white; width: 100%; margin-top: 15px;">
@@ -847,7 +849,26 @@
 
         // Função de teste: cria e conclui uma venda automaticamente
         async function testarVendaConcluida() {
-            if (!confirm('Deseja criar uma venda de teste no valor de R$ 1.000,00?')) {
+            // Pega o card de bônus
+            const bonusCard = document.getElementById('bonus-card');
+            if (!bonusCard) {
+                alert('❌ Erro: Card de bônus não encontrado');
+                return;
+            }
+
+            // Pega o vendaId e valorVenda dos data attributes
+            const vendaId = bonusCard.getAttribute('data-venda-id');
+            const valorVenda = parseFloat(bonusCard.getAttribute('data-valor-venda')) || 0;
+
+            if (!vendaId) {
+                alert('❌ Erro: ID da venda não encontrado');
+                return;
+            }
+
+            // Se o valor for zero, usa um valor padrão
+            const valorFinal = valorVenda > 0 ? valorVenda : 1000.00;
+
+            if (!confirm(`Deseja criar uma venda de teste no valor de R$ ${valorFinal.toFixed(2).replace('.', ',')}?`)) {
                 return;
             }
 
@@ -858,7 +879,7 @@
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     }),
-                    body: JSON.stringify({ valorVenda: 1000.00 })
+                    body: JSON.stringify({ valorVenda: valorFinal })
                 });
 
                 if (!response.ok) {
@@ -866,7 +887,7 @@
                 }
 
                 const data = await response.json();
-                alert(`✅ ${data.message}\n\nValor adicionado: R$ ${data.valorAdicionado.toFixed(2)}\nNovo saldo: R$ ${data.novoSaldo.toFixed(2)}`);
+                alert(`✅ ${data.message}\n\nValor adicionado: R$ ${data.valorAdicionado.toFixed(2).replace('.', ',')}\nNovo saldo: R$ ${data.novoSaldo.toFixed(2).replace('.', ',')}`);
 
                 // Recarrega o kanban se estiver disponível
                 if (window.vendasBoard && window.vendasBoard.loadBoard) {
