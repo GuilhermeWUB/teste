@@ -85,7 +85,8 @@ public class CrmController {
 
     @GetMapping(value = "/relatorios", produces = MediaType.TEXT_HTML_VALUE)
     public String relatorios(Model model) {
-        return buildComingSoonPage(model, "Relatórios");
+        model.addAttribute("pageTitle", "Relatórios - CRM");
+        return "crm/relatorios";
     }
 
     @GetMapping(value = "/financeiro", produces = MediaType.TEXT_HTML_VALUE)

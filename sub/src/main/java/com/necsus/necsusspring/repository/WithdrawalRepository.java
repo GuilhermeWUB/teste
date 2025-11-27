@@ -21,6 +21,8 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
 
     Long countByUserIdAndStatus(Long userId, String status);
 
+    Long countByStatus(String status);
+
     @Query("SELECT COALESCE(SUM(w.amount), 0) FROM Withdrawal w WHERE w.userId = ?1 AND w.status IN ('PENDENTE', 'APROVADO')")
     BigDecimal sumPendingAndApprovedByUserId(Long userId);
 }
