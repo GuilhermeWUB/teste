@@ -3,6 +3,7 @@
 
     const API_BASE = '/crm/api/vendas';
     const STATUSES = ['COTACOES_RECEBIDAS', 'EM_NEGOCIACAO', 'VISTORIAS', 'LIBERADAS_PARA_CADASTRO', 'FILIACAO_CONCRETIZADAS'];
+    const FINAL_STATUS = 'FILIACAO_CONCRETIZADAS';
 
     const state = {
         cards: [],
@@ -251,7 +252,7 @@
         const article = document.createElement('article');
         article.className = 'vendas-kanban-card';
         article.dataset.id = card.id;
-        article.setAttribute('draggable', 'true');
+        article.setAttribute('draggable', card.status === FINAL_STATUS ? 'false' : 'true');
 
         // Topo do card
         const top = document.createElement('div');
@@ -359,7 +360,17 @@
 
     function enableDragAndDrop() {
         document.querySelectorAll('.vendas-kanban-card').forEach(card => {
-            card.setAttribute('draggable', 'true');
+            const columnStatus = card.closest('.vendas-kanban-column, .kanban-column')?.dataset.status;
+            const locked = columnStatus === FINAL_STATUS;
+
+            card.setAttribute('draggable', locked ? 'false' : 'true');
+            card.removeEventListener('dragstart', handleDragStart);
+            card.removeEventListener('dragend', handleDragEnd);
+
+            if (locked) {
+                return;
+            }
+
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragend', handleDragEnd);
         });
@@ -423,6 +434,16 @@
         }
     }
 
+    function updateCardStatus(cardId, targetStatus) {
+        const card = state.cards.find(item => String(item.id) === String(cardId));
+        if (!card || !STATUSES.includes(targetStatus)) {
+            return;
+        }
+
+        card.status = targetStatus;
+        render();
+    }
+
     async function handleDrop(event) {
         event.preventDefault();
 
@@ -451,6 +472,11 @@
 
         const previousStatus = card.status;
         if (previousStatus === targetStatus) {
+            return;
+        }
+
+        const isLocked = previousStatus === FINAL_STATUS || dragState.originStatus === FINAL_STATUS;
+        if (isLocked && targetStatus !== FINAL_STATUS) {
             return;
         }
 
@@ -1118,7 +1144,9 @@
             closeCreateModal: closeCreateModal,
             closeModal: closeModal,
             openEditModal: openEditModal,
-            deleteVenda: deleteVenda
+            deleteVenda: deleteVenda,
+            loadBoard: loadBoard,
+            updateCardStatus: updateCardStatus
         };
 
         console.log('[VENDAS-KANBAN] window.vendasBoard criado:', window.vendasBoard);
