@@ -423,6 +423,16 @@
         }
     }
 
+    function updateCardStatus(cardId, targetStatus) {
+        const card = state.cards.find(item => String(item.id) === String(cardId));
+        if (!card || !STATUSES.includes(targetStatus)) {
+            return;
+        }
+
+        card.status = targetStatus;
+        render();
+    }
+
     async function handleDrop(event) {
         event.preventDefault();
 
@@ -1118,7 +1128,9 @@
             closeCreateModal: closeCreateModal,
             closeModal: closeModal,
             openEditModal: openEditModal,
-            deleteVenda: deleteVenda
+            deleteVenda: deleteVenda,
+            loadBoard: loadBoard,
+            updateCardStatus: updateCardStatus
         };
 
         console.log('[VENDAS-KANBAN] window.vendasBoard criado:', window.vendasBoard);
