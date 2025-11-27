@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Minha Empresa - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/minha-empresa.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="minha-empresa-container">
+        <!-- Sidebar -->
+        <aside class="empresa-sidebar">
+            <h3>Minha Empresa</h3>
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-section="usuarios">
+                    <i class="bi bi-people"></i>
+                    <span>Usuários</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="empresa-content">
+            <!-- Usuários Section -->
+            <div class="content-section" id="section-usuarios">
+                <!-- Header -->
+                <div class="section-header">
+                    <div class="header-icon-text">
+                        <div class="icon-group">
+                            <i class="bi bi-person-circle icon-main"></i>
+                            <div class="icon-sub-group">
+                                <i class="bi bi-person icon-sub"></i>
+                                <i class="bi bi-person icon-sub"></i>
+                                <i class="bi bi-person icon-sub"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h1>Usuários</h1>
+                            <p class="section-description">
+                                Aqui você deve cadastrar todos usuários do sistema, sejam eles consultores ou gestores.
+                                Todo usuário deve estar vinculado a pelo menos 1 cooperativa, ter o seu modelo de comissionamento e permissões definidas.
+                                Após o cadastro o novo usuário receberá um email para definir sua senha.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="btn-add-user" onclick="openCreateModal()">
+                        <i class="bi bi-plus-circle"></i>
+                        Adicionar usuário
+                    </button>
+                </div>
+
+                <p class="action-hint">Clique no botão abaixo para adicionar um usuário.</p>
+
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card active">
+                        <div class="stat-icon">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Usuários ativos</p>
+                            <h2 class="stat-value" id="activeCount">0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card blocked">
+                        <div class="stat-icon">
+                            <i class="bi bi-person-x"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Usuários bloqueados</p>
+                            <h2 class="stat-value" id="blockedCount">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-section">
+                    <p class="filters-title">Filtre os usuários por regional, nome e bloqueados.</p>
+
+                    <div class="filters-grid">
+                        <div class="filter-item">
+                            <label>Status:</label>
+                            <select id="filterStatus" onchange="applyFilters()">
+                                <option value="">Todos</option>
+                                <option value="true">Ativos</option>
+                                <option value="false">Bloqueados</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label>Buscar:</label>
+                            <input type="text" id="searchInput" placeholder="Localizar por nome" onkeyup="applyFilters()">
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="applyFilters()">
+                                <i class="bi bi-funnel"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nome Completo</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Criado em</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr class="loading-row">
+                                <td colspan="6" class="text-center">
+                                    <div class="spinner"></div>
+                                    Carregando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Criar/Editar Usuário -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Adicionar Usuário</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+
+                <div class="form-group">
+                    <label for="fullName">Nome Completo *</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha <span class="password-hint">(deixe em branco para não alterar)</span></label>
+                    <input type="password" id="password">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle"></i>
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmar Bloqueio/Desbloqueio -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="confirmTitle">Confirmar</h2>
+                <button class="btn-close" onclick="closeConfirmModal()">&times;</button>
+            </div>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+                <button type="button" class="btn-confirm" id="confirmButton">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script th:src="@{/js/minha-empresa.js}"></script>
+</body>
+</html>

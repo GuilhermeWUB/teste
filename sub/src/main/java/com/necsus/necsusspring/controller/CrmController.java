@@ -74,7 +74,8 @@ public class CrmController {
 
     @GetMapping(value = "/minha-empresa", produces = MediaType.TEXT_HTML_VALUE)
     public String minhaEmpresa(Model model) {
-        return buildComingSoonPage(model, "Minha Empresa");
+        model.addAttribute("pageTitle", "Minha Empresa - CRM");
+        return "crm/minha-empresa";
     }
 
     @GetMapping(value = "/ferramentas", produces = MediaType.TEXT_HTML_VALUE)
