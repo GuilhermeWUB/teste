@@ -1,5 +1,7 @@
 package com.necsus.necsusspring.controller;
 
+import com.necsus.necsusspring.model.Sale;
+import com.necsus.necsusspring.service.SaleService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -7,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Optional;
 
 /**
  * Controller para gerenciar as páginas do módulo CRM
@@ -16,6 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/crm")
 @PreAuthorize("hasAnyRole('ADMIN', 'COMERCIAL', 'CLOSERS', 'DIRETORIA', 'GERENTE', 'GESTOR')")
 public class CrmController {
+
+    private final SaleService saleService;
+
+    public CrmController(SaleService saleService) {
+        this.saleService = saleService;
+    }
 
     /**
      * Dashboard principal do módulo CRM
@@ -42,7 +52,18 @@ public class CrmController {
      */
     @GetMapping(value = "/vendas/{id}/view", produces = MediaType.TEXT_HTML_VALUE)
     public String viewVenda(@PathVariable Long id, Model model) {
+        Optional<Sale> saleOpt = saleService.findById(id);
+
+        if (saleOpt.isEmpty()) {
+            model.addAttribute("error", "Venda não encontrada");
+            return "crm/venda-view";
+        }
+
+        Sale sale = saleOpt.get();
         model.addAttribute("vendaId", id);
+        model.addAttribute("venda", sale);
+        model.addAttribute("valorVenda", sale.getValorVenda() != null ? sale.getValorVenda() : 0.0);
+
         return "crm/venda-view";
     }
 
