@@ -78,6 +78,9 @@ async function loadDashboardData() {
         // Load user balance
         await loadUserBalance();
 
+        // Load user info and withdrawal balance
+        await loadUserInfo();
+
         // Hide loading, show content
         loadingState.style.display = 'none';
         dashboardContent.style.display = 'block';
@@ -226,9 +229,22 @@ async function loadUserInfo() {
             if (saldoAReceberElement) {
                 saldoAReceberElement.textContent = formatCurrency(balanceData.saldoBloqueado);
             }
+        } else {
+            console.warn('Withdrawal balance endpoint not available, using default values');
+            // Set default values if endpoint is not available
+            const saldoDisponivelElement = document.getElementById('saldoDisponivel');
+            const saldoAReceberElement = document.getElementById('saldoAReceber');
+
+            if (saldoDisponivelElement) {
+                saldoDisponivelElement.textContent = 'R$ 0,00';
+            }
+            if (saldoAReceberElement) {
+                saldoAReceberElement.textContent = 'R$ 0,00';
+            }
         }
     } catch (error) {
         console.error('Error loading user info:', error);
+        // Don't throw - allow dashboard to continue loading
     }
 }
 
@@ -288,13 +304,6 @@ async function testAddBalance() {
         console.error('Error adding test balance:', error);
         alert('❌ Erro ao adicionar saldo de teste');
     }
-}
-
-// Update loadDashboardData to include user info
-const originalLoadDashboardData = loadDashboardData;
-async function loadDashboardData() {
-    await originalLoadDashboardData();
-    await loadUserInfo();
 }
 
 // Export for inline onclick handlers
