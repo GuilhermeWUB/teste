@@ -16,6 +16,10 @@
                     <i class="bi bi-people"></i>
                     <span>Usuários</span>
                 </a>
+                <a href="#" class="menu-item" data-section="regionais">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>Regionais</span>
+                </a>
             </nav>
         </aside>
 
@@ -125,6 +129,105 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Regionais Section -->
+            <div class="content-section" id="section-regionais" style="display: none;">
+                <!-- Header -->
+                <div class="section-header">
+                    <div class="header-icon-text">
+                        <div class="icon-group">
+                            <i class="bi bi-geo-alt-fill icon-main"></i>
+                        </div>
+                        <div>
+                            <h1>Regionais</h1>
+                            <p class="section-description">
+                                Gerencie as regionais da sua empresa. Cada regional representa uma área geográfica de atuação.
+                                As regionais podem ser associadas a usuários e cooperativas para melhor organização.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="btn-add-user" onclick="openCreateRegionalModal()">
+                        <i class="bi bi-plus-circle"></i>
+                        Adicionar regional
+                    </button>
+                </div>
+
+                <p class="action-hint">Clique no botão acima para adicionar uma regional.</p>
+
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card active">
+                        <div class="stat-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Regionais ativas</p>
+                            <h2 class="stat-value" id="regionaisActiveCount">0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card blocked">
+                        <div class="stat-icon">
+                            <i class="bi bi-geo"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">Regionais inativas</p>
+                            <h2 class="stat-value" id="regionaisInactiveCount">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-section">
+                    <p class="filters-title">Filtre as regionais por status e busque por nome ou código.</p>
+
+                    <div class="filters-grid">
+                        <div class="filter-item">
+                            <label>Status:</label>
+                            <select id="filterRegionalStatus" onchange="applyRegionalFilters()">
+                                <option value="">Todos</option>
+                                <option value="true">Ativas</option>
+                                <option value="false">Inativas</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label>Buscar:</label>
+                            <input type="text" id="searchRegionalInput" placeholder="Localizar por nome ou código" onkeyup="applyRegionalFilters()">
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="applyRegionalFilters()">
+                                <i class="bi bi-funnel"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Código</th>
+                                <th>Descrição</th>
+                                <th>Criado em</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="regionaisTableBody">
+                            <tr class="loading-row">
+                                <td colspan="6" class="text-center">
+                                    <div class="spinner"></div>
+                                    Carregando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -181,6 +284,57 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
                 <button type="button" class="btn-confirm" id="confirmButton">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Criar/Editar Regional -->
+    <div id="regionalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="regionalModalTitle">Adicionar Regional</h2>
+                <button class="btn-close" onclick="closeRegionalModal()">&times;</button>
+            </div>
+            <form id="regionalForm">
+                <input type="hidden" id="regionalId">
+
+                <div class="form-group">
+                    <label for="regionalName">Nome *</label>
+                    <input type="text" id="regionalName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regionalCode">Código *</label>
+                    <input type="text" id="regionalCode" required placeholder="Ex: SUL, SUDESTE, NORTE">
+                </div>
+
+                <div class="form-group">
+                    <label for="regionalDescription">Descrição</label>
+                    <textarea id="regionalDescription" rows="3" placeholder="Descrição da regional (opcional)"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeRegionalModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-check-circle"></i>
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmar Ativação/Desativação Regional -->
+    <div id="confirmRegionalModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="confirmRegionalTitle">Confirmar</h2>
+                <button class="btn-close" onclick="closeConfirmRegionalModal()">&times;</button>
+            </div>
+            <p id="confirmRegionalMessage"></p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeConfirmRegionalModal()">Cancelar</button>
+                <button type="button" class="btn-confirm" id="confirmRegionalButton">Confirmar</button>
             </div>
         </div>
     </div>

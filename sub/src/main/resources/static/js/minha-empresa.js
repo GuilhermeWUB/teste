@@ -2,27 +2,22 @@
     'use strict';
 
     // ========== CONSTANTES ==========
-    const API_BASE = '/crm/api/usuarios';
+    const API_USUARIOS = '/crm/api/usuarios';
+    const API_REGIONAIS = '/crm/api/regionais';
 
     // ========== STATE ==========
     const state = {
         users: [],
         filteredUsers: [],
-        isEditing: false,
-        editingUserId: null
-    };
+        isEditingUser: false,
+        editingUserId: null,
 
-    // ========== SELETORES DOM ==========
-    const selectors = {
-        usersTableBody: () => document.getElementById('usersTableBody'),
-        activeCount: () => document.getElementById('activeCount'),
-        blockedCount: () => document.getElementById('blockedCount'),
-        filterStatus: () => document.getElementById('filterStatus'),
-        searchInput: () => document.getElementById('searchInput'),
-        userModal: () => document.getElementById('userModal'),
-        confirmModal: () => document.getElementById('confirmModal'),
-        userForm: () => document.getElementById('userForm'),
-        modalTitle: () => document.getElementById('modalTitle')
+        regionais: [],
+        filteredRegionais: [],
+        isEditingRegional: false,
+        editingRegionalId: null,
+
+        currentSection: 'usuarios'
     };
 
     // ========== CSRF TOKEN ==========
@@ -42,36 +37,72 @@
 
     // ========== INICIALIZAÇÃO ==========
     function init() {
-        console.log('Inicializando Minha Empresa - Usuários');
+        console.log('Inicializando Minha Empresa');
         bindEvents();
         loadUsers();
         loadStats();
+        loadRegionais();
+        loadRegionaisStats();
     }
 
     function bindEvents() {
-        const form = selectors.userForm();
-        if (form) {
-            form.addEventListener('submit', handleFormSubmit);
+        // Navegação do menu
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', handleMenuClick);
+        });
+
+        // Forms
+        const userForm = document.getElementById('userForm');
+        if (userForm) {
+            userForm.addEventListener('submit', handleUserFormSubmit);
         }
 
-        // Fechar modal ao clicar fora
-        window.addEventListener('click', (e) => {
-            const userModal = selectors.userModal();
-            const confirmModal = selectors.confirmModal();
+        const regionalForm = document.getElementById('regionalForm');
+        if (regionalForm) {
+            regionalForm.addEventListener('submit', handleRegionalFormSubmit);
+        }
 
-            if (e.target === userModal) {
-                closeModal();
-            }
-            if (e.target === confirmModal) {
-                closeConfirmModal();
-            }
+        // Fechar modais ao clicar fora
+        window.addEventListener('click', (e) => {
+            const userModal = document.getElementById('userModal');
+            const confirmModal = document.getElementById('confirmModal');
+            const regionalModal = document.getElementById('regionalModal');
+            const confirmRegionalModal = document.getElementById('confirmRegionalModal');
+
+            if (e.target === userModal) closeModal();
+            if (e.target === confirmModal) closeConfirmModal();
+            if (e.target === regionalModal) closeRegionalModal();
+            if (e.target === confirmRegionalModal) closeConfirmRegionalModal();
         });
     }
 
-    // ========== REQUISIÇÕES API ==========
+    // ========== NAVEGAÇÃO ==========
+    function handleMenuClick(e) {
+        e.preventDefault();
+        const section = this.getAttribute('data-section');
+
+        // Atualizar menu ativo
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        this.classList.add('active');
+
+        // Mostrar/ocultar seções
+        document.querySelectorAll('.content-section').forEach(sec => {
+            sec.style.display = 'none';
+        });
+        document.getElementById(`section-${section}`).style.display = 'block';
+
+        state.currentSection = section;
+    }
+
+    // ========================================
+    // USUÁRIOS
+    // ========================================
+
     async function loadUsers() {
         try {
-            const response = await fetch(API_BASE, {
+            const response = await fetch(API_USUARIOS, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
@@ -91,7 +122,7 @@
 
     async function loadStats() {
         try {
-            const response = await fetch(`${API_BASE}/stats`, {
+            const response = await fetch(`${API_USUARIOS}/stats`, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
@@ -100,82 +131,15 @@
             }
 
             const data = await response.json();
-            selectors.activeCount().textContent = data.ativos || 0;
-            selectors.blockedCount().textContent = data.bloqueados || 0;
+            document.getElementById('activeCount').textContent = data.ativos || 0;
+            document.getElementById('blockedCount').textContent = data.bloqueados || 0;
         } catch (error) {
             console.error('Erro ao carregar estatísticas:', error);
         }
     }
 
-    async function createUser(userData) {
-        const response = await fetch(API_BASE, {
-            method: 'POST',
-            headers: buildHeaders({
-                'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify(userData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao criar usuário');
-        }
-
-        return await response.json();
-    }
-
-    async function updateUser(id, userData) {
-        const response = await fetch(`${API_BASE}/${id}`, {
-            method: 'PUT',
-            headers: buildHeaders({
-                'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify(userData)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao atualizar usuário');
-        }
-
-        return await response.json();
-    }
-
-    async function blockUser(id) {
-        const response = await fetch(`${API_BASE}/${id}/bloquear`, {
-            method: 'PUT',
-            headers: buildHeaders({
-                'Content-Type': 'application/json'
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao bloquear usuário');
-        }
-
-        return await response.json();
-    }
-
-    async function unblockUser(id) {
-        const response = await fetch(`${API_BASE}/${id}/desbloquear`, {
-            method: 'PUT',
-            headers: buildHeaders({
-                'Content-Type': 'application/json'
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro ao desbloquear usuário');
-        }
-
-        return await response.json();
-    }
-
-    // ========== RENDERIZAÇÃO ==========
     function renderUsers() {
-        const tbody = selectors.usersTableBody();
+        const tbody = document.getElementById('usersTableBody');
         if (!tbody) return;
 
         if (state.filteredUsers.length === 0) {
@@ -220,26 +184,19 @@
         `).join('');
     }
 
-    // ========== FILTROS ==========
     window.applyFilters = function() {
-        const statusFilter = selectors.filterStatus().value;
-        const searchTerm = selectors.searchInput().value.toLowerCase();
+        const statusFilter = document.getElementById('filterStatus').value;
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
         state.filteredUsers = state.users.filter(user => {
-            // Filtro de status
             if (statusFilter !== '') {
                 const isActive = statusFilter === 'true';
-                if (user.active !== isActive) {
-                    return false;
-                }
+                if (user.active !== isActive) return false;
             }
 
-            // Filtro de busca
             if (searchTerm) {
                 const searchableText = `${user.fullName} ${user.email} ${user.username}`.toLowerCase();
-                if (!searchableText.includes(searchTerm)) {
-                    return false;
-                }
+                if (!searchableText.includes(searchTerm)) return false;
             }
 
             return true;
@@ -248,27 +205,26 @@
         renderUsers();
     };
 
-    // ========== MODAIS ==========
     window.openCreateModal = function() {
-        state.isEditing = false;
+        state.isEditingUser = false;
         state.editingUserId = null;
 
-        selectors.modalTitle().textContent = 'Adicionar Usuário';
-        selectors.userForm().reset();
+        document.getElementById('modalTitle').textContent = 'Adicionar Usuário';
+        document.getElementById('userForm').reset();
         document.getElementById('userId').value = '';
         document.getElementById('password').required = true;
 
-        selectors.userModal().style.display = 'block';
+        document.getElementById('userModal').style.display = 'block';
     };
 
     window.editUser = function(id) {
         const user = state.users.find(u => u.id === id);
         if (!user) return;
 
-        state.isEditing = true;
+        state.isEditingUser = true;
         state.editingUserId = id;
 
-        selectors.modalTitle().textContent = 'Editar Usuário';
+        document.getElementById('modalTitle').textContent = 'Editar Usuário';
         document.getElementById('userId').value = user.id;
         document.getElementById('fullName').value = user.fullName;
         document.getElementById('username').value = user.username;
@@ -276,21 +232,20 @@
         document.getElementById('password').value = '';
         document.getElementById('password').required = false;
 
-        selectors.userModal().style.display = 'block';
+        document.getElementById('userModal').style.display = 'block';
     };
 
     window.closeModal = function() {
-        selectors.userModal().style.display = 'none';
-        selectors.userForm().reset();
-        state.isEditing = false;
+        document.getElementById('userModal').style.display = 'none';
+        document.getElementById('userForm').reset();
+        state.isEditingUser = false;
         state.editingUserId = null;
     };
 
     window.closeConfirmModal = function() {
-        selectors.confirmModal().style.display = 'none';
+        document.getElementById('confirmModal').style.display = 'none';
     };
 
-    // ========== CONFIRMAÇÕES ==========
     window.confirmBlock = function(id) {
         const user = state.users.find(u => u.id === id);
         if (!user) return;
@@ -312,7 +267,7 @@
             }
         };
 
-        selectors.confirmModal().style.display = 'block';
+        document.getElementById('confirmModal').style.display = 'block';
     };
 
     window.confirmUnblock = function(id) {
@@ -336,11 +291,10 @@
             }
         };
 
-        selectors.confirmModal().style.display = 'block';
+        document.getElementById('confirmModal').style.display = 'block';
     };
 
-    // ========== FORM SUBMIT ==========
-    async function handleFormSubmit(e) {
+    async function handleUserFormSubmit(e) {
         e.preventDefault();
 
         const userData = {
@@ -351,7 +305,7 @@
         };
 
         try {
-            if (state.isEditing) {
+            if (state.isEditingUser) {
                 await updateUser(state.editingUserId, userData);
                 showSuccess('Usuário atualizado com sucesso!');
             } else {
@@ -371,8 +325,346 @@
         }
     }
 
+    async function createUser(userData) {
+        const response = await fetch(API_USUARIOS, {
+            method: 'POST',
+            headers: buildHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao criar usuário');
+        }
+
+        return await response.json();
+    }
+
+    async function updateUser(id, userData) {
+        const response = await fetch(`${API_USUARIOS}/${id}`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao atualizar usuário');
+        }
+
+        return await response.json();
+    }
+
+    async function blockUser(id) {
+        const response = await fetch(`${API_USUARIOS}/${id}/bloquear`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao bloquear usuário');
+        }
+
+        return await response.json();
+    }
+
+    async function unblockUser(id) {
+        const response = await fetch(`${API_USUARIOS}/${id}/desbloquear`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao desbloquear usuário');
+        }
+
+        return await response.json();
+    }
+
+    // ========================================
+    // REGIONAIS
+    // ========================================
+
+    async function loadRegionais() {
+        try {
+            const response = await fetch(API_REGIONAIS, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao carregar regionais');
+            }
+
+            const data = await response.json();
+            state.regionais = data;
+            state.filteredRegionais = data;
+            renderRegionais();
+        } catch (error) {
+            console.error('Erro ao carregar regionais:', error);
+            showError('Erro ao carregar regionais. Tente novamente.');
+        }
+    }
+
+    async function loadRegionaisStats() {
+        try {
+            const response = await fetch(`${API_REGIONAIS}/stats`, {
+                headers: buildHeaders({ 'Accept': 'application/json' })
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao carregar estatísticas');
+            }
+
+            const data = await response.json();
+            document.getElementById('regionaisActiveCount').textContent = data.ativas || 0;
+            document.getElementById('regionaisInactiveCount').textContent = data.inativas || 0;
+        } catch (error) {
+            console.error('Erro ao carregar estatísticas de regionais:', error);
+        }
+    }
+
+    function renderRegionais() {
+        const tbody = document.getElementById('regionaisTableBody');
+        if (!tbody) return;
+
+        if (state.filteredRegionais.length === 0) {
+            tbody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="6" class="text-center">
+                        <i class="bi bi-inbox"></i>
+                        <p>Nenhuma regional encontrada</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = state.filteredRegionais.map(regional => `
+            <tr>
+                <td>${escapeHtml(regional.name)}</td>
+                <td><strong>${escapeHtml(regional.code)}</strong></td>
+                <td>${escapeHtml(regional.description || '-')}</td>
+                <td>${formatDate(regional.createdAt)}</td>
+                <td>
+                    <span class="badge ${regional.active ? 'badge-active' : 'badge-blocked'}">
+                        ${regional.active ? 'Ativa' : 'Inativa'}
+                    </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-edit" onclick="window.editRegional(${regional.id})" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        ${regional.active ?
+                            `<button class="btn-icon btn-block" onclick="window.confirmDeactivate(${regional.id})" title="Desativar">
+                                <i class="bi bi-x-circle"></i>
+                            </button>` :
+                            `<button class="btn-icon btn-unblock" onclick="window.confirmActivate(${regional.id})" title="Ativar">
+                                <i class="bi bi-check-circle"></i>
+                            </button>`
+                        }
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.applyRegionalFilters = function() {
+        const statusFilter = document.getElementById('filterRegionalStatus').value;
+        const searchTerm = document.getElementById('searchRegionalInput').value.toLowerCase();
+
+        state.filteredRegionais = state.regionais.filter(regional => {
+            if (statusFilter !== '') {
+                const isActive = statusFilter === 'true';
+                if (regional.active !== isActive) return false;
+            }
+
+            if (searchTerm) {
+                const searchableText = `${regional.name} ${regional.code} ${regional.description || ''}`.toLowerCase();
+                if (!searchableText.includes(searchTerm)) return false;
+            }
+
+            return true;
+        });
+
+        renderRegionais();
+    };
+
+    window.openCreateRegionalModal = function() {
+        state.isEditingRegional = false;
+        state.editingRegionalId = null;
+
+        document.getElementById('regionalModalTitle').textContent = 'Adicionar Regional';
+        document.getElementById('regionalForm').reset();
+        document.getElementById('regionalId').value = '';
+
+        document.getElementById('regionalModal').style.display = 'block';
+    };
+
+    window.editRegional = function(id) {
+        const regional = state.regionais.find(r => r.id === id);
+        if (!regional) return;
+
+        state.isEditingRegional = true;
+        state.editingRegionalId = id;
+
+        document.getElementById('regionalModalTitle').textContent = 'Editar Regional';
+        document.getElementById('regionalId').value = regional.id;
+        document.getElementById('regionalName').value = regional.name;
+        document.getElementById('regionalCode').value = regional.code;
+        document.getElementById('regionalDescription').value = regional.description || '';
+
+        document.getElementById('regionalModal').style.display = 'block';
+    };
+
+    window.closeRegionalModal = function() {
+        document.getElementById('regionalModal').style.display = 'none';
+        document.getElementById('regionalForm').reset();
+        state.isEditingRegional = false;
+        state.editingRegionalId = null;
+    };
+
+    window.closeConfirmRegionalModal = function() {
+        document.getElementById('confirmRegionalModal').style.display = 'none';
+    };
+
+    window.confirmActivate = function(id) {
+        const regional = state.regionais.find(r => r.id === id);
+        if (!regional) return;
+
+        document.getElementById('confirmRegionalTitle').textContent = 'Ativar Regional';
+        document.getElementById('confirmRegionalMessage').textContent =
+            `Deseja realmente ativar a regional "${regional.name}"?`;
+
+        const confirmBtn = document.getElementById('confirmRegionalButton');
+        confirmBtn.onclick = async () => {
+            try {
+                await activateRegional(id);
+                showSuccess('Regional ativada com sucesso!');
+                closeConfirmRegionalModal();
+                loadRegionais();
+                loadRegionaisStats();
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        document.getElementById('confirmRegionalModal').style.display = 'block';
+    };
+
+    window.confirmDeactivate = function(id) {
+        const regional = state.regionais.find(r => r.id === id);
+        if (!regional) return;
+
+        document.getElementById('confirmRegionalTitle').textContent = 'Desativar Regional';
+        document.getElementById('confirmRegionalMessage').textContent =
+            `Deseja realmente desativar a regional "${regional.name}"?`;
+
+        const confirmBtn = document.getElementById('confirmRegionalButton');
+        confirmBtn.onclick = async () => {
+            try {
+                await deactivateRegional(id);
+                showSuccess('Regional desativada com sucesso!');
+                closeConfirmRegionalModal();
+                loadRegionais();
+                loadRegionaisStats();
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        document.getElementById('confirmRegionalModal').style.display = 'block';
+    };
+
+    async function handleRegionalFormSubmit(e) {
+        e.preventDefault();
+
+        const regionalData = {
+            name: document.getElementById('regionalName').value,
+            code: document.getElementById('regionalCode').value,
+            description: document.getElementById('regionalDescription').value || null
+        };
+
+        try {
+            if (state.isEditingRegional) {
+                await updateRegional(state.editingRegionalId, regionalData);
+                showSuccess('Regional atualizada com sucesso!');
+            } else {
+                await createRegional(regionalData);
+                showSuccess('Regional criada com sucesso!');
+            }
+
+            closeRegionalModal();
+            loadRegionais();
+            loadRegionaisStats();
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function createRegional(regionalData) {
+        const response = await fetch(API_REGIONAIS, {
+            method: 'POST',
+            headers: buildHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(regionalData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao criar regional');
+        }
+
+        return await response.json();
+    }
+
+    async function updateRegional(id, regionalData) {
+        const response = await fetch(`${API_REGIONAIS}/${id}`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(regionalData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao atualizar regional');
+        }
+
+        return await response.json();
+    }
+
+    async function activateRegional(id) {
+        const response = await fetch(`${API_REGIONAIS}/${id}/ativar`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao ativar regional');
+        }
+
+        return await response.json();
+    }
+
+    async function deactivateRegional(id) {
+        const response = await fetch(`${API_REGIONAIS}/${id}/desativar`, {
+            method: 'PUT',
+            headers: buildHeaders({ 'Content-Type': 'application/json' })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Erro ao desativar regional');
+        }
+
+        return await response.json();
+    }
+
     // ========== UTILITÁRIOS ==========
     function escapeHtml(text) {
+        if (!text) return '';
         const map = {
             '&': '&amp;',
             '<': '&lt;',
