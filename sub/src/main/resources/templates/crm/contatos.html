@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Contatos - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-contatos.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-contatos">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="/crm/dashboard">Home</a>
+                <i class="bi bi-chevron-right"></i>
+                <span>Contatos</span>
+            </div>
+            <div class="page-header__title">
+                <div>
+                    <p class="kicker">CRM</p>
+                    <h1>Contatos</h1>
+                    <p class="subtitle">Organize sua carteira, resolva duplicados e acompanhe negociações em andamento.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn ghost" type="button">
+                        <i class="bi bi-cloud-arrow-down"></i>
+                        Exportar
+                    </button>
+                    <button class="btn primary" type="button">
+                        <i class="bi bi-person-plus"></i>
+                        Novo contato
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout-grid">
+            <div class="main-column">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary"><i class="bi bi-people"></i></div>
+                        <div class="stat-content">
+                            <p class="label">Contatos cadastrados</p>
+                            <p class="value" id="statTotal">-</p>
+                            <p class="muted">Base consolidada com integração automática</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon warning"><i class="bi bi-exclamation-octagon"></i></div>
+                        <div class="stat-content">
+                            <p class="label">Possíveis duplicados</p>
+                            <p class="value" id="statDuplicates">-</p>
+                            <p class="muted">Verifique entradas com e-mail ou telefone repetidos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success"><i class="bi bi-clipboard-check"></i></div>
+                        <div class="stat-content">
+                            <p class="label">Negociações ativas</p>
+                            <p class="value" id="statNegotiations">-</p>
+                            <p class="muted">Contatos com pelo menos uma negociação aberta</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon info"><i class="bi bi-shield-check"></i></div>
+                        <div class="stat-content">
+                            <p class="label">Responsáveis</p>
+                            <p class="value" id="statOwners">-</p>
+                            <p class="muted">Distribuição equilibrada entre consultores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="kicker">Base de contatos</p>
+                            <h2>Lista de contatos</h2>
+                            <p class="muted" id="contactsCount">-</p>
+                        </div>
+                        <div class="table-actions">
+                            <div class="pill-group" role="group" aria-label="Opções de duplicidade">
+                                <label class="pill">
+                                    <input type="checkbox" id="filterDuplicateEmail" checked>
+                                    <span>E-mail repetido</span>
+                                </label>
+                                <label class="pill">
+                                    <input type="checkbox" id="filterDuplicatePhone" checked>
+                                    <span>Telefone repetido</span>
+                                </label>
+                                <label class="pill">
+                                    <input type="checkbox" id="filterShowUnique" checked>
+                                    <span>Mostrar únicos</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="search" id="searchInput" placeholder="Buscar por nome, e-mail ou telefone">
+                        </div>
+                        <div class="filters">
+                            <select id="responsibleFilter">
+                                <option value="">Todos os responsáveis</option>
+                            </select>
+                            <button class="btn ghost" type="button" id="refreshButton">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                Atualizar
+                            </button>
+                            <button class="btn primary" type="button">
+                                <i class="bi bi-funnel"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="contacts-table">
+                            <thead>
+                            <tr>
+                                <th class="checkbox-col">
+                                    <label class="checkbox">
+                                        <input type="checkbox" id="selectAll">
+                                        <span></span>
+                                    </label>
+                                </th>
+                                <th>Contato</th>
+                                <th>Telefone</th>
+                                <th>E-mail</th>
+                                <th>Negociações</th>
+                                <th>Responsável</th>
+                            </tr>
+                            </thead>
+                            <tbody id="contactsBody">
+                            </tbody>
+                        </table>
+                        <div class="empty-state" id="emptyState" hidden>
+                            <i class="bi bi-inbox"></i>
+                            <p>Nenhum contato encontrado para o filtro aplicado.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel-footer">
+                        <div class="selection-actions" id="selectionInfo" hidden>
+                            <p><strong id="selectedCount">0</strong> contato(s) selecionado(s)</p>
+                            <div class="action-buttons">
+                                <button class="btn ghost" type="button"><i class="bi bi-folder"></i> Adicionar à pasta</button>
+                                <button class="btn ghost" type="button"><i class="bi bi-envelope"></i> E-mail</button>
+                                <button class="btn ghost" type="button"><i class="bi bi-archive"></i> Arquivar</button>
+                                <button class="btn ghost" type="button"><i class="bi bi-chat-left"></i> Conversar</button>
+                                <button class="btn ghost" type="button"><i class="bi bi-trash"></i> Deletar</button>
+                                <button class="btn ghost" type="button"><i class="bi bi-download"></i> Exportar</button>
+                            </div>
+                        </div>
+                        <div class="result-info">
+                            <span id="resultLabel">-</span>
+                            <span class="muted">Atualizado agora</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Buscar contato</h3>
+                        <p>Localize rapidamente registros na base.</p>
+                    </div>
+                    <form id="searchForm" class="form-grid" onsubmit="return false;">
+                        <label class="field">
+                            <span>Nome</span>
+                            <div class="input-icon">
+                                <i class="bi bi-person"></i>
+                                <input type="text" id="formName" placeholder="Digite o nome do contato">
+                            </div>
+                        </label>
+                        <label class="field">
+                            <span>E-mail</span>
+                            <div class="input-icon">
+                                <i class="bi bi-envelope"></i>
+                                <input type="email" id="formEmail" placeholder="nome@empresa.com">
+                            </div>
+                        </label>
+                        <label class="field">
+                            <span>Telefone</span>
+                            <div class="input-icon">
+                                <i class="bi bi-telephone"></i>
+                                <input type="tel" id="formPhone" placeholder="(00) 00000-0000">
+                            </div>
+                        </label>
+                        <button class="btn primary full" type="submit" id="applyFilters">Aplicar</button>
+                    </form>
+                </div>
+
+                <div class="card highlight">
+                    <div class="card-header">
+                        <div class="badge warning">Duplicados</div>
+                        <h3>Resolver duplicados</h3>
+                        <p>Identifique contatos repetidos e consolide os dados.</p>
+                    </div>
+                    <div class="duplicate-info">
+                        <div>
+                            <p class="muted">Duplicados pendentes</p>
+                            <p class="value" id="pendingDuplicates">-</p>
+                        </div>
+                        <div class="chips" id="duplicateTags"></div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn primary full" type="button" id="processDuplicates">Processar duplicados</button>
+                        <button class="btn ghost full" type="button" id="explainDuplicates">Como funciona</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+<script th:src="@{/js/crm-contatos.js}"></script>
+</body>
+</html>
