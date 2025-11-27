@@ -512,12 +512,33 @@
             const html = await response.text();
             modalBody.innerHTML = html;
 
+            // Executa scripts embutidos (necessário para funções inline do modal)
+            executeModalScripts(modalBody);
+
             // Inicializa as abas após o conteúdo ser carregado
             initializeModalTabs();
         } catch (error) {
             console.error('[VENDAS-KANBAN] Erro ao carregar modal:', error);
             modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="bi bi-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="margin-top: 10px; color: #ef4444;">Erro ao carregar os detalhes da venda.</p></div>';
         }
+    }
+
+    function executeModalScripts(container) {
+        if (!container) return;
+
+        const scripts = container.querySelectorAll('script');
+        scripts.forEach((oldScript) => {
+            const newScript = document.createElement('script');
+
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+
+            document.body.appendChild(newScript);
+            oldScript.remove();
+        });
     }
 
     function initializeModalTabs() {
