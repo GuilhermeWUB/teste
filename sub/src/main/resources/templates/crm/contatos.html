@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>SUB - Contatos do CRM</title>
+    <style>
+        .contacts-page {
+            padding: 20px;
+            background: #f8fafc;
+        }
+
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .contacts-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contacts-breadcrumb {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .contacts-content {
+            display: grid;
+            grid-template-columns: 2fr 320px;
+            gap: 16px;
+        }
+
+        .contacts-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .contacts-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .contacts-count {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .contacts-count strong {
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .contacts-count span {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .contacts-pager button {
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #6b7280;
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-left: 6px;
+        }
+
+        .contacts-table-wrapper {
+            overflow: auto;
+        }
+
+        .contacts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .contacts-table thead {
+            background: #f9fafb;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .contacts-table th,
+        .contacts-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .contact-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .contact-phone,
+        .contact-email {
+            color: #6b7280;
+        }
+
+        .contact-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .contact-owner {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .contact-owner strong {
+            color: #111827;
+        }
+
+        .contact-owner small {
+            color: #6b7280;
+        }
+
+        .contact-date {
+            color: #6b7280;
+        }
+
+        .contacts-search {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contacts-search h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+
+        .contacts-search label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .contacts-search input,
+        .contacts-search select {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+        }
+
+        .contacts-search button {
+            background: #1d4ed8;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 600;
+        }
+
+        .contacts-search small {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        .contacts-search .link {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1100px) {
+            .contacts-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="contacts-page">
+        <div class="contacts-header">
+            <div>
+                <p class="contacts-breadcrumb">Home / Contatos</p>
+                <h1 class="contacts-title">Contatos</h1>
+            </div>
+        </div>
+
+        <div class="contacts-content">
+            <div class="contacts-card">
+                <div class="contacts-card-header">
+                    <div class="contacts-count">
+                        <strong>1.358</strong>
+                        <span>contatos cadastrados</span>
+                    </div>
+                    <div class="contacts-pager">
+                        <button aria-label="Página anterior">&larr;</button>
+                        <button aria-label="Página seguinte">&rarr;</button>
+                    </div>
+                </div>
+
+                <div class="contacts-table-wrapper">
+                    <table class="contacts-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 50px;"><input type="checkbox" aria-label="Selecionar todos"></th>
+                            <th>Contato</th>
+                            <th>Telefone</th>
+                            <th>E-mail</th>
+                            <th>Negociações</th>
+                            <th>Responsável</th>
+                            <th>Criado em</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Brunno Gianullo</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">bruno@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>0</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>5 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Jennifer</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">jennifer@gmail.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>0</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>5 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Contato Teste</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">contato@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>2</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>5 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Rafael</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">rafael@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>0</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>4 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Eduardo Donadelli Tasiss</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">eduardo@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>1</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>4 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Mauricio</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">mauricio@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>0</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>4 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" aria-label="Selecionar contato"></td>
+                            <td><span class="contact-name">Teste</span></td>
+                            <td><span class="contact-phone">(41) 99999-9999</span></td>
+                            <td><span class="contact-email">teste@teste.com</span></td>
+                            <td><span class="contact-badge"><i class="bi bi-briefcase"></i>0</span></td>
+                            <td class="contact-owner">
+                                <strong>Jennifer Gonçalves Bueno</strong>
+                                <small>4 meses atrás</small>
+                            </td>
+                            <td class="contact-date">10 dias atrás</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <aside class="contacts-search">
+                <h3>Buscar contato</h3>
+                <div>
+                    <label for="contactSearch">NOME, EMAIL, TELEFONE</label>
+                    <input type="text" id="contactSearch" placeholder="Digite para buscar">
+                </div>
+                <div>
+                    <label for="contactOwner">RESPONSÁVEL</label>
+                    <select id="contactOwner">
+                        <option>Todos</option>
+                        <option>Jennifer Gonçalves Bueno</option>
+                        <option>Equipe Comercial</option>
+                    </select>
+                </div>
+                <button type="button">Aplicar</button>
+                <small>Nenhum registros encontrados (contatos duplicados serão exibidos na busca por CPF/CNPJ).</small>
+                <a class="link" href="#">Mesclar duplicados</a>
+            </aside>
+        </div>
+    </div>
+</section>
+</body>
+</html>
