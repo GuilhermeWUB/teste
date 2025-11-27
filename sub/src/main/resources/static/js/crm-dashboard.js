@@ -2,6 +2,35 @@
 
 console.log('✅ CRM Dashboard script loaded');
 
+// Get CSRF token from meta tags or cookies
+function getCsrfToken() {
+    // Try to get from meta tag first
+    const metaToken = document.querySelector('meta[name="_csrf"]');
+    if (metaToken) {
+        return metaToken.getAttribute('content');
+    }
+
+    // Try to get from cookie
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'XSRF-TOKEN') {
+            return decodeURIComponent(value);
+        }
+    }
+
+    return null;
+}
+
+// Get CSRF header name
+function getCsrfHeaderName() {
+    const metaHeader = document.querySelector('meta[name="_csrf_header"]');
+    if (metaHeader) {
+        return metaHeader.getAttribute('content');
+    }
+    return 'X-XSRF-TOKEN';
+}
+
 // Load dashboard data on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadDashboardData();
@@ -231,12 +260,21 @@ async function testWithdrawal() {
         const amount = prompt('Digite o valor do saque de teste (padrão: R$ 100,00):', '100');
         if (!amount) return;
 
+        const csrfToken = getCsrfToken();
+        const csrfHeader = getCsrfHeaderName();
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        if (csrfToken) {
+            headers[csrfHeader] = csrfToken;
+        }
+
         const response = await fetch('/crm/api/saques/teste', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
+            headers: headers,
             body: JSON.stringify({ amount: parseFloat(amount) })
         });
 
@@ -260,12 +298,21 @@ async function testAddBalance() {
         const amount = prompt('Digite o valor para adicionar ao saldo (padrão: R$ 1000,00):', '1000');
         if (!amount) return;
 
+        const csrfToken = getCsrfToken();
+        const csrfHeader = getCsrfHeaderName();
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        if (csrfToken) {
+            headers[csrfHeader] = csrfToken;
+        }
+
         const response = await fetch('/crm/api/vendas/teste-concluir', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
+            headers: headers,
             body: JSON.stringify({ valorVenda: parseFloat(amount) })
         });
 
