@@ -78,6 +78,15 @@ public class WithdrawalService {
             throw new RuntimeException("Apenas saques pendentes podem ser aprovados");
         }
 
+        // Validar se ainda há saldo disponível para aprovação
+        UserAccount user = userAccountRepository.findById(withdrawal.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + withdrawal.getUserId()));
+
+        BigDecimal availableBalance = getAvailableBalance(withdrawal.getUserId());
+        if (withdrawal.getAmount().compareTo(availableBalance) > 0) {
+            throw new RuntimeException("Saldo insuficiente para aprovar este saque. Disponível: R$ " + availableBalance);
+        }
+
         withdrawal.setStatus(WithdrawalStatus.APROVADO.name());
         if (observation != null) {
             withdrawal.setObservation(observation);
@@ -119,11 +128,14 @@ public class WithdrawalService {
         UserAccount user = userAccountRepository.findById(withdrawal.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + withdrawal.getUserId()));
 
-        if (withdrawal.getAmount().compareTo(user.getSaldo()) > 0) {
-            throw new RuntimeException("Saldo insuficiente para concluir o saque");
+        // Validação rigorosa: garantir que o saldo não fique negativo
+        BigDecimal saldoAposDebito = user.getSaldo().subtract(withdrawal.getAmount());
+        if (saldoAposDebito.compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Saldo insuficiente para concluir o saque. Saldo atual: R$ "
+                + user.getSaldo() + ", Valor do saque: R$ " + withdrawal.getAmount());
         }
 
-        user.setSaldo(user.getSaldo().subtract(withdrawal.getAmount()));
+        user.setSaldo(saldoAposDebito);
         userAccountRepository.save(user);
 
         withdrawal.setStatus(WithdrawalStatus.CONCLUIDO.name());
@@ -162,17 +174,11 @@ public class WithdrawalService {
 
     /**
      * Cria um saque de teste (para desenvolvimento)
+     * IMPORTANTE: Valida o saldo antes de criar
      */
     public Withdrawal createTestWithdrawal(Long userId, BigDecimal amount) {
-        Withdrawal withdrawal = new Withdrawal();
-        withdrawal.setUserId(userId);
-        withdrawal.setAmount(amount);
-        withdrawal.setPixKey("teste@teste.com");
-        withdrawal.setStatus(WithdrawalStatus.PENDENTE.name());
-        withdrawal.setRequestDate(LocalDateTime.now());
-        withdrawal.setObservation("Saque de teste");
-
-        return withdrawalRepository.save(withdrawal);
+        // Usar o método principal que já valida o saldo
+        return createWithdrawalRequest(userId, amount, "teste@teste.com");
     }
 
     /**
