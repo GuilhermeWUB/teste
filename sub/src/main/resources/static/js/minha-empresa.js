@@ -80,6 +80,7 @@
     function handleMenuClick(e) {
         e.preventDefault();
         const section = this.getAttribute('data-section');
+        console.log('Navegando para seção:', section);
 
         // Atualizar menu ativo
         document.querySelectorAll('.menu-item').forEach(item => {
@@ -91,7 +92,13 @@
         document.querySelectorAll('.content-section').forEach(sec => {
             sec.style.display = 'none';
         });
-        document.getElementById(`section-${section}`).style.display = 'block';
+        const targetSection = document.getElementById(`section-${section}`);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            console.log('Seção exibida:', section);
+        } else {
+            console.error('Seção não encontrada:', `section-${section}`);
+        }
 
         state.currentSection = section;
     }
