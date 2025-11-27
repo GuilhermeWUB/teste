@@ -10,6 +10,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -43,6 +44,9 @@ public class UserAccount {
     @Column(nullable = false)
     private Boolean active = true;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal saldo = BigDecimal.ZERO;
+
     @Column(name = "created_at", nullable = false)
     @Getter(AccessLevel.NONE)  // Desabilita o getter gerado pelo Lombok
     @Setter(AccessLevel.NONE)  // Desabilita o setter gerado pelo Lombok
@@ -71,7 +75,7 @@ public class UserAccount {
      * Substitui o @AllArgsConstructor do Lombok para ter controle total
      */
     public UserAccount(Long id, String fullName, String username, String email,
-                       String password, String role, Boolean active, LocalDateTime createdAt) {
+                       String password, String role, Boolean active, BigDecimal saldo, LocalDateTime createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
@@ -79,6 +83,7 @@ public class UserAccount {
         this.password = password;
         this.role = role;
         this.active = (active != null) ? active : true;
+        this.saldo = (saldo != null) ? saldo : BigDecimal.ZERO;
         // Usa o setter personalizado para garantir que não seja null
         this.setCreatedAt(createdAt);
     }
@@ -93,6 +98,9 @@ public class UserAccount {
         }
         if (active == null) {
             active = true;
+        }
+        if (saldo == null) {
+            saldo = BigDecimal.ZERO;
         }
     }
 

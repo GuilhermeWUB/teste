@@ -3,11 +3,15 @@ package com.necsus.necsusspring.controller;
 import com.necsus.necsusspring.dto.SaleRequest;
 import com.necsus.necsusspring.model.Sale;
 import com.necsus.necsusspring.model.SaleStatus;
+import com.necsus.necsusspring.model.UserAccount;
+import com.necsus.necsusspring.repository.UserAccountRepository;
 import com.necsus.necsusspring.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +23,11 @@ import java.util.Map;
 public class SaleController {
 
     private final SaleService saleService;
+    private final UserAccountRepository userAccountRepository;
 
-    public SaleController(SaleService saleService) {
+    public SaleController(SaleService saleService, UserAccountRepository userAccountRepository) {
         this.saleService = saleService;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @GetMapping
@@ -100,5 +106,38 @@ public class SaleController {
     public ResponseEntity<List<Sale>> getConcluidedSales() {
         List<Sale> sales = saleService.findConcluidas();
         return ResponseEntity.ok(sales);
+    }
+
+    /**
+     * Endpoint de TESTE: Cria e conclui uma venda automaticamente para o usuário logado
+     * Adiciona o valor ao saldo do usuário
+     */
+    @PostMapping("/teste-concluir")
+    public ResponseEntity<?> testCompleteSale(@RequestBody(required = false) Map<String, Double> body) {
+        try {
+            // Pega o usuário logado
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+
+            UserAccount user = userAccountRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+
+            // Valor padrão de teste se não for fornecido
+            Double valorVenda = (body != null && body.containsKey("valorVenda"))
+                    ? body.get("valorVenda")
+                    : 1000.00;
+
+            // Criar e concluir venda de teste
+            Sale sale = saleService.createTestSaleAndComplete(user.getId(), valorVenda);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Venda de teste concluída com sucesso!",
+                    "sale", sale,
+                    "valorAdicionado", valorVenda,
+                    "novoSaldo", user.getSaldo().add(java.math.BigDecimal.valueOf(valorVenda))
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }
