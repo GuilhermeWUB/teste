@@ -1,13 +1,13 @@
 :root {
-    --crm-bg: #0f172a;
-    --crm-card: #121a2f;
-    --crm-border: #1f2a44;
-    --crm-text: #e2e8f0;
-    --crm-subtle: #94a3b8;
-    --crm-primary: #3b82f6;
-    --crm-green: #22c55e;
-    --crm-orange: #f59e0b;
-    --crm-purple: #a855f7;
+    --crm-bg: #f5f7fb;
+    --crm-card: #ffffff;
+    --crm-border: #e2e8f0;
+    --crm-text: #0f172a;
+    --crm-subtle: #64748b;
+    --crm-primary: #2563eb;
+    --crm-green: #16a34a;
+    --crm-orange: #ea580c;
+    --crm-purple: #9333ea;
     --crm-red: #ef4444;
 }
 
@@ -16,6 +16,8 @@
     flex-direction: column;
     gap: 1.5rem;
     color: var(--crm-text);
+    background: var(--crm-bg);
+    padding: 1rem;
 }
 
 .crm-contacts .eyebrow {
@@ -35,7 +37,7 @@
     border: 1px solid var(--crm-border);
     border-radius: 18px;
     padding: 1.2rem 1.5rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
 }
 
 .title-group {
@@ -48,7 +50,7 @@
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    background: rgba(59, 130, 246, 0.15);
+    background: rgba(37, 99, 235, 0.12);
     display: grid;
     place-items: center;
     color: var(--crm-primary);
@@ -88,13 +90,14 @@
 
 .btn.ghost {
     border-color: var(--crm-border);
-    background: rgba(255, 255, 255, 0.03);
+    background: #f8fafc;
 }
 
 .btn.primary {
     background: linear-gradient(120deg, #2563eb, #3b82f6);
     border-color: #2563eb;
-    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
 }
 
 .btn:hover {
@@ -116,7 +119,7 @@
     display: flex;
     gap: 0.9rem;
     align-items: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .summary-icon {
@@ -129,10 +132,10 @@
     font-size: 1.2rem;
 }
 
-.summary-icon.blue { background: rgba(59, 130, 246, 0.18); color: #60a5fa; }
-.summary-icon.green { background: rgba(34, 197, 94, 0.18); color: #4ade80; }
-.summary-icon.orange { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
-.summary-icon.purple { background: rgba(168, 85, 247, 0.18); color: #c084fc; }
+.summary-icon.blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.summary-icon.green { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
+.summary-icon.orange { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
+.summary-icon.purple { background: rgba(147, 51, 234, 0.12); color: #9333ea; }
 
 .summary-label {
     margin: 0;
@@ -189,7 +192,7 @@
 
 .filter-field input,
 .filter-field select {
-    background: rgba(255, 255, 255, 0.03);
+    background: #ffffff;
     border: 1px solid var(--crm-border);
     border-radius: 10px;
     padding: 0.7rem 0.9rem;
@@ -211,7 +214,7 @@
     border: 1px solid var(--crm-border);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
 }
 
 .table-card__header {
@@ -271,15 +274,15 @@
 }
 
 .muted {
-    color: var(--crm-subtle);
+    color: #94a3b8;
 }
 
 .deal-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: rgba(59, 130, 246, 0.12);
-    color: #bfdbfe;
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
     padding: 0.35rem 0.65rem;
     border-radius: 999px;
     font-weight: 600;
@@ -292,23 +295,23 @@
     font-size: 0.85rem;
 }
 
-.badge-lead { background: rgba(59, 130, 246, 0.18); color: #bfdbfe; }
-.badge-client { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; }
-.badge-prospect { background: rgba(168, 85, 247, 0.18); color: #e9d5ff; }
-.badge-inactive { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
-.badge-blocked { background: rgba(239, 68, 68, 0.18); color: #fecdd3; }
+.badge-lead { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.badge-client { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.badge-prospect { background: rgba(147, 51, 234, 0.12); color: #7e22ce; }
+.badge-inactive { background: rgba(148, 163, 184, 0.2); color: #475569; }
+.badge-blocked { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
 
 .activity-text {
     font-weight: 600;
 }
 
 .pending {
-    color: #fbbf24;
+    color: #d97706;
     font-weight: 600;
 }
 
 .done {
-    color: var(--crm-subtle);
+    color: #475569;
 }
 
 .table-footer {
@@ -316,7 +319,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.9rem 1.25rem;
-    background: rgba(255, 255, 255, 0.02);
+    background: #f8fafc;
 }
 
 .footnote {
