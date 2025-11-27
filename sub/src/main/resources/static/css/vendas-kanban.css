@@ -38,45 +38,45 @@ body[data-theme="dark"],
 body[data-bs-theme="dark"],
 body.dark,
 .theme-dark {
-    --gradient-top: #0b1220;
-    --gradient-mid: #0f172a;
-    --gradient-bottom: #0a1020;
-    --panel: #131c2f;
-    --panel-contrast: #e5e7eb;
-    --surface: #0f172a;
-    --surface-strong: #1f2937;
-    --muted: #cbd5e1;
-    --muted-2: #94a3b8;
-    --accent: #7aa2f7;
-    --accent-2: #a78bfa;
-    --accent-strong: #8ba8ff;
+    --gradient-top: #1c1333;
+    --gradient-mid: #140b2a;
+    --gradient-bottom: #0f0820;
+    --panel: rgba(32, 22, 52, 0.92);
+    --panel-contrast: #f5f3ff;
+    --surface: #0f0820;
+    --surface-strong: rgba(168, 85, 247, 0.24);
+    --muted: #d9d6fe;
+    --muted-2: #b4a4f6;
+    --accent: #c084fc;
+    --accent-2: #a855f7;
+    --accent-strong: #d8b4fe;
     --positive: #4ade80;
     --warning: #fbbf24;
-    --info: #38bdf8;
-    --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
-    --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+    --info: #a5b4fc;
+    --shadow-soft: 0 26px 60px rgba(10, 6, 20, 0.55);
+    --shadow-hover: 0 30px 70px rgba(10, 6, 20, 0.72);
     color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
-        --gradient-top: #0b1220;
-        --gradient-mid: #0f172a;
-        --gradient-bottom: #0a1020;
-        --panel: #131c2f;
-        --panel-contrast: #e5e7eb;
-        --surface: #0f172a;
-        --surface-strong: #1f2937;
-        --muted: #cbd5e1;
-        --muted-2: #94a3b8;
-        --accent: #7aa2f7;
-        --accent-2: #a78bfa;
-        --accent-strong: #8ba8ff;
+        --gradient-top: #1c1333;
+        --gradient-mid: #140b2a;
+        --gradient-bottom: #0f0820;
+        --panel: rgba(32, 22, 52, 0.92);
+        --panel-contrast: #f5f3ff;
+        --surface: #0f0820;
+        --surface-strong: rgba(168, 85, 247, 0.24);
+        --muted: #d9d6fe;
+        --muted-2: #b4a4f6;
+        --accent: #c084fc;
+        --accent-2: #a855f7;
+        --accent-strong: #d8b4fe;
         --positive: #4ade80;
         --warning: #fbbf24;
-        --info: #38bdf8;
-        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
-        --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+        --info: #a5b4fc;
+        --shadow-soft: 0 26px 60px rgba(10, 6, 20, 0.55);
+        --shadow-hover: 0 30px 70px rgba(10, 6, 20, 0.72);
         color-scheme: dark;
     }
 }
@@ -841,19 +841,25 @@ html[data-theme="dark"] .kanban-modal-body .gabiii-container,
 html[data-bs-theme="dark"] .kanban-modal-body .gabiii-container,
 body.dark .kanban-modal-body .gabiii-container,
 .theme-dark .kanban-modal-body .gabiii-container {
-    --gabiii-surface: #0b1220;
-    --gabiii-panel: #111827;
-    --gabiii-panel-strong: #1f2937;
-    --gabiii-text-primary: #e5e7eb;
-    --gabiii-text-muted: #9ca3af;
-    --gabiii-border: #243044;
-    --gabiii-accent: #7aa2f7;
-    --gabiii-accent-strong: #8ba8ff;
-    --gabiii-success: #34d399;
-    --gabiii-warning-bg: #3b2f17;
+    --gabiii-surface: radial-gradient(circle at 12% 10%, rgba(168, 85, 247, 0.18), transparent 32%),
+                      radial-gradient(circle at 80% 0%, rgba(124, 58, 237, 0.22), transparent 30%),
+                      linear-gradient(180deg, #1c1333 0%, #120b26 48%, #0f0820 100%);
+    --gabiii-panel: rgba(36, 24, 63, 0.9);
+    --gabiii-panel-strong: rgba(45, 30, 75, 0.95);
+    --gabiii-text-primary: #f5f3ff;
+    --gabiii-text-muted: #c4b5fd;
+    --gabiii-border: rgba(168, 85, 247, 0.35);
+    --gabiii-accent: #c084fc;
+    --gabiii-accent-strong: #a855f7;
+    --gabiii-success: #4ade80;
+    --gabiii-warning-bg: rgba(251, 191, 36, 0.12);
     --gabiii-warning: #fbbf24;
+    --gabiii-shadow: 0 26px 60px rgba(10, 6, 20, 0.55);
     background: var(--gabiii-surface);
     color: var(--gabiii-text-primary);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--gabiii-shadow);
+    border: 1px solid var(--gabiii-border);
 }
 
 html[data-theme="dark"] .kanban-modal-body .gabiii-card,
@@ -862,7 +868,8 @@ body.dark .kanban-modal-body .gabiii-card,
 .theme-dark .kanban-modal-body .gabiii-card {
     background: var(--gabiii-panel);
     border: 1px solid var(--gabiii-border);
-    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--gabiii-shadow);
+    backdrop-filter: blur(10px);
     color: var(--gabiii-text-primary);
 }
 
