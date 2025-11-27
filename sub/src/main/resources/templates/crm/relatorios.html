@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout-crm}">
+<head>
+    <title>Relatórios - CRM</title>
+    <link rel="stylesheet" th:href="@{/css/crm-reports.css}">
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="crm-reports">
+        <!-- Header -->
+        <div class="reports-header">
+            <div>
+                <h1><i class="bi bi-bar-chart-line"></i> Relatórios CRM</h1>
+                <p>Métricas de desempenho e atividades do time comercial</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-refresh" onclick="loadReportsData()">
+                    <i class="bi bi-arrow-clockwise"></i> Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Carregando relatórios...</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="reportsContent" style="display: none;">
+
+            <!-- Principais Métricas -->
+            <div class="section-header">
+                <h2><i class="bi bi-graph-up"></i> Principais Métricas</h2>
+            </div>
+
+            <div class="metrics-grid">
+                <!-- Ligações -->
+                <div class="metric-card phone">
+                    <div class="metric-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-label">Total de Ligações</div>
+                        <div class="metric-value" id="totalLigacoes">0</div>
+                        <div class="metric-subtitle">Ligações realizadas</div>
+                    </div>
+                </div>
+
+                <!-- Vendas -->
+                <div class="metric-card sales">
+                    <div class="metric-icon">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-label">Total de Vendas</div>
+                        <div class="metric-value" id="totalVendas">0</div>
+                        <div class="metric-subtitle"><span id="vendasConcluidas">0</span> concluídas</div>
+                    </div>
+                </div>
+
+                <!-- Saques -->
+                <div class="metric-card withdrawals">
+                    <div class="metric-icon">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-label">Total de Saques</div>
+                        <div class="metric-value" id="totalSaques">0</div>
+                        <div class="metric-subtitle"><span id="saquesConcluidos">0</span> concluídos</div>
+                    </div>
+                </div>
+
+                <!-- Taxa de Conversão -->
+                <div class="metric-card conversion">
+                    <div class="metric-icon">
+                        <i class="bi bi-percent"></i>
+                    </div>
+                    <div class="metric-body">
+                        <div class="metric-label">Taxa de Conversão</div>
+                        <div class="metric-value" id="taxaConversao">0%</div>
+                        <div class="metric-subtitle">Vendas concluídas / Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalhamento de Vendas -->
+            <div class="section-header">
+                <h2><i class="bi bi-cart"></i> Vendas</h2>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-label">Vendas Pendentes</div>
+                    <div class="detail-value pending" id="vendasPendentes">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Vendas Concluídas</div>
+                    <div class="detail-value success" id="vendasConcluidasDetail">0</div>
+                </div>
+            </div>
+
+            <!-- Detalhamento de Saques -->
+            <div class="section-header">
+                <h2><i class="bi bi-wallet2"></i> Saques</h2>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-label">Saques Pendentes</div>
+                    <div class="detail-value warning" id="saquesPendentes">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Saques Aprovados</div>
+                    <div class="detail-value info" id="saquesAprovados">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Saques Concluídos</div>
+                    <div class="detail-value success" id="saquesConcluidosDetail">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Saques Rejeitados</div>
+                    <div class="detail-value error" id="saquesRejeitados">0</div>
+                </div>
+            </div>
+
+            <!-- Detalhamento de Atividades -->
+            <div class="section-header">
+                <h2><i class="bi bi-activity"></i> Outras Atividades</h2>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-label">E-mails</div>
+                    <div class="detail-value" id="totalEmails">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Reuniões</div>
+                    <div class="detail-value" id="totalReunioes">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Visitas</div>
+                    <div class="detail-value" id="totalVisitas">0</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Total de Atividades</div>
+                    <div class="detail-value" id="totalAtividades">0</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script th:src="@{/js/crm-reports.js}"></script>
+</section>
+</body>
+</html>
