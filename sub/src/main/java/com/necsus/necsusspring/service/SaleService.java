@@ -3,10 +3,13 @@ package com.necsus.necsusspring.service;
 import com.necsus.necsusspring.dto.SaleRequest;
 import com.necsus.necsusspring.model.Sale;
 import com.necsus.necsusspring.model.SaleStatus;
+import com.necsus.necsusspring.model.UserAccount;
 import com.necsus.necsusspring.repository.SaleRepository;
+import com.necsus.necsusspring.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +18,11 @@ import java.util.Optional;
 public class SaleService {
 
     private final SaleRepository saleRepository;
+    private final UserAccountRepository userAccountRepository;
 
-    public SaleService(SaleRepository saleRepository) {
+    public SaleService(SaleRepository saleRepository, UserAccountRepository userAccountRepository) {
         this.saleRepository = saleRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     public List<Sale> findAll() {
@@ -103,7 +108,52 @@ public class SaleService {
         sale.setDataConclusao(java.time.LocalDateTime.now());
         sale.setStatus(SaleStatus.FILIACAO_CONCRETIZADAS);
 
+        // Adiciona o valor da venda ao saldo do usuário
+        if (sale.getUserId() != null && valorVenda != null) {
+            UserAccount user = userAccountRepository.findById(sale.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + sale.getUserId()));
+
+            BigDecimal valorBigDecimal = BigDecimal.valueOf(valorVenda);
+            user.setSaldo(user.getSaldo().add(valorBigDecimal));
+            userAccountRepository.save(user);
+        }
+
         return saleRepository.save(sale);
+    }
+
+    /**
+     * Cria e conclui uma venda de teste para o usuário especificado
+     */
+    public Sale createTestSaleAndComplete(Long userId, Double valorVenda) {
+        // Verificar se usuário existe
+        UserAccount user = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
+
+        // Criar venda de teste
+        Sale sale = new Sale();
+        sale.setCooperativa("TESTE");
+        sale.setTipoVeiculo("Carro");
+        sale.setPlaca("TST-" + System.currentTimeMillis() % 10000);
+        sale.setMarca("Fiat");
+        sale.setAnoModelo("2024");
+        sale.setModelo("Uno");
+        sale.setNomeContato("Cliente Teste");
+        sale.setEmail("teste@teste.com");
+        sale.setCelular("(11) 99999-9999");
+        sale.setEstado("SP");
+        sale.setCidade("São Paulo");
+        sale.setOrigemLead("TESTE");
+        sale.setVeiculoTrabalho(true);
+        sale.setEnviarCotacao(false);
+        sale.setObservacoes("Venda de teste criada automaticamente");
+        sale.setValorVenda(valorVenda);
+        sale.setUserId(userId);
+        sale.setStatus(SaleStatus.COTACOES_RECEBIDAS);
+
+        Sale savedSale = saleRepository.save(sale);
+
+        // Concluir a venda imediatamente
+        return completeSale(savedSale.getId(), valorVenda);
     }
 
     public List<Sale> findConcluidas() {

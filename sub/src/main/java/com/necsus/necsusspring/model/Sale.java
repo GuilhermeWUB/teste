@@ -69,6 +69,9 @@ public class Sale {
     @Column(name = "concluida")
     private Boolean concluida = false;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -261,5 +264,13 @@ public class Sale {
 
     public void setConcluida(Boolean concluida) {
         this.concluida = concluida;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

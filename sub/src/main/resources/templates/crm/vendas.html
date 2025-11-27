@@ -29,6 +29,13 @@
                     </button>
                 </div>
                 <div class="vendas-kanban-actions">
+                    <div class="saldo-info" id="saldo-info" style="margin-right: 15px; padding: 8px 16px; background: #e8f5e9; border-radius: 8px; display: none;">
+                        <span style="font-size: 12px; color: #666;">Meu Saldo:</span>
+                        <strong style="font-size: 16px; color: #4CAF50; margin-left: 8px;" id="saldo-valor">R$ 0,00</strong>
+                    </div>
+                    <button class="btn-teste-venda" type="button" onclick="testarVendaConcluida()" style="background: #ff9800; margin-right: 10px;">
+                        <i class="bi bi-lightning-fill"></i> Venda Concluída (TESTE)
+                    </button>
                     <button class="btn-novo-evento" type="button" onclick="window.vendasBoard?.openCreateModal?.()">
                         <i class="bi bi-plus-circle"></i> Nova negociação
                     </button>
@@ -239,6 +246,86 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ========== SISTEMA DE SALDO E TESTE DE VENDA ==========
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+        function buildHeaders(extra = {}) {
+            const headers = { 'X-Requested-With': 'XMLHttpRequest', ...extra };
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+            return headers;
+        }
+
+        // Carrega o saldo do usuário logado
+        async function carregarSaldo() {
+            try {
+                const response = await fetch('/crm/api/usuarios/meu-saldo', {
+                    headers: buildHeaders({ 'Accept': 'application/json' })
+                });
+
+                if (!response.ok) {
+                    console.error('Erro ao carregar saldo');
+                    return;
+                }
+
+                const data = await response.json();
+                const saldoInfo = document.getElementById('saldo-info');
+                const saldoValor = document.getElementById('saldo-valor');
+
+                if (saldoInfo && saldoValor) {
+                    saldoValor.textContent = 'R$ ' + parseFloat(data.saldo).toFixed(2).replace('.', ',');
+                    saldoInfo.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar saldo:', error);
+            }
+        }
+
+        // Função de teste: cria e conclui uma venda automaticamente
+        async function testarVendaConcluida() {
+            if (!confirm('Deseja criar uma venda de teste no valor de R$ 1.000,00?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/crm/api/vendas/teste-concluir', {
+                    method: 'POST',
+                    headers: buildHeaders({
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify({ valorVenda: 1000.00 })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao criar venda de teste');
+                }
+
+                const data = await response.json();
+                alert(`✅ ${data.message}\n\nValor adicionado: R$ ${data.valorAdicionado.toFixed(2)}\nNovo saldo: R$ ${data.novoSaldo.toFixed(2)}`);
+
+                // Recarrega o saldo
+                await carregarSaldo();
+
+                // Recarrega o kanban se estiver disponível
+                if (window.vendasBoard && window.vendasBoard.loadBoard) {
+                    window.vendasBoard.loadBoard();
+                }
+            } catch (error) {
+                console.error('Erro ao testar venda:', error);
+                alert('❌ Erro ao criar venda de teste: ' + error.message);
+            }
+        }
+
+        // Carrega o saldo quando a página carrega
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarSaldo();
+        });
+    </script>
 
     <script th:src="@{/js/vendas-kanban.js}"></script>
 </section>
