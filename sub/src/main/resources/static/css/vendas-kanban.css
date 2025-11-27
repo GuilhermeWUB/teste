@@ -38,45 +38,45 @@ body[data-theme="dark"],
 body[data-bs-theme="dark"],
 body.dark,
 .theme-dark {
-    --gradient-top: #0b1220;
-    --gradient-mid: #0f172a;
-    --gradient-bottom: #0a1020;
-    --panel: #131c2f;
-    --panel-contrast: #e5e7eb;
-    --surface: #0f172a;
-    --surface-strong: #1f2937;
-    --muted: #cbd5e1;
-    --muted-2: #94a3b8;
-    --accent: #7aa2f7;
-    --accent-2: #a78bfa;
-    --accent-strong: #8ba8ff;
+    --gradient-top: #1c1333;
+    --gradient-mid: #140b2a;
+    --gradient-bottom: #0f0820;
+    --panel: rgba(32, 22, 52, 0.92);
+    --panel-contrast: #f5f3ff;
+    --surface: #0f0820;
+    --surface-strong: rgba(168, 85, 247, 0.24);
+    --muted: #d9d6fe;
+    --muted-2: #b4a4f6;
+    --accent: #c084fc;
+    --accent-2: #a855f7;
+    --accent-strong: #d8b4fe;
     --positive: #4ade80;
     --warning: #fbbf24;
-    --info: #38bdf8;
-    --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
-    --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+    --info: #a5b4fc;
+    --shadow-soft: 0 26px 60px rgba(10, 6, 20, 0.55);
+    --shadow-hover: 0 30px 70px rgba(10, 6, 20, 0.72);
     color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]):not([data-bs-theme="light"]) {
-        --gradient-top: #0b1220;
-        --gradient-mid: #0f172a;
-        --gradient-bottom: #0a1020;
-        --panel: #131c2f;
-        --panel-contrast: #e5e7eb;
-        --surface: #0f172a;
-        --surface-strong: #1f2937;
-        --muted: #cbd5e1;
-        --muted-2: #94a3b8;
-        --accent: #7aa2f7;
-        --accent-2: #a78bfa;
-        --accent-strong: #8ba8ff;
+        --gradient-top: #1c1333;
+        --gradient-mid: #140b2a;
+        --gradient-bottom: #0f0820;
+        --panel: rgba(32, 22, 52, 0.92);
+        --panel-contrast: #f5f3ff;
+        --surface: #0f0820;
+        --surface-strong: rgba(168, 85, 247, 0.24);
+        --muted: #d9d6fe;
+        --muted-2: #b4a4f6;
+        --accent: #c084fc;
+        --accent-2: #a855f7;
+        --accent-strong: #d8b4fe;
         --positive: #4ade80;
         --warning: #fbbf24;
-        --info: #38bdf8;
-        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
-        --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.6);
+        --info: #a5b4fc;
+        --shadow-soft: 0 26px 60px rgba(10, 6, 20, 0.55);
+        --shadow-hover: 0 30px 70px rgba(10, 6, 20, 0.72);
         color-scheme: dark;
     }
 }
@@ -834,6 +834,251 @@ body.kanban-modal-open { overflow: hidden; }
     .vendas-kanban-controls-left { flex-direction: column; min-width: 100%; max-width: 100%; }
     .vendas-kanban-actions { flex: 1 1 100%; max-width: 100%; }
     .vendas-kanban-actions .btn-novo-evento { width: 100%; }
+}
+
+/* Dark theme fixes for AJAX-loaded Venda modal (gabiii styles) */
+html[data-theme="dark"] .kanban-modal-body .gabiii-container,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-container,
+body.dark .kanban-modal-body .gabiii-container,
+.theme-dark .kanban-modal-body .gabiii-container {
+    --gabiii-surface: radial-gradient(circle at 12% 10%, rgba(168, 85, 247, 0.18), transparent 32%),
+                      radial-gradient(circle at 80% 0%, rgba(124, 58, 237, 0.22), transparent 30%),
+                      linear-gradient(180deg, #1c1333 0%, #120b26 48%, #0f0820 100%);
+    --gabiii-panel: rgba(36, 24, 63, 0.9);
+    --gabiii-panel-strong: rgba(45, 30, 75, 0.95);
+    --gabiii-text-primary: #f5f3ff;
+    --gabiii-text-muted: #c4b5fd;
+    --gabiii-border: rgba(168, 85, 247, 0.35);
+    --gabiii-accent: #c084fc;
+    --gabiii-accent-strong: #a855f7;
+    --gabiii-success: #4ade80;
+    --gabiii-warning-bg: rgba(251, 191, 36, 0.12);
+    --gabiii-warning: #fbbf24;
+    --gabiii-shadow: 0 26px 60px rgba(10, 6, 20, 0.55);
+    background: var(--gabiii-surface);
+    color: var(--gabiii-text-primary);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--gabiii-shadow);
+    border: 1px solid var(--gabiii-border);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-card,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-card,
+body.dark .kanban-modal-body .gabiii-card,
+.theme-dark .kanban-modal-body .gabiii-card {
+    background: var(--gabiii-panel);
+    border: 1px solid var(--gabiii-border);
+    box-shadow: var(--gabiii-shadow);
+    backdrop-filter: blur(10px);
+    color: var(--gabiii-text-primary);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-card-title,
+html[data-theme="dark"] .kanban-modal-body .gabiii-title,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-card-title,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-title,
+body.dark .kanban-modal-body .gabiii-card-title,
+body.dark .kanban-modal-body .gabiii-title,
+.theme-dark .kanban-modal-body .gabiii-card-title,
+.theme-dark .kanban-modal-body .gabiii-title {
+    color: var(--gabiii-text-primary) !important;
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-id,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-id,
+body.dark .kanban-modal-body .gabiii-id,
+.theme-dark .kanban-modal-body .gabiii-id {
+    background: var(--gabiii-panel-strong);
+    color: var(--gabiii-text-muted);
+    border: 1px solid var(--gabiii-border);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-tabs,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tabs,
+body.dark .kanban-modal-body .gabiii-tabs,
+.theme-dark .kanban-modal-body .gabiii-tabs,
+html[data-theme="dark"] .kanban-modal-body .gabiii-tabs-secondary,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tabs-secondary,
+body.dark .kanban-modal-body .gabiii-tabs-secondary,
+.theme-dark .kanban-modal-body .gabiii-tabs-secondary {
+    border-color: var(--gabiii-border);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-tab,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tab,
+body.dark .kanban-modal-body .gabiii-tab,
+.theme-dark .kanban-modal-body .gabiii-tab,
+html[data-theme="dark"] .kanban-modal-body .gabiii-tab-secondary,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tab-secondary,
+body.dark .kanban-modal-body .gabiii-tab-secondary,
+.theme-dark .kanban-modal-body .gabiii-tab-secondary {
+    color: var(--gabiii-text-muted);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-tab.active,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tab.active,
+body.dark .kanban-modal-body .gabiii-tab.active,
+.theme-dark .kanban-modal-body .gabiii-tab.active,
+html[data-theme="dark"] .kanban-modal-body .gabiii-tab-secondary.active,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tab-secondary.active,
+body.dark .kanban-modal-body .gabiii-tab-secondary.active,
+.theme-dark .kanban-modal-body .gabiii-tab-secondary.active {
+    color: var(--gabiii-accent) !important;
+    border-bottom-color: var(--gabiii-accent) !important;
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-input,
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-select,
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-textarea,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-input,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-select,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-textarea,
+body.dark .kanban-modal-body .gabiii-form-input,
+body.dark .kanban-modal-body .gabiii-form-select,
+body.dark .kanban-modal-body .gabiii-form-textarea,
+.theme-dark .kanban-modal-body .gabiii-form-input,
+.theme-dark .kanban-modal-body .gabiii-form-select,
+.theme-dark .kanban-modal-body .gabiii-form-textarea {
+    background: var(--gabiii-panel-strong);
+    border-color: var(--gabiii-border);
+    color: var(--gabiii-text-primary);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-input:focus,
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-select:focus,
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-textarea:focus,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-input:focus,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-select:focus,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-textarea:focus,
+body.dark .kanban-modal-body .gabiii-form-input:focus,
+body.dark .kanban-modal-body .gabiii-form-select:focus,
+body.dark .kanban-modal-body .gabiii-form-textarea:focus,
+.theme-dark .kanban-modal-body .gabiii-form-input:focus,
+.theme-dark .kanban-modal-body .gabiii-form-select:focus,
+.theme-dark .kanban-modal-body .gabiii-form-textarea:focus {
+    border-color: var(--gabiii-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--gabiii-accent) 22%, transparent);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-form-label,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-form-label,
+body.dark .kanban-modal-body .gabiii-form-label,
+.theme-dark .kanban-modal-body .gabiii-form-label,
+html[data-theme="dark"] .kanban-modal-body .gabiii-info-value,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-info-value,
+body.dark .kanban-modal-body .gabiii-info-value,
+.theme-dark .kanban-modal-body .gabiii-info-value,
+html[data-theme="dark"] .kanban-modal-body .gabiii-section-title,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-section-title,
+body.dark .kanban-modal-body .gabiii-section-title,
+.theme-dark .kanban-modal-body .gabiii-section-title,
+html[data-theme="dark"] .kanban-modal-body .gabiii-card p,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-card p,
+body.dark .kanban-modal-body .gabiii-card p,
+.theme-dark .kanban-modal-body .gabiii-card p {
+    color: var(--gabiii-text-primary) !important;
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-muted,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-muted,
+body.dark .kanban-modal-body .gabiii-muted,
+.theme-dark .kanban-modal-body .gabiii-muted,
+html[data-theme="dark"] .kanban-modal-body .gabiii-info-label,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-info-label,
+body.dark .kanban-modal-body .gabiii-info-label,
+.theme-dark .kanban-modal-body .gabiii-info-label,
+html[data-theme="dark"] .kanban-modal-body .gabiii-empty-text,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-empty-text,
+body.dark .kanban-modal-body .gabiii-empty-text,
+.theme-dark .kanban-modal-body .gabiii-empty-text {
+    color: var(--gabiii-text-muted) !important;
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-empty-icon,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-empty-icon,
+body.dark .kanban-modal-body .gabiii-empty-icon,
+.theme-dark .kanban-modal-body .gabiii-empty-icon {
+    color: color-mix(in srgb, var(--gabiii-text-muted) 80%, transparent);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-avatar,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-avatar,
+body.dark .kanban-modal-body .gabiii-avatar,
+.theme-dark .kanban-modal-body .gabiii-avatar {
+    background: var(--gabiii-border);
+    color: var(--gabiii-text-primary);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-status,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-status,
+body.dark .kanban-modal-body .gabiii-status,
+.theme-dark .kanban-modal-body .gabiii-status {
+    background: var(--gabiii-warning-bg);
+    color: var(--gabiii-warning);
+    border: 1px solid color-mix(in srgb, var(--gabiii-warning) 30%, transparent);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-btn-primary,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-btn-primary,
+body.dark .kanban-modal-body .gabiii-btn-primary,
+.theme-dark .kanban-modal-body .gabiii-btn-primary {
+    background: var(--gabiii-accent);
+    color: var(--gabiii-panel);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-btn-primary:hover,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-btn-primary:hover,
+body.dark .kanban-modal-body .gabiii-btn-primary:hover,
+.theme-dark .kanban-modal-body .gabiii-btn-primary:hover {
+    background: var(--gabiii-accent-strong);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-btn-secondary,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-btn-secondary,
+body.dark .kanban-modal-body .gabiii-btn-secondary,
+.theme-dark .kanban-modal-body .gabiii-btn-secondary {
+    background: var(--gabiii-panel-strong);
+    color: var(--gabiii-text-primary);
+    border: 1px solid var(--gabiii-border);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-btn-success,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-btn-success,
+body.dark .kanban-modal-body .gabiii-btn-success,
+.theme-dark .kanban-modal-body .gabiii-btn-success {
+    background: var(--gabiii-success);
+    color: #052e16;
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-highlight-card,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-highlight-card,
+body.dark .kanban-modal-body .gabiii-highlight-card,
+.theme-dark .kanban-modal-body .gabiii-highlight-card {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--gabiii-accent) 16%, transparent) 0%, color-mix(in srgb, var(--gabiii-accent) 6%, transparent) 100%);
+    border-left-color: var(--gabiii-accent);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-tag-blue,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tag-blue,
+body.dark .kanban-modal-body .gabiii-tag-blue,
+.theme-dark .kanban-modal-body .gabiii-tag-blue {
+    background: color-mix(in srgb, var(--gabiii-accent) 25%, transparent);
+    color: var(--gabiii-text-primary);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-tag-green,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-tag-green,
+body.dark .kanban-modal-body .gabiii-tag-green,
+.theme-dark .kanban-modal-body .gabiii-tag-green {
+    background: color-mix(in srgb, var(--gabiii-success) 25%, transparent);
+    color: var(--gabiii-text-primary);
+}
+
+html[data-theme="dark"] .kanban-modal-body .gabiii-btn-link,
+html[data-bs-theme="dark"] .kanban-modal-body .gabiii-btn-link,
+body.dark .kanban-modal-body .gabiii-btn-link,
+.theme-dark .kanban-modal-body .gabiii-btn-link {
+    color: var(--gabiii-accent);
 }
 
 /* ACCESSIBILITY -------------------------------------------- */
