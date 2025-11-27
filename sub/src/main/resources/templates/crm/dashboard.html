@@ -11,8 +11,8 @@
         <!-- Header -->
         <div class="dashboard-header">
             <div>
-                <h1><i class="bi bi-speedometer2"></i> Dashboard CRM</h1>
-                <p>Visão geral das suas vendas e atividades</p>
+                <h1 class="greeting-title">Olá, <span id="userName">Usuário</span></h1>
+                <p class="greeting-subtitle">Acompanhe seu trabalho e novidades do Power CRM.</p>
             </div>
             <div class="header-actions">
                 <button class="btn-refresh" onclick="loadDashboardData()">
@@ -29,12 +29,99 @@
 
         <!-- Main Content -->
         <div id="dashboardContent" style="display: none;">
-            <!-- Vendas Stats -->
+            <!-- Saldo Section -->
             <div class="section-header">
+                <h2 class="section-title">Saldo</h2>
+            </div>
+
+            <div class="balance-grid">
+                <div class="balance-card available">
+                    <div class="balance-label">Disponível</div>
+                    <div class="balance-value" id="saldoDisponivel">R$ 0,00</div>
+                </div>
+
+                <div class="balance-card to-receive">
+                    <div class="balance-label">A Receber</div>
+                    <div class="balance-value" id="saldoAReceber">R$ 0,00</div>
+                </div>
+            </div>
+
+            <!-- Atividades Section -->
+            <div class="section-header">
+                <h2 class="section-title">Atividades</h2>
+            </div>
+
+            <div class="activities-grid">
+                <div class="activity-card access-deals">
+                    <div class="activity-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <div class="activity-text">
+                        <div class="activity-title">Acesse suas</div>
+                        <div class="activity-subtitle">negociações</div>
+                    </div>
+                </div>
+
+                <div class="activity-card overdue">
+                    <div class="activity-number" id="atividadesVencidas">0</div>
+                    <div class="activity-info">
+                        <div class="activity-label">Atividades</div>
+                        <div class="activity-label">Vencidas</div>
+                    </div>
+                </div>
+
+                <div class="activity-card today">
+                    <div class="activity-number" id="atividadesParaHoje">0</div>
+                    <div class="activity-info">
+                        <div class="activity-label">Atividades</div>
+                        <div class="activity-label">Para hoje</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Central de Ajuda Section -->
+            <div class="section-header">
+                <h2 class="section-title">Central de ajuda</h2>
+            </div>
+
+            <div class="help-grid">
+                <div class="help-card">
+                    <div class="help-icon">
+                        <i class="bi bi-play-circle"></i>
+                    </div>
+                    <div class="help-text">
+                        <div class="help-title">Curso</div>
+                        <div class="help-subtitle">Power CRM</div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">
+                        <i class="bi bi-question-circle"></i>
+                    </div>
+                    <div class="help-text">
+                        <div class="help-title">Central de</div>
+                        <div class="help-subtitle">Ajuda</div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <div class="help-icon">
+                        <i class="bi bi-chat-square-text"></i>
+                    </div>
+                    <div class="help-text">
+                        <div class="help-title">Envie uma</div>
+                        <div class="help-subtitle">solicitação</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendas Stats (Hidden for now) -->
+            <div class="section-header" style="display: none;">
                 <h2><i class="bi bi-cart-check"></i> Vendas</h2>
             </div>
 
-            <div class="stats-grid">
+            <div class="stats-grid" style="display: none;">
                 <div class="stat-card success" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #10b981;">
                     <div class="stat-card-icon" style="background: #10b981;">
                         <i class="bi bi-wallet2"></i>
@@ -163,7 +250,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions-section">
+            <div class="quick-actions-section" style="display: none;">
                 <div class="section-header">
                     <h2><i class="bi bi-lightning-charge"></i> Ações Rápidas</h2>
                 </div>
@@ -180,6 +267,23 @@
                         <i class="bi bi-plus-circle"></i>
                         <span>Nova Negociação</span>
                     </a>
+                </div>
+            </div>
+
+            <!-- Test Withdrawal Button -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2 class="section-title">Área de Testes</h2>
+                </div>
+                <div class="test-buttons">
+                    <button class="test-btn" onclick="testWithdrawal()">
+                        <i class="bi bi-cash-coin"></i>
+                        <span>Criar Saque de Teste</span>
+                    </button>
+                    <button class="test-btn" onclick="testAddBalance()">
+                        <i class="bi bi-plus-circle"></i>
+                        <span>Adicionar Saldo de Teste</span>
+                    </button>
                 </div>
             </div>
         </div>

@@ -196,7 +196,110 @@ function renderAtividadesTipo(metrics) {
     }
 }
 
+// Load user name and balance information
+async function loadUserInfo() {
+    try {
+        // Get authenticated user info (from session or API)
+        const userNameElement = document.getElementById('userName');
+        if (userNameElement && window.userFullName) {
+            userNameElement.textContent = window.userFullName;
+        }
+
+        // Load balance info
+        const balanceResponse = await fetch('/crm/api/saques/saldo-disponivel', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (balanceResponse.ok) {
+            const balanceData = await balanceResponse.json();
+
+            const saldoDisponivelElement = document.getElementById('saldoDisponivel');
+            const saldoAReceberElement = document.getElementById('saldoAReceber');
+
+            if (saldoDisponivelElement) {
+                saldoDisponivelElement.textContent = formatCurrency(balanceData.saldoDisponivel);
+            }
+
+            if (saldoAReceberElement) {
+                saldoAReceberElement.textContent = formatCurrency(balanceData.saldoBloqueado);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading user info:', error);
+    }
+}
+
+// Test function: Create a test withdrawal
+async function testWithdrawal() {
+    try {
+        const amount = prompt('Digite o valor do saque de teste (padrão: R$ 100,00):', '100');
+        if (!amount) return;
+
+        const response = await fetch('/crm/api/saques/teste', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ amount: parseFloat(amount) })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`✅ ${result.message}\n\nSaque criado com sucesso!\nValor: R$ ${amount}\nSaldo atual: ${formatCurrency(result.saldoAtual)}`);
+            loadDashboardData();
+        } else {
+            alert(`❌ Erro: ${result.error}`);
+        }
+    } catch (error) {
+        console.error('Error creating test withdrawal:', error);
+        alert('❌ Erro ao criar saque de teste');
+    }
+}
+
+// Test function: Add test balance
+async function testAddBalance() {
+    try {
+        const amount = prompt('Digite o valor para adicionar ao saldo (padrão: R$ 1000,00):', '1000');
+        if (!amount) return;
+
+        const response = await fetch('/crm/api/vendas/teste-concluir', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ valorVenda: parseFloat(amount) })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`✅ ${result.message}\n\nValor adicionado: ${formatCurrency(result.valorAdicionado)}\nNovo saldo: ${formatCurrency(result.novoSaldo)}`);
+            loadDashboardData();
+        } else {
+            alert(`❌ Erro: ${result.error}`);
+        }
+    } catch (error) {
+        console.error('Error adding test balance:', error);
+        alert('❌ Erro ao adicionar saldo de teste');
+    }
+}
+
+// Update loadDashboardData to include user info
+const originalLoadDashboardData = loadDashboardData;
+async function loadDashboardData() {
+    await originalLoadDashboardData();
+    await loadUserInfo();
+}
+
 // Export for inline onclick handlers
 window.loadDashboardData = loadDashboardData;
+window.testWithdrawal = testWithdrawal;
+window.testAddBalance = testAddBalance;
 
 console.log('✅ CRM Dashboard ready');
