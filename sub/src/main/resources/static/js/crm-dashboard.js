@@ -55,29 +55,6 @@ async function loadDashboardData() {
         loadingState.style.display = 'block';
         dashboardContent.style.display = 'none';
 
-        // Fetch metrics from API
-        const response = await fetch('/crm/api/dashboard/metrics', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to load dashboard metrics');
-        }
-
-        const metrics = await response.json();
-        console.log('Dashboard metrics loaded:', metrics);
-
-        // Render all sections
-        renderVendasMetrics(metrics);
-        renderFunnelMetrics(metrics);
-        renderAtividadesMetrics(metrics);
-        renderAtividadesTipo(metrics);
-
-        // Load user balance
-        await loadUserBalance();
-
         // Load user info and withdrawal balance
         await loadUserInfo();
 
