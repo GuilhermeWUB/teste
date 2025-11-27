@@ -20,6 +20,31 @@ function formatNumber(value) {
     return new Intl.NumberFormat('pt-BR').format(value || 0);
 }
 
+// Load user balance
+async function loadUserBalance() {
+    try {
+        const response = await fetch('/crm/api/usuarios/meu-saldo', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.error('Failed to load user balance');
+            return;
+        }
+
+        const data = await response.json();
+        const saldoElement = document.getElementById('meuSaldo');
+        if (saldoElement) {
+            saldoElement.textContent = formatCurrency(data.saldo);
+        }
+    } catch (error) {
+        console.error('Error loading user balance:', error);
+    }
+}
+
 // Load all dashboard metrics
 async function loadDashboardData() {
     const loadingState = document.getElementById('loadingState');
@@ -49,6 +74,9 @@ async function loadDashboardData() {
         renderFunnelMetrics(metrics);
         renderAtividadesMetrics(metrics);
         renderAtividadesTipo(metrics);
+
+        // Load user balance
+        await loadUserBalance();
 
         // Hide loading, show content
         loadingState.style.display = 'none';

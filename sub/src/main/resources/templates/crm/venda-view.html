@@ -785,6 +785,11 @@
                         <h3 class="gabiii-card-title">Bônus</h3>
                     </div>
                     <p class="gabiii-info-value" style="color: #10b981;">R$ 0,00</p>
+
+                    <button class="gabiii-btn" type="button" onclick="testarVendaConcluida()"
+                            style="background: #ff9800; color: white; width: 100%; margin-top: 15px;">
+                        <i class="bi bi-lightning-fill"></i> Venda Concluída (TESTE)
+                    </button>
                 </div>
 
                 <div class="gabiii-card">
@@ -826,5 +831,57 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ========== SISTEMA DE TESTE DE VENDA ==========
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+        function buildHeaders(extra = {}) {
+            const headers = { 'X-Requested-With': 'XMLHttpRequest', ...extra };
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader] = csrfToken;
+            }
+            return headers;
+        }
+
+        // Função de teste: cria e conclui uma venda automaticamente
+        async function testarVendaConcluida() {
+            if (!confirm('Deseja criar uma venda de teste no valor de R$ 1.000,00?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/crm/api/vendas/teste-concluir', {
+                    method: 'POST',
+                    headers: buildHeaders({
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify({ valorVenda: 1000.00 })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao criar venda de teste');
+                }
+
+                const data = await response.json();
+                alert(`✅ ${data.message}\n\nValor adicionado: R$ ${data.valorAdicionado.toFixed(2)}\nNovo saldo: R$ ${data.novoSaldo.toFixed(2)}`);
+
+                // Recarrega o kanban se estiver disponível
+                if (window.vendasBoard && window.vendasBoard.loadBoard) {
+                    window.vendasBoard.loadBoard();
+                }
+
+                // Fecha o modal após criar a venda
+                if (window.vendasBoard && window.vendasBoard.closeModal) {
+                    window.vendasBoard.closeModal();
+                }
+            } catch (error) {
+                console.error('Erro ao testar venda:', error);
+                alert('❌ Erro ao criar venda de teste: ' + error.message);
+            }
+        }
+    </script>
 </body>
 </html>
