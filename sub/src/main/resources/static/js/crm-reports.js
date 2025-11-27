@@ -2,18 +2,24 @@
 
 console.log('✅ CRM Reports script loaded');
 
-// Load reports data on page load
-document.addEventListener('DOMContentLoaded', () => {
-    loadReportsData();
-});
-
 // Format number with thousands separator
 function formatNumber(value) {
     return new Intl.NumberFormat('pt-BR').format(value || 0);
 }
 
-// Load all reports data
-async function loadReportsData() {
+// Generate report based on selected checkboxes
+async function generateReport() {
+    const checkLigacoes = document.getElementById('checkLigacoes').checked;
+    const checkVendas = document.getElementById('checkVendas').checked;
+    const checkSaques = document.getElementById('checkSaques').checked;
+    const checkAtividades = document.getElementById('checkAtividades').checked;
+
+    // Validate at least one option is selected
+    if (!checkLigacoes && !checkVendas && !checkSaques && !checkAtividades) {
+        alert('Selecione pelo menos um relatório para gerar!');
+        return;
+    }
+
     const loadingState = document.getElementById('loadingState');
     const reportsContent = document.getElementById('reportsContent');
 
@@ -37,15 +43,41 @@ async function loadReportsData() {
         const data = await response.json();
         console.log('Reports data loaded:', data);
 
-        // Render all metrics
-        renderMetrics(data);
-        renderSalesDetails(data);
-        renderWithdrawalsDetails(data);
-        renderActivitiesDetails(data);
+        // Render selected sections
+        if (checkLigacoes) {
+            renderLigacoes(data);
+            document.getElementById('sectionLigacoes').style.display = 'block';
+        } else {
+            document.getElementById('sectionLigacoes').style.display = 'none';
+        }
+
+        if (checkVendas) {
+            renderVendas(data);
+            document.getElementById('sectionVendas').style.display = 'block';
+        } else {
+            document.getElementById('sectionVendas').style.display = 'none';
+        }
+
+        if (checkSaques) {
+            renderSaques(data);
+            document.getElementById('sectionSaques').style.display = 'block';
+        } else {
+            document.getElementById('sectionSaques').style.display = 'none';
+        }
+
+        if (checkAtividades) {
+            renderAtividades(data);
+            document.getElementById('sectionAtividades').style.display = 'block';
+        } else {
+            document.getElementById('sectionAtividades').style.display = 'none';
+        }
 
         // Hide loading, show content
         loadingState.style.display = 'none';
         reportsContent.style.display = 'block';
+
+        // Scroll to results
+        reportsContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (error) {
         console.error('Error loading reports:', error);
@@ -54,23 +86,38 @@ async function loadReportsData() {
         loadingState.innerHTML = `
             <div style="color: #ef4444;">
                 <i class="bi bi-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-                <p>Erro ao carregar relatórios</p>
-                <button onclick="loadReportsData()" class="btn-refresh" style="margin-top: 1rem;">
+                <p>Erro ao gerar relatório</p>
+                <button onclick="generateReport()" class="btn-refresh" style="margin-top: 1rem;">
                     <i class="bi bi-arrow-clockwise"></i> Tentar novamente
                 </button>
             </div>
         `;
+        loadingState.style.display = 'block';
     }
 }
 
-// Render main metrics
-function renderMetrics(data) {
-    // Total de Ligações
+// Clear report and hide results
+function clearReport() {
+    const reportsContent = document.getElementById('reportsContent');
+    reportsContent.style.display = 'none';
+
+    // Hide all sections
+    document.getElementById('sectionLigacoes').style.display = 'none';
+    document.getElementById('sectionVendas').style.display = 'none';
+    document.getElementById('sectionSaques').style.display = 'none';
+    document.getElementById('sectionAtividades').style.display = 'none';
+}
+
+// Render Ligações section
+function renderLigacoes(data) {
     const totalLigacoes = document.getElementById('totalLigacoes');
     if (totalLigacoes) {
         totalLigacoes.textContent = formatNumber(data.totalLigacoes);
     }
+}
 
+// Render Vendas section
+function renderVendas(data) {
     // Total de Vendas
     const totalVendas = document.getElementById('totalVendas');
     if (totalVendas) {
@@ -83,27 +130,12 @@ function renderMetrics(data) {
         vendasConcluidas.textContent = formatNumber(data.vendasConcluidas);
     }
 
-    // Total de Saques
-    const totalSaques = document.getElementById('totalSaques');
-    if (totalSaques) {
-        totalSaques.textContent = formatNumber(data.totalSaques);
-    }
-
-    // Saques Concluídos (subtitle)
-    const saquesConcluidos = document.getElementById('saquesConcluidos');
-    if (saquesConcluidos) {
-        saquesConcluidos.textContent = formatNumber(data.saquesConcluidos);
-    }
-
     // Taxa de Conversão
     const taxaConversao = document.getElementById('taxaConversao');
     if (taxaConversao) {
         taxaConversao.textContent = data.taxaConversao + '%';
     }
-}
 
-// Render sales details
-function renderSalesDetails(data) {
     // Vendas Pendentes
     const vendasPendentes = document.getElementById('vendasPendentes');
     if (vendasPendentes) {
@@ -117,8 +149,20 @@ function renderSalesDetails(data) {
     }
 }
 
-// Render withdrawals details
-function renderWithdrawalsDetails(data) {
+// Render Saques section
+function renderSaques(data) {
+    // Total de Saques
+    const totalSaques = document.getElementById('totalSaques');
+    if (totalSaques) {
+        totalSaques.textContent = formatNumber(data.totalSaques);
+    }
+
+    // Saques Concluídos (subtitle)
+    const saquesConcluidos = document.getElementById('saquesConcluidos');
+    if (saquesConcluidos) {
+        saquesConcluidos.textContent = formatNumber(data.saquesConcluidos);
+    }
+
     // Saques Pendentes
     const saquesPendentes = document.getElementById('saquesPendentes');
     if (saquesPendentes) {
@@ -144,8 +188,8 @@ function renderWithdrawalsDetails(data) {
     }
 }
 
-// Render activities details
-function renderActivitiesDetails(data) {
+// Render Atividades section
+function renderAtividades(data) {
     // E-mails
     const totalEmails = document.getElementById('totalEmails');
     if (totalEmails) {
@@ -172,6 +216,7 @@ function renderActivitiesDetails(data) {
 }
 
 // Export for inline onclick handlers
-window.loadReportsData = loadReportsData;
+window.generateReport = generateReport;
+window.clearReport = clearReport;
 
 console.log('✅ CRM Reports ready');

@@ -12,140 +12,214 @@
         <div class="reports-header">
             <div>
                 <h1><i class="bi bi-bar-chart-line"></i> Relatórios CRM</h1>
-                <p>Métricas de desempenho e atividades do time comercial</p>
+                <p>Selecione os relatórios que deseja visualizar e clique em Gerar</p>
             </div>
-            <div class="header-actions">
-                <button class="btn-refresh" onclick="loadReportsData()">
-                    <i class="bi bi-arrow-clockwise"></i> Atualizar
-                </button>
+        </div>
+
+        <!-- Report Selection Form -->
+        <div class="report-form">
+            <div class="form-section">
+                <h3><i class="bi bi-file-earmark-bar-graph"></i> Selecione os Relatórios</h3>
+                <p class="form-subtitle">Escolha quais métricas você deseja visualizar</p>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-card">
+                        <input type="checkbox" id="checkLigacoes" checked>
+                        <div class="checkbox-content">
+                            <div class="checkbox-icon phone">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div class="checkbox-text">
+                                <div class="checkbox-title">Ligações</div>
+                                <div class="checkbox-description">Total de ligações realizadas</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" id="checkVendas" checked>
+                        <div class="checkbox-content">
+                            <div class="checkbox-icon sales">
+                                <i class="bi bi-cart-check"></i>
+                            </div>
+                            <div class="checkbox-text">
+                                <div class="checkbox-title">Vendas</div>
+                                <div class="checkbox-description">Métricas de vendas e conversão</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" id="checkSaques" checked>
+                        <div class="checkbox-content">
+                            <div class="checkbox-icon withdrawals">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                            <div class="checkbox-text">
+                                <div class="checkbox-title">Saques</div>
+                                <div class="checkbox-description">Status e totais de saques</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" id="checkAtividades" checked>
+                        <div class="checkbox-content">
+                            <div class="checkbox-icon activities">
+                                <i class="bi bi-activity"></i>
+                            </div>
+                            <div class="checkbox-text">
+                                <div class="checkbox-title">Atividades</div>
+                                <div class="checkbox-description">E-mails, reuniões e visitas</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-generate" onclick="generateReport()">
+                        <i class="bi bi-bar-chart-fill"></i> Gerar Relatório
+                    </button>
+                    <button class="btn-clear" onclick="clearReport()">
+                        <i class="bi bi-x-circle"></i> Limpar
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Loading State -->
-        <div id="loadingState" class="loading-state">
+        <div id="loadingState" class="loading-state" style="display: none;">
             <div class="spinner"></div>
-            <p>Carregando relatórios...</p>
+            <p>Gerando relatório...</p>
         </div>
 
         <!-- Main Content -->
         <div id="reportsContent" style="display: none;">
 
-            <!-- Principais Métricas -->
-            <div class="section-header">
-                <h2><i class="bi bi-graph-up"></i> Principais Métricas</h2>
-            </div>
-
-            <div class="metrics-grid">
-                <!-- Ligações -->
-                <div class="metric-card phone">
-                    <div class="metric-icon">
-                        <i class="bi bi-telephone"></i>
-                    </div>
-                    <div class="metric-body">
-                        <div class="metric-label">Total de Ligações</div>
-                        <div class="metric-value" id="totalLigacoes">0</div>
-                        <div class="metric-subtitle">Ligações realizadas</div>
-                    </div>
+            <!-- Ligações Section -->
+            <div id="sectionLigacoes" class="report-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="bi bi-telephone"></i> Ligações</h2>
                 </div>
 
-                <!-- Vendas -->
-                <div class="metric-card sales">
-                    <div class="metric-icon">
-                        <i class="bi bi-cart-check"></i>
-                    </div>
-                    <div class="metric-body">
-                        <div class="metric-label">Total de Vendas</div>
-                        <div class="metric-value" id="totalVendas">0</div>
-                        <div class="metric-subtitle"><span id="vendasConcluidas">0</span> concluídas</div>
-                    </div>
-                </div>
-
-                <!-- Saques -->
-                <div class="metric-card withdrawals">
-                    <div class="metric-icon">
-                        <i class="bi bi-cash-coin"></i>
-                    </div>
-                    <div class="metric-body">
-                        <div class="metric-label">Total de Saques</div>
-                        <div class="metric-value" id="totalSaques">0</div>
-                        <div class="metric-subtitle"><span id="saquesConcluidos">0</span> concluídos</div>
-                    </div>
-                </div>
-
-                <!-- Taxa de Conversão -->
-                <div class="metric-card conversion">
-                    <div class="metric-icon">
-                        <i class="bi bi-percent"></i>
-                    </div>
-                    <div class="metric-body">
-                        <div class="metric-label">Taxa de Conversão</div>
-                        <div class="metric-value" id="taxaConversao">0%</div>
-                        <div class="metric-subtitle">Vendas concluídas / Total</div>
+                <div class="metrics-grid">
+                    <div class="metric-card phone">
+                        <div class="metric-icon">
+                            <i class="bi bi-telephone"></i>
+                        </div>
+                        <div class="metric-body">
+                            <div class="metric-label">Total de Ligações</div>
+                            <div class="metric-value" id="totalLigacoes">0</div>
+                            <div class="metric-subtitle">Ligações realizadas</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Detalhamento de Vendas -->
-            <div class="section-header">
-                <h2><i class="bi bi-cart"></i> Vendas</h2>
+            <!-- Vendas Section -->
+            <div id="sectionVendas" class="report-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="bi bi-cart"></i> Vendas</h2>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card sales">
+                        <div class="metric-icon">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+                        <div class="metric-body">
+                            <div class="metric-label">Total de Vendas</div>
+                            <div class="metric-value" id="totalVendas">0</div>
+                            <div class="metric-subtitle"><span id="vendasConcluidas">0</span> concluídas</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card conversion">
+                        <div class="metric-icon">
+                            <i class="bi bi-percent"></i>
+                        </div>
+                        <div class="metric-body">
+                            <div class="metric-label">Taxa de Conversão</div>
+                            <div class="metric-value" id="taxaConversao">0%</div>
+                            <div class="metric-subtitle">Vendas concluídas / Total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <div class="detail-label">Vendas Pendentes</div>
+                        <div class="detail-value pending" id="vendasPendentes">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Vendas Concluídas</div>
+                        <div class="detail-value success" id="vendasConcluidasDetail">0</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="detail-grid">
-                <div class="detail-card">
-                    <div class="detail-label">Vendas Pendentes</div>
-                    <div class="detail-value pending" id="vendasPendentes">0</div>
+            <!-- Saques Section -->
+            <div id="sectionSaques" class="report-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="bi bi-wallet2"></i> Saques</h2>
                 </div>
-                <div class="detail-card">
-                    <div class="detail-label">Vendas Concluídas</div>
-                    <div class="detail-value success" id="vendasConcluidasDetail">0</div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card withdrawals">
+                        <div class="metric-icon">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <div class="metric-body">
+                            <div class="metric-label">Total de Saques</div>
+                            <div class="metric-value" id="totalSaques">0</div>
+                            <div class="metric-subtitle"><span id="saquesConcluidos">0</span> concluídos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <div class="detail-label">Saques Pendentes</div>
+                        <div class="detail-value warning" id="saquesPendentes">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Saques Aprovados</div>
+                        <div class="detail-value info" id="saquesAprovados">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Saques Concluídos</div>
+                        <div class="detail-value success" id="saquesConcluidosDetail">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Saques Rejeitados</div>
+                        <div class="detail-value error" id="saquesRejeitados">0</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Detalhamento de Saques -->
-            <div class="section-header">
-                <h2><i class="bi bi-wallet2"></i> Saques</h2>
-            </div>
+            <!-- Atividades Section -->
+            <div id="sectionAtividades" class="report-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="bi bi-activity"></i> Outras Atividades</h2>
+                </div>
 
-            <div class="detail-grid">
-                <div class="detail-card">
-                    <div class="detail-label">Saques Pendentes</div>
-                    <div class="detail-value warning" id="saquesPendentes">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Saques Aprovados</div>
-                    <div class="detail-value info" id="saquesAprovados">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Saques Concluídos</div>
-                    <div class="detail-value success" id="saquesConcluidosDetail">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Saques Rejeitados</div>
-                    <div class="detail-value error" id="saquesRejeitados">0</div>
-                </div>
-            </div>
-
-            <!-- Detalhamento de Atividades -->
-            <div class="section-header">
-                <h2><i class="bi bi-activity"></i> Outras Atividades</h2>
-            </div>
-
-            <div class="detail-grid">
-                <div class="detail-card">
-                    <div class="detail-label">E-mails</div>
-                    <div class="detail-value" id="totalEmails">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Reuniões</div>
-                    <div class="detail-value" id="totalReunioes">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Visitas</div>
-                    <div class="detail-value" id="totalVisitas">0</div>
-                </div>
-                <div class="detail-card">
-                    <div class="detail-label">Total de Atividades</div>
-                    <div class="detail-value" id="totalAtividades">0</div>
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <div class="detail-label">E-mails</div>
+                        <div class="detail-value" id="totalEmails">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Reuniões</div>
+                        <div class="detail-value" id="totalReunioes">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Visitas</div>
+                        <div class="detail-value" id="totalVisitas">0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Total de Atividades</div>
+                        <div class="detail-value" id="totalAtividades">0</div>
+                    </div>
                 </div>
             </div>
 
