@@ -1,6 +1,8 @@
 (function() {
     'use strict';
 
+    console.log('[Minha Empresa] Iniciando módulo...');
+
     // ========== CONSTANTES ==========
     const API_USUARIOS = '/crm/api/usuarios';
     const API_REGIONAIS = '/crm/minha-empresa/regionais';
@@ -24,6 +26,8 @@
     const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
+    console.log('[Minha Empresa] CSRF Token:', csrfToken ? 'Presente' : 'Ausente');
+
     function buildHeaders(extra = {}) {
         const headers = {
             'X-Requested-With': 'XMLHttpRequest',
@@ -37,27 +41,50 @@
 
     // ========== INICIALIZAÇÃO ==========
     function init() {
-        console.log('Inicializando Minha Empresa');
-        bindEvents();
+        console.log('[Minha Empresa] Executando init()...');
 
-        const initialSection = getInitialSection();
-        navigateToSection(initialSection);
-        loadUsers();
-        loadStats();
-        loadRegionais();
-        loadRegionaisStats();
+        try {
+            bindEvents();
+
+            const initialSection = getInitialSection();
+            console.log('[Minha Empresa] Seção inicial:', initialSection);
+
+            navigateToSection(initialSection);
+
+            // Carregar dados baseado na seção inicial
+            if (initialSection === 'regionais') {
+                console.log('[Minha Empresa] Carregando dados de Regionais...');
+                loadRegionais();
+                loadRegionaisStats();
+            } else {
+                console.log('[Minha Empresa] Carregando dados de Usuários...');
+                loadUsers();
+                loadStats();
+            }
+        } catch (error) {
+            console.error('[Minha Empresa] Erro durante inicialização:', error);
+            showError('Erro ao inicializar a página. Verifique o console para mais detalhes.');
+        }
     }
 
     function bindEvents() {
+        console.log('[Minha Empresa] Vinculando eventos...');
+
         // Forms
         const userForm = document.getElementById('userForm');
         if (userForm) {
             userForm.addEventListener('submit', handleUserFormSubmit);
+            console.log('[Minha Empresa] Form de usuário vinculado');
+        } else {
+            console.warn('[Minha Empresa] Form de usuário não encontrado');
         }
 
         const regionalForm = document.getElementById('regionalForm');
         if (regionalForm) {
             regionalForm.addEventListener('submit', handleRegionalFormSubmit);
+            console.log('[Minha Empresa] Form de regional vinculado');
+        } else {
+            console.warn('[Minha Empresa] Form de regional não encontrado');
         }
 
         // Fechar modais ao clicar fora
@@ -72,6 +99,8 @@
             if (e.target === regionalModal) closeRegionalModal();
             if (e.target === confirmRegionalModal) closeConfirmRegionalModal();
         });
+
+        console.log('[Minha Empresa] Eventos vinculados com sucesso');
     }
 
     // ========== NAVEGAÇÃO ==========
@@ -79,42 +108,35 @@
         const container = document.querySelector('.empresa-content');
         const defaultSection = container?.dataset?.defaultSection;
 
+        console.log('[Minha Empresa] defaultSection do container:', defaultSection);
+
         return ['usuarios', 'regionais'].includes(defaultSection)
             ? defaultSection
             : 'usuarios';
     }
 
     function navigateToSection(section) {
+        console.log('[Minha Empresa] Navegando para seção:', section);
+
         const targetSection = document.getElementById(`section-${section}`);
         if (!targetSection) {
-            console.error('Seção não encontrada:', `section-${section}`);
+            console.error('[Minha Empresa] Seção não encontrada:', `section-${section}`);
             return;
         }
 
+        // Atualizar menu
         document.querySelectorAll('.menu-item').forEach(item => {
             const isActive = item.getAttribute('data-section') === section;
             item.classList.toggle('active', isActive);
         });
 
+        // Mostrar/esconder seções
         document.querySelectorAll('.content-section').forEach(sec => {
             sec.style.display = sec === targetSection ? 'block' : 'none';
         });
 
         state.currentSection = section;
-        if (updateHash) {
-            const targetHash = `#${section}`;
-            if (window.location.hash !== targetHash) {
-                window.location.hash = targetHash;
-            }
-        }
-    }
-
-    function syncSectionWithHash() {
-        const sectionFromHash = window.location.hash?.replace('#', '') || 'usuarios';
-        const targetSection = ['usuarios', 'regionais'].includes(sectionFromHash)
-            ? sectionFromHash
-            : 'usuarios';
-        navigateToSection(targetSection, false);
+        console.log('[Minha Empresa] Navegação concluída. Seção atual:', state.currentSection);
     }
 
     // ========================================
@@ -122,46 +144,77 @@
     // ========================================
 
     async function loadUsers() {
+        console.log('[Usuários] Carregando usuários...');
+
         try {
             const response = await fetch(API_USUARIOS, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
+            console.log('[Usuários] Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Erro ao carregar usuários');
+                throw new Error(`Erro HTTP: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('[Usuários] Dados recebidos:', data.length, 'usuários');
+
             state.users = data;
             state.filteredUsers = data;
             renderUsers();
         } catch (error) {
-            console.error('Erro ao carregar usuários:', error);
-            showError('Erro ao carregar usuários. Tente novamente.');
+            console.error('[Usuários] Erro ao carregar:', error);
+            showError('Erro ao carregar usuários. Verifique sua conexão.');
+
+            // Mostrar mensagem na tabela
+            const tbody = document.getElementById('usersTableBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="6" class="text-center">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <p style="color: #ff6b6b;">Erro ao carregar usuários</p>
+                        </td>
+                    </tr>
+                `;
+            }
         }
     }
 
     async function loadStats() {
+        console.log('[Usuários] Carregando estatísticas...');
+
         try {
             const response = await fetch(`${API_USUARIOS}/stats`, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao carregar estatísticas');
+                throw new Error(`Erro HTTP: ${response.status}`);
             }
 
             const data = await response.json();
-            document.getElementById('activeCount').textContent = data.ativos || 0;
-            document.getElementById('blockedCount').textContent = data.bloqueados || 0;
+            console.log('[Usuários] Estatísticas:', data);
+
+            const activeEl = document.getElementById('activeCount');
+            const blockedEl = document.getElementById('blockedCount');
+
+            if (activeEl) activeEl.textContent = data.ativos || 0;
+            if (blockedEl) blockedEl.textContent = data.bloqueados || 0;
         } catch (error) {
-            console.error('Erro ao carregar estatísticas:', error);
+            console.error('[Usuários] Erro ao carregar estatísticas:', error);
         }
     }
 
     function renderUsers() {
+        console.log('[Usuários] Renderizando', state.filteredUsers.length, 'usuários');
+
         const tbody = document.getElementById('usersTableBody');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('[Usuários] Elemento usersTableBody não encontrado');
+            return;
+        }
 
         if (state.filteredUsers.length === 0) {
             tbody.innerHTML = `
@@ -203,11 +256,15 @@
                 </td>
             </tr>
         `).join('');
+
+        console.log('[Usuários] Renderização concluída');
     }
 
     window.applyFilters = function() {
-        const statusFilter = document.getElementById('filterStatus').value;
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        console.log('[Usuários] Aplicando filtros...');
+
+        const statusFilter = document.getElementById('filterStatus')?.value || '';
+        const searchTerm = document.getElementById('searchInput')?.value?.toLowerCase() || '';
 
         state.filteredUsers = state.users.filter(user => {
             if (statusFilter !== '') {
@@ -223,10 +280,13 @@
             return true;
         });
 
+        console.log('[Usuários] Filtros aplicados. Resultados:', state.filteredUsers.length);
         renderUsers();
     };
 
     window.openCreateModal = function() {
+        console.log('[Usuários] Abrindo modal de criação');
+
         state.isEditingUser = false;
         state.editingUserId = null;
 
@@ -239,8 +299,13 @@
     };
 
     window.editUser = function(id) {
+        console.log('[Usuários] Editando usuário:', id);
+
         const user = state.users.find(u => u.id === id);
-        if (!user) return;
+        if (!user) {
+            console.error('[Usuários] Usuário não encontrado:', id);
+            return;
+        }
 
         state.isEditingUser = true;
         state.editingUserId = id;
@@ -257,6 +322,8 @@
     };
 
     window.closeModal = function() {
+        console.log('[Usuários] Fechando modal');
+
         document.getElementById('userModal').style.display = 'none';
         document.getElementById('userForm').reset();
         state.isEditingUser = false;
@@ -281,8 +348,8 @@
                 await blockUser(id);
                 showSuccess('Usuário bloqueado com sucesso!');
                 closeConfirmModal();
-                loadUsers();
-                loadStats();
+                await loadUsers();
+                await loadStats();
             } catch (error) {
                 showError(error.message);
             }
@@ -305,8 +372,8 @@
                 await unblockUser(id);
                 showSuccess('Usuário desbloqueado com sucesso!');
                 closeConfirmModal();
-                loadUsers();
-                loadStats();
+                await loadUsers();
+                await loadStats();
             } catch (error) {
                 showError(error.message);
             }
@@ -317,6 +384,7 @@
 
     async function handleUserFormSubmit(e) {
         e.preventDefault();
+        console.log('[Usuários] Submetendo formulário...');
 
         const userData = {
             fullName: document.getElementById('fullName').value,
@@ -339,14 +407,17 @@
             }
 
             closeModal();
-            loadUsers();
-            loadStats();
+            await loadUsers();
+            await loadStats();
         } catch (error) {
+            console.error('[Usuários] Erro ao salvar:', error);
             showError(error.message);
         }
     }
 
     async function createUser(userData) {
+        console.log('[Usuários] Criando usuário...');
+
         const response = await fetch(API_USUARIOS, {
             method: 'POST',
             headers: buildHeaders({ 'Content-Type': 'application/json' }),
@@ -354,7 +425,7 @@
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao criar usuário');
         }
 
@@ -362,6 +433,8 @@
     }
 
     async function updateUser(id, userData) {
+        console.log('[Usuários] Atualizando usuário:', id);
+
         const response = await fetch(`${API_USUARIOS}/${id}`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' }),
@@ -369,7 +442,7 @@
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao atualizar usuário');
         }
 
@@ -377,13 +450,15 @@
     }
 
     async function blockUser(id) {
+        console.log('[Usuários] Bloqueando usuário:', id);
+
         const response = await fetch(`${API_USUARIOS}/${id}/bloquear`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao bloquear usuário');
         }
 
@@ -391,13 +466,15 @@
     }
 
     async function unblockUser(id) {
+        console.log('[Usuários] Desbloqueando usuário:', id);
+
         const response = await fetch(`${API_USUARIOS}/${id}/desbloquear`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao desbloquear usuário');
         }
 
@@ -409,46 +486,77 @@
     // ========================================
 
     async function loadRegionais() {
+        console.log('[Regionais] Carregando regionais...');
+
         try {
             const response = await fetch(API_REGIONAIS, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
+            console.log('[Regionais] Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Erro ao carregar regionais');
+                throw new Error(`Erro HTTP: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log('[Regionais] Dados recebidos:', data.length, 'regionais');
+
             state.regionais = data;
             state.filteredRegionais = data;
             renderRegionais();
         } catch (error) {
-            console.error('Erro ao carregar regionais:', error);
-            showError('Erro ao carregar regionais. Tente novamente.');
+            console.error('[Regionais] Erro ao carregar:', error);
+            showError('Erro ao carregar regionais. Verifique sua conexão.');
+
+            // Mostrar mensagem na tabela
+            const tbody = document.getElementById('regionaisTableBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr class="empty-row">
+                        <td colspan="6" class="text-center">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <p style="color: #ff6b6b;">Erro ao carregar regionais</p>
+                        </td>
+                    </tr>
+                `;
+            }
         }
     }
 
     async function loadRegionaisStats() {
+        console.log('[Regionais] Carregando estatísticas...');
+
         try {
             const response = await fetch(`${API_REGIONAIS}/stats`, {
                 headers: buildHeaders({ 'Accept': 'application/json' })
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao carregar estatísticas');
+                throw new Error(`Erro HTTP: ${response.status}`);
             }
 
             const data = await response.json();
-            document.getElementById('regionaisActiveCount').textContent = data.ativas || 0;
-            document.getElementById('regionaisInactiveCount').textContent = data.inativas || 0;
+            console.log('[Regionais] Estatísticas:', data);
+
+            const activeEl = document.getElementById('regionaisActiveCount');
+            const inactiveEl = document.getElementById('regionaisInactiveCount');
+
+            if (activeEl) activeEl.textContent = data.ativas || 0;
+            if (inactiveEl) inactiveEl.textContent = data.inativas || 0;
         } catch (error) {
-            console.error('Erro ao carregar estatísticas de regionais:', error);
+            console.error('[Regionais] Erro ao carregar estatísticas:', error);
         }
     }
 
     function renderRegionais() {
+        console.log('[Regionais] Renderizando', state.filteredRegionais.length, 'regionais');
+
         const tbody = document.getElementById('regionaisTableBody');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('[Regionais] Elemento regionaisTableBody não encontrado');
+            return;
+        }
 
         if (state.filteredRegionais.length === 0) {
             tbody.innerHTML = `
@@ -493,11 +601,15 @@
                 </td>
             </tr>
         `).join('');
+
+        console.log('[Regionais] Renderização concluída');
     }
 
     window.applyRegionalFilters = function() {
-        const statusFilter = document.getElementById('filterRegionalStatus').value;
-        const searchTerm = document.getElementById('searchRegionalInput').value.toLowerCase();
+        console.log('[Regionais] Aplicando filtros...');
+
+        const statusFilter = document.getElementById('filterRegionalStatus')?.value || '';
+        const searchTerm = document.getElementById('searchRegionalInput')?.value?.toLowerCase() || '';
 
         state.filteredRegionais = state.regionais.filter(regional => {
             if (statusFilter !== '') {
@@ -513,10 +625,13 @@
             return true;
         });
 
+        console.log('[Regionais] Filtros aplicados. Resultados:', state.filteredRegionais.length);
         renderRegionais();
     };
 
     window.openCreateRegionalModal = function() {
+        console.log('[Regionais] Abrindo modal de criação');
+
         state.isEditingRegional = false;
         state.editingRegionalId = null;
 
@@ -528,8 +643,13 @@
     };
 
     window.editRegional = function(id) {
+        console.log('[Regionais] Editando regional:', id);
+
         const regional = state.regionais.find(r => r.id === id);
-        if (!regional) return;
+        if (!regional) {
+            console.error('[Regionais] Regional não encontrada:', id);
+            return;
+        }
 
         state.isEditingRegional = true;
         state.editingRegionalId = id;
@@ -544,6 +664,8 @@
     };
 
     window.closeRegionalModal = function() {
+        console.log('[Regionais] Fechando modal');
+
         document.getElementById('regionalModal').style.display = 'none';
         document.getElementById('regionalForm').reset();
         state.isEditingRegional = false;
@@ -568,8 +690,8 @@
                 await activateRegional(id);
                 showSuccess('Regional ativada com sucesso!');
                 closeConfirmRegionalModal();
-                loadRegionais();
-                loadRegionaisStats();
+                await loadRegionais();
+                await loadRegionaisStats();
             } catch (error) {
                 showError(error.message);
             }
@@ -592,8 +714,8 @@
                 await deactivateRegional(id);
                 showSuccess('Regional desativada com sucesso!');
                 closeConfirmRegionalModal();
-                loadRegionais();
-                loadRegionaisStats();
+                await loadRegionais();
+                await loadRegionaisStats();
             } catch (error) {
                 showError(error.message);
             }
@@ -616,8 +738,8 @@
                 await deleteRegional(id);
                 showSuccess('Regional excluída com sucesso!');
                 closeConfirmRegionalModal();
-                loadRegionais();
-                loadRegionaisStats();
+                await loadRegionais();
+                await loadRegionaisStats();
             } catch (error) {
                 showError(error.message);
             }
@@ -628,6 +750,7 @@
 
     async function handleRegionalFormSubmit(e) {
         e.preventDefault();
+        console.log('[Regionais] Submetendo formulário...');
 
         const regionalData = {
             name: document.getElementById('regionalName').value,
@@ -645,14 +768,17 @@
             }
 
             closeRegionalModal();
-            loadRegionais();
-            loadRegionaisStats();
+            await loadRegionais();
+            await loadRegionaisStats();
         } catch (error) {
+            console.error('[Regionais] Erro ao salvar:', error);
             showError(error.message);
         }
     }
 
     async function createRegional(regionalData) {
+        console.log('[Regionais] Criando regional...');
+
         const response = await fetch(API_REGIONAIS, {
             method: 'POST',
             headers: buildHeaders({ 'Content-Type': 'application/json' }),
@@ -660,7 +786,7 @@
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao criar regional');
         }
 
@@ -668,6 +794,8 @@
     }
 
     async function updateRegional(id, regionalData) {
+        console.log('[Regionais] Atualizando regional:', id);
+
         const response = await fetch(`${API_REGIONAIS}/${id}`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' }),
@@ -675,7 +803,7 @@
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao atualizar regional');
         }
 
@@ -683,13 +811,15 @@
     }
 
     async function activateRegional(id) {
+        console.log('[Regionais] Ativando regional:', id);
+
         const response = await fetch(`${API_REGIONAIS}/${id}/ativar`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao ativar regional');
         }
 
@@ -697,13 +827,15 @@
     }
 
     async function deactivateRegional(id) {
+        console.log('[Regionais] Desativando regional:', id);
+
         const response = await fetch(`${API_REGIONAIS}/${id}/desativar`, {
             method: 'PUT',
             headers: buildHeaders({ 'Content-Type': 'application/json' })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Erro ao desativar regional');
         }
 
@@ -711,6 +843,8 @@
     }
 
     async function deleteRegional(id) {
+        console.log('[Regionais] Excluindo regional:', id);
+
         const response = await fetch(`${API_REGIONAIS}/${id}`, {
             method: 'DELETE',
             headers: buildHeaders({ 'Content-Type': 'application/json' })
@@ -738,27 +872,42 @@
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, m => map[m]);
+        return text.toString().replace(/[&<>"']/g, m => map[m]);
     }
 
     function formatDate(dateString) {
         if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch (e) {
+            console.error('[Utils] Erro ao formatar data:', e);
+            return '-';
+        }
     }
 
     function showSuccess(message) {
-        alert(message);
+        console.log('[Success]', message);
+        alert('✓ ' + message);
     }
 
     function showError(message) {
-        alert('Erro: ' + message);
+        console.error('[Error]', message);
+        alert('✗ Erro: ' + message);
     }
 
     // ========== EXECUÇÃO INICIAL ==========
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+        console.log('[Minha Empresa] Aguardando DOMContentLoaded...');
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        console.log('[Minha Empresa] DOM já carregado, iniciando imediatamente');
+        init();
+    }
+
+    console.log('[Minha Empresa] Módulo configurado');
 })();
