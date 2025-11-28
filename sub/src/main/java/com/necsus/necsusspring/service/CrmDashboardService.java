@@ -154,7 +154,13 @@ public class CrmDashboardService {
 
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
-        Long atividadesHoje = (long) activityRepository.findByDataAgendadaBetween(startOfDay, endOfDay).size();
+        Long atividadesParaHoje = (long) activityRepository.findByDataAgendadaBetween(startOfDay, endOfDay).size();
+
+        // Calcula atividades vencidas (data agendada anterior a hoje e status não concluído/cancelado)
+        Long atividadesVencidas = activityRepository.findAll().stream()
+                .filter(a -> a.getDataAgendada() != null && a.getDataAgendada().isBefore(startOfDay))
+                .filter(a -> a.getStatus() != ActivityStatus.CONCLUIDA && a.getStatus() != ActivityStatus.CANCELADA)
+                .count();
 
         Map<String, Long> atividadesPorTipo = new HashMap<>();
         for (ActivityType tipo : ActivityType.values()) {
@@ -169,7 +175,8 @@ public class CrmDashboardService {
         metrics.put("totalAtividades", totalAtividades);
         metrics.put("atividadesAgendadas", atividadesAgendadas);
         metrics.put("atividadesConcluidas", atividadesConcluidas);
-        metrics.put("atividadesHoje", atividadesHoje);
+        metrics.put("atividadesParaHoje", atividadesParaHoje);
+        metrics.put("atividadesVencidas", atividadesVencidas);
         metrics.put("atividadesPorTipo", atividadesPorTipo);
         metrics.put("atividadesPorStatus", atividadesPorStatus);
 
