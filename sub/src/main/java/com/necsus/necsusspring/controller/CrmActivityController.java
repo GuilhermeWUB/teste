@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,4 +123,28 @@ public class CrmActivityController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        Map<String, Object> stats = new HashMap<>();
+
+        // Calcula data de hoje às 00:00 e 23:59
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = LocalDate.now().atTime(23, 59, 59);
+
+        // Busca todas as atividades agendadas para hoje
+        List<CrmActivity> atividadesHoje = activityService.findByDataAgendadaBetween(startOfToday, endOfToday);
+
+        // Filtra atividades vencidas (data agendada anterior a hoje e status não concluído)
+        long atividadesVencidas = activityService.findAll().stream()
+                .filter(a -> a.getDataAgendada() != null && a.getDataAgendada().isBefore(startOfToday))
+                .filter(a -> a.getStatus() != ActivityStatus.CONCLUIDA && a.getStatus() != ActivityStatus.CANCELADA)
+                .count();
+
+        stats.put("atividadesVencidas", atividadesVencidas);
+        stats.put("atividadesParaHoje", atividadesHoje.size());
+
+        return ResponseEntity.ok(stats);
+    }
 }
+

@@ -376,45 +376,47 @@
                         <div class="gabiii-form-grid">
                             <div class="gabiii-form-group">
                                 <label class="gabiii-form-label">Atividade*</label>
-                                <select class="gabiii-form-select">
-                                    <option value="ligar">Ligar</option>
-                                    <option value="email">Email</option>
-                                    <option value="whatsapp">Whatsapp</option>
-                                    <option value="reuniao">Reunião</option>
+                                <select class="gabiii-form-select" id="activity-type">
+                                    <option value="LIGACAO">Ligar</option>
+                                    <option value="EMAIL">Email</option>
+                                    <option value="REUNIAO">Reunião</option>
+                                    <option value="VISITA">Visita</option>
+                                    <option value="FOLLOW_UP">Follow-up</option>
+                                    <option value="APRESENTACAO">Apresentação</option>
+                                    <option value="NEGOCIACAO">Negociação</option>
+                                    <option value="VISTORIA">Vistoria</option>
+                                    <option value="OUTRO">Outro</option>
                                 </select>
                             </div>
 
                             <div class="gabiii-form-group">
                                 <label class="gabiii-form-label">Responsável*</label>
-                                <select class="gabiii-form-select">
-                                    <option value="">VINICIUS RIAN SOARES</option>
-                                    <option value="">Equipe Comercial</option>
-                                </select>
+                                <input type="text" class="gabiii-form-input" id="activity-responsavel" placeholder="Nome do responsável">
                             </div>
 
                             <div class="gabiii-form-group">
                                 <label class="gabiii-form-label">Quando*</label>
-                                <input type="datetime-local" class="gabiii-form-input" value="2025-11-25T17:27">
+                                <input type="datetime-local" class="gabiii-form-input" id="activity-when">
                             </div>
 
                             <div class="gabiii-form-group">
                                 <label class="gabiii-form-label">Cliente*</label>
-                                <select class="gabiii-form-select">
-                                    <option value="">VINICIUS RIAN SOARES</option>
-                                </select>
+                                <input type="text" class="gabiii-form-input" id="activity-cliente" placeholder="Nome do cliente">
                             </div>
                         </div>
 
                         <div class="gabiii-form-actions">
-                            <button class="gabiii-btn gabiii-btn-primary" type="button">Salvar</button>
+                            <button class="gabiii-btn gabiii-btn-primary" type="button" onclick="salvarAtividade()">Salvar</button>
                         </div>
                     </div>
 
                     <div class="gabiii-card">
                         <div class="gabiii-section-title">Atividades</div>
-                        <div class="gabiii-empty-state">
-                            <i class="bi bi-calendar-x gabiii-empty-icon"></i>
-                            <p class="gabiii-empty-text">Sem atividades nesta negociação.</p>
+                        <div id="activities-list">
+                            <div class="gabiii-empty-state">
+                                <i class="bi bi-calendar-x gabiii-empty-icon"></i>
+                                <p class="gabiii-empty-text">Sem atividades nesta negociação.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -838,6 +840,7 @@
         // ========== SISTEMA DE TESTE DE VENDA ==========
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const vendaId = '[[${vendaId}]]';
 
         function buildHeaders(extra = {}) {
             const headers = { 'X-Requested-With': 'XMLHttpRequest', ...extra };
@@ -845,6 +848,228 @@
                 headers[csrfHeader] = csrfToken;
             }
             return headers;
+        }
+
+        // ========== SISTEMA DE ATIVIDADES ==========
+        // Inicializa os campos e carrega atividades ao abrir o modal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define data/hora atual como padrão
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            const dateTimeValue = `${year}-${month}-${day}T${hours}:${minutes}`;
+            const whenField = document.getElementById('activity-when');
+            if (whenField) {
+                whenField.value = dateTimeValue;
+            }
+
+            // Carrega atividades existentes
+            loadActivities();
+        });
+
+        async function salvarAtividade() {
+            const tipo = document.getElementById('activity-type').value;
+            const responsavel = document.getElementById('activity-responsavel').value.trim();
+            const quando = document.getElementById('activity-when').value;
+            const cliente = document.getElementById('activity-cliente').value.trim();
+
+            // Validações
+            if (!tipo) {
+                alert('Por favor, selecione o tipo de atividade.');
+                return;
+            }
+            if (!responsavel) {
+                alert('Por favor, informe o responsável.');
+                return;
+            }
+            if (!quando) {
+                alert('Por favor, informe quando a atividade será realizada.');
+                return;
+            }
+            if (!cliente) {
+                alert('Por favor, informe o nome do cliente.');
+                return;
+            }
+
+            // Prepara payload
+            const payload = {
+                titulo: `${tipo} - ${cliente}`,
+                tipo: tipo,
+                prioridade: 'MEDIA',
+                descricao: `Atividade criada para ${cliente}`,
+                responsavel: responsavel,
+                dataAgendada: quando,
+                contatoNome: cliente,
+                saleId: vendaId,
+                status: 'AGENDADA'
+            };
+
+            try {
+                const response = await fetch('/crm/api/atividades', {
+                    method: 'POST',
+                    headers: buildHeaders({
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }),
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao salvar atividade');
+                }
+
+                const data = await response.json();
+                alert('✅ Atividade salva com sucesso!');
+
+                // Limpa os campos
+                document.getElementById('activity-responsavel').value = '';
+                document.getElementById('activity-cliente').value = '';
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                document.getElementById('activity-when').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                // Recarrega a lista de atividades
+                loadActivities();
+
+            } catch (error) {
+                console.error('Erro ao salvar atividade:', error);
+                alert('❌ Erro ao salvar atividade: ' + error.message);
+            }
+        }
+
+        async function loadActivities() {
+            try {
+                const response = await fetch(`/crm/api/atividades/venda/${vendaId}`, {
+                    headers: buildHeaders({
+                        'Accept': 'application/json'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar atividades');
+                }
+
+                const activities = await response.json();
+                displayActivities(activities);
+
+            } catch (error) {
+                console.error('Erro ao carregar atividades:', error);
+            }
+        }
+
+        function displayActivities(activities) {
+            const listContainer = document.getElementById('activities-list');
+
+            if (!activities || activities.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="gabiii-empty-state">
+                        <i class="bi bi-calendar-x gabiii-empty-icon"></i>
+                        <p class="gabiii-empty-text">Sem atividades nesta negociação.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            activities.forEach(activity => {
+                const statusColor = getStatusColor(activity.status);
+                const tipoIcon = getTipoIcon(activity.tipo);
+                const dataFormatada = formatarData(activity.dataAgendada);
+
+                html += `
+                    <div style="border-left: 4px solid ${statusColor}; padding: 15px; background: #f9fafb; border-radius: 6px; margin-bottom: 10px;">
+                        <div style="display: flex; align-items: start; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${statusColor}; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi ${tipoIcon}" style="color: white; font-size: 1.2rem;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="font-size: 0.95rem; font-weight: 600; color: #111827; margin-bottom: 5px;">
+                                    ${activity.titulo}
+                                </h4>
+                                <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 5px;">
+                                    ${activity.descricao || ''}
+                                </p>
+                                <div style="display: flex; gap: 15px; font-size: 0.75rem; color: #9ca3af;">
+                                    <span><i class="bi bi-person"></i> ${activity.responsavel || 'Não definido'}</span>
+                                    <span><i class="bi bi-calendar"></i> ${dataFormatada}</span>
+                                    <span class="gabiii-tag gabiii-tag-${getStatusClass(activity.status)}" style="padding: 2px 8px;">${getStatusLabel(activity.status)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'AGENDADA': '#3b82f6',
+                'EM_ANDAMENTO': '#f59e0b',
+                'CONCLUIDA': '#10b981',
+                'CANCELADA': '#ef4444',
+                'REAGENDADA': '#8b5cf6'
+            };
+            return colors[status] || '#6b7280';
+        }
+
+        function getTipoIcon(tipo) {
+            const icons = {
+                'LIGACAO': 'bi-telephone',
+                'EMAIL': 'bi-envelope',
+                'REUNIAO': 'bi-people',
+                'VISITA': 'bi-geo-alt',
+                'FOLLOW_UP': 'bi-arrow-repeat',
+                'APRESENTACAO': 'bi-easel',
+                'NEGOCIACAO': 'bi-handshake',
+                'VISTORIA': 'bi-car-front',
+                'OUTRO': 'bi-three-dots'
+            };
+            return icons[tipo] || 'bi-calendar';
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'AGENDADA': 'blue',
+                'EM_ANDAMENTO': 'blue',
+                'CONCLUIDA': 'green',
+                'CANCELADA': 'blue',
+                'REAGENDADA': 'blue'
+            };
+            return classes[status] || 'blue';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'AGENDADA': 'Agendada',
+                'EM_ANDAMENTO': 'Em andamento',
+                'CONCLUIDA': 'Concluída',
+                'CANCELADA': 'Cancelada',
+                'REAGENDADA': 'Reagendada'
+            };
+            return labels[status] || status;
+        }
+
+        function formatarData(dateString) {
+            if (!dateString) return 'Não definida';
+
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
         }
 
         // Função para concluir a venda atual e atualizar o kanban

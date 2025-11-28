@@ -87,6 +87,9 @@ async function loadDashboardData() {
         // Load user info and withdrawal balance
         await loadUserInfo();
 
+        // Load activities data
+        await loadActivitiesData();
+
         // Hide loading, show content
         loadingState.style.display = 'none';
         dashboardContent.style.display = 'block';
@@ -202,6 +205,45 @@ function renderAtividadesTipo(metrics) {
                 <p>Nenhuma atividade registrada ainda</p>
             </div>
         `;
+    }
+}
+
+// Load activities data for dashboard
+async function loadActivitiesData() {
+    try {
+        const response = await fetch('/crm/api/dashboard/atividades', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            console.warn('Activities endpoint not available, using default values');
+            document.getElementById('atividadesVencidas').textContent = '0';
+            document.getElementById('atividadesParaHoje').textContent = '0';
+            return;
+        }
+
+        const data = await response.json();
+
+        // Update overdue activities
+        const atividadesVencidasElement = document.getElementById('atividadesVencidas');
+        if (atividadesVencidasElement) {
+            atividadesVencidasElement.textContent = formatNumber(data.atividadesVencidas || 0);
+        }
+
+        // Update activities for today
+        const atividadesParaHojeElement = document.getElementById('atividadesParaHoje');
+        if (atividadesParaHojeElement) {
+            atividadesParaHojeElement.textContent = formatNumber(data.atividadesParaHoje || 0);
+        }
+
+    } catch (error) {
+        console.error('Error loading activities data:', error);
+        // Don't throw - allow dashboard to continue loading
+        document.getElementById('atividadesVencidas').textContent = '0';
+        document.getElementById('atividadesParaHoje').textContent = '0';
     }
 }
 

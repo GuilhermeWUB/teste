@@ -52,7 +52,7 @@
             </div>
 
             <div class="activities-grid">
-                <div class="activity-card access-deals">
+                <a th:href="@{/crm/vendas}" class="activity-card access-deals" style="text-decoration: none; color: inherit;">
                     <div class="activity-icon">
                         <i class="bi bi-briefcase"></i>
                     </div>
@@ -60,23 +60,23 @@
                         <div class="activity-title">Acesse suas</div>
                         <div class="activity-subtitle">negociações</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="activity-card overdue">
+                <a th:href="@{/crm/atividades}" class="activity-card overdue" style="text-decoration: none; color: inherit; cursor: pointer;">
                     <div class="activity-number" id="atividadesVencidas">0</div>
                     <div class="activity-info">
                         <div class="activity-label">Atividades</div>
                         <div class="activity-label">Vencidas</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="activity-card today">
+                <a th:href="@{/crm/atividades}" class="activity-card today" style="text-decoration: none; color: inherit; cursor: pointer;">
                     <div class="activity-number" id="atividadesParaHoje">0</div>
                     <div class="activity-info">
                         <div class="activity-label">Atividades</div>
                         <div class="activity-label">Para hoje</div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Vendas Stats (Hidden for now) -->
