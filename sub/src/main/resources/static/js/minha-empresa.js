@@ -101,6 +101,20 @@
         });
 
         state.currentSection = section;
+        if (updateHash) {
+            const targetHash = `#${section}`;
+            if (window.location.hash !== targetHash) {
+                window.location.hash = targetHash;
+            }
+        }
+    }
+
+    function syncSectionWithHash() {
+        const sectionFromHash = window.location.hash?.replace('#', '') || 'usuarios';
+        const targetSection = ['usuarios', 'regionais'].includes(sectionFromHash)
+            ? sectionFromHash
+            : 'usuarios';
+        navigateToSection(targetSection, false);
     }
 
     // ========================================
