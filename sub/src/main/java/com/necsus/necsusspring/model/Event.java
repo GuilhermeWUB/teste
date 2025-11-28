@@ -89,6 +89,20 @@ public class Event {
     @Column(name = "doc_termo_abertura_path")
     private String docTermoAberturaPath;
 
+    // Indica se há terceiro envolvido no acidente
+    @Column(name = "terceiro_envolvido")
+    private Boolean terceiroEnvolvido;
+
+    // Documentos do terceiro envolvido (se houver)
+    @Column(name = "doc_terceiro_cnh_path")
+    private String docTerceiroCnhPath;
+
+    @Column(name = "doc_terceiro_crlv_path")
+    private String docTerceiroCrlvPath;
+
+    @Column(name = "doc_terceiro_outros_path")
+    private String docTerceiroOutrosPath;
+
     // Método auxiliar para exibir prioridade formatada
     public String getPrioridadeFormatted() {
         return prioridade != null ? prioridade.getDisplayName() : "";

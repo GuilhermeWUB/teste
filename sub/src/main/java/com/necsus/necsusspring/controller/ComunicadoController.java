@@ -249,7 +249,12 @@ public class ComunicadoController {
                               @RequestParam(value = "docCnh", required = false) MultipartFile docCnh,
                               @RequestParam(value = "docBo", required = false) MultipartFile docBo,
                               @RequestParam(value = "docComprovanteResidencia", required = false) MultipartFile docComprovanteResidencia,
-                              @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura) {
+                              @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura,
+                              @RequestParam(value = "fotosAcidente", required = false) MultipartFile[] fotosAcidente,
+                              @RequestParam(value = "terceiroEnvolvido", required = false) Boolean terceiroEnvolvido,
+                              @RequestParam(value = "docTerceiroCnh", required = false) MultipartFile docTerceiroCnh,
+                              @RequestParam(value = "docTerceiroCrlv", required = false) MultipartFile docTerceiroCrlv,
+                              @RequestParam(value = "docTerceiroOutros", required = false) MultipartFile docTerceiroOutros) {
 
         if (authentication == null) {
             return "redirect:/login";
@@ -296,9 +301,29 @@ public class ComunicadoController {
         }
 
         try {
+            // Define se há terceiro envolvido
+            event.setTerceiroEnvolvido(terceiroEnvolvido != null && terceiroEnvolvido);
+
+            // Anexa documentos do associado
             anexarDocumentos(event, docCrlv, docCnh, docBo, docComprovanteResidencia, docTermoAbertura);
-            eventService.create(event);
+
+            // Anexa documentos de terceiros (se houver)
+            if (Boolean.TRUE.equals(terceiroEnvolvido)) {
+                anexarDocumentosTerceiro(event, docTerceiroCnh, docTerceiroCrlv, docTerceiroOutros);
+            }
+
+            // Cria o evento
+            Event eventoSalvo = eventService.create(event);
             logger.info("Evento criado com sucesso pelo usuário Associado: {}", authentication.getName());
+
+            // Cria vistoria com fotos do acidente (se houver)
+            if (fotosAcidente != null && fotosAcidente.length > 0) {
+                boolean fotosSalvas = anexarFotosAcidente(eventoSalvo, fotosAcidente, authentication);
+                if (fotosSalvas) {
+                    logger.info("Fotos do acidente anexadas ao evento {} pelo usuário {}", eventoSalvo.getId(), authentication.getName());
+                }
+            }
+
             redirectAttributes.addFlashAttribute("successMessage", "Evento cadastrado com sucesso! Nossa equipe entrará em contato em breve.");
             return "redirect:/comunicados";
         } catch (Exception ex) {
@@ -343,6 +368,70 @@ public class ComunicadoController {
             event.setDocTermoAberturaPath(path);
             logger.info("[COMUNICADOS] Termo de abertura anexado: {}", path);
         }
+    }
+
+    private void anexarDocumentosTerceiro(Event event,
+                                          MultipartFile docTerceiroCnh,
+                                          MultipartFile docTerceiroCrlv,
+                                          MultipartFile docTerceiroOutros) {
+        if (docTerceiroCnh != null && !docTerceiroCnh.isEmpty()) {
+            String path = fileStorageService.storeFile(docTerceiroCnh);
+            event.setDocTerceiroCnhPath(path);
+            logger.info("[COMUNICADOS] CNH do terceiro anexada: {}", path);
+        }
+
+        if (docTerceiroCrlv != null && !docTerceiroCrlv.isEmpty()) {
+            String path = fileStorageService.storeFile(docTerceiroCrlv);
+            event.setDocTerceiroCrlvPath(path);
+            logger.info("[COMUNICADOS] CRLV do terceiro anexado: {}", path);
+        }
+
+        if (docTerceiroOutros != null && !docTerceiroOutros.isEmpty()) {
+            String path = fileStorageService.storeFile(docTerceiroOutros);
+            event.setDocTerceiroOutrosPath(path);
+            logger.info("[COMUNICADOS] Outros documentos do terceiro anexados: {}", path);
+        }
+    }
+
+    private boolean anexarFotosAcidente(Event event, MultipartFile[] fotosAcidente, Authentication authentication) {
+        if (fotosAcidente == null || fotosAcidente.length == 0) {
+            return false;
+        }
+
+        List<VistoriaFoto> fotos = new ArrayList<>();
+        for (MultipartFile arquivo : fotosAcidente) {
+            if (arquivo == null || arquivo.isEmpty()) {
+                continue;
+            }
+            String path = fileStorageService.storeFile(arquivo);
+            if (path == null) {
+                continue;
+            }
+            VistoriaFoto foto = new VistoriaFoto();
+            foto.setFotoPath(path.replace("\\", "/"));
+            fotos.add(foto);
+        }
+
+        if (fotos.isEmpty()) {
+            return false;
+        }
+
+        // Cria uma nova vistoria para este evento
+        Vistoria vistoria = new Vistoria();
+        vistoria.setEvent(event);
+        vistoria.setUsuarioCriacao(authentication != null ? authentication.getName() : "Sistema");
+        vistoria.setObservacoes("Fotos do acidente enviadas pelo associado no momento da criação do comunicado");
+        vistoria = vistoriaService.create(vistoria);
+
+        // Adiciona as fotos à vistoria com ordenação
+        int ordem = 0;
+        for (VistoriaFoto foto : fotos) {
+            foto.setOrdem(++ordem);
+            foto.setVistoria(vistoria);
+        }
+
+        vistoriaService.updateWithNewPhotos(vistoria.getId(), vistoria.getObservacoes(), fotos);
+        return true;
     }
 
     /**
@@ -540,6 +629,14 @@ public class ComunicadoController {
         addDocIfPresent(docs, "B.O.", event.getDocBoPath());
         addDocIfPresent(docs, "Comprovante de Residência", event.getDocComprovanteResidenciaPath());
         addDocIfPresent(docs, "Termo de Abertura", event.getDocTermoAberturaPath());
+
+        // Adiciona documentos de terceiros, se houver
+        if (Boolean.TRUE.equals(event.getTerceiroEnvolvido())) {
+            addDocIfPresent(docs, "CNH do Terceiro", event.getDocTerceiroCnhPath());
+            addDocIfPresent(docs, "CRLV do Terceiro", event.getDocTerceiroCrlvPath());
+            addDocIfPresent(docs, "Outros Docs do Terceiro", event.getDocTerceiroOutrosPath());
+        }
+
         return docs;
     }
 
