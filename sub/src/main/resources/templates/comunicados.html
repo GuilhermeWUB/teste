@@ -214,6 +214,36 @@
                     </div>
 
                     <div id="documentosTerceiro" style="display: none;">
+                        <!-- Informações Pessoais do Terceiro -->
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person-vcard text-warning fs-5"></i>
+                            <div>
+                                <h6 class="mb-0">Informações Pessoais do Terceiro</h6>
+                                <p class="text-muted small mb-0">Preencha os dados pessoais do terceiro envolvido.</p>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="terceiroNome" class="form-label fw-semibold">Nome completo</label>
+                                <input type="text" class="form-control" id="terceiroNome" name="terceiroNome"
+                                       placeholder="Ex: João da Silva" maxlength="200">
+                                <small class="text-muted">Nome completo do terceiro envolvido.</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="terceiroCpf" class="form-label fw-semibold">CPF</label>
+                                <input type="text" class="form-control" id="terceiroCpf" name="terceiroCpf"
+                                       placeholder="000.000.000-00" maxlength="14">
+                                <small class="text-muted">CPF do terceiro.</small>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="terceiroTelefone" class="form-label fw-semibold">Telefone</label>
+                                <input type="text" class="form-control" id="terceiroTelefone" name="terceiroTelefone"
+                                       placeholder="(00) 00000-0000" maxlength="20">
+                                <small class="text-muted">Telefone de contato.</small>
+                            </div>
+                        </div>
+
+                        <!-- Documentos do Terceiro -->
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <i class="bi bi-file-earmark-person text-warning fs-5"></i>
                             <div>
@@ -425,6 +455,17 @@
                                                 <span class="text-muted">Nenhum documento foi anexado.</span>
                                             </div>
                                         </div>
+                                        <div class="mt-4" id="eventTerceiroSection" style="display: none;">
+                                            <h6 class="fw-semibold mb-2"><i class="bi bi-person-plus text-warning me-2"></i>Terceiro Envolvido</h6>
+                                            <dl class="row mb-0 small">
+                                                <dt class="col-4 text-muted">Nome</dt>
+                                                <dd class="col-8" id="eventTerceiroNome">-</dd>
+                                                <dt class="col-4 text-muted">CPF</dt>
+                                                <dd class="col-8" id="eventTerceiroCpf">-</dd>
+                                                <dt class="col-4 text-muted">Telefone</dt>
+                                                <dd class="col-8" id="eventTerceiroTelefone">-</dd>
+                                            </dl>
+                                        </div>
                                         <div class="mt-4">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <h6 class="fw-semibold mb-0"><i class="bi bi-images me-2"></i>Fotos da vistoria</h6>
@@ -534,6 +575,10 @@
                     documentosTerceiroDiv.style.display = 'block';
                 } else {
                     documentosTerceiroDiv.style.display = 'none';
+                    // Limpa os campos de informações pessoais quando desmarcado
+                    document.getElementById('terceiroNome').value = '';
+                    document.getElementById('terceiroCpf').value = '';
+                    document.getElementById('terceiroTelefone').value = '';
                     // Limpa os campos de upload quando desmarcado
                     document.getElementById('docTerceiroCnh').value = '';
                     document.getElementById('docTerceiroCrlv').value = '';
@@ -621,6 +666,7 @@
             dataComunicacao.textContent = formatDateWithFallback(data.dataComunicacao, data.horaComunicacao);
 
             renderAttachments(data.attachments);
+            renderTerceiroInfo(data);
             renderPhotos(data.photos, data.photoCount);
 
             descricaoField.value = data.descricao || '';
@@ -653,6 +699,23 @@
                 link.innerHTML = `<i class="bi bi-file-earmark-text"></i><span>${doc.label} (${doc.filename})</span>`;
                 attachmentsList.appendChild(link);
             });
+        }
+
+        function renderTerceiroInfo(data) {
+            const terceiroSection = document.getElementById('eventTerceiroSection');
+            const terceiroNome = document.getElementById('eventTerceiroNome');
+            const terceiroCpf = document.getElementById('eventTerceiroCpf');
+            const terceiroTelefone = document.getElementById('eventTerceiroTelefone');
+
+            if (!data.terceiroEnvolvido) {
+                terceiroSection.style.display = 'none';
+                return;
+            }
+
+            terceiroSection.style.display = 'block';
+            terceiroNome.textContent = data.terceiroNome || '-';
+            terceiroCpf.textContent = data.terceiroCpf || '-';
+            terceiroTelefone.textContent = data.terceiroTelefone || '-';
         }
 
         function renderPhotos(photos, count) {

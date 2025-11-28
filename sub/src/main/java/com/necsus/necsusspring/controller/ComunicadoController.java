@@ -252,6 +252,9 @@ public class ComunicadoController {
                               @RequestParam(value = "docTermoAbertura", required = false) MultipartFile docTermoAbertura,
                               @RequestParam(value = "fotosAcidente", required = false) MultipartFile[] fotosAcidente,
                               @RequestParam(value = "terceiroEnvolvido", required = false) Boolean terceiroEnvolvido,
+                              @RequestParam(value = "terceiroNome", required = false) String terceiroNome,
+                              @RequestParam(value = "terceiroCpf", required = false) String terceiroCpf,
+                              @RequestParam(value = "terceiroTelefone", required = false) String terceiroTelefone,
                               @RequestParam(value = "docTerceiroCnh", required = false) MultipartFile docTerceiroCnh,
                               @RequestParam(value = "docTerceiroCrlv", required = false) MultipartFile docTerceiroCrlv,
                               @RequestParam(value = "docTerceiroOutros", required = false) MultipartFile docTerceiroOutros) {
@@ -303,6 +306,13 @@ public class ComunicadoController {
         try {
             // Define se há terceiro envolvido
             event.setTerceiroEnvolvido(terceiroEnvolvido != null && terceiroEnvolvido);
+
+            // Define informações pessoais do terceiro (se houver)
+            if (Boolean.TRUE.equals(terceiroEnvolvido)) {
+                event.setTerceiroNome(terceiroNome);
+                event.setTerceiroCpf(terceiroCpf);
+                event.setTerceiroTelefone(terceiroTelefone);
+            }
 
             // Anexa documentos do associado
             anexarDocumentos(event, docCrlv, docCnh, docBo, docComprovanteResidencia, docTermoAbertura);
@@ -581,6 +591,10 @@ public class ComunicadoController {
         payload.put("dataComunicacao", formatDate(event.getDataComunicacao()));
         payload.put("horaComunicacao", formatHora(event.getHoraComunicacao()));
         payload.put("attachments", buildDocumentList(event));
+        payload.put("terceiroEnvolvido", event.getTerceiroEnvolvido());
+        payload.put("terceiroNome", event.getTerceiroNome());
+        payload.put("terceiroCpf", event.getTerceiroCpf());
+        payload.put("terceiroTelefone", event.getTerceiroTelefone());
 
         Optional<Vistoria> vistoriaOpt = vistoriaService.findLatestWithPhotosByEventId(event.getId());
         if (vistoriaOpt.isPresent()) {
