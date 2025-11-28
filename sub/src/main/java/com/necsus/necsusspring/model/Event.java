@@ -103,6 +103,19 @@ public class Event {
     @Column(name = "doc_terceiro_outros_path")
     private String docTerceiroOutrosPath;
 
+    // Informações pessoais do terceiro envolvido (se houver)
+    @Column(name = "terceiro_nome")
+    @Size(max = 200, message = "O nome do terceiro deve ter no máximo 200 caracteres")
+    private String terceiroNome;
+
+    @Column(name = "terceiro_cpf")
+    @Size(max = 14, message = "O CPF deve ter no máximo 14 caracteres")
+    private String terceiroCpf;
+
+    @Column(name = "terceiro_telefone")
+    @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
+    private String terceiroTelefone;
+
     // Método auxiliar para exibir prioridade formatada
     public String getPrioridadeFormatted() {
         return prioridade != null ? prioridade.getDisplayName() : "";
