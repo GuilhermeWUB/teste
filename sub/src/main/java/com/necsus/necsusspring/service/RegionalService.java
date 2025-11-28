@@ -160,6 +160,16 @@ public class RegionalService {
     }
 
     /**
+     * Exclui uma regional
+     */
+    public void delete(Long id) {
+        Regional regional = regionalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Regional não encontrada: " + id));
+
+        regionalRepository.delete(regional);
+    }
+
+    /**
      * Conta regionais ativas
      */
     public Long countActive() {

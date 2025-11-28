@@ -39,6 +39,9 @@
     function init() {
         console.log('Inicializando Minha Empresa');
         bindEvents();
+
+        const initialSection = getInitialSection();
+        navigateToSection(initialSection);
         loadUsers();
         loadStats();
         loadRegionais();
@@ -46,11 +49,6 @@
     }
 
     function bindEvents() {
-        // Navegação do menu
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', handleMenuClick);
-        });
-
         // Forms
         const userForm = document.getElementById('userForm');
         if (userForm) {
@@ -77,28 +75,30 @@
     }
 
     // ========== NAVEGAÇÃO ==========
-    function handleMenuClick(e) {
-        e.preventDefault();
-        const section = this.getAttribute('data-section');
-        console.log('Navegando para seção:', section);
+    function getInitialSection() {
+        const container = document.querySelector('.empresa-content');
+        const defaultSection = container?.dataset?.defaultSection;
 
-        // Atualizar menu ativo
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        this.classList.add('active');
+        return ['usuarios', 'regionais'].includes(defaultSection)
+            ? defaultSection
+            : 'usuarios';
+    }
 
-        // Mostrar/ocultar seções
-        document.querySelectorAll('.content-section').forEach(sec => {
-            sec.style.display = 'none';
-        });
+    function navigateToSection(section) {
         const targetSection = document.getElementById(`section-${section}`);
-        if (targetSection) {
-            targetSection.style.display = 'block';
-            console.log('Seção exibida:', section);
-        } else {
+        if (!targetSection) {
             console.error('Seção não encontrada:', `section-${section}`);
+            return;
         }
+
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const isActive = item.getAttribute('data-section') === section;
+            item.classList.toggle('active', isActive);
+        });
+
+        document.querySelectorAll('.content-section').forEach(sec => {
+            sec.style.display = sec === targetSection ? 'block' : 'none';
+        });
 
         state.currentSection = section;
     }
@@ -472,6 +472,9 @@
                                 <i class="bi bi-check-circle"></i>
                             </button>`
                         }
+                        <button class="btn-icon btn-delete" onclick="window.confirmDeleteRegional(${regional.id})" title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -585,6 +588,30 @@
         document.getElementById('confirmRegionalModal').style.display = 'block';
     };
 
+    window.confirmDeleteRegional = function(id) {
+        const regional = state.regionais.find(r => r.id === id);
+        if (!regional) return;
+
+        document.getElementById('confirmRegionalTitle').textContent = 'Excluir Regional';
+        document.getElementById('confirmRegionalMessage').textContent =
+            `Deseja realmente excluir a regional "${regional.name}"? Esta ação não poderá ser desfeita.`;
+
+        const confirmBtn = document.getElementById('confirmRegionalButton');
+        confirmBtn.onclick = async () => {
+            try {
+                await deleteRegional(id);
+                showSuccess('Regional excluída com sucesso!');
+                closeConfirmRegionalModal();
+                loadRegionais();
+                loadRegionaisStats();
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        document.getElementById('confirmRegionalModal').style.display = 'block';
+    };
+
     async function handleRegionalFormSubmit(e) {
         e.preventDefault();
 
@@ -667,6 +694,24 @@
         }
 
         return await response.json();
+    }
+
+    async function deleteRegional(id) {
+        const response = await fetch(`${API_REGIONAIS}/${id}`, {
+            method: 'DELETE',
+            headers: buildHeaders({ 'Content-Type': 'application/json' })
+        });
+
+        if (!response.ok) {
+            let errorMessage = 'Erro ao excluir regional';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.error || errorMessage;
+            } catch (e) {
+                // ignore json parsing errors
+            }
+            throw new Error(errorMessage);
+        }
     }
 
     // ========== UTILITÁRIOS ==========

@@ -97,8 +97,17 @@ public class CrmController {
 
     @GetMapping(value = "/minha-empresa", produces = MediaType.TEXT_HTML_VALUE)
     public String minhaEmpresa(Model model) {
-        model.addAttribute("pageTitle", "Minha Empresa - CRM");
-        return "crm/minha-empresa";
+        return "redirect:/crm/minha-empresa/usuarios";
+    }
+
+    @GetMapping(value = "/minha-empresa/usuarios", produces = MediaType.TEXT_HTML_VALUE)
+    public String minhaEmpresaUsuarios(Model model) {
+        return buildMinhaEmpresaPage(model, "usuarios");
+    }
+
+    @GetMapping(value = "/minha-empresa/regionais", produces = MediaType.TEXT_HTML_VALUE)
+    public String minhaEmpresaRegionais(Model model) {
+        return buildMinhaEmpresaPage(model, "regionais");
     }
 
     @GetMapping(value = "/ferramentas", produces = MediaType.TEXT_HTML_VALUE)
@@ -111,5 +120,11 @@ public class CrmController {
         model.addAttribute("sectionTitle", sectionTitle);
         model.addAttribute("sectionDescription", "Esta área do CRM está em desenvolvimento. Em breve teremos novidades.");
         return "crm/em-desenvolvimento";
+    }
+
+    private String buildMinhaEmpresaPage(Model model, String section) {
+        model.addAttribute("pageTitle", "Minha Empresa - CRM");
+        model.addAttribute("defaultSection", section);
+        return "crm/minha-empresa";
     }
 }
