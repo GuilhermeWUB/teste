@@ -438,6 +438,14 @@
     background: color-mix(in srgb, var(--color-success, #4CAF50) 16%, transparent);
 }
 
+.btn-delete {
+    color: var(--color-danger, #ff6b6b);
+}
+
+.btn-delete:hover {
+    background: color-mix(in srgb, var(--color-danger, #ff6b6b) 12%, transparent);
+}
+
 /* ========== MODAL ========== */
 .modal {
     display: none;

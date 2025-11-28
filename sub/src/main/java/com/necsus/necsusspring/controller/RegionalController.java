@@ -123,6 +123,19 @@ public class RegionalController {
     }
 
     /**
+     * Remove uma regional
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRegional(@PathVariable Long id) {
+        try {
+            regionalService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
      * Retorna estatísticas de regionais
      */
     @GetMapping("/stats")
