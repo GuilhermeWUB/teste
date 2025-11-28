@@ -259,17 +259,22 @@
 }
 
 .badge {
-    padding: 0.25rem 0.625rem;
-    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--badge-bg, var(--color-surface, #f8fafc));
+    color: var(--badge-text, var(--color-text-secondary, #475569));
+    border: 1px solid var(--badge-border, transparent);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
 }
 
-.badge.status-AGENDADA { background: #fef3c7; color: #92400e; }
-.badge.status-EM_ANDAMENTO { background: #dbeafe; color: #1e3a8a; }
-.badge.status-CONCLUIDA { background: #d1fae5; color: #065f46; }
-.badge.status-CANCELADA { background: #fee2e2; color: #991b1b; }
-.badge.status-REAGENDADA { background: #e0e7ff; color: #3730a3; }
+.badge.status-AGENDADA { --badge-bg: #ede9fe; --badge-border: #ddd6fe; --badge-text: #5b21b6; }
+.badge.status-EM_ANDAMENTO { --badge-bg: #dbeafe; --badge-border: #bfdbfe; --badge-text: #1e3a8a; }
+.badge.status-CONCLUIDA { --badge-bg: #d1fae5; --badge-border: #a7f3d0; --badge-text: #065f46; }
+.badge.status-CANCELADA { --badge-bg: #fee2e2; --badge-border: #fecdd3; --badge-text: #991b1b; }
+.badge.status-REAGENDADA { --badge-bg: #e0e7ff; --badge-border: #c7d2fe; --badge-text: #3730a3; }
 
 .activity-desc {
     font-size: 0.9375rem;
@@ -459,6 +464,17 @@
     color: var(--color-text-primary, #f5f3ff);
     border-color: var(--color-action-icon-border, rgba(168, 85, 247, 0.35));
 }
+
+[data-theme="dark"] .badge {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45);
+    border-color: var(--badge-border, rgba(255, 255, 255, 0.08));
+}
+
+[data-theme="dark"] .badge.status-AGENDADA { --badge-bg: rgba(168, 85, 247, 0.18); --badge-border: rgba(168, 85, 247, 0.55); --badge-text: #f5e1ff; }
+[data-theme="dark"] .badge.status-EM_ANDAMENTO { --badge-bg: rgba(59, 130, 246, 0.2); --badge-border: rgba(59, 130, 246, 0.6); --badge-text: #dbeafe; }
+[data-theme="dark"] .badge.status-CONCLUIDA { --badge-bg: rgba(16, 185, 129, 0.18); --badge-border: rgba(16, 185, 129, 0.55); --badge-text: #d1fae5; }
+[data-theme="dark"] .badge.status-CANCELADA { --badge-bg: rgba(239, 68, 68, 0.18); --badge-border: rgba(239, 68, 68, 0.55); --badge-text: #fee2e2; }
+[data-theme="dark"] .badge.status-REAGENDADA { --badge-bg: rgba(99, 102, 241, 0.18); --badge-border: rgba(99, 102, 241, 0.55); --badge-text: #e0e7ff; }
 
 /* Responsive */
 @media (max-width: 768px) {
