@@ -184,6 +184,63 @@
                     </div>
                 </div>
 
+                <!-- Seção de Fotos do Acidente -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-camera text-primary fs-5"></i>
+                        <div>
+                            <h6 class="mb-0">Fotos do Acidente</h6>
+                            <p class="text-muted small mb-0">Envie fotos do local do acidente, dos danos no veículo e quaisquer outros detalhes relevantes.</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="fotosAcidente" class="form-label fw-semibold">Fotos do acidente</label>
+                            <input type="file" class="form-control" id="fotosAcidente" name="fotosAcidente"
+                                   accept="image/*" multiple>
+                            <small class="text-muted">Você pode selecionar múltiplas fotos. Formatos aceitos: JPG, PNG.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Terceiro Envolvido -->
+                <div class="mb-4">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="terceiroEnvolvido" name="terceiroEnvolvido" value="true">
+                        <label class="form-check-label fw-semibold" for="terceiroEnvolvido">
+                            <i class="bi bi-person-plus text-warning me-1"></i>
+                            Há terceiro envolvido no acidente?
+                        </label>
+                    </div>
+
+                    <div id="documentosTerceiro" style="display: none;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-file-earmark-person text-warning fs-5"></i>
+                            <div>
+                                <h6 class="mb-0">Documentos do Terceiro</h6>
+                                <p class="text-muted small mb-0">Envie os documentos do terceiro envolvido no acidente.</p>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-4">
+                                <label for="docTerceiroCnh" class="form-label fw-semibold">CNH do terceiro</label>
+                                <input type="file" class="form-control" id="docTerceiroCnh" name="docTerceiroCnh" accept="application/pdf,image/*">
+                                <small class="text-muted">Habilitação do condutor terceiro.</small>
+                            </div>
+                            <div class="col-md-6 col-lg-4">
+                                <label for="docTerceiroCrlv" class="form-label fw-semibold">CRLV do veículo do terceiro</label>
+                                <input type="file" class="form-control" id="docTerceiroCrlv" name="docTerceiroCrlv" accept="application/pdf,image/*">
+                                <small class="text-muted">Documento do veículo do terceiro.</small>
+                            </div>
+                            <div class="col-md-6 col-lg-4">
+                                <label for="docTerceiroOutros" class="form-label fw-semibold">Outros documentos</label>
+                                <input type="file" class="form-control" id="docTerceiroOutros" name="docTerceiroOutros" accept="application/pdf,image/*">
+                                <small class="text-muted">Outros documentos do terceiro (seguro, etc).</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2 justify-content-end">
                     <button type="reset" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>Limpar
@@ -465,6 +522,23 @@
                 document.getElementById('horaComunicacao').value = horaFormatada;
 
                 console.log('Data da Comunicação preenchida automaticamente:', dataFormatada, horaFormatada);
+            });
+        }
+
+        // Controla a exibição dos campos de documentos de terceiro
+        var terceiroEnvolvidoCheckbox = document.getElementById('terceiroEnvolvido');
+        var documentosTerceiroDiv = document.getElementById('documentosTerceiro');
+        if (terceiroEnvolvidoCheckbox && documentosTerceiroDiv) {
+            terceiroEnvolvidoCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    documentosTerceiroDiv.style.display = 'block';
+                } else {
+                    documentosTerceiroDiv.style.display = 'none';
+                    // Limpa os campos de upload quando desmarcado
+                    document.getElementById('docTerceiroCnh').value = '';
+                    document.getElementById('docTerceiroCrlv').value = '';
+                    document.getElementById('docTerceiroOutros').value = '';
+                }
             });
         }
 
