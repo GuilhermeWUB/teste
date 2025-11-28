@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/crm/api/regionais")
+@RequestMapping("/crm/minha-empresa/regionais")
 @PreAuthorize("hasAnyRole('ADMIN', 'DIRETORIA', 'GERENTE', 'GESTOR')")
 public class RegionalController {
 
