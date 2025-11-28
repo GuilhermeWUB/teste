@@ -12,11 +12,17 @@
         <aside class="empresa-sidebar">
             <h3>Minha Empresa</h3>
             <nav class="sidebar-menu">
-                <a href="#usuarios" class="menu-item active" data-section="usuarios">
+                <a th:href="@{/crm/minha-empresa/usuarios}"
+                   class="menu-item"
+                   data-section="usuarios"
+                   th:classappend="${defaultSection == null || defaultSection == 'usuarios'} ? ' active' : ''">
                     <i class="bi bi-people"></i>
                     <span>Usuários</span>
                 </a>
-                <a href="#regionais" class="menu-item" data-section="regionais">
+                <a th:href="@{/crm/minha-empresa/regionais}"
+                   class="menu-item"
+                   data-section="regionais"
+                   th:classappend="${defaultSection == 'regionais'} ? ' active' : ''">
                     <i class="bi bi-geo-alt"></i>
                     <span>Regionais</span>
                 </a>
@@ -24,9 +30,10 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="empresa-content">
+        <main class="empresa-content" th:data-default-section="${defaultSection != null ? defaultSection : 'usuarios'}">
             <!-- Usuários Section -->
-            <div class="content-section" id="section-usuarios">
+            <div class="content-section" id="section-usuarios"
+                 th:style="${defaultSection == 'regionais'} ? 'display:none;' : ''">
                 <!-- Header -->
                 <div class="section-header">
                     <div class="header-icon-text">
@@ -131,7 +138,8 @@
             </div>
 
             <!-- Regionais Section -->
-            <div class="content-section" id="section-regionais" style="display: none;">
+            <div class="content-section" id="section-regionais"
+                 th:style="${defaultSection == null || defaultSection == 'usuarios'} ? 'display:none;' : ''">
                 <!-- Header -->
                 <div class="section-header">
                     <div class="header-icon-text">
