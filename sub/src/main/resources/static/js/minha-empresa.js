@@ -3,7 +3,7 @@
 
     // ========== CONSTANTES ==========
     const API_USUARIOS = '/crm/api/usuarios';
-    const API_REGIONAIS = '/crm/api/regionais';
+    const API_REGIONAIS = '/crm/minha-empresa/regionais';
 
     // ========== STATE ==========
     const state = {
