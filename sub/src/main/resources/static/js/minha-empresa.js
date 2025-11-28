@@ -39,6 +39,7 @@
     function init() {
         console.log('Inicializando Minha Empresa');
         bindEvents();
+        syncSectionWithHash();
         loadUsers();
         loadStats();
         loadRegionais();
@@ -50,6 +51,8 @@
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', handleMenuClick);
         });
+
+        window.addEventListener('hashchange', syncSectionWithHash);
 
         // Forms
         const userForm = document.getElementById('userForm');
@@ -79,28 +82,42 @@
     // ========== NAVEGAÇÃO ==========
     function handleMenuClick(e) {
         e.preventDefault();
-        const section = this.getAttribute('data-section');
-        console.log('Navegando para seção:', section);
+        const section = e.currentTarget?.getAttribute('data-section');
+        if (!section) return;
+        navigateToSection(section, true);
+    }
 
-        // Atualizar menu ativo
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        this.classList.add('active');
-
-        // Mostrar/ocultar seções
-        document.querySelectorAll('.content-section').forEach(sec => {
-            sec.style.display = 'none';
-        });
+    function navigateToSection(section, updateHash = false) {
         const targetSection = document.getElementById(`section-${section}`);
-        if (targetSection) {
-            targetSection.style.display = 'block';
-            console.log('Seção exibida:', section);
-        } else {
+        if (!targetSection) {
             console.error('Seção não encontrada:', `section-${section}`);
+            return;
         }
 
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const isActive = item.getAttribute('data-section') === section;
+            item.classList.toggle('active', isActive);
+        });
+
+        document.querySelectorAll('.content-section').forEach(sec => {
+            sec.style.display = sec === targetSection ? 'block' : 'none';
+        });
+
         state.currentSection = section;
+        if (updateHash) {
+            const targetHash = `#${section}`;
+            if (window.location.hash !== targetHash) {
+                window.location.hash = targetHash;
+            }
+        }
+    }
+
+    function syncSectionWithHash() {
+        const sectionFromHash = window.location.hash?.replace('#', '') || 'usuarios';
+        const targetSection = ['usuarios', 'regionais'].includes(sectionFromHash)
+            ? sectionFromHash
+            : 'usuarios';
+        navigateToSection(targetSection, false);
     }
 
     // ========================================
